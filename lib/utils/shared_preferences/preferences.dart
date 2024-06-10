@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Preferences {
@@ -22,13 +23,13 @@ class Preferences {
    return tokenValue;
  }
 
- static setRoleID(String role) async {
+ static setRoleID(int role) async {
    SharedPreferences prefs = await SharedPreferences.getInstance();
-   prefs.setString('role_id', role);
+   prefs.setInt('role_id', role);
  }
  static getRoleID() async {
    SharedPreferences prefs = await SharedPreferences.getInstance();
-   String? roleIdValue = prefs.getString("role_id");
+   int? roleIdValue = prefs.getInt("role_id");
    return roleIdValue;
  }
 

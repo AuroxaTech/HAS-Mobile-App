@@ -12,6 +12,7 @@ import 'package:property_app/views/tenant_profile/tenent_dashboard.dart';
 
 import '../../app_constants/color_constants.dart';
 import '../../services/notification_services/notification_services.dart';
+import '../chat_screens/HomeScreen.dart';
 import '../land_lords/job_screeen.dart';
 class TenantBottomBar extends StatefulWidget {
   const TenantBottomBar({Key? key}) : super(key: key);
@@ -56,7 +57,7 @@ class _TenantBottomBarState extends State<TenantBottomBar> {
 
   List<Widget> widgetList = [
     AllPropertyScreen(),
-    const ChatScreenList(),
+    const ChatListing(),
     ServicesListingScreen(),
      JobsScreen(),
     const TenantDashboard(),

@@ -231,12 +231,12 @@ class Routes {
           binding: ScreenBindings(),
           transition: routeTransition
       ),
-      GetPage(
-          name: kChatConversionScreen,
-          page: () => const ChatConversionScreen(),
-          binding: ScreenBindings(),
-          transition: routeTransition
-      ),
+      // GetPage(
+      //     name: kChatConversionScreen,
+      //     page: () => const ChatConversionScreen(),
+      //     binding: ScreenBindings(),
+      //     transition: routeTransition
+      // ),
       GetPage(
           name: kServiceListingScreenDetail,
           page: () => const ServiceListingDetailScreen(),

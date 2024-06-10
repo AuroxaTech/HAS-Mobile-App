@@ -74,8 +74,8 @@ class PropertyData {
 
 class Property {
   int id;
-  String userId;
-  String type;
+  int userId;
+  int type;
   String images;
   String city;
   String amount;
@@ -163,7 +163,7 @@ class User {
   String fullname;
   String email;
   String phoneNumber;
-  String roleId;
+  int roleId;
   String profileimage;
   DateTime createdAt;
   DateTime updatedAt;

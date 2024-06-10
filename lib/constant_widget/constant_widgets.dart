@@ -1893,3 +1893,4 @@ bool emailValidation(String em) {
   RegExp regExp = RegExp(p);
   return regExp.hasMatch(em);
 }
+

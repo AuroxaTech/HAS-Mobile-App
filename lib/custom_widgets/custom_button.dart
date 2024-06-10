@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:property_app/constant_widget/constant_widgets.dart';
 
 
@@ -66,5 +67,23 @@ class CustomButton extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+
+
+String formatTime(DateTime time) {
+  DateTime now = DateTime.now();
+  Duration difference = now.difference(time);
+
+  if (time.year == now.year && time.month == now.month && time.day == now.day) {
+    // If the timestamp is from today, show the time only
+    return DateFormat('hh:mm a').format(time);
+  } else if (difference.inDays == 1 && now.day != time.day) {
+    // If the timestamp is from yesterday, show 'Yesterday'
+    return 'Yesterday';
+  } else {
+    // Otherwise, show the date
+    return DateFormat('dd MMM yyyy').format(time);
   }
 }

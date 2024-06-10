@@ -30,13 +30,13 @@ class SplashScreenController extends GetxController {
     await Future.delayed(const Duration(seconds: 3), (){
      if(isCheck == true){
         if(token != null){
-          if(roleId == "1"){
+          if(roleId == 1){
             Get.offAll(const MainBottomBar());
-          }else if(roleId == "2"){
+          }else if(roleId == 2){
             Get.offAll(const TenantBottomBar());
-          }else if(roleId == "3"){
+          }else if(roleId == 3){
             Get.offAll(const ServiceProviderBottomBar());
-          }else if(roleId == "4"){
+          }else if(roleId == 4){
             Get.offAll(const VisitorBottomBar());
           }else{
 

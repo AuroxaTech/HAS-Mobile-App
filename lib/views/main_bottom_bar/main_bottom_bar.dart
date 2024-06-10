@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:property_app/app_constants/app_icon.dart';
+import 'package:property_app/views/chat_screens/HomeScreen.dart';
 import 'package:property_app/views/chat_screens/chat_screen_list.dart';
 import 'package:property_app/views/dashoard_screens/all_property_screen.dart';
 import 'package:property_app/views/dashoard_screens/congrate_screen.dart';
@@ -45,7 +46,7 @@ class _MainBottomBarState extends State<MainBottomBar> {
 
   List<Widget> widgetList = [
      AllPropertyScreen(),
-    const ChatScreenList(),
+    const ChatListing(),
      ServicesListingScreen(),
      JobsScreen(),
     const DashBoardScreen(),

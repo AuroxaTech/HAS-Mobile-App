@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -43,11 +44,12 @@ class LoginScreenController extends GetxController{
         platform: Platform.isAndroid ? "android" : "ios",
       );
 
-      //print("Response: ${response.toString()}"); // Log the full response
+      // Log the full response
 
     //  var data = jsonDecode(response); // This might throw FormatException
 
       if (data['status'] == true) {
+        print("Response: ${data["data"]}");
         // Setting user preferences
         Preferences.setToken(data["token"]);
         Preferences.setUserName(data["data"]["fullname"]);
@@ -57,7 +59,41 @@ class LoginScreenController extends GetxController{
         // Navigation based on role
         navigateBasedOnRole(data["data"]["role_id"]);
         debugPrint(data["messages"]);
+
+
+        final FirebaseFirestore firestore = FirebaseFirestore.instance;
+        CollectionReference users = firestore.collection('users');
+
+        DocumentSnapshot docSnapshot = await users.doc(data["data"]["id"].toString()).get();
+
+        if (docSnapshot.exists) {
+
+          await users.doc(data["data"]["id"].toString()).update({
+            'fullname': data["data"]["fullname"],
+            'email': data["data"]["email"],
+            "userId" : data["data"]["id"],
+            'role_id': data["data"]["role_id"],
+            "online" : true,
+            'profileimage': data["data"]["profileimage"],
+            'lastSeen': FieldValue.serverTimestamp(),
+          });
+          print("user updated");
+        } else {
+          await users.doc(data["data"]["id"].toString()).set({
+            'fullname': data["data"]["fullname"],
+            'email': data["data"]["email"],
+            "userId" : data["data"]["id"],
+            'role_id': data["data"]["role_id"],
+            'profileimage': data["data"]["profileimage"],
+            "online" : true,
+            'mobileNumber': data["data"]["phone_number"],
+            'lastSeen': FieldValue.serverTimestamp(),
+            "createdAT" : FieldValue.serverTimestamp(),
+          });
+          print("user added");
+        }
         isLoading.value = false;
+
         AppUtils.getSnackBar("Success", data["messages"]);
       } else {
         isLoading.value = false;
@@ -85,18 +121,52 @@ class LoginScreenController extends GetxController{
     }
   }
 
-  void navigateBasedOnRole(String roleId) {
+  Future<void> addOrUpdateUserInFirebase(Map<String, dynamic> userData) async {
+    try {
+
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+      CollectionReference users = firestore.collection('users');
+
+      DocumentSnapshot docSnapshot = await users.doc(userData['id'].toString()).get();
+
+      if (docSnapshot.exists) {
+
+        await users.doc(userData['id'].toString()).update({
+          'fullname': userData['fullname'],
+          'email': userData['email'],
+          'role_id': userData['role_id'],
+          'last_login': FieldValue.serverTimestamp(),
+          // Optional: track last login time
+        });
+      } else {
+        // User does not exist, create new document
+        await users.doc(userData['id'].toString()).set({
+          'id': userData['id'],
+          'fullname': userData['fullname'],
+          'email': userData['email'],
+          'role_id': userData['role_id'],
+          'created_at': FieldValue.serverTimestamp(), // Optional: track creation time
+        });
+      }
+      print("User data added/updated in Firebase");
+    } catch (e) {
+      print("Error adding/updating user in Firebase: $e");
+      throw Exception("Failed to update user data in Firebase.");
+    }
+  }
+
+  void navigateBasedOnRole(int roleId) {
     switch (roleId) {
-      case "1":
+      case 1:
         Get.offAll(() => const MainBottomBar());
         break;
-      case "2":
+      case 2:
         Get.offAll(() => const TenantBottomBar());
         break;
-      case "3":
+      case 3:
         Get.offAll(() => const ServiceProviderBottomBar());
         break;
-      case "4":
+      case 4:
         Get.offAll(() => const VisitorBottomBar());
         break;
     }

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -207,6 +208,18 @@ class SignUpController extends GetxController{
   AuthServices authServices = AuthServices();
   RxBool isLoading = false.obs;
   RxString errorMessage = "".obs;
+
+  Future<void> updateProfileInfo(String userId, Map<String, dynamic> profileData) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .set(profileData, SetOptions(merge: true));
+    } catch (e) {
+      print('Error updating profile info: $e');
+    }
+  }
+
   Future<void> registerVisitor(
       BuildContext context,
       String fullName,
@@ -232,10 +245,9 @@ class SignUpController extends GetxController{
         platform: Platform.isAndroid ? "android" : "ios",
       );
 
-      print("Data : $data");
-
       if (data['status'] == true) {
         // Handle success
+
         isLoading.value = false;
         Get.back();
         AppUtils.getSnackBar("Success", data["messages"]);

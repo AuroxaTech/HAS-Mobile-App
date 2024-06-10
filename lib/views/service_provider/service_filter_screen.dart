@@ -13,7 +13,7 @@ class ServiceFilterScreen extends GetView<ServiceListingScreenController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Scaffold (
       backgroundColor: whiteColor,
       appBar: titleAppBar("Service Filter"),
       body: SafeArea(

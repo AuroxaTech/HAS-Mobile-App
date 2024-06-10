@@ -62,7 +62,7 @@ class VisitorData {
 
 class Visitor {
   int id;
-  String userId;
+  int userId;
   DateTime createdAt;
   DateTime updatedAt;
   User user;
@@ -97,7 +97,7 @@ class User {
   String fullname;
   String email;
   String phoneNumber;
-  String roleId;
+  int roleId;
   String profileimage;
   DateTime createdAt;
   DateTime updatedAt;

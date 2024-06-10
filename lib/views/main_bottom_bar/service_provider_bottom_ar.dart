@@ -12,6 +12,7 @@ import 'package:property_app/views/service_provider/services_provider_screen.dar
 
 import '../../app_constants/color_constants.dart';
 import '../../services/notification_services/notification_services.dart';
+import '../chat_screens/HomeScreen.dart';
 import '../dashoard_screens/all_property_screen.dart';
 class ServiceProviderBottomBar extends StatefulWidget {
   const ServiceProviderBottomBar({Key? key}) : super(key: key);
@@ -34,7 +35,7 @@ class _ServiceProviderBottomBarState extends State<ServiceProviderBottomBar> {
         controller: _pageController,
         children:  <Widget>[
           AllPropertyScreen(),
-          const ChatScreenList(),
+          const ChatListing(),
           const CalendarScreen(),
           ServiceProviderScreen(),
           //  Center(child: Text("People Settings")),

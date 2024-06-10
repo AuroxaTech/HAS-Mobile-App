@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -12,6 +13,8 @@ import 'package:property_app/views/service_provider/rating_screen.dart';
 import '../../app_constants/app_icon.dart';
 import '../../app_constants/color_constants.dart';
 import '../../route_management/constant_routes.dart';
+import '../../utils/shared_preferences/preferences.dart';
+import '../chat_screens/chat_conversion_screen.dart';
 
 class ServiceListingDetailScreen extends GetView<ServiceListingDetailScreenController> {
   const ServiceListingDetailScreen({Key? key}) : super(key: key);
@@ -461,7 +464,8 @@ class ServiceListingDetailScreen extends GetView<ServiceListingDetailScreenContr
                                     fontSize: 18,
                                     gradientColor: greenGradient(),
                                     onTap: (){
-                                      Get.toNamed(kChatConversionScreen);
+                                      createConversation(controller.getServiceOne.value!.user!.fullname.toString(), controller.getServiceOne.value!.user!.profileimage.toString(), controller.getServiceOne.value!.user!.id.toString(), context);
+                                     // Get.toNamed(kChatConversionScreen);
                                     },
                                   ),
                                 ),
@@ -500,4 +504,97 @@ class ServiceListingDetailScreen extends GetView<ServiceListingDetailScreenContr
       ),
     );
   }
+
+  createConversation(
+      String name,
+      String profilePicture,
+      String id,
+      context
+      ) async {
+    try {
+
+      var userId = await Preferences.getUserID();
+      var userName = await Preferences.getUserName();
+
+      // Query Firestore to check if a conversation already exists
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('conversationListing')
+          .where('user1', isEqualTo: userId.toString())
+          .where('user2', isEqualTo: id)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        print("EXIST");
+        // Conversation already exists, navigate to chat screen
+        DocumentSnapshot conversationSnapshot = querySnapshot.docs.first;
+        Navigator.push(context, MaterialPageRoute(builder: (context) => ChatScreen1(
+            group: false,
+            image: profilePicture,
+            name: name,
+            data: conversationSnapshot)));
+        // Navigator.pushAndRemoveUntil(
+        //   context,
+        //   MaterialPageRoute(
+        //       builder: (context) => ChatScreen1(
+        //           group: false,
+        //           image: profilePicture,
+        //           name: name,
+        //           data: conversationSnapshot)),
+        //       (Route<dynamic> route) => false,
+        // );
+      } else {
+        print("Not EXIST");
+        // Conversation doesn't exist, create new conversation
+        Map<String, dynamic> conversationData = {
+          'group' : false,
+          'profilePictureUrl': profilePicture,
+          "members": [
+            {
+              'userId': userId.toString(),
+              'userName': userName,
+              'profilePictureUrl': id == userId.toString()
+                  ? profilePicture
+                  : await Preferences.getToken(),
+            },
+
+            {
+              'userId': id,
+              'userName': name,
+              'profilePictureUrl': profilePicture
+            },
+          ],
+          "created": DateTime.now(),
+          "user1" : userId.toString(),
+          "user2" : id,
+          "user": [userId.toString(), id],
+          "lastMessage": {
+            "message": "",
+            "time": null,
+            "seen": false,
+          },
+        };
+        DocumentReference conversationRef = await FirebaseFirestore.instance.collection('conversationListing').add(conversationData);
+        DocumentSnapshot conversationSnapshot = await conversationRef.get();
+        // Navigator.pushAndRemoveUntil(
+        //   context,
+        //   MaterialPageRoute(
+        //       builder: (context) => ChatScreen1(
+        //           group: false,
+        //           image: profilePicture,
+        //           name: name,
+        //           data: conversationSnapshot)),
+        //       (Route<dynamic> route) => false,
+        // );
+
+        Navigator.push(context, MaterialPageRoute(builder: (context) => ChatScreen1(
+            group: false,
+            image: profilePicture,
+            name: name,
+            data: conversationSnapshot)));
+      }
+    } catch (e) {
+      print('Error creating or navigating to conversation: $e');
+    }
+  }
+
 }

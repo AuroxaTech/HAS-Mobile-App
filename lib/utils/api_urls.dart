@@ -2,7 +2,8 @@ class AppUrls {
 
   static const mapKey = "AIzaSyDyeWs6PDrJbaqLv_AL0m1aww0munJ_vlc";
 
-  static const baseUrl = "https://pktours.pk";
+ // static const baseUrl = "https://pktours.pk";
+  static const baseUrl = "http://138.197.174.41:8080";
   static const profileImageBaseUrl = "$baseUrl/public/assets/profile_images/";
   static const electricityBillBaseUrl = "$baseUrl/public/assets/electricity_bill/";
   static const certificateImagesBaseUrl = "$baseUrl/public/assets/certification_images/";
