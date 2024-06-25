@@ -5,14 +5,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:property_app/app_constants/color_constants.dart';
 import 'package:property_app/app_constants/theme.dart';
 import 'package:property_app/controllers/authentication_controller/splash_screen_controller.dart';
 import 'package:property_app/route_management/routes.dart';
-import 'package:property_app/services/notification_services/notification_services.dart';
-import 'package:property_app/views/authentication_screens/splash_screen.dart';
-
 import 'route_management/constant_routes.dart';
 import 'route_management/screen_bindings.dart';
 
@@ -45,8 +40,12 @@ class MyApp extends StatelessWidget {
       getPages: Routes.getPages(),
       title: 'HAS',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.theme
-
+      theme: AppTheme.theme,
+      builder: (_, child) => TextScaleFactorClamper(
+        minTextScaleFactor: 1.0,
+        maxTextScaleFactor: 1.0,
+        child: child!
+      ),
     );
   }
 }
@@ -59,7 +58,7 @@ class MyHttpOverrides extends HttpOverrides {
   }
 }
 
-//MUX_TOKEN_ID=15d0fe63-213f-443d-abf1-847edde2b710
+// MUX_TOKEN_ID=15d0fe63-213f-443d-abf1-847edde2b710
 // MUX_TOKEN_SECRET=gaHuGszH71j1pT210WIMa3OGSfWvqCXxSARBObQAeFeYOUG/qQr9R4AA+T36bUsV6Hzmky/YlHi
 
 
@@ -95,3 +94,50 @@ class MyHttpOverrides extends HttpOverrides {
 //                     ),
 //                   ],
 //                 ),
+
+class TextScaleFactorClamper extends StatelessWidget {
+  /// {@macro text_scale_factor_clamper}
+  const TextScaleFactorClamper({
+    super.key,
+    required this.child,
+    this.minTextScaleFactor,
+    this.maxTextScaleFactor,
+  }) : assert(
+  minTextScaleFactor == null ||
+      maxTextScaleFactor == null ||
+      minTextScaleFactor <= maxTextScaleFactor,
+  'minTextScaleFactor must be less than maxTextScaleFactor',
+  ),
+        assert(
+        maxTextScaleFactor == null ||
+            minTextScaleFactor == null ||
+            maxTextScaleFactor >= minTextScaleFactor,
+        'maxTextScaleFactor must be greater than minTextScaleFactor',
+        );
+
+  /// Child widget.
+  final Widget child;
+
+  /// Min text scale factor.
+  final double? minTextScaleFactor;
+
+  /// Max text scale factor.
+  final double? maxTextScaleFactor;
+
+  @override
+  Widget build(BuildContext context) {
+    final mediaQueryData = MediaQuery.of(context);
+
+    final constrainedTextScaleFactor = mediaQueryData.textScaler.clamp(
+      minScaleFactor: minTextScaleFactor ?? 1,
+      maxScaleFactor: maxTextScaleFactor ?? 1.3,
+    );
+
+    return MediaQuery(
+      data: mediaQueryData.copyWith(
+        textScaler: constrainedTextScaleFactor,
+      ),
+      child: child,
+    );
+  }
+}

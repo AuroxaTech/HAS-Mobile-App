@@ -7,7 +7,8 @@ import '../../models/propert_model/ladlord_property_model.dart';
 import '../../services/property_services/get_property_services.dart';
 import '../../utils/shared_preferences/preferences.dart';
 
-class AllPropertyController extends GetxController {
+
+class AllPropertyController extends GetxController with GetTickerProviderStateMixin {
 
   final sheet = GlobalKey();
   final controller = DraggableScrollableController();
@@ -18,11 +19,15 @@ class AllPropertyController extends GetxController {
     "300 sq ft",
     "400 sq ft"
   ];
+
+  late TabController tabController;
+  RxInt selectedIndex = 0.obs;
+
   RxInt selectedArea = 0.obs;
   RxInt selectedBedroom = 1.obs;
   RxInt selectedBathrooms = 1.obs;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-
+  RxBool isSale = false.obs;
   var description = TextEditingController();
   var minPriceController = TextEditingController();
   var maxPriceController = TextEditingController();
@@ -102,6 +107,10 @@ class AllPropertyController extends GetxController {
 
   @override
   void onInit() {
+    tabController = TabController(length: 2, vsync: this);
+    tabController.addListener(() {
+      selectedIndex.value = tabController.index;
+    });
     pagingController.addPageRequestListener((pageKey) {
       getProperties(pageKey);
     });

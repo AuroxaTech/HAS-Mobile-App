@@ -239,7 +239,7 @@ PreferredSizeWidget homeAppBar(context, {
               shape: BoxShape.circle,
               border: Border.all(color: borderColor)
           ),
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(12),
           child: SvgPicture.asset(AppIcons.notification),
         ),
       ) : const SizedBox(),
@@ -264,7 +264,7 @@ PreferredSizeWidget homeAppBar(context, {
             shape: BoxShape.circle,
             border: Border.all(color: borderColor)
           ),
-          padding: const EdgeInsets.all(5),
+          padding: const EdgeInsets.all(12),
           child: SvgPicture.asset(AppIcons.menu),
         ),
       ),
@@ -376,7 +376,7 @@ Widget imageButton({
   );
 }
 
-Widget uploadImageContainer({VoidCallback? onTap, String? text}){
+Widget uploadImageContainer({VoidCallback? onTap, String? text, IconData? icon}){
   return GestureDetector(
     onTap: onTap,
     child: Container(

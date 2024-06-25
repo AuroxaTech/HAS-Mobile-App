@@ -66,7 +66,7 @@ class Provider {
 
 class Serviceprovider {
   int id;
-  String userId;
+  int userId;
   String services;
   String yearExperience;
   String availabilityStartTime;
@@ -78,7 +78,7 @@ class Serviceprovider {
   DateTime createdAt;
   DateTime updatedAt;
   User user;
-  ProviderService providerService;
+  ProviderService? providerService;
 
   Serviceprovider({
     required this.id,
@@ -111,7 +111,8 @@ class Serviceprovider {
     createdAt: DateTime.parse(json["created_at"]),
     updatedAt: DateTime.parse(json["updated_at"]),
     user: User.fromJson(json["user"]),
-    providerService: ProviderService.fromJson(json["provider_service"]),
+
+    providerService: json["provider_service"] == null ? null  : ProviderService.fromJson(json["provider_service"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -128,7 +129,7 @@ class Serviceprovider {
     "created_at": createdAt.toIso8601String(),
     "updated_at": updatedAt.toIso8601String(),
     "user": user.toJson(),
-    "provider_service": providerService.toJson(),
+    "provider_service": providerService,
   };
 }
 
@@ -165,7 +166,7 @@ class User {
   String fullname;
   String email;
   String phoneNumber;
-  String roleId;
+  int roleId;
   String profileimage;
   String platform;
   String deviceToken;

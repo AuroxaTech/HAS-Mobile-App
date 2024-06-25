@@ -7,10 +7,13 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location_geocoder/location_geocoder.dart';
 import 'package:property_app/app_constants/color_constants.dart';
 import 'package:http/http.dart' as http;
+import 'package:property_app/custom_widgets/custom_button.dart';
 import 'package:property_app/utils/api_urls.dart';
+
 enum AddressType { Home, Office, Other }
 
 AddressType selectedAddress = AddressType.Other;
+
 class LocationScreen extends StatefulWidget {
   const LocationScreen({super.key});
 
@@ -28,34 +31,41 @@ class _LocationScreenState extends State<LocationScreen> {
 
   final Completer<GoogleMapController> _mapController = Completer();
 
-
-  updateMarkerPin(lat, lng) async {
+  updateMarkerPin(double lat, double lng) async {
     print("Lat : $lat , Lng : $lng");
     final GoogleMapController controller = await _mapController.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(lat, lng), zoom: 17)));
     setState(() {});
     isFirstTime.value = false;
   }
+
+  void _returnSelectedLocation() {
+    final selectedLocation = {
+      'address': address.value,
+      'latitude': lat.value,
+      'longitude': lng.value,
+    };
+    Navigator.pop(context, selectedLocation);
+  }
+
   @override
   void initState() {
-    kGooglePlex =  CameraPosition(
+    kGooglePlex = CameraPosition(
       target: LatLng(lat.value, lng.value),
       zoom: 14.4746,
     );
-    // rootBundle.loadString('images/map_style.txt').then((string) {
-    //   mapStyle = string;
-    // });
     super.initState();
 
     updateMarkerPin(lat.value, lng.value);
-
   }
+
   late CameraPosition kGooglePlex;
   RxBool isCard = false.obs;
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         FocusManager.instance.primaryFocus?.unfocus();
       },
       child: Scaffold(
@@ -67,122 +77,19 @@ class _LocationScreenState extends State<LocationScreen> {
               "Hangi",
               style: TextStyle(fontSize: 16.7),
             ),
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(100.0),
-              child: Container(
-                  width: MediaQuery.sizeOf(context).width,
-                  margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                  padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 24.0),
-                  decoration: const BoxDecoration(
-                    // boxShadow: [
-                    //   BoxShadow(color: Theme.of(context).cardColor),
-                    // ],
-                    // borderRadius: BorderRadius.circular(30.0),
-                    // color: Theme.of(context).cardColor,
-                  ),
-                  child: Column(
-                    children: [
-                      // if (lat != null && lng != null) // Ensure lat and lng are not null
-                      //   // GooglePlaceAutoCompleteTextField(
-                      //   //   textEditingController: searchController.value,
-                      //   //   googleAPIKey: Common.apiKey!, // Replace with your actual Google API Key
-                      //   //   inputDecoration: const InputDecoration(
-                      //   //     hintText: 'Enter Location',
-                      //   //     border: InputBorder.none,
-                      //   //     suffixIcon: Icon(Icons.search),
-                      //   //   ),
-                      //   //   debounceTime: 800,
-                      //   //   countries:  [_countryCode.toLowerCase(),],
-                      //   //   isLatLngRequired: true,
-                      //   //   getPlaceDetailWithLatLng: (prediction) {
-                      //   //     print("Place Details: ${prediction.description}, Lat: ${prediction.lat}, Lng: ${prediction.lng}");
-                      //   //   },
-                      //   //   itemClick: (Prediction prediction) {
-                      //   //     setState(() {
-                      //   //       List<String> addressParts = prediction.description?.split(', ') ?? [];
-                      //   //       String desiredAddress = addressParts.take(2).join(', '); // Include the first two parts
-                      //   //
-                      //   //       searchController.value.text = prediction.description ?? "";
-                      //   //       address.value = desiredAddress;
-                      //   //       print(address.value);
-                      //   //       // Optionally, move map camera here if using a Google Map
-                      //   //     });
-                      //   //   },
-                      //   //   itemBuilder: (context, index, Prediction prediction) {
-                      //   //     return ListTile(
-                      //   //       leading: const Icon(Icons.location_on),
-                      //   //       title: Text(prediction.description ?? ""),
-                      //   //     );
-                      //   //   },
-                      //   //   seperatedBuilder: const Divider(),
-                      //   //   isCrossBtnShown: true,
-                      //   //   containerHorizontalPadding: 10,
-                      //   // ),
-                      //   GooglePlacesAutocompleteWidget(
-                      //     googleAPIKey: Common.apiKey!,
-                      //     countryCode: "pk", latitude: Common.currentLat!, longitude: Common.currentLng!,),
-                    ],
-                  )
-                //
-                // MapAutoCompleteField(
-                //   googleMapApiKey: Common.apiKey!,
-                //   controller: searchController.value,
-                //   hintStyle: Theme.of(context).textTheme.titleLarge!.copyWith(color: kHintColor),
-                //   itemBuilder: (BuildContext context, suggestion) {
-                //     return ListTile(
-                //       leading: Icon(Icons.location_on, color: kTextColor),
-                //       title: Text(suggestion.description, style: Theme.of(context).textTheme.titleLarge!.copyWith(color: kTextColor)),
-                //     );
-                //   },
-                //   onSuggestionSelected: (suggestion) async {
-                //     searchController.value.text = suggestion.description;
-                //     if (searchController.value.text.isNotEmpty) {
-                //       print(searchController.value.text);
-                //       final LocatitonGeocoder geocoder = LocatitonGeocoder(Common.apiKey!);
-                //       final result = await geocoder.findAddressesFromQuery(searchController.value.text);
-                //       lat.value = result.first.coordinates.latitude!;
-                //       lng.value = result.first.coordinates.longitude!;
-                //       await updateMarkerPin(lat.value, lng.value);
-                //     }
-                //
-                //     address.value = suggestion.description;
-                //   },
-                //   inputDecoration: InputDecoration(
-                //     fillColor: Theme.of(context).cardColor,
-                //     contentPadding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 5.0),
-                //     icon: ImageIcon(AssetImage('assets/images/icons/ic_search.png'), color: Theme.of(context).secondaryHeaderColor, size: 16),
-                //     filled: true,
-                //     suffixIcon: searchController.value.text.isNotEmpty
-                //         ? InkWell(
-                //       onTap: () async {
-                //         searchController.value.text = '';
-                //         address.value = '';
-                //         lat.value = 0.0;
-                //         lng.value = 0.0;
-                //         await updateMarkerPin(double.parse(Common.currentLat!), double.parse(Common.currentLng!));
-                //       },
-                //       child: Icon(Icons.close),
-                //     )
-                //         : Icon(Icons.close, color: Colors.transparent),
-                //     hintText: AppLocalizations.of(context)!.enterLocation,
-                //     hintStyle: Theme.of(context).textTheme.titleLarge!.copyWith(color: kHintColor),
-                //     labelStyle: Theme.of(context).textTheme.titleLarge!.copyWith(color: kHintColor),
-                //     border: InputBorder.none,
-                //   ),
-                // ),
-              ),
-            ),
+
           ),
         ),
         body: Obx(() {
           return SingleChildScrollView(
             child: Container(
-              height: MediaQuery.of(context).size.height - AppBar().preferredSize.height - MediaQuery.of(context).padding.top - 70,
+              height: MediaQuery.of(context).size.height - AppBar().preferredSize.height - MediaQuery.of(context).padding.top - 10,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   const SizedBox(height: 8.0),
                   Expanded(
+                    flex: 3,
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
@@ -214,7 +121,6 @@ class _LocationScreenState extends State<LocationScreen> {
                             }
                           },
                         ),
-
                         Positioned(
                           top: 10.0, // Adjust the position based on your AppBar height or UI design
                           left: 10,
@@ -222,67 +128,79 @@ class _LocationScreenState extends State<LocationScreen> {
                           child: Align(
                             alignment: Alignment.topCenter,
                             child: Container(
-                                width: MediaQuery.sizeOf(context).width,
-                                margin: const EdgeInsets.symmetric(horizontal: 6.0),
-                                padding: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 24.0),
-                                decoration:  BoxDecoration(
+                              width: MediaQuery.sizeOf(context).width,
+                              margin: const EdgeInsets.symmetric(horizontal: 6.0),
+                              padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 24.0),
+                              decoration: BoxDecoration(
 
-                                  boxShadow: [
-                                    BoxShadow(color: Theme.of(context).cardColor),
-                                  ],
-                                  borderRadius: BorderRadius.circular(50.0),
-                                  color: Theme.of(context).cardColor,
-                                ),
-                                child: Column(
-                                  children: [
-                                    TextFormField(
-                                      controller: _controller,
-                                      style: const TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w300
-                                      ),
-                                      decoration: InputDecoration(
-                                          hintText: 'Search Places',
+                                borderRadius: BorderRadius.circular(40.0),
+                                color: whiteColor,
+                              ),
+                              child: Column(
+                                children: [
 
-                                          suffixIcon: _isLoading ? CircularProgressIndicator() : IconButton(onPressed: (){
-                                            setState(() {
-
-                                              print(address.value);
-                                              _controller.clear();
-                                              _autocompleteSuggestions.clear();
-                                            });
-                                          }, icon: const Icon(Icons.close)),
-                                          border: InputBorder.none
-                                      ),
-
-                                      onChanged: _getAutocomplete,
+                                  TextFormField(
+                                    controller: _controller,
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w300,
                                     ),
-                                    ListView.builder(
-                                      itemCount: _autocompleteSuggestions.length,
-                                      shrinkWrap: true,
-                                      itemBuilder: (context, index) {
-                                        return ListTile(
-                                          title: Text(_autocompleteSuggestions[index], style: const TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w300
-                                          ),),
-                                          onTap: () {
-                                            setState(() {
-                                              _controller.text = _autocompleteSuggestions[index];
-                                              List<String> addressParts = _controller.text.split(', ') ?? [];
-                                              String desiredAddress = addressParts.take(2).join(', '); // Include the first two parts
-                                              // searchController.value.text = prediction.description ?? "";
-                                              address.value = desiredAddress;
-                                              _autocompleteSuggestions.clear(); // Clear suggestions after selection
-                                            });
-                                          },
-                                        );
-                                      },
+                                    textAlign: TextAlign.start,
+                                    textAlignVertical: TextAlignVertical.center,
+                                    decoration: InputDecoration(
+                                      hintText: 'Search Places',
+                                      suffixIcon: _isLoading
+                                          ? const CircularProgressIndicator()
+                                          : IconButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            print(address.value);
+                                            _controller.clear();
+                                            _autocompleteSuggestions.clear();
+                                          });
+                                        },
+                                        icon: const Icon(Icons.close),
+                                      ),
+                                      border: InputBorder.none,
                                     ),
-                                  ],
-                                )
+                                    onChanged: _getAutocomplete,
+                                  ),
+                                  ListView.builder(
+                                    itemCount: _autocompleteSuggestions.length,
+                                    shrinkWrap: true,
+                                    itemBuilder: (context, index) {
+                                      return ListTile(
+                                        title: Text(
+                                          _autocompleteSuggestions[index],
+                                          style: const TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w300,
+                                          ),
+                                        ),
+                                        onTap: () async {
+                                          setState(() {
+                                            _controller.text = _autocompleteSuggestions[index];
+                                            List<String> addressParts = _controller.text.split(', ');
+                                            String desiredAddress = addressParts.take(2).join(', ');
+                                            address.value = desiredAddress;
+                                            _autocompleteSuggestions.clear();
+                                          });
+
+                                          final LocatitonGeocoder geocoder = LocatitonGeocoder(AppUrls.mapKey);
+                                          final results = await geocoder.findAddressesFromQuery(_controller.text);
+                                          if (results.isNotEmpty) {
+                                            lat.value = results.first.coordinates.latitude!;
+                                            lng.value = results.first.coordinates.longitude!;
+                                            updateMarkerPin(lat.value, lng.value);
+                                          }
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -290,7 +208,6 @@ class _LocationScreenState extends State<LocationScreen> {
                       ],
                     ),
                   ),
-
                   Container(
                     color: Theme.of(context).cardColor,
                     padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
@@ -309,31 +226,31 @@ class _LocationScreenState extends State<LocationScreen> {
                     ),
                   ),
 
-                  BottomBar(
-                    text: "Continue",
-                    onTap: () async {
-                      if (!isCard.value) {
-                        isCard.value = true;
-                      } else {
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: CustomButton(
+                      width: double.infinity,
+                      text: "Continue",
+                      onTap: () async {
+                          String addressType = AddressType.Other.name;
+                          if (selectedAddress == AddressType.Home) addressType = AddressType.Home.name;
+                          if (selectedAddress == AddressType.Office) addressType = AddressType.Office.name;
+                          if (selectedAddress == AddressType.Other) addressType = AddressType.Other.name;
 
-                        String addressType = AddressType.Other.name;
-                        if (selectedAddress == AddressType.Home) addressType = AddressType.Home.name;
-                        if (selectedAddress == AddressType.Office) addressType = AddressType.Office.name;
-                        if (selectedAddress == AddressType.Other) addressType = AddressType.Other.name;
+                          Map<String, dynamic> map = {
+                            "address": address.value,
+                            "latitude": lat.value.toString(),
+                            "longitude": lng.value.toString(),
+                            "addressType": addressType,
+                            "createdOn": DateTime.now().millisecondsSinceEpoch,
+                          };
 
-                        Map<String, dynamic> map = {
-                          "address": address.value,
-                          "latitude": lat.value.toString(),
-                          "longitude": lng.value.toString(),
-                          "addressType": addressType,
-                          "createdOn": DateTime.now().millisecondsSinceEpoch,
-                        };
+                          _returnSelectedLocation();
 
-                        Get.back();
-                        Get.back();
-                      }
-                    },
+                      },
+                    ),
                   ),
+
                 ],
               ),
             ),
@@ -341,8 +258,8 @@ class _LocationScreenState extends State<LocationScreen> {
         }),
       ),
     );
-
   }
+
   void onLocationSelected(String selectedLocation) {
     Get.back(result: selectedLocation);
   }
@@ -352,17 +269,31 @@ class _LocationScreenState extends State<LocationScreen> {
       _mapController.complete(controller);
       mapStyleController = controller;
       controller.setMapStyle('''
-    [
+  [
   {
-    "elementType": "geometry",
+    "featureType": "all",
+    "elementType": "labels.text.fill",
     "stylers": [
       {
-        "color": "#f5f5f5"
+        "color": "#7c93a3"
+      },
+      {
+        "lightness": "-10"
       }
     ]
   },
   {
-    "elementType": "labels.icon",
+    "featureType": "administrative.country",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "visibility": "simplified"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative.land_parcel",
+    "elementType": "all",
     "stylers": [
       {
         "visibility": "off"
@@ -370,63 +301,53 @@ class _LocationScreenState extends State<LocationScreen> {
     ]
   },
   {
-    "elementType": "labels.text.fill",
+    "featureType": "administrative.province",
+    "elementType": "all",
     "stylers": [
       {
-        "color": "#616161"
+        "visibility": "off"
       }
     ]
   },
   {
-    "elementType": "labels.text.stroke",
+    "featureType": "landscape",
+    "elementType": "geometry",
     "stylers": [
       {
-        "color": "#f5f5f5"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative.land_parcel",
-    "elementType": "labels.text.fill",
-    "stylers": [
+        "visibility": "simplified"
+      },
       {
-        "color": "#bdbdbd"
+        "color": "#e9e5dc"
       }
     ]
   },
   {
     "featureType": "poi",
-    "elementType": "geometry",
+    "elementType": "labels",
     "stylers": [
       {
-        "color": "#eeeeee"
-      }
-    ]
-  },
-  {
-    "featureType": "poi",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#757575"
+        "visibility": "on"
       }
     ]
   },
   {
     "featureType": "poi.park",
-    "elementType": "geometry",
+    "elementType": "geometry.fill",
     "stylers": [
       {
-        "color": "#e5e5e5"
+        "color": "#a5b076"
       }
     ]
   },
   {
     "featureType": "poi.park",
-    "elementType": "labels.text.fill",
+    "elementType": "labels.text",
     "stylers": [
       {
-        "color": "#9e9e9e"
+        "visibility": "simplified"
+      },
+      {
+        "color": "#447530"
       }
     ]
   },
@@ -440,11 +361,20 @@ class _LocationScreenState extends State<LocationScreen> {
     ]
   },
   {
+    "featureType": "road",
+    "elementType": "geometry.fill",
+    "stylers": [
+      {
+        "color": "#ffffff"
+      }
+    ]
+  },
+  {
     "featureType": "road.arterial",
-    "elementType": "labels.text.fill",
+    "elementType": "geometry",
     "stylers": [
       {
-        "color": "#757575"
+        "color": "#ffffff"
       }
     ]
   },
@@ -453,67 +383,43 @@ class _LocationScreenState extends State<LocationScreen> {
     "elementType": "geometry",
     "stylers": [
       {
-        "color": "#dadada"
+        "color": "#f9d29d"
       }
     ]
   },
   {
     "featureType": "road.highway",
-    "elementType": "labels.text.fill",
+    "elementType": "geometry.fill",
     "stylers": [
       {
-        "color": "#616161"
+        "color": "#f9d29d"
       }
     ]
   },
   {
-    "featureType": "road.local",
-    "elementType": "labels.text.fill",
+    "featureType": "transit",
+    "elementType": "labels",
     "stylers": [
       {
-        "color": "#9e9e9e"
-      }
-    ]
-  },
-  {
-    "featureType": "transit.line",
-    "elementType": "geometry",
-    "stylers": [
+        "visibility": "simplified"
+      },
       {
-        "color": "#e5e5e5"
-      }
-    ]
-  },
-  {
-    "featureType": "transit.station",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#eeeeee"
+        "color": "#82868c"
       }
     ]
   },
   {
     "featureType": "water",
-    "elementType": "geometry",
+    "elementType": "geometry.fill",
     "stylers": [
       {
-        "color": "#c9c9c9"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#9e9e9e"
+        "color": "#a6cbe3"
       }
     ]
   }
 ]
+
     ''');
-      // mapStyleController!.setMapStyle(mapStyle);
     });
   }
 
@@ -521,7 +427,6 @@ class _LocationScreenState extends State<LocationScreen> {
   List<String> _autocompleteSuggestions = [];
   bool _isLoading = false;
 
-  // Function to call Google Places Autocomplete API
   Future<void> _getAutocomplete(String input) async {
     if (input.isEmpty) {
       setState(() {
@@ -532,39 +437,37 @@ class _LocationScreenState extends State<LocationScreen> {
 
     setState(() => _isLoading = true);
 
-    // Ensure the countryCode is correctly set to the ISO 3166-1 Alpha-2 code.
-    // For example, 'us' for the United States, 'pk' for Pakistan.
+    const String url = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
 
-    const String url = 'https://places.googleapis.com/v1/places:autocomplete';
-    Map<String, dynamic> body = {
+    Map<String, dynamic> parameters = {
       'input': input,
-      "locationBias": {
-        "circle": {
-          "center": {
-            "latitude": lat.value,
-            "longitude": lng.value
-          },
-          "radius": 500.0
-        }
-      }
+      'key': AppUrls.mapKey,
+      'components': 'country:pk', // Restrict results to Pakistan
+      'language': 'en',  // Language set to English
     };
 
+    // Add location bias parameters if coordinates are available
+    if (lat.value != null && lng.value != null) {
+      parameters.addAll({
+        "location": "${lat.value},${lng.value}",
+        "radius": "500"  // radius in meters
+      });
+    }
+
     try {
-      final response = await http.post(
-        Uri.parse(url),
+      final response = await http.get(
+        Uri.parse(url).replace(queryParameters: parameters),
         headers: {
           'Content-Type': 'application/json',
-          'X-Goog-Api-Key': AppUrls.mapKey,
         },
-        body: jsonEncode(body),
       );
 
       final data = json.decode(response.body);
       print(data);
-      if (data != null && data['suggestions'] != null) {
+      if (data != null && data['predictions'] != null) {
         setState(() {
           _autocompleteSuggestions = List<String>.from(
-              data['suggestions'].map((s) => s['placePrediction']['text']['text'] as String)
+              data['predictions'].map((s) => s['description'] as String)
           );
           _isLoading = false;
         });
@@ -579,13 +482,7 @@ class _LocationScreenState extends State<LocationScreen> {
       print("Failed to fetch suggestions: $e");
     }
   }
-
-
 }
-
-
-
-
 
 class BottomBar extends StatelessWidget {
   final Function onTap;
@@ -602,7 +499,7 @@ class BottomBar extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(color: color ?? primaryColor, borderRadius: BorderRadius.all(Radius.circular(30.0))),
         margin: EdgeInsets.symmetric(horizontal: 15.0, vertical: 20.0),
-        height: 60.0,
+        height: 55.0,
         child: Center(
           child: Text(
             text!,

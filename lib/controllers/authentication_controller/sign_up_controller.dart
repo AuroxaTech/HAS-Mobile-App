@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -17,11 +18,14 @@ class SignUpController extends GetxController{
   final items = ['Choose Property Type', "Apartment", "House", "Condo", "Townhouse", "Other"];
   RxString contactMethodValue = 'Preferred Contact Method'.obs;
   RxString onRentValue = 'Select last status'.obs;
+  RxString leasedDuration = 'Select Leased Duration'.obs;
+  RxString noOfOccupant = 'Number of Occupant'.obs;
   RxString electricalValue = 'Choose service'.obs;
   RxString yesValue = 'Any Certificate ?'.obs;
   RxBool isSale = false.obs;
   RxInt selectedArea = 0.obs;
   RxString selectedRange = "50 sq ft".obs;
+  RxString selectedBothList = "1".obs;
   RxInt selectedBedroom = 1.obs;
   RxInt selectedBathrooms = 1.obs;
   List<String> areaRange = [
@@ -31,9 +35,29 @@ class SignUpController extends GetxController{
     "300 sq ft",
     "400 sq ft"
   ] ;
+  var map ={};
+
+  List<String> bathroomsList = [
+    "1",
+    "1  1/2",
+    "2",
+    "2  1/2",
+    "3",
+    "3  1/2",
+    "4",
+    "4  1/2",
+    "5",
+    "5  1/2",
+    "6",
+    "6  1/2",
+    "7",
+    "7  1/2"
+  ] ;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final GlobalKey<FormState> formKeyDetail = GlobalKey<FormState>();
   TextEditingController nameController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
+  TextEditingController postalCode = TextEditingController();
   RxBool nameField = true.obs;
   TextEditingController emailController = TextEditingController();
   RxBool emailField = true.obs;
@@ -71,7 +95,11 @@ class SignUpController extends GetxController{
  TextEditingController description = TextEditingController();
 
 
-
+  String phone = "";
+  String countryCode = "";
+  String selectedAddress = "";
+  double selectedLat = 0.0;
+  double selectedLng = 0.0;
   @override
   void onInit() {
     super.onInit();
@@ -205,6 +233,37 @@ class SignUpController extends GetxController{
         }
     }
   }
+
+
+  Rx<PlatformFile?> pickFile = Rx<PlatformFile?>(null);
+  void pickFiles() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf', 'doc', 'docx'],
+    );
+    if (result != null) {
+      pickFile.value = result.files.first;
+    } else {
+      // User canceled the picker
+    }
+  }
+
+  Icon getFileIcon(String fileName) {
+    if (fileName.endsWith('.pdf')) {
+      return const Icon(Icons.picture_as_pdf, size: 35,);
+    } else if (fileName.endsWith('.doc') || fileName.endsWith('.docx')) {
+      return const Icon(Icons.description, size: 35,);
+    } else {
+      return const Icon(Icons.insert_drive_file);
+    }
+  }
+
+
+
+
+
+
+
   AuthServices authServices = AuthServices();
   RxBool isLoading = false.obs;
   RxString errorMessage = "".obs;
@@ -280,7 +339,7 @@ class SignUpController extends GetxController{
   required double long,
   required String areaRange,
   required int bedroom,
-  required int bathroom,
+  required String bathroom,
   required XFile electricityBill,
   required List<XFile> propertyImages,
   required int noOfProperty,
@@ -425,7 +484,7 @@ class SignUpController extends GetxController{
     String? lastLandlordContact,
     String? occupation,
     String? leasedDuration,
-    int? noOfOccupants,
+    String? noOfOccupants,
   }) async {
     isLoading.value = true;
     try {

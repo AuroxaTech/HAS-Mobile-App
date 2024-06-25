@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import 'package:intl_phone_field/countries.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:intl_phone_field/phone_number.dart';
 import '../app_constants/color_constants.dart';
-import '../constant_widget/constant_widgets.dart';
+
 class CustomTextField extends StatefulWidget {
   CustomTextField({
     super.key,
@@ -31,6 +33,7 @@ class CustomTextField extends StatefulWidget {
     this.textAlign,
     this.textAlignVertical,
     this.onTap,
+    this.border,
     this.height
   });
 
@@ -58,6 +61,7 @@ class CustomTextField extends StatefulWidget {
   void Function(String)? onChanged;
   final TextAlign? textAlign;
   final VoidCallback? onTap;
+  final InputBorder? border;
   final TextAlignVertical? textAlignVertical;
 
   @override
@@ -104,12 +108,15 @@ class _CustomTextFieldState extends State<CustomTextField> {
     return InputDecoration(
       hintText: widget.hintText ?? "",
       errorText: widget.errorText,
+      border: widget.border,
       hintStyle:  GoogleFonts.poppins(color: greyColor, fontWeight: FontWeight.w400, fontSize: 16),
       contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
       enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide:  BorderSide(color: Colors.grey.shade100)),
-      focusedBorder: OutlineInputBorder(
+      focusedBorder: widget != null ?  OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: whiteColor)) : OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: primaryColor)),
       focusedErrorBorder: OutlineInputBorder(
@@ -515,6 +522,78 @@ class _CustomBorderTextFieldState extends State<CustomBorderTextField> {
       prefixIconConstraints: widget.prefixConstraints,
       suffixIcon: widget.suffixIcon,
       suffixIconConstraints: widget.suffixConstraints,
+      fillColor: Colors.white,
+      filled: true,
+      isDense: true,
+    );
+  }
+}
+
+
+
+String getDefaultCountryCode(context) {
+  Locale locale = Localizations.localeOf(context);
+  print("Local Country Code ${locale.countryCode}");
+  return locale.countryCode ?? 'US';  // Default to 'US' if locale doesn't include country code
+}
+
+class PhoneNumberInput extends StatelessWidget {
+  final String? label;
+  final void Function(PhoneNumber)? onChange;
+  final void Function(Country)? onCountryChange;
+  final TextEditingController? controller;
+  dynamic validator;
+   PhoneNumberInput({
+    super.key,
+    this.label,
+    this.onChange,
+    this.controller,
+    this.onCountryChange,
+    this.validator
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    String initialCountryCode = getDefaultCountryCode(context);
+
+    return IntlPhoneField(
+      cursorColor: primaryColor,
+      controller: controller,
+      style:  GoogleFonts.poppins(color: hintColor, fontWeight: FontWeight.w400, fontSize: 16),
+      keyboardType: TextInputType.phone,
+      searchText: "Search Country",
+      invalidNumberMessage: "Invalid Phone Number",
+      decoration: _buildDecoration(),
+      initialCountryCode: initialCountryCode,
+      onChanged: onChange,
+      showDropdownIcon: false,
+      onCountryChanged: onCountryChange,
+      validator: validator,
+    );
+  }
+
+  _buildDecoration() {
+    return InputDecoration(
+      hintText: label ?? "",
+      hintStyle:  GoogleFonts.poppins(color: greyColor, fontWeight: FontWeight.w400, fontSize: 16),
+      contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+      enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide:  BorderSide(color: Colors.grey.shade100)),
+      focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: primaryColor)),
+      focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Colors.red)),
+      errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Colors.red)),
+      // prefixIcon: widget.prefix,
+      // prefixIconConstraints: widget.prefixConstraints,
+      // suffixIcon: widget.suffixIcon,
+      // suffixIconConstraints: widget.suffixConstraints,
+
       fillColor: Colors.white,
       filled: true,
       isDense: true,

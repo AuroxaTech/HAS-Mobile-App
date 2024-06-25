@@ -62,7 +62,7 @@ class LandLordData {
 
 class Landlord {
   int id;
-  String userId;
+  int userId;
   String noOfProperty;
   String availabilityStartTime;
   String availabilityEndTime;
@@ -83,7 +83,7 @@ class Landlord {
 
   factory Landlord.fromJson(Map<String, dynamic> json) => Landlord(
     id: json["id"] ?? 0,
-    userId: json["user_id"] ?? "",
+    userId: json["user_id"] ?? 0,
     noOfProperty: json["no_of_property"] ?? "",
     availabilityStartTime: json["availability_start_time"] ?? "",
     availabilityEndTime: json["availability_end_time"] ?? "",
@@ -109,7 +109,7 @@ class User {
   String fullname;
   String email;
   String phoneNumber;
-  String roleId;
+  int roleId;
   String profileimage;
   String createdAt;
   String updatedAt;
@@ -130,7 +130,7 @@ class User {
     fullname: json["fullname"] ?? "",
     email: json["email"]??"",
     phoneNumber: json["phone_number"] ?? "",
-    roleId: json["role_id"] ?? "",
+    roleId: json["role_id"] ?? 0,
     profileimage: json["profileimage"] ?? "",
     createdAt: json["created_at"] ?? "",
     updatedAt: json["updated_at"] ?? "",

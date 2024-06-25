@@ -1844,13 +1844,12 @@ class _ChatScreen1State extends State<ChatScreen1> {
       print('User does not exist');
       return null;
     }
-
     print("id : ${email}");
     print("token : $id");
 
     // String? accessToken = await NotificationServices.generateFCMAccessToken();
-    // NotificationServices.sendNotification(
-    //     "Dambo Notification", messageContent, id, accessToken, context);
+    NotificationServices().sendNotification(context,
+        "HAS Notification", messageContent, id, "msg",);
     // NotificationServices().firebaseInit(context);
   }
 

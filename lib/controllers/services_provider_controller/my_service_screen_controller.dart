@@ -354,7 +354,7 @@ class MyServicesDetailScreenController extends GetxController{
     isLoading.value = true;
     // Fetch the service data
     var result = await servicesService.getService(id: id);
-    print("Service Result : $result[data]");
+    print("Service Result : $result");
 
     isLoading.value = false;
 

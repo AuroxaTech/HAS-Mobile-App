@@ -26,16 +26,16 @@ class AllPropertyScreen extends GetView<AllPropertyController> {
 
     return Scaffold(
       backgroundColor: whiteColor,
-      appBar: titleAppBar("Properties", action: [
-        IconButton(onPressed: (){
-          Get.toNamed(kPropertyFilterScreen)?.then((result) {
-            if (result != null) {
-              controller.pagingController.value.itemList!.clear();
-              return controller.getProperties(1, result);
-            }
-          });
-        }, icon: const Icon(Icons.filter_list)),
-      ]),
+      // appBar: titleAppBar("Properties", action: [
+      //   IconButton(onPressed: (){
+      //     Get.toNamed(kPropertyFilterScreen)?.then((result) {
+      //       if (result != null) {
+      //         controller.pagingController.value.itemList!.clear();
+      //         return controller.getProperties(1, result);
+      //       }
+      //     });
+      //   }, icon: const Icon(Icons.filter_list)),
+      // ]),
       body: SafeArea(
         child: Stack(
           children: [
@@ -96,7 +96,7 @@ class AllPropertyScreen extends GetView<AllPropertyController> {
                                           ),)
                                   ),
                                 ),
-                                rent: item.type == "1" ? "Rent" : "Sale"),
+                                rent: item.type == 1 ? "Rent" : "Sale"),
 
                             SizedBox(
                               height: 20,

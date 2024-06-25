@@ -65,7 +65,7 @@ class ServiceProviderScreen extends GetView<ServiceProviderController> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           customText(
-                              text: controller.getServiceOne.value == null ? "Other" : controller.getServiceOne.value!.serviceprovider.providerService.name,
+                              text:controller.getServiceOne.value!.serviceprovider.providerService == null ? "Nothing mentioned" :  controller.getServiceOne.value!.serviceprovider.providerService!.name,
                               fontSize: 14
                           ),
                           RatingWidget(

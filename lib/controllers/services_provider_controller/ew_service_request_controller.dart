@@ -94,7 +94,7 @@ class NewServiceRequestScreenController extends GetxController{
     fullname: '',
     email: '',
     phoneNumber: '',
-    roleId: '',
+    roleId: 0,
     profileimage: '',
     createdAt: DateTime.now(),
     updatedAt: DateTime.now(),

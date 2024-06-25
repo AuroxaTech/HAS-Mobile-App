@@ -98,7 +98,7 @@ class Data {
 
 class AllService {
   int id;
-  String userId;
+  int userId;
   String serviceName;
   String description;
   String pricing;
@@ -223,7 +223,7 @@ class User {
   String fullname;
   String email;
   String? phoneNumber;
-  String roleId;
+  int roleId;
   String profileimage;
   DateTime createdAt;
   DateTime updatedAt;

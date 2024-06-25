@@ -9,6 +9,7 @@ import 'package:property_app/controllers/authentication_controller/sign_up_contr
 import 'package:property_app/custom_widgets/custom_button.dart';
 import 'package:property_app/custom_widgets/custom_text_field.dart';
 import 'package:property_app/utils/utils.dart';
+import 'package:property_app/views/locations/location_screen.dart';
 
 import '../../app_constants/animations.dart';
 
@@ -138,6 +139,7 @@ class AddPropertyDetailScreen extends GetView<SignUpController> {
                     h10,
                     CustomTextField(
                       hintText: "97898",
+
                       keyboaredtype: TextInputType.number,
                       validator: (value) {
                         if (value == null || value.isEmpty || value.length < 1) {
@@ -162,6 +164,23 @@ class AddPropertyDetailScreen extends GetView<SignUpController> {
                           return 'Please enter street';
                         }
                         return null;
+                      },
+                      readOnly: true,
+                      onTap: ()async{
+                        var result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const LocationScreen()),
+                        );
+                        if (result != null) {
+                            controller.selectedAddress = result['address'];
+                            controller.selectedLat = result['latitude'];
+                            controller.selectedLng = result['longitude'];
+                            controller.streetController.text =  controller.selectedAddress;
+
+                            print(controller.selectedAddress);
+                            print(controller.selectedLat);
+                            print(controller.selectedLng);
+                        }
                       },
                       controller: controller.streetController,
                       errorText: controller.streetField.value ? null : "Please enter street",
@@ -249,20 +268,21 @@ class AddPropertyDetailScreen extends GetView<SignUpController> {
                     SizedBox(
                       height: 35,
                       child: ListView.builder(
-                        itemCount: 8,
+                        itemCount: controller.bathroomsList.length,
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (context, index) {
-                          index += 1;
                           return Obx(
                                 () => Row(
                               children: [
                                 roundedSmallButton(
-                                  text: "$index",
-                                  isSelected:
-                                  controller.selectedBathrooms.value == index,
-                                  onTap: () =>
-                                  controller.selectedBathrooms.value = index,
+                                    text:controller.bathroomsList[index],
+                                    isSelected:
+                                    controller.selectedBathrooms.value == index,
+                                    onTap: () {
+                                      controller.selectedBathrooms.value = index;
+                                      controller.selectedBothList.value = controller.bathroomsList[index];
+                                    }
                                 ),
                                 const SizedBox(width: 15),
                               ],
@@ -293,7 +313,7 @@ class AddPropertyDetailScreen extends GetView<SignUpController> {
                       isLoading: controller.isLoading.value,
                       onTap: (){
                         if(controller.formKeyDetail.currentState!.validate()){
-                          if(controller.images.isNotEmpty){
+                          if(controller.images.length > 4){
                             double amount = double.parse(controller.amountController.text);
                             int nofProp = int.parse(controller.noOfPropertiesValue.value);
                             if(controller.profileImage.value == null){
@@ -308,11 +328,11 @@ class AddPropertyDetailScreen extends GetView<SignUpController> {
                                 city: controller.newYorkController.text,
                                 amount: amount,
                                 address: controller.amountController.text,
-                                lat: 33.44433,
-                                long: 77.43322,
+                                lat: controller.selectedLat,
+                                long: controller.selectedLng,
                                 areaRange: controller.selectedRange.value,
                                 bedroom: controller.selectedBedroom.value,
-                                bathroom: controller.selectedBathrooms.value,
+                                bathroom: controller.selectedBothList.value,
                                 electricityBill: controller.images[0],
                                 propertyImages: controller.images,
                                 noOfProperty: nofProp,
@@ -322,7 +342,8 @@ class AddPropertyDetailScreen extends GetView<SignUpController> {
                                 description: controller.description.text,
                                 subType: 1.toString()
                               );
-                            }else{
+                            }
+                            else{
                               controller.registerProperty(
                                 fullName: controller.nameController.text,
                                 email: controller.emailController.text,
@@ -335,11 +356,11 @@ class AddPropertyDetailScreen extends GetView<SignUpController> {
                                 city: controller.newYorkController.text,
                                 amount: amount,
                                 address: controller.amountController.text,
-                                lat: 33.44433,
-                                long: 77.43322,
+                                lat: controller.selectedLat,
+                                long: controller.selectedLng,
                                 areaRange: controller.selectedRange.value,
                                 bedroom: controller.selectedBedroom.value,
-                                bathroom: controller.selectedBathrooms.value,
+                                bathroom: controller.selectedBothList.value,
                                 electricityBill: controller.profileImage.value!,
                                 propertyImages: controller.images,
                                 noOfProperty: nofProp,
@@ -351,7 +372,7 @@ class AddPropertyDetailScreen extends GetView<SignUpController> {
                               );
                             }
                           }else{
-                            AppUtils.errorSnackBar("Select Images", "Please select property images");
+                            AppUtils.errorSnackBar("Select Images", "Minimum 5 images upload");
                           }
                         }
                       },

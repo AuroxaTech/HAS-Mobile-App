@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 
@@ -194,5 +196,45 @@ class NotificationServices {
     );
   }
 
+
+  void sendNotification(context, String title, String body, String deviceId, String type,)async{
+    var data = {
+      'to' : deviceId.toString(),
+      'notification' : {
+        'title' : title,
+        'body' :  body,
+        //"sound": "jetsons_doorbell.mp3"
+      },
+      'android': {
+        'notification': {
+          'notification_count': 23,
+        },
+      },
+      'data' : {
+        'type' : type ,
+        'id' : 'Aayaz'
+      }
+    };
+
+    var response = await http.post(Uri.parse('https://fcm.googleapis.com/fcm/send'),
+        body: jsonEncode(data) ,
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization' : 'key=AAAAwG3fBRY:APA91bGswE_GtChlZU3fq5A6iLypoG90MsPnx7TRTzAhM3HuPgKiL9RbHhAFNw0QmZFUSbj6vMXEZ1YtNNweKYvmt3BNm5VK-hmbBCYxU6llDzU-5Mh_Vyp2_uhCHHtvE3TgsswxdJTL'
+        }
+    ).then((value){
+
+      if (kDebugMode) {
+        print(value.body.toString());
+      }
+
+    }).onError((error, stackTrace){
+      if (kDebugMode) {
+        print(error);
+      }
+    });
+    print(response);
+    firebaseInit(context);
+  }
 
 }

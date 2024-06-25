@@ -1,8 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:property_app/app_constants/animations.dart';
 import 'package:property_app/app_constants/app_icon.dart';
 import 'package:property_app/route_management/constant_routes.dart';
 import 'package:property_app/utils/shared_preferences/preferences.dart';
+import 'package:property_app/views/settings/privacy_policy.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../app_constants/color_constants.dart';
@@ -103,6 +106,7 @@ Widget customDrawer(context) {
           onTap: () {
             Navigator.pop(context);
             Get.toNamed(kContractStatusScreen);
+
             //  Navigator.push(context, customPageRoute(const AboutScreen()));
           },
           leading: const Icon(Icons.file_copy),
@@ -119,6 +123,18 @@ Widget customDrawer(context) {
           leading: const Icon(Icons.password),
           title: customText(
             text: "Change Password",
+          ),
+        ),
+
+        ListTile(
+          onTap: () {
+            Navigator.pop(context);
+          //  Get.toNamed(kChangePasswordScreen);
+             Get.to(() => const PrivacyPolicy(), transition: routeTransition);
+          },
+          leading: const Icon(Icons.info_outline),
+          title: customText(
+            text: "Privacy Policy",
           ),
         ),
         ListTile(
@@ -170,6 +186,7 @@ Widget customDrawer(context) {
                               MaterialButton(
                                 onPressed: () async {
                                   SharedPreferences prefs = await SharedPreferences.getInstance();
+                                  await updateUserStatus(false);
                                   await prefs.remove("token");
                                   await prefs.remove("role_id");
                                   await  prefs.remove("user_id").then((value) {
@@ -208,6 +225,16 @@ Widget customDrawer(context) {
       ],
     )
   );
+}
+updateUserStatus(bool isOnline) async{
+  var userId = await Preferences.getUserID();
+  if (userId != null) {
+    FirebaseFirestore.instance.collection('users').doc(userId.toString()).update({
+      'online': isOnline,
+      'lastSeen': FieldValue.serverTimestamp(),
+    });
+    print(isOnline);
+  }
 }
 
 Widget providerDrawer(context) {
@@ -313,6 +340,17 @@ Widget providerDrawer(context) {
           ),
           ListTile(
             onTap: () {
+              Navigator.pop(context);
+              //  Get.toNamed(kChangePasswordScreen);
+              Get.to(() => const PrivacyPolicy(), transition: routeTransition);
+            },
+            leading: const Icon(Icons.info_outline),
+            title: customText(
+              text: "Privacy Policy",
+            ),
+          ),
+          ListTile(
+            onTap: () {
               showDialog(
                   context: context,
                   builder: (context) {
@@ -360,6 +398,7 @@ Widget providerDrawer(context) {
                                 MaterialButton(
                                   onPressed: () async{
                                     SharedPreferences prefs = await SharedPreferences.getInstance();
+                                    await updateUserStatus(false);
                                     await prefs.remove("token");
                                     await prefs.remove("role_id");
                                     await  prefs.remove("user_id").then((value) {

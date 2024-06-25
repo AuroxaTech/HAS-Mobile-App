@@ -205,7 +205,7 @@ class PropertyServices {
     required double long,
     required String areaRange,
     required int bedroom,
-    required int bathroom,
+    required String bathroom,
     required XFile electricityBill,
     required List<XFile> propertyImages,
     required String description,

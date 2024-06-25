@@ -72,7 +72,7 @@ class AuthServices {
     required double long,
     required String areaRange,
     required int bedroom,
-    required int bathroom,
+    required String bathroom,
     required XFile electricityBill,
     required List<XFile> propertyImages,
     required int noOfProperty,
@@ -270,7 +270,7 @@ class AuthServices {
     String? lastLandlordContact,
     String? occupation,
     String? leasedDuration,
-    int? noOfOccupants,
+    String? noOfOccupants,
   }) async {
     if (await ConnectivityUtility.checkInternetConnectivity() == true) {
       var url = Uri.parse(AppUrls.registerUrl);

@@ -67,7 +67,7 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
                                   yesTap: (){
                                     controller.acceptServiceRequest(
                                         requestId: item.id,
-                                        userId: item.userId,
+                                        userId: item.userId.toString(),
                                         providerId: item.serviceproviderId.toString()).then((value) {
                                       controller.getServicesRequests(1);
                                     });

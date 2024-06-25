@@ -42,9 +42,9 @@ class Favorite {
 
 class FavoriteProperty {
   int id;
-  String userId;
-  String propertyId;
-  String favFlag;
+  int userId;
+  int propertyId;
+  int favFlag;
   DateTime createdAt;
   DateTime updatedAt;
   PropertData? property;
@@ -203,8 +203,8 @@ class Service {
 
 class PropertData {
   int id;
-  String userId;
-  String type;
+  int userId;
+  int type;
   String? images;
   String city;
   String amount;
@@ -216,8 +216,8 @@ class PropertData {
   String bathroom;
   String? description;
   String? electricityBill;
-  String propertyType;
-  String propertySubType;
+  int propertyType;
+  int propertySubType;
   DateTime createdAt;
   DateTime updatedAt;
   String noOfProperty;

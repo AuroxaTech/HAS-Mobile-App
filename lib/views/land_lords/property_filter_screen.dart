@@ -28,6 +28,38 @@ class PropertyFilterScreen extends GetView<AllPropertyController> {
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+
+                    Row(
+                      children: [
+                        imageButton(
+                            padding:const EdgeInsets.only(top: 5, bottom: 5),
+                            onTap: () {
+                              controller.isSale.value = false;
+                            },
+                            borderColor: controller.isSale.value ? bluishWhite : primaryColor,
+                            textColor: controller.isSale.value ? blackColor : primaryColor,
+                            imageColor: controller.isSale.value ? blackColor : primaryColor,
+                            width: 100,
+                            text: "Sale",
+                            image: AppIcons.sale),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        imageButton(
+                            padding:const EdgeInsets.only(top: 5, bottom: 5),
+                            onTap: () {
+                              controller.isSale.value = true;
+                            },
+                            width: 100,
+                            text: "Rent",
+                            borderColor: controller.isSale.value ? primaryColor : bluishWhite,
+                            textColor: controller.isSale.value ? primaryColor : blackColor,
+                            imageColor: controller.isSale.value ? primaryColor : blackColor,
+                            image: AppIcons.rent
+                        ),
+                      ],
+                    ),
+                    h10,
                     labelText("Area Range"),
                     h10,
                     SizedBox(
@@ -382,6 +414,7 @@ class PropertyFilterScreen extends GetView<AllPropertyController> {
                             "min_amount": controller.minPriceController.text,
                             "max_amount": controller.maxPriceController.text,
                             "sub_type": selectedSubType,
+                           // "type" : controller.isSale.value ? 1 : 2,
                             "bedroom": controller.selectedBedroom.value.toString(),
                             "bathroom": controller.selectedBathrooms.value.toString(),
                           //  "description": controller.description.text,

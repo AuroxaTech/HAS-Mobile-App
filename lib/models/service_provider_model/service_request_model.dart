@@ -37,9 +37,9 @@ class ServiceRequest {
 
 class ServiceRequestProvider {
   int id;
-  String userId;
-  String serviceproviderId;
-  String serviceId;
+  int userId;
+  int serviceproviderId;
+  int serviceId;
   String address;
   String lat;
   String long;
@@ -49,8 +49,8 @@ class ServiceRequestProvider {
   String time;
   String description;
   String additionalInfo;
-  String approved;
-  String decline;
+  int approved;
+  int decline;
   DateTime createdAt;
   DateTime updatedAt;
   User user;
@@ -160,7 +160,7 @@ class PropertyType {
 
 class Service {
   int id;
-  String userId;
+  int userId;
   String serviceName;
   String description;
   String pricing;
@@ -232,7 +232,7 @@ class User {
   String fullname;
   String email;
   String phoneNumber;
-  String roleId;
+  int roleId;
   String profileimage;
   DateTime createdAt;
   DateTime updatedAt;
@@ -253,7 +253,7 @@ class User {
     fullname: json["fullname"] as String? ?? '', // Default to empty string if null
     email: json["email"] as String? ?? '', // Default to empty string if null
     phoneNumber: json["phone_number"] as String? ?? '', // Default to empty string if null
-    roleId: json["role_id"] as String? ?? '', // Default to 0 if null
+    roleId: json["role_id"] ?? 0, // Default to 0 if null
     profileimage: json["profileimage"] as String? ?? '', // Default to empty string if null
     createdAt: json["created_at"] != null ? DateTime.parse(json["created_at"]) : DateTime(1970), // Default to Unix epoch if null
     updatedAt: json["updated_at"] != null ? DateTime.parse(json["updated_at"]) : DateTime(1970), // Default to Unix epoch if null
@@ -395,7 +395,7 @@ class Provider {
   String fullname;
   String email;
   String phoneNumber;
-  String roleId;
+  int roleId;
   String profileimage;
   DateTime createdAt;
   DateTime updatedAt;

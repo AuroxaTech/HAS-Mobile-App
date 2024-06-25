@@ -10,6 +10,7 @@ import '../../app_constants/app_sizes.dart';
 import '../../controllers/land_lord/add_property_controller.dart';
 import '../../custom_widgets/custom_button.dart';
 import '../../custom_widgets/custom_text_field.dart';
+import '../locations/location_screen.dart';
 class AddPropertyScreen extends GetView<AddPropertyController> {
   const AddPropertyScreen({Key? key}) : super(key: key);
 
@@ -150,13 +151,32 @@ class AddPropertyScreen extends GetView<AddPropertyController> {
                     labelText("Enter Street Address"),
                     h10,
                     CustomTextField(
-                      controller: controller.streetController,
-                      validator: (value){
-                        if(value.isEmpty){
-                          return "Please enter address";
+
+                      validator: (value) {
+                        if (value == null || value.isEmpty || value.length < 1) {
+                          return 'Please enter street';
                         }
                         return null;
                       },
+                      readOnly: true,
+                      onTap: ()async{
+                        var result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const LocationScreen()),
+                        );
+                        if (result != null) {
+                          controller.selectedAddress = result['address'];
+                          controller.selectedLat = result['latitude'];
+                          controller.selectedLng = result['longitude'];
+                          controller.streetController.text =  controller.selectedAddress;
+
+                          print(controller.selectedAddress);
+                          print(controller.selectedLat);
+                          print(controller.selectedLng);
+                        }
+                      },
+                      controller: controller.streetController,
+                      errorText: controller.streetField.value ? null : "Please enter street",
                       hintText: "Main Canadian street",
                       suffixIcon: Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -238,20 +258,21 @@ class AddPropertyScreen extends GetView<AddPropertyController> {
                     SizedBox(
                       height: 35,
                       child: ListView.builder(
-                        itemCount: 8,
+                        itemCount: controller.bathroomsList.length,
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (context, index) {
-                          index += 1;
                           return Obx(
                                 () => Row(
                               children: [
                                 roundedSmallButton(
-                                  text: "$index",
-                                  isSelected:
-                                  controller.selectedBathrooms.value == index,
-                                  onTap: () =>
-                                  controller.selectedBathrooms.value = index,
+                                    text:controller.bathroomsList[index],
+                                    isSelected:
+                                    controller.selectedBathrooms.value == index,
+                                    onTap: () {
+                                      controller.selectedBathrooms.value = index;
+                                      controller.selectedBothList.value = controller.bathroomsList[index];
+                                    }
                                 ),
                                 const SizedBox(width: 15),
                               ],
@@ -260,6 +281,7 @@ class AddPropertyScreen extends GetView<AddPropertyController> {
                         },
                       ),
                     ),
+
 
                     // h15,
                     // labelText("Description"),
@@ -500,20 +522,24 @@ class AddPropertyScreen extends GetView<AddPropertyController> {
                                 } else if (controller.commercial.value) {
                                   selectedSubType = controller.getSelectedCommercialSubTypeIndex();
                                 }
+
+
+
+
                                 print(selectedSubType);
                                 print(propertyType);
-                                if(controller.images.isNotEmpty){
+                                if(controller.images.length > 4){
                                   double amount = double.parse(controller.amountController.text);
                                   controller.addProperty(
                                     type: controller.isSale.value ? 1 : 2,
                                     city: controller.newYorkController.text,
                                     amount: amount,
-                                    address: controller.amountController.text,
-                                    lat: 33.44433,
-                                    long: 77.43322,
+                                    address: controller.streetController.text,
+                                    lat: controller.selectedLat,
+                                    long: controller.selectedLng,
                                     areaRange: controller.areaRange[0],
                                     bedroom: controller.selectedBedroom.value,
-                                    bathroom: controller.selectedBathrooms.value,
+                                    bathroom: controller.selectedBothList.value,
                                     electricityBill: controller.images[0],
                                     propertyImages: controller.images,
                                     description: controller.description.text,
@@ -521,7 +547,7 @@ class AddPropertyScreen extends GetView<AddPropertyController> {
                                     propertySubType: selectedSubType.toString(),
                                   );
                                 } else {
-                                  AppUtils.errorSnackBar("Error", "Please add property images");
+                                  AppUtils.errorSnackBar("Select Images", "Minimum 5 images upload");
                                 }
                               }
                             },

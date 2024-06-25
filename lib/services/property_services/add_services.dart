@@ -385,7 +385,7 @@ class ServiceProviderServices {
 
   Future<Map<String, dynamic>> getFavoriteServices({required int id , required int page}) async {
     try {
-      Uri url = Uri.parse("https://pktours.pk/get-favourite?page=1");
+      Uri url = Uri.parse("${AppUrls.getFavourite}?page=$page");
       var id = await Preferences.getUserID();
       var res = await http.post(
         url,

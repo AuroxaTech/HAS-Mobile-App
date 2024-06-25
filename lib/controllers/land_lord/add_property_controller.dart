@@ -10,6 +10,7 @@ class AddPropertyController extends GetxController{
   RxInt selectedArea = 0.obs;
   RxInt selectedBedroom = 1.obs;
   RxInt selectedBathrooms = 1.obs;
+  RxString selectedBothList = "1".obs;
   List<String> areaRange = [
     "50 sq ft",
     "100 sq ft",
@@ -17,6 +18,22 @@ class AddPropertyController extends GetxController{
     "300 sq ft",
     "400 sq ft"
   ];
+  List<String> bathroomsList = [
+    "1",
+    "1  1/2",
+    "2",
+    "2  1/2",
+    "3",
+    "3  1/2",
+    "4",
+    "4  1/2",
+    "5",
+    "5  1/2",
+    "6",
+    "6  1/2",
+    "7",
+    "7  1/2"
+  ] ;
   TextEditingController newYorkController = TextEditingController();
   RxBool newYorkField = true.obs;
   TextEditingController amountController = TextEditingController();
@@ -29,6 +46,10 @@ class AddPropertyController extends GetxController{
   RxBool home = true.obs;
   RxBool plots = false.obs;
   RxBool commercial = false.obs;
+
+  String selectedAddress = "";
+  double selectedLat = 0.0;
+  double selectedLng = 0.0;
 
   var selectedHome = <String, bool>{
     'House': false,
@@ -152,7 +173,7 @@ class AddPropertyController extends GetxController{
     required double long,
     required String areaRange,
     required int bedroom,
-    required int bathroom,
+    required String bathroom,
     required XFile electricityBill,
     required List<XFile> propertyImages,
     required String description,

@@ -37,7 +37,7 @@ class User {
   String fullname;
   String email;
   String phoneNumber;
-  String roleId;
+  int roleId;
   String profileimage;
   String platform;
   String deviceToken;

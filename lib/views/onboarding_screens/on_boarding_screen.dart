@@ -39,7 +39,7 @@ class OnBoardingScreen extends GetView<OnBoardingScreenController> {
                   alignment: FractionalOffset.bottomCenter,
                   child: Container(
                     width: double.infinity,
-                    height: MediaQuery.of(context).size.height * 0.15,
+                    height: MediaQuery.of(context).size.height * 0.18,
 
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,

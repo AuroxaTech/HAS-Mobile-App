@@ -419,6 +419,7 @@ class AppState with WidgetsBindingObserver {
         _updateUserStatus(false);
         break;
       case AppLifecycleState.hidden:
+        _updateUserStatus(false);
         // TODO: Handle this case.
     }
   }

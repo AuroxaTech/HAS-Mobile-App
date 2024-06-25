@@ -11,6 +11,10 @@ import '../../app_constants/color_constants.dart';
 import '../../constant_widget/constant_widgets.dart';
 import '../../custom_widgets/custom_button.dart';
 import '../../custom_widgets/custom_text_field.dart';
+import 'package:intl_phone_field/countries.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:intl_phone_field/phone_number.dart';
+
 
 class SignUpScreen extends GetView<SignUpController> {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -83,16 +87,57 @@ class SignUpScreen extends GetView<SignUpController> {
                           : 'Email is incorrect',
                       hintText: "Email",),
                     h15,
-                    CustomTextField(
+                    PhoneNumberInput(
                       controller: controller.phoneController,
-                      keyboaredtype: TextInputType.number,
+                      label: "Phone number",
                       validator: (value) {
-                        if (value == null || value.isEmpty || value.length < 11) {
-                          return 'Please enter valid phone number';
+                        if (value == null || value.isEmpty) {
+                          return 'Invalid Phone Number.';
                         }
                         return null;
                       },
-                      hintText: "Phone Number",),
+                      onChange: (value) {
+                        controller.phone = value.completeNumber;
+                        print(controller.phoneController.text);  // This prints the complete number with country code
+                      },
+                      onCountryChange: (country) {
+                        controller.countryCode = country.dialCode;
+                        print('Country changed to: ${country.name}');
+                        print('Country code to: ${country.dialCode}');
+                      },
+                    ),
+                    // CustomTextField(
+                    //   controller: controller.phoneController,
+                    //   keyboaredtype: TextInputType.number,
+                    //   validator: (value) {
+                    //     if (value == null || value.isEmpty || value.length < 11) {
+                    //       return 'Please enter valid phone number';
+                    //     }
+                    //     return null;
+                    //   },
+                    //   hintText: "Phone Number",),
+                    h15,
+                    CustomTextField(
+                      controller: controller.addressController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Address is required';
+                        }
+                        return null;
+                      },
+                      hintText: "Address",
+                    ),
+                    h15,
+                    CustomTextField(
+                      controller: controller.postalCode,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Postal code is required';
+                        }
+                        return null;
+                      },
+                      hintText: "Postal code",
+                    ),
                     h15,
                     CustomTextField(
                       controller: controller.passwordController,
@@ -360,39 +405,39 @@ class SignUpScreen extends GetView<SignUpController> {
         controller.onRentValue.value == "on rent" ?  Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CustomTextField(
-              validator: (value){
-                if (value == null || value.isEmpty) {
-                  return 'Last tenancy required';
-                }
-                return null;
-              },
-              controller: controller.lastTenancyController,
-              errorText: controller.lastTenancyField.value ? null : "Last tenancy required",
-              hintText: "Duration of Last Tenancy",),
-            h15,
-            CustomTextField(
-              validator: (value){
-                if (value == null || value.isEmpty) {
-                  return 'Last landlord required';
-                }
-                return null;
-              },
-              controller: controller.lastLandLordController,
-              errorText: controller.lastLandLordField.value ? null : "Last landlord required",
-              hintText: "Name of Last Landlord",),
-            h15,
-            CustomTextField(
-              validator: (value){
-                if (value == null || value.isEmpty) {
-                  return 'Last landlord number required';
-                }
-                return null;
-              },
-              controller: controller.lastLandLordContactController,
-              errorText: controller.lastLandLordContactField.value ? null : "Last landlord number required",
-              hintText: "Contact Number of Last Landlord",),
-            h15,
+            // CustomTextField(
+            //   validator: (value){
+            //     if (value == null || value.isEmpty) {
+            //       return 'Last tenancy required';
+            //     }
+            //     return null;
+            //   },
+            //   controller: controller.lastTenancyController,
+            //   errorText: controller.lastTenancyField.value ? null : "Last tenancy required",
+            //   hintText: "Duration of Last Tenancy",),
+            // h15,
+            // CustomTextField(
+            //   validator: (value){
+            //     if (value == null || value.isEmpty) {
+            //       return 'Last landlord required';
+            //     }
+            //     return null;
+            //   },
+            //   controller: controller.lastLandLordController,
+            //   errorText: controller.lastLandLordField.value ? null : "Last landlord required",
+            //   hintText: "Name of Last Landlord",),
+            // h15,
+            // CustomTextField(
+            //   validator: (value){
+            //     if (value == null || value.isEmpty) {
+            //       return 'Last landlord number required';
+            //     }
+            //     return null;
+            //   },
+            //   controller: controller.lastLandLordContactController,
+            //   errorText: controller.lastLandLordContactField.value ? null : "Last landlord number required",
+            //   hintText: "Contact Number of Last Landlord",),
+            // h15,
           ],
         ) : const SizedBox(),
         CustomTextField(
@@ -407,28 +452,81 @@ class SignUpScreen extends GetView<SignUpController> {
           hintText: "Occupation",
         ),
         h15,
-        CustomTextField(
+        // CustomTextField(
+        //   validator: (value){
+        //     if (value == null || value.isEmpty) {
+        //       return 'Leased Duration required';
+        //     }
+        //     return null;
+        //   },
+        //   controller: controller.leasedDurationController,
+        //   errorText: controller.leasedDurationField.value ? null : "Leased Duration required",
+        //   hintText: "Leased Duration",),
+
+
+
+        CustomDropDown(
+          value: controller.leasedDuration.value,
           validator: (value){
-            if (value == null || value.isEmpty) {
-              return 'Leased Duration required';
+            if (value == null || value == "Select Leased Duration") {
+              return 'Select Leased Duration';
             }
             return null;
           },
-          controller: controller.leasedDurationController,
-          errorText: controller.leasedDurationField.value ? null : "Leased Duration required",
-          hintText: "Leased Duration",),
+          onChange: (value){
+            controller.leasedDuration.value  = value;
+          },items: ['Select Leased Duration','1 to 3 months', '1 to 6 months' , '1 to 9 month' , "1 to 12 month" , "1 to 3 year", "1 to 6 year"]
+            .map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            onTap: (){},
+            value: value,
+            child: customText(
+                text: value,
+                fontSize: 16,
+                color: hintColor
+            ),
+          );
+        }).toList(),),
+
+
         h15,
-        CustomTextField(
+
+        CustomDropDown(
+          value: controller.noOfOccupant.value,
           validator: (value){
-            if (value == null || value.isEmpty) {
-              return 'No of occupant required';
+            if (value == null || value == "Number of Occupant") {
+              return 'Number of Occupant';
             }
             return null;
           },
-          keyboaredtype: TextInputType.number,
-          controller: controller.noOfOccupants,
-          errorText: controller.leasedDurationField.value ? null : "No of occupant required",
-          hintText: "No of occupants",),
+          onChange: (value){
+            controller.noOfOccupant.value  = value;
+          },items: ['Number of Occupant','1 to 5', '1 to 10' , '1 to 15' , "1 to 20"]
+            .map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            onTap: (){},
+            value: value,
+            child: customText(
+                text: value,
+                fontSize: 16,
+                color: hintColor
+            ),
+          );
+        }).toList(),),
+
+        // CustomTextField(
+        //   validator: (value){
+        //     if (value == null || value.isEmpty) {
+        //       return 'No of occupant required';
+        //     }
+        //     return null;
+        //   },
+        //   keyboaredtype: TextInputType.number,
+        //   controller: controller.noOfOccupants,
+        //   errorText: controller.leasedDurationField.value ? null : "No of occupant required",
+        //   hintText: "No of occupants",),
+
+
         h50,
         CustomButton(
           width: double.infinity,
@@ -436,7 +534,7 @@ class SignUpScreen extends GetView<SignUpController> {
           isLoading: controller.isLoading.value,
           onTap:  controller.isLoading.value ? null : ()async{
             if(controller.formKey.currentState!.validate()){
-              int occupant = int.parse(controller.noOfOccupants.text);
+              String occupant = controller.noOfOccupant.value;
               if(controller.profileImage.value == null){
                 if( controller.onRentValue.value == "Select last status" || controller.onRentValue.value == "own house" ){
                   print("own house");
@@ -449,7 +547,7 @@ class SignUpScreen extends GetView<SignUpController> {
                     roleId: 2,
                     lastStatus: 1, // or 2 based on your scenario
                     occupation: controller.occupationController.text, // provide value based on your scenario
-                    leasedDuration: controller.leasedDurationController.text, // provide value based on your scenario
+                    leasedDuration: controller.leasedDuration.value, // provide value based on your scenario
                     noOfOccupants: occupant, // provide value based on your scenario
                   );
                 }
@@ -463,11 +561,11 @@ class SignUpScreen extends GetView<SignUpController> {
                     cPassword: controller.confirmPasswordController.text,
                     roleId: 2,
                     lastStatus: 2,
-                    lastLandlordName: controller.lastLandLordController.text, // provide value based on your scenario
-                    lastTenancy: controller.lastTenancyController.text, // provide value based on your scenario
-                    lastLandlordContact: controller.lastLandLordContactController.text, // provide value based on your scenario
+                    // lastLandlordName: controller.lastLandLordController.text, // provide value based on your scenario
+                    // lastTenancy: controller.lastTenancyController.text, // provide value based on your scenario
+                    // lastLandlordContact: controller.lastLandLordContactController.text, // provide value based on your scenario
                     occupation: controller.occupationController.text, // provide value based on your scenario
-                    leasedDuration: controller.leasedDurationController.text, // provide value based on your scenario
+                    leasedDuration: controller.leasedDuration.value,// provide value based on your scenario
                     noOfOccupants: occupant, // provide value based on your scenario
                   );
                 }
@@ -485,7 +583,7 @@ class SignUpScreen extends GetView<SignUpController> {
                     profileImage: controller.profileImage.value!,
                     lastStatus: 2, // or 2 based on your scenario
                     occupation: controller.occupationController.text, // provide value based on your scenario
-                    leasedDuration: controller.leasedDurationController.text, // provide value based on your scenario
+                    leasedDuration:  controller.leasedDuration.value, // provide value based on your scenario
                     noOfOccupants: occupant, // provide value based on your scenario
                   );
                 }else {
@@ -499,11 +597,11 @@ class SignUpScreen extends GetView<SignUpController> {
                     roleId: 2,
                     profileImage: controller.profileImage.value!,
                     lastStatus: 1,
-                    lastLandlordName: controller.lastLandLordController.text, // provide value based on your scenario
-                    lastTenancy: controller.lastTenancyController.text, // provide value based on your scenario
-                    lastLandlordContact: controller.lastLandLordContactController.text, // provide value based on your scenario
+                    // lastLandlordName: controller.lastLandLordController.text, // provide value based on your scenario
+                    // lastTenancy: controller.lastTenancyController.text, // provide value based on your scenario
+                    // lastLandlordContact: controller.lastLandLordContactController.text, // provide value based on your scenario
                     occupation: controller.occupationController.text, // provide value based on your scenario
-                    leasedDuration: controller.leasedDurationController.text, // provide value based on your scenario
+                    leasedDuration:  controller.leasedDuration.value, // provide value based on your scenario
                     noOfOccupants: occupant, // provide value based on your scenario
                   );
                 }
@@ -629,7 +727,7 @@ class SignUpScreen extends GetView<SignUpController> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   InkWell(
-                    onTap: (){
+                    onTap: () {
                       controller.certificateImage.value = null;
                     },
                     child: Container(
@@ -792,6 +890,95 @@ class SignUpScreen extends GetView<SignUpController> {
                 ],
               ),
             ),
+          ),
+        ) ,
+        h15,
+        Align(
+          alignment: Alignment.bottomLeft,
+          child: customText(
+            text: "Upload a Resume",
+            fontSize: 12,
+            color: blackColor,
+          ),
+        ),
+        h15,
+        controller.pickFile.value == null ? uploadImageContainer(
+            onTap: (){
+              controller.pickFiles();
+            },
+            text: "Upload Resume"
+        ) : Container(
+          width: double.infinity,
+          height: 130,
+          decoration: BoxDecoration(
+            color: whiteColor,
+            borderRadius: BorderRadius.circular(15),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 1.0,
+              ),
+            ],
+          ),
+          child: Stack(
+            children: [
+              Align(
+                alignment: Alignment.topRight,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      InkWell(
+                        onTap: (){
+                          controller.pickFile.value = null;
+                        },
+                        child: Container(
+                          width: 35,
+                          height: 35,
+                          decoration: BoxDecoration(
+                              color: whiteColor,
+                              borderRadius: BorderRadius.circular(10)
+                          ),
+                          child: const Icon(Icons.delete),
+                        ),
+                      ),
+                      w5,
+                      InkWell(
+                        onTap: (){
+                          controller.pickFiles();
+                        },
+                        child: Container(
+                          width: 35,
+                          height: 35,
+                          decoration: BoxDecoration(
+                              color: whiteColor,
+                              borderRadius: BorderRadius.circular(10)
+                          ),
+                          child: const Icon(Icons.edit),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Positioned.fill(
+               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Center(
+                    child: controller.getFileIcon(controller.pickFile.value!.name)
+                  ),
+                  h10,
+                  Center(
+                    child: customText(
+                      text: controller.pickFile.value!.name,
+                      fontSize: 18
+                    ),
+                  ),
+                ],
+              ))
+            ],
           ),
         ) ,
         h50,

@@ -76,6 +76,7 @@ class LoginScreenController extends GetxController{
             "online" : true,
             'profileimage': data["data"]["profileimage"],
             'lastSeen': FieldValue.serverTimestamp(),
+            "deviceToken" : deviceId
           });
           print("user updated");
         } else {
@@ -89,6 +90,7 @@ class LoginScreenController extends GetxController{
             'mobileNumber': data["data"]["phone_number"],
             'lastSeen': FieldValue.serverTimestamp(),
             "createdAT" : FieldValue.serverTimestamp(),
+            "deviceToken" : deviceId
           });
           print("user added");
         }

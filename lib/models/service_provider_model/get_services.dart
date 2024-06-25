@@ -34,7 +34,7 @@ class GetServices {
 
 class Services {
   int id;
-  String userId;
+  int userId;
   String serviceName;
   String description;
   String pricing;
