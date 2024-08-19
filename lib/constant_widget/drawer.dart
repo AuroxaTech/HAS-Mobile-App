@@ -12,7 +12,7 @@ import '../app_constants/color_constants.dart';
 import 'constant_widgets.dart';
 import 'package:lottie/lottie.dart';
 
-Widget customDrawer(context) {
+Widget customDrawer(context, {VoidCallback? onDeleteAccount}) {
   return Drawer(
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -22,7 +22,7 @@ Widget customDrawer(context) {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
+              SizedBox(
                 height: 130,
                 child: Align(
                     alignment: Alignment.bottomLeft,
@@ -83,7 +83,7 @@ Widget customDrawer(context) {
 
         ListTile(
           onTap: () {
-            Navigator.pop(context);
+            Get.back();
             Get.toNamed(kPaymentScreen);
           },
           leading: const Icon(Icons.wallet),
@@ -93,7 +93,7 @@ Widget customDrawer(context) {
         ),
         ListTile(
           onTap: () {
-            Navigator.pop(context);
+            Get.back();
             Get.toNamed(kProfileSettingScreen);
           //  Navigator.push(context, customPageRoute(const AboutScreen()));
           },
@@ -106,7 +106,6 @@ Widget customDrawer(context) {
           onTap: () {
             Navigator.pop(context);
             Get.toNamed(kContractStatusScreen);
-
             //  Navigator.push(context, customPageRoute(const AboutScreen()));
           },
           leading: const Icon(Icons.file_copy),
@@ -135,6 +134,14 @@ Widget customDrawer(context) {
           leading: const Icon(Icons.info_outline),
           title: customText(
             text: "Privacy Policy",
+          ),
+        ),
+
+        ListTile(
+          onTap: onDeleteAccount,
+          leading: const Icon(Icons.delete_rounded),
+          title: customText(
+            text: "Delete Account",
           ),
         ),
         ListTile(
@@ -226,6 +233,7 @@ Widget customDrawer(context) {
     )
   );
 }
+
 updateUserStatus(bool isOnline) async{
   var userId = await Preferences.getUserID();
   if (userId != null) {
@@ -237,7 +245,7 @@ updateUserStatus(bool isOnline) async{
   }
 }
 
-Widget providerDrawer(context) {
+Widget providerDrawer(context, {VoidCallback? onDeleteAccount}) {
   return Drawer(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -347,6 +355,13 @@ Widget providerDrawer(context) {
             leading: const Icon(Icons.info_outline),
             title: customText(
               text: "Privacy Policy",
+            ),
+          ),
+          ListTile(
+            onTap: onDeleteAccount,
+            leading: const Icon(Icons.delete_rounded),
+            title: customText(
+              text: "Delete Account",
             ),
           ),
           ListTile(

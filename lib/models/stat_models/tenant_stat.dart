@@ -62,7 +62,7 @@ class TenantData {
 
 class Tenant {
   int id;
-  String userId;
+  int userId;
   String lastStatus;
   dynamic lastTenancy;
   dynamic lastLandlordName;
@@ -125,7 +125,7 @@ class User {
   String fullname;
   String email;
   String phoneNumber;
-  String roleId;
+  int roleId;
   String profileimage;
   DateTime createdAt;
   DateTime updatedAt;

@@ -186,30 +186,24 @@ class AddPropertyScreen extends GetView<AddPropertyController> {
                     h15,
                     labelText("Area Range"),
                     h10,
-                    SizedBox(
-                      height: 35,
-                      child: ListView.builder(
-                        itemCount: controller.areaRange.length,
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return Obx(
-                                () => Row(
-                              children: [
-                                roundedSmallButton(
-                                  text: controller.areaRange[index],
-                                  isSecondText: true,
-                                  isSelected:
-                                  controller.selectedArea.value == index,
-                                  onTap: () =>
-                                  controller.selectedArea.value = index,
-                                ),
-                                const SizedBox(width: 15),
-                              ],
-                            ),
-                          );
-                        },
+                    Obx(()=> RangeSlider(
+                      values: controller.currentRange.value,
+                      min: 1,
+                      max: 1000,
+                      divisions: 99,
+                      activeColor: primaryColor,
+                      inactiveColor: Colors.grey.shade300,
+                      labels: RangeLabels(
+                        "${controller.currentRange.value.start.round()} sq ft",
+                        controller.currentRange.value.end.round().toString(),
                       ),
+                      onChanged: (RangeValues values) {
+                        controller.currentRange.value = values;
+                        controller.selectedRange.value = controller.currentRange.value.start.round().toString();
+
+                        print(controller.selectedRange.value );
+                      },
+                    ),
                     ),
                     h15,
                     Row(
@@ -537,7 +531,7 @@ class AddPropertyScreen extends GetView<AddPropertyController> {
                                     address: controller.streetController.text,
                                     lat: controller.selectedLat,
                                     long: controller.selectedLng,
-                                    areaRange: controller.areaRange[0],
+                                    areaRange: "${controller.selectedRange.value} sq ft",
                                     bedroom: controller.selectedBedroom.value,
                                     bathroom: controller.selectedBothList.value,
                                     electricityBill: controller.images[0],

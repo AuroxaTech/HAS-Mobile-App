@@ -141,11 +141,11 @@ class AllPropertyDetailController extends GetxController {
   List<String> images = [];
   RxInt id = 0.obs;
   var userId = 0.obs;
-  var uId = "".obs;
+  var uId = 0.obs;
   getUserId()async{
     var id = await Preferences.getUserID();
     userId.value = id;
-    uId.value = userId.value.toString();
+    uId.value = userId.value;
     print(userId.value);
   }
   @override

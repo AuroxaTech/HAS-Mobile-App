@@ -7,9 +7,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:property_app/app_constants/app_icon.dart';
 import 'package:property_app/views/chat_screens/HomeScreen.dart';
-import 'package:property_app/views/chat_screens/chat_screen_list.dart';
-import 'package:property_app/views/dashoard_screens/all_property_screen.dart';
-import 'package:property_app/views/dashoard_screens/congrate_screen.dart';
 import 'package:property_app/views/dashoard_screens/dashboard_screen.dart';
 import 'package:property_app/views/dashoard_screens/property_tabs.dart';
 import 'package:property_app/views/land_lords/job_screeen.dart';
@@ -54,7 +51,7 @@ class _MainBottomBarState extends State<MainBottomBar> {
      const PropertyTabsScreen(),
     const ChatListing(),
      ServicesListingScreen(),
-     JobsScreen(),
+     JobsScreen(isBack: false,),
     const DashBoardScreen(),
     // const Center(child: Text("People Settings")),
     // const Center(child: Text("Wallet")),
@@ -72,7 +69,8 @@ class _MainBottomBarState extends State<MainBottomBar> {
   }
 
   void dialog(){
-    showDialog(context: context,
+    showDialog(
+        context: context,
         builder: (context){
           return AlertDialog(
             surfaceTintColor: Colors.white,
@@ -96,7 +94,7 @@ class _MainBottomBarState extends State<MainBottomBar> {
               MaterialButton(onPressed: ()async{
                 await _updateUserStatus(false);
                 SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-              },
+               },
                 color: greenColor,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8)
@@ -106,12 +104,10 @@ class _MainBottomBarState extends State<MainBottomBar> {
                 ),),
               ),
 
-
-
-
             ],
           );
-        });
+        }
+      );
   }
 
   @override
@@ -120,7 +116,7 @@ class _MainBottomBarState extends State<MainBottomBar> {
     WidgetsBinding.instance.addObserver(_appState);
     return PopScope(
       canPop: false,
-      onPopInvoked: (val){
+      onPopInvoked: (val)async{
         dialog();
       },
       child: Scaffold(

@@ -34,7 +34,15 @@ class LoginScreenController extends GetxController{
     isLoading.value = true;
 
     try {
-      var deviceId = await notificationServices.getDeviceToken();
+      var deviceId;
+      if(Platform.isAndroid){
+         deviceId = await notificationServices.getDeviceToken();
+      }else if(Platform.isIOS){
+        deviceId = await notificationServices.getIOSDeviceToken();
+      }else if(Platform.isMacOS){
+        deviceId = await notificationServices.getIOSDeviceToken();
+      }
+
       print("deviceToken : $deviceId");
 
       var data = await authServices.login(
@@ -46,7 +54,7 @@ class LoginScreenController extends GetxController{
 
       // Log the full response
 
-    //  var data = jsonDecode(response); // This might throw FormatException
+      //  var data = jsonDecode(response); // This might throw FormatException
 
       if (data['status'] == true) {
         print("Response: ${data["data"]}");

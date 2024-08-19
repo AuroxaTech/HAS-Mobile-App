@@ -192,7 +192,7 @@ class AddServiceScreen extends GetView<AddServiceController> {
                     h5,
 
                     CustomTextField(
-                      hintText: "Weekdays, ${controller.startTime.value.format(context)} - ${controller.endTime.value.format(context)}",
+                      hintText: '${controller.selectedWeekdayRange.value.isEmpty ? 'Select range' : controller.selectedWeekdayRange.value}, ${controller.startTime.value.format(context)} - ${controller.endTime.value.format(context)}',
                       validator: (value){
                         if (value == null || value.isEmpty) {
                           return 'Availability required';
@@ -341,7 +341,7 @@ class AddServiceScreen extends GetView<AddServiceController> {
                                       serviceName: controller.servicesNameController.text,
                                       description: controller.descriptionController.text,
                                       pricing: controller.pricingController.text,
-                                      startTime: controller.startTime.value.format(context),
+                                      startTime: controller.selectedWeekdayRange + controller.startTime.value.format(context),
                                       endTime: controller.endTime.value.format(context),
                                       location: controller.locationController.text,
                                       country: controller.selectedCountry.value.toString(),

@@ -155,7 +155,7 @@ class Routes {
       ),
       GetPage(
           name: kCalendarScreen,
-          page: () => const CalendarScreen(),
+          page: () => const CalendarScreen(isBack: true,),
           binding: ScreenBindings(),
           transition: routeTransition
       ),
@@ -269,7 +269,7 @@ class Routes {
       ),
       GetPage(
           name: kJobScreen,
-          page: () =>  JobsScreen(),
+          page: () =>  JobsScreen(isBack: true,),
           binding: ScreenBindings(),
           transition: routeTransition
       ),

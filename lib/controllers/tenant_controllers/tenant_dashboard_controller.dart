@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:property_app/models/stat_models/tenant_stat.dart';
-
+import 'package:http/http.dart' as http;
+import '../../constant_widget/constant_widgets.dart';
 import '../../services/auth_services/auth_services.dart';
+import '../../utils/api_urls.dart';
 import '../../utils/shared_preferences/preferences.dart';
+import '../../utils/utils.dart';
+import '../../views/authentication_screens/login_screen.dart';
 
 class TenantDashboardController extends GetxController {
 
@@ -45,6 +49,40 @@ class TenantDashboardController extends GetxController {
     } else {
       isLoading.value = false;
       print("Invalid or null data format");
+    }
+  }
+
+  Future<void> deleteUser() async {
+
+    try {
+      isLoading(true);
+      var userId = await Preferences.getUserID();
+      var userToken = await Preferences.getToken();
+      // Making the HTTP POST request
+      final response = await http.delete(
+        Uri.parse(AppUrls.deleteUser),
+
+        headers: getHeader(userToken: userToken),
+      );
+      print(response.body);
+      // Handling the response
+      if (response.statusCode == 200) {
+        AppUtils.getSnackBar('Success', 'User deleted successfully');
+        Get.offAll(const LoginScreen());
+      } else if (response.statusCode == 404) {
+        AppUtils.errorSnackBar('Error', 'User not found');
+      } else if (response.statusCode == 500) {
+        AppUtils.errorSnackBar('Error', 'Server error, please try again later');
+      } else {
+        AppUtils.errorSnackBar('Error', 'Unexpected error occurred');
+      }
+    } catch (error) {
+      // Error handling for network or other issues
+      print(error);
+      rethrow;
+      AppUtils.errorSnackBar('Error', 'Failed to delete user: $error');
+    } finally {
+      isLoading(false);
     }
   }
 }

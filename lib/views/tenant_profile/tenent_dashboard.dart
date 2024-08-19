@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:property_app/constant_widget/delete_widgets.dart';
 import 'package:property_app/constant_widget/drawer.dart';
 import 'package:property_app/controllers/tenant_controllers/tenant_dashboard_controller.dart';
 import 'package:property_app/models/stat_models/tenant_stat.dart';
@@ -27,7 +28,9 @@ class TenantDashboard extends GetView<TenantDashboardController> {
           menuOnTap:  () => controller.key.currentState!.openDrawer(),
           back: false
       ),
-      drawer: providerDrawer(context),
+      drawer: providerDrawer(context, onDeleteAccount: (){
+          deleteFunction(context, controller);
+      }),
       body: SafeArea(
         child: Obx(() =>
             RefreshIndicator(
@@ -116,7 +119,7 @@ class TenantDashboard extends GetView<TenantDashboardController> {
                                         ),
                                         dashboardContainer(
                                             onTap: (){
-                                              Get.toNamed(kMyServiceRequestScreen);
+                                            //  Get.toNamed(kMyServiceRequestScreen);
                                             },
                                             title: "Request service",
                                             image: AppIcons.service

@@ -136,7 +136,7 @@ class _SendMessageState extends State<SendMessage> {
                                 onTap: (){
                                 },
                                 child: Container(
-                                  constraints: BoxConstraints(
+                                  constraints: const BoxConstraints(
 
                                     maxHeight: 148,
 

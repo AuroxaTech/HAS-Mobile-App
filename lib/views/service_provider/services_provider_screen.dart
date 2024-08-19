@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:property_app/constant_widget/delete_widgets.dart';
 import 'package:property_app/constant_widget/drawer.dart';
 import 'package:property_app/controllers/services_provider_controller/service_provide_controller.dart';
 import 'package:property_app/controllers/tenant_controllers/tenant_dashboard_controller.dart';
@@ -30,7 +31,9 @@ class ServiceProviderScreen extends GetView<ServiceProviderController> {
       appBar: homeAppBar(context, text: "Service Provider", showNotification: true, isBack: true,
         menuOnTap:  () => controller.key.currentState!.openDrawer(), back: false
       ),
-      drawer: providerDrawer(context),
+      drawer: providerDrawer(context,onDeleteAccount: (){
+          deleteFunction(context, controller);
+      }),
       body: SafeArea(
         child: Obx(() => controller.getServiceOne.value == null || controller.isLoading.value ?
         const Center(child: CircularProgressIndicator())  :

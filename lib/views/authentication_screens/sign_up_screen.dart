@@ -119,24 +119,24 @@ class SignUpScreen extends GetView<SignUpController> {
                     h15,
                     CustomTextField(
                       controller: controller.addressController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Address is required';
-                        }
-                        return null;
-                      },
-                      hintText: "Address",
+                      // validator: (value) {
+                      //   if (value == null || value.isEmpty) {
+                      //     return 'Address is required';
+                      //   }
+                      //   return null;
+                      // },
+                      hintText: "Address (Optional)",
                     ),
                     h15,
                     CustomTextField(
                       controller: controller.postalCode,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Postal code is required';
-                        }
-                        return null;
-                      },
-                      hintText: "Postal code",
+                      // validator: (value) {
+                      //   if (value == null || value.isEmpty) {
+                      //     return 'Postal code is required';
+                      //   }
+                      //   return null;
+                      // },
+                      hintText: "Postal code (Optional)",
                     ),
                     h15,
                     CustomTextField(
@@ -216,6 +216,8 @@ class SignUpScreen extends GetView<SignUpController> {
                                       controller.nameController.text,
                                       controller.emailController.text,
                                       controller.phoneController.text,
+                                      controller.addressController.text.isEmpty ? "Test" : controller.addressController.text,
+                                      controller.postalCode.text.isEmpty ? "00000" : controller.postalCode.text,
                                       controller.passwordController.text,
                                       controller.confirmPasswordController.text);
                                 }else{
@@ -223,6 +225,8 @@ class SignUpScreen extends GetView<SignUpController> {
                                   controller.registerVisitor(context,
                                       controller.nameController.text,
                                       controller.emailController.text,
+                                      controller.addressController.text.isEmpty ? "Test" : controller.addressController.text,
+                                      controller.postalCode.text.isEmpty ? "00000" : controller.postalCode.text,
                                       controller.phoneController.text,
                                       controller.passwordController.text,
                                       controller.confirmPasswordController.text, profileImage: controller.profileImage.value);
@@ -273,6 +277,7 @@ class SignUpScreen extends GetView<SignUpController> {
       ),
     );
   }
+
   Widget landLard(context){
     return Column(
       children: [
@@ -354,12 +359,14 @@ class SignUpScreen extends GetView<SignUpController> {
           );
         }).toList(),),
         h15,
-        CustomTextField(
-          readOnly: true,
-          hintText: 'Weekdays, ${controller.startTime.value.format(context)} - ${controller.endTime.value.format(context)}',
-          suffixIcon: IconButton(onPressed: (){
-            controller.selectDateTime(context);
-          }, icon: const Icon(Icons.calendar_month)),
+        Obx(
+        ()=> CustomTextField(
+            readOnly: true,
+            hintText: '${controller.selectedWeekdayRange.value.isEmpty ? 'Select range' : controller.selectedWeekdayRange.value}, ${controller.startTime.value.format(context)} - ${controller.endTime.value.format(context)}',
+            suffixIcon: IconButton(onPressed: (){
+              controller.selectDateTime(context);
+            }, icon: const Icon(Icons.calendar_month)),
+          ),
         ),
         h30,
         CustomButton(
@@ -540,6 +547,8 @@ class SignUpScreen extends GetView<SignUpController> {
                   print("own house");
                   await controller.registerTenant(
                     fullName: controller.nameController.text,
+                    address: controller.addressController.text.isEmpty ? "Test" : controller.addressController.text,
+                    postalCode:  controller.postalCode.text.isEmpty ? "00000" : controller.postalCode.text,
                     email: controller.emailController.text,
                     phoneNumber: controller.phoneController.text,
                     password: controller.passwordController.text,
@@ -555,6 +564,8 @@ class SignUpScreen extends GetView<SignUpController> {
                   print("own rent");
                   await controller.registerTenant(
                     fullName: controller.nameController.text,
+                    address: controller.addressController.text.isEmpty ? "Test" : controller.addressController.text,
+                    postalCode:  controller.postalCode.text.isEmpty ? "00000" : controller.postalCode.text,
                     phoneNumber: controller.phoneController.text,
                     email: controller.emailController.text,
                     password: controller.passwordController.text,
@@ -574,6 +585,8 @@ class SignUpScreen extends GetView<SignUpController> {
                 if( controller.onRentValue.value == "Select last status" || controller.onRentValue.value == "own house" ){
                   print("own house");
                   await controller.registerTenant(
+                    address: controller.addressController.text.isEmpty ? "Test" : controller.addressController.text,
+                    postalCode:  controller.postalCode.text.isEmpty ? "00000" : controller.postalCode.text,
                     fullName: controller.nameController.text,
                     email: controller.emailController.text,
                     phoneNumber: controller.phoneController.text,
@@ -589,6 +602,8 @@ class SignUpScreen extends GetView<SignUpController> {
                 }else {
                   print("own rent");
                   await controller.registerTenant(
+                    address: controller.addressController.text.isEmpty ? "Test" : controller.addressController.text,
+                    postalCode:  controller.postalCode.text.isEmpty ? "00000" : controller.postalCode.text,
                     fullName: controller.nameController.text,
                     phoneNumber: controller.phoneController.text,
                     email: controller.emailController.text,
@@ -1001,12 +1016,14 @@ class SignUpScreen extends GetView<SignUpController> {
                       await controller.registerServiceProvider(
                         fullName: controller.nameController.text,
                         email: controller.emailController.text,
+                        address: controller.addressController.text.isEmpty ? "Test" : controller.addressController.text,
+                        postalCode:  controller.postalCode.text.isEmpty ? "00000" : controller.postalCode.text,
                         phoneNumber: controller.phoneController.text,
                         password: controller.passwordController.text,
                         cPassword: controller.confirmPasswordController.text,
                         services: controller.electricalValue.value,
                         yearExperience: controller.experienceController.text,
-                        availabilityStartTime: controller.startTime.value.format(context),
+                        availabilityStartTime:  controller.selectedWeekdayRange.value + controller.startTime.value.format(context),
                         availabilityEndTime: controller.endTime.value.format(context),
                         cnicFront: controller.frontCNICImage.value!,
                         cnicBack: controller.backCNICImage.value!,
@@ -1022,12 +1039,14 @@ class SignUpScreen extends GetView<SignUpController> {
                       await controller.registerServiceProvider(
                         fullName: controller.nameController.text,
                         email: controller.emailController.text,
+                        address: controller.addressController.text.isEmpty ? "Test" : controller.addressController.text,
+                        postalCode:  controller.postalCode.text.isEmpty ? "00000" : controller.postalCode.text,
                         phoneNumber: controller.phoneController.text,
                         password: controller.passwordController.text,
                         cPassword: controller.confirmPasswordController.text,
                         services: controller.electricalValue.value,
                         yearExperience: controller.experienceController.text,
-                        availabilityStartTime: controller.startTime.value.format(context),
+                        availabilityStartTime: controller.selectedWeekdayRange.value +  controller.startTime.value.format(context),
                         availabilityEndTime: controller.endTime.value.format(context),
                         cnicFront: controller.frontCNICImage.value!,
                         cnicBack: controller.backCNICImage.value!,
@@ -1049,7 +1068,8 @@ class SignUpScreen extends GetView<SignUpController> {
                     // User has provided certification
                     try {
                       await controller.registerServiceProvider(
-
+                        address: controller.addressController.text.isEmpty ? "Test" : controller.addressController.text,
+                        postalCode:  controller.postalCode.text.isEmpty ? "00000" : controller.postalCode.text,
                         fullName: controller.nameController.text,
                         email: controller.emailController.text,
                         phoneNumber: controller.phoneController.text,
@@ -1073,6 +1093,8 @@ class SignUpScreen extends GetView<SignUpController> {
                     // User has not provided certification
                     try {
                       await controller.registerServiceProvider(
+                        address: controller.addressController.text.isEmpty ? "Test" : controller.addressController.text,
+                        postalCode:  controller.postalCode.text.isEmpty ? "00000" : controller.postalCode.text,
                         fullName: controller.nameController.text,
                         email: controller.emailController.text,
                         phoneNumber: controller.phoneController.text,

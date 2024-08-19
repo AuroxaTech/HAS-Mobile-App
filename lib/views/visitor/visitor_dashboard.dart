@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:property_app/constant_widget/delete_widgets.dart';
 import 'package:property_app/constant_widget/drawer.dart';
 import 'package:property_app/models/stat_models/visitor_stat.dart';
 import '../../app_constants/animations.dart';
@@ -27,7 +28,9 @@ class VisitorDashBoard extends GetView<VisitorDashboardController> {
           menuOnTap:  () => controller.key.currentState!.openDrawer(),
           back: false
       ),
-      drawer: providerDrawer(context),
+      drawer: providerDrawer(context, onDeleteAccount: (){
+        deleteFunction(context, controller);
+      }),
       body: SafeArea(
         child: Obx(
         () => RefreshIndicator(

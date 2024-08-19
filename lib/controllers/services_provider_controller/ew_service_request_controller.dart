@@ -30,36 +30,33 @@ class NewServiceRequestScreenController extends GetxController{
 
   RxBool isLoading = false.obs;
 
-
-  DateTime selectedDate = DateTime.now();
   Rx<TimeOfDay> startTime = const TimeOfDay(hour: 9, minute: 0).obs;
   Rx<TimeOfDay> endTime = const TimeOfDay(hour: 17, minute: 0).obs;
+  RxString selectedWeekdayRange = ''.obs;
+
+  final List<String> weekdayRanges = ['Monday to Friday', 'Full Week'];
 
   Future<void> selectDateTime(BuildContext context) async {
-    showModalBottomSheet(
+    await _selectWeekdayRange(context);
+    await _selectTime(context, true);
+    await _selectTime(context, false);
+  }
+
+  Future<void> _selectWeekdayRange(BuildContext context) async {
+    await showModalBottomSheet(
       context: context,
       builder: (BuildContext builder) {
-        return Container(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                title: const Text('Select Start Time'),
-                onTap: () async {
-                  //Navigator.pop(context);
-
-                  await _selectTime(context, true);
-                },
-              ),
-              ListTile(
-                title: const Text('Select End Time'),
-                onTap: () async {
-                  Navigator.pop(context);
-                  await _selectTime(context, false);
-                },
-              ),
-            ],
-          ),
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: weekdayRanges.map((range) {
+            return ListTile(
+              title: Text(range),
+              onTap: () {
+                selectedWeekdayRange.value = range;
+                Navigator.pop(context);
+              },
+            );
+          }).toList(),
         );
       },
     );
@@ -79,7 +76,6 @@ class NewServiceRequestScreenController extends GetxController{
       }
     }
   }
-
 
   @override
   void onInit() {

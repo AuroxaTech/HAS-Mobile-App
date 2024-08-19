@@ -13,6 +13,7 @@ class ForgotPasswordController extends GetxController{
   void sendPasswordResetEmail(email) async {
     try {
       isLoading.value = true;
+
       final response = await http.post(
         Uri.parse(AppUrls.forgotPassword),
         body: json.encode({'email': emailController.text}),
@@ -20,6 +21,7 @@ class ForgotPasswordController extends GetxController{
           "Content-Type" : "application/json"
         }
       );
+
       if (response.statusCode == 200) {
         // Handle success
         var jsonData = jsonDecode(response.body);

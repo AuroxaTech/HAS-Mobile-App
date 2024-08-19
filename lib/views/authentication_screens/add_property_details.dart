@@ -155,6 +155,7 @@ class AddPropertyDetailScreen extends GetView<SignUpController> {
                       ),
                       prefix: SvgPicture.asset(AppIcons.amount),
                     ),
+
                     h15,
                     labelText("Enter Street Address"),
                     h10,
@@ -175,11 +176,14 @@ class AddPropertyDetailScreen extends GetView<SignUpController> {
                             controller.selectedAddress = result['address'];
                             controller.selectedLat = result['latitude'];
                             controller.selectedLng = result['longitude'];
+                            controller.addressPostalCode = result['postalCode'];
                             controller.streetController.text =  controller.selectedAddress;
+                            controller.postalAddressController.text =  controller.addressPostalCode;
 
                             print(controller.selectedAddress);
                             print(controller.selectedLat);
                             print(controller.selectedLng);
+                            print( "Postal Code  ${controller.addressPostalCode}");
                         }
                       },
                       controller: controller.streetController,
@@ -190,37 +194,73 @@ class AddPropertyDetailScreen extends GetView<SignUpController> {
                         child: SvgPicture.asset(AppIcons.location),
                       ),
                     ),
+                   controller.addressPostalCode == "" ?  const SizedBox() : h15,
+                    controller.addressPostalCode == "" ?  const SizedBox() :  labelText("Postal Code"),
+                    controller.addressPostalCode == "" ?  const SizedBox() :   h10,
+                    controller.addressPostalCode == "" ?  const SizedBox() :
+                    CustomTextField(
+                      hintText: "Postal Code",
+                      keyboaredtype: TextInputType.number,
+                      controller: controller.postalAddressController,
+                      prefixConstraints: BoxConstraints(
+                        minWidth: Get.width * 0.12,
+                        minHeight: Get.width * 0.038,
+                      ),
+                      suffixIcon: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: SvgPicture.asset(AppIcons.location),
+                      ),
+                    ),
                     h15,
                     labelText("Area Range"),
                     h10,
-                    SizedBox(
-                      height: 35,
-                      child: ListView.builder(
-                        itemCount: controller.areaRange.length,
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return Obx(
-                            () => Row(
-                              children: [
-                                roundedSmallButton(
-                                  text: controller.areaRange[index],
-                                  isSecondText: true,
-                                  isSelected:
-                                      controller.selectedArea.value == index,
-                                  onTap: () {
-                                    controller.selectedArea.value = index;
-                                    controller.selectedRange.value = controller.areaRange[index];
-                                  }
+                    Obx(()=> RangeSlider(
+                        values: controller.currentRange.value,
+                        min: 1,
+                        max: 1000,
+                        divisions: 99,
+                        activeColor: primaryColor,
+                        inactiveColor: Colors.grey.shade300,
+                        labels: RangeLabels(
+                          "${controller.currentRange.value.start.round()} sq ft",
+                          controller.currentRange.value.end.round().toString(),
+                        ),
+                        onChanged: (RangeValues values) {
+                          controller.currentRange.value = values;
+                          controller.selectedRange.value = controller.currentRange.value.start.round().toString();
 
-                                ),
-                                const SizedBox(width: 15),
-                              ],
-                            ),
-                          );
+                          print(controller.selectedRange.value );
                         },
                       ),
                     ),
+                    // h10,
+                    // SizedBox(
+                    //   height: 35,
+                    //   child: ListView.builder(
+                    //     itemCount: controller.areaRange.length,
+                    //     shrinkWrap: true,
+                    //     scrollDirection: Axis.horizontal,
+                    //     itemBuilder: (context, index) {
+                    //       return Obx(
+                    //         () => Row(
+                    //           children: [
+                    //             roundedSmallButton(
+                    //               text: controller.areaRange[index],
+                    //               isSecondText: true,
+                    //               isSelected:
+                    //                   controller.selectedArea.value == index,
+                    //               onTap: () {
+                    //                 controller.selectedArea.value = index;
+                    //                 controller.selectedRange.value = controller.areaRange[index];
+                    //               }
+                    //             ),
+                    //             const SizedBox(width: 15),
+                    //           ],
+                    //         ),
+                    //       );
+                    //     },
+                    //   ),
+                    // ),
                     h15,
                     Row(
                       children: [
@@ -327,10 +367,11 @@ class AddPropertyDetailScreen extends GetView<SignUpController> {
                                 type: controller.isSale.value ? 1 : 2,
                                 city: controller.newYorkController.text,
                                 amount: amount,
-                                address: controller.amountController.text,
+                                address: controller.addressController.text.isEmpty ? "Test" : controller.addressController.text,
+                                postalCode:  controller.postalCode.text.isEmpty ? "00000" : controller.postalCode.text,
                                 lat: controller.selectedLat,
                                 long: controller.selectedLng,
-                                areaRange: controller.selectedRange.value,
+                                areaRange: "${controller.selectedRange.value} sq ft",
                                 bedroom: controller.selectedBedroom.value,
                                 bathroom: controller.selectedBothList.value,
                                 electricityBill: controller.images[0],
@@ -340,7 +381,8 @@ class AddPropertyDetailScreen extends GetView<SignUpController> {
                                 availabilityStartTime: controller.startTime.value.format(context),
                                 availabilityEndTime: controller.endTime.value.format(context),
                                 description: controller.description.text,
-                                subType: 1.toString()
+                                subType: 1.toString(),
+
                               );
                             }
                             else{
@@ -355,10 +397,11 @@ class AddPropertyDetailScreen extends GetView<SignUpController> {
                                 type: controller.isSale.value ? 1 : 2,
                                 city: controller.newYorkController.text,
                                 amount: amount,
-                                address: controller.amountController.text,
+                                address: controller.addressController.text.isEmpty ? "Test" : controller.addressController.text,
+                                postalCode:  controller.postalCode.text.isEmpty ? "00000" : controller.postalCode.text,
                                 lat: controller.selectedLat,
                                 long: controller.selectedLng,
-                                areaRange: controller.selectedRange.value,
+                                areaRange: "${controller.selectedRange.value} sq ft",
                                 bedroom: controller.selectedBedroom.value,
                                 bathroom: controller.selectedBothList.value,
                                 electricityBill: controller.profileImage.value!,
@@ -368,7 +411,8 @@ class AddPropertyDetailScreen extends GetView<SignUpController> {
                                 availabilityStartTime: controller.startTime.value.toString(),
                                 availabilityEndTime: controller.endTime.value.toString(),
                                 description: controller.description.text,
-                                subType: 1.toString()
+                                subType: 1.toString(),
+
                               );
                             }
                           }else{

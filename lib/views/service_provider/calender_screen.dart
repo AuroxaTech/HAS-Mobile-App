@@ -7,6 +7,7 @@ import 'package:property_app/constant_widget/constant_widgets.dart';
 import 'package:property_app/constant_widget/drawer.dart';
 import 'package:property_app/views/main_bottom_bar/service_provider_bottom_ar.dart';
 import 'package:table_calendar/table_calendar.dart';
+import '../../constant_widget/delete_widgets.dart';
 import '../../controllers/services_provider_controller/calender_screen_controlelr.dart';
 import 'package:intl/intl.dart';
 import '../../models/service_provider_model/provider_job.dart';
@@ -16,7 +17,8 @@ const int kFirstYear = 2020;
 const int kLastYear = 2030;
 
 class CalendarScreen extends GetView<CalendarScreenController> {
-  const CalendarScreen({Key? key}) : super(key: key);
+  final bool isBack;
+  const CalendarScreen({Key? key, required this.isBack}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +32,9 @@ class CalendarScreen extends GetView<CalendarScreenController> {
         },
           back: false
       ),
-      drawer: providerDrawer(context),
+      drawer: providerDrawer(context, onDeleteAccount: (){
+        deleteFunction(context, controller);
+      }),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: ()async{

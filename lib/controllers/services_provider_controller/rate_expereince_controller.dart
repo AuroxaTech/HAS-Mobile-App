@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:get/get_rx/get_rx.dart';
 import 'package:http/http.dart'as http;
+import 'package:property_app/utils/api_urls.dart';
 import 'package:property_app/utils/shared_preferences/preferences.dart';
 
 import '../../utils/utils.dart';
@@ -20,6 +22,12 @@ class RateExperienceController extends GetxController {
     'Room': false,
     'Penthouse': false,
   }.obs;
+
+
+
+  RxInt serviceId = 0.obs;
+
+
 
   RxInt selectedIndex = 0.obs; // Add this line to declare a variable for storing the index
 
@@ -45,7 +53,7 @@ class RateExperienceController extends GetxController {
     var token = await Preferences.getToken();
     isLoading.value = true;
     final response = await http.post(
-      Uri.parse('https://pktours.pk/make-service-feedback'),
+      Uri.parse(AppUrls.makeFeedBack),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer $token',
@@ -64,6 +72,10 @@ class RateExperienceController extends GetxController {
       isLoading.value = false;
       var jsonData = jsonDecode(response.body);
       print('Feedback sent successfully');
+      Get.back();
+      Get.back();
+      Get.back();
+      Get.back();
       AppUtils.getSnackBar("Feedback", jsonData["message"]);
 
     } else {
@@ -72,5 +84,12 @@ class RateExperienceController extends GetxController {
       // then throw an exception.
       throw Exception('Failed to send feedback');
     }
+  }
+  @override
+  void onInit() {
+    var data = Get.arguments;
+    serviceId.value = data;
+    print("service Id : $serviceId");
+    super.onInit();
   }
 }

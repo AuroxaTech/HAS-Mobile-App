@@ -8,8 +8,11 @@ import 'package:get/get.dart';
 import 'package:property_app/app_constants/theme.dart';
 import 'package:property_app/controllers/authentication_controller/splash_screen_controller.dart';
 import 'package:property_app/route_management/routes.dart';
+import 'firebase_options.dart';
 import 'route_management/constant_routes.dart';
 import 'route_management/screen_bindings.dart';
+
+// key id :  ZF877N5RJQ
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message)async {
@@ -19,7 +22,10 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message)async {
 
 void main()async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   Get.put(SplashScreenController());
   HttpOverrides.global = MyHttpOverrides();

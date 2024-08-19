@@ -68,17 +68,19 @@ class AllPropertyScreen extends GetView<AllPropertyController> {
                         print(AppUrls.propertyImages + imageList[0],);
                         return Column(
                           children: [
+
                             myPropertyWidget(context,
                                 onTap: (){
                                   Get.toNamed(kAllPropertyDetailScreen, arguments: item.id);
                                 },
                                 title: item.city.toString(),
-                                image: AppUrls.propertyImages + imageList[0],
+                                image:  AppUrls.propertyImages + imageList[0],
                                 price: "\$${item.amount.toString()}",
                                 description: item.description.toString(),
                                 bedroom: item.bedroom.toString(),
                                 bathroom: item.bathroom.toString(),
                                 marla: item.areaRange.toString(),
+                                index: index,
                                 icon: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Align(

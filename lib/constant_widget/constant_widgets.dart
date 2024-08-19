@@ -176,10 +176,11 @@ OutlineInputBorder shapeBorder =  OutlineInputBorder(
   borderRadius: BorderRadius.circular(15),
 );
 
-PreferredSizeWidget backAppBar({String? text, bool? isTitle = false}){
+PreferredSizeWidget backAppBar({String? text, bool? isTitle = false, Widget? leading}){
   return AppBar(
     elevation: 0.0,
     backgroundColor: whiteColor,
+    leading: leading,
     automaticallyImplyLeading: true,
     title: isTitle == true ? customText(
       text: text,
@@ -614,7 +615,7 @@ Widget dashboardContainer({String? title, String? image, VoidCallback? onTap, Ed
           customText(
             textAlign: TextAlign.center,
               text: title,
-              fontSize: 11,
+              fontSize: 9,
               color: blackColor
           ),
         ],
@@ -630,7 +631,7 @@ Widget rowMainAxis({children}){
 }
 
 Widget myPropertyWidget(context,{required VoidCallback onTap, required String title, required String image, required String price,
-required String description,required String bedroom, required String bathroom, required String marla, required String rent, Widget? icon}){
+required String description,required String bedroom, required String bathroom, required String marla, required String rent, Widget? icon, int? index}){
 
   late ImageProvider imgVariable;
   imgVariable = CachedNetworkImageProvider(image, errorListener: (ee){
@@ -680,7 +681,7 @@ required String description,required String bedroom, required String bathroom, r
                     height: screenHeight(context) *0.23,
                     fit: BoxFit.cover,
                     errorWidget: (context, d , g){
-                      return Image.asset(AppIcons.appLogo);
+                      return index == 0 ? Image.asset(AppIcons.p3, width: double.infinity, fit: BoxFit.cover,) :  index == 1 ? Image.asset(AppIcons.p1, width: double.infinity, fit: BoxFit.cover,) : Image.asset(AppIcons.p2, width: double.infinity, fit: BoxFit.cover,);
                   },
                 ),
                 Positioned(child:  icon ?? const SizedBox(),)

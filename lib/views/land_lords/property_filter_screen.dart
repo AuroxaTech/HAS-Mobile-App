@@ -62,31 +62,24 @@ class PropertyFilterScreen extends GetView<AllPropertyController> {
                     h10,
                     labelText("Area Range"),
                     h10,
-                    SizedBox(
-                      height: 35,
-                      child: ListView.builder(
-                        itemCount: controller.areaRange.length,
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return Obx(
-                                () => Row(
-                                children: [
-                                 roundedSmallButton(
-                                  text: controller.areaRange[index],
-                                  subTitle: "",
-                                  isSecondText: true,
-                                  isSelected:
-                                  controller.selectedArea.value == index,
-                                  onTap: () =>
-                                  controller.selectedArea.value = index,
-                                ),
-                                const SizedBox(width: 15),
-                              ],
-                            ),
-                          );
-                        },
+                    Obx(()=> RangeSlider(
+                      values: controller.currentRange.value,
+                      min: 1,
+                      max: 1000,
+                      divisions: 99,
+                      activeColor: primaryColor,
+                      inactiveColor: Colors.grey.shade300,
+                      labels: RangeLabels(
+                        "${controller.currentRange.value.start.round()} sq ft",
+                        controller.currentRange.value.end.round().toString(),
                       ),
+                      onChanged: (RangeValues values) {
+                        controller.currentRange.value = values;
+                        controller.selectedRange.value = controller.currentRange.value.end.round().toString();
+
+                        print("Range ${controller.selectedRange.value}" );
+                      },
+                    ),
                     ),
 
                     h15,
@@ -136,20 +129,21 @@ class PropertyFilterScreen extends GetView<AllPropertyController> {
                     SizedBox(
                       height: 35,
                       child: ListView.builder(
-                        itemCount: 8,
+                        itemCount: controller.bathroomsList.length,
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (context, index) {
-                          index += 1;
                           return Obx(
                                 () => Row(
                               children: [
                                 roundedSmallButton(
-                                  text: "$index",
-                                  isSelected:
-                                  controller.selectedBathrooms.value == index,
-                                  onTap: () =>
-                                  controller.selectedBathrooms.value = index,
+                                    text:controller.bathroomsList[index],
+                                    isSelected:
+                                    controller.selectedBathrooms.value == index,
+                                    onTap: () {
+                                      controller.selectedBathrooms.value = index;
+                                      controller.selectedBothList.value = controller.bathroomsList[index];
+                                    }
                                 ),
                                 const SizedBox(width: 15),
                               ],
@@ -158,21 +152,6 @@ class PropertyFilterScreen extends GetView<AllPropertyController> {
                         },
                       ),
                     ),
-                    // h15,
-                    // labelText("Description"),
-                    // h10,
-                    // CustomTextField(
-                    //   maxLines: 5,
-                    //   minLines: 3,
-                    //   validator: (value) {
-                    //     if (value == null || value.isEmpty || value.length < 3) {
-                    //       return 'Description Required';
-                    //     }
-                    //     return null;
-                    //   },
-                    //   controller: controller.description,
-                    //   hintText: "Clean and Minimalistic House , with modern interior and exterior built in the centre of city with modern facilities",
-                    // ),
                     h15,
                     labelText("Property Type"),
                     h10,
@@ -406,20 +385,24 @@ class PropertyFilterScreen extends GetView<AllPropertyController> {
                           } else if (controller.commercial.value) {
                             selectedSubType = controller.getSelectedCommercialSubTypeIndex();
                           }
+
                           print(selectedSubType);
                           print(propertyType);
 
                           Map<String, dynamic> filters = {
+                            "type" : controller.isSale.value ?  "Rent" : "Sale",
                             "property_type": propertyType,
                             "min_amount": controller.minPriceController.text,
                             "max_amount": controller.maxPriceController.text,
                             "sub_type": selectedSubType,
-                           // "type" : controller.isSale.value ? 1 : 2,
+                            // "type" : controller.isSale.value ? 1 : 2,
                             "bedroom": controller.selectedBedroom.value.toString(),
-                            "bathroom": controller.selectedBathrooms.value.toString(),
-                          //  "description": controller.description.text,
-                            "area_range": controller.selectedArea.value
+                            "bathroom":  controller.selectedBothList.value,
+                            //  "description": controller.description.text,
+                            "area_range": "${controller.selectedRange.value} sq ft"
                           };
+
+                          print(filters);
                           Get.back(result: filters);
                         }
                       },

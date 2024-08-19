@@ -35,10 +35,10 @@ class CalendarService {
 
 class CalendarData {
   int id;
-  String userId;
-  String requestId;
-  String providerId;
-  String status;
+  int userId;
+  int requestId;
+  int providerId;
+  int status;
   DateTime createdAt;
   DateTime updatedAt;
   Request request;
@@ -86,7 +86,7 @@ class Provider {
   String fullname;
   String email;
   String phoneNumber;
-  String roleId;
+  int roleId;
   String profileimage;
   DateTime createdAt;
   DateTime updatedAt;
@@ -126,20 +126,20 @@ class Provider {
 }
 class Request {
   int id;
-  String userId;
-  String serviceproviderId;
-  String serviceId;
+  int userId;
+  int serviceproviderId;
+  int serviceId;
   String address;
   String lat;
   String long;
-  String propertyType;
+  int propertyType;
   String price;
   String date;
   String time;
   String description;
   String additionalInfo;
-  String approved;
-  String decline;
+  int approved;
+  int decline;
   DateTime createdAt;
   DateTime updatedAt;
   Service? service;
@@ -211,7 +211,7 @@ class Request {
 
 class Service {
   int id;
-  String userId;
+  int userId;
   String serviceName;
   String description;
   dynamic categoryId;

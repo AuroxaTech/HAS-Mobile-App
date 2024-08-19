@@ -1,10 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:property_app/app_constants/app_icon.dart';
 import 'package:property_app/app_constants/app_sizes.dart';
 import 'package:property_app/app_constants/color_constants.dart';
 import 'package:property_app/constant_widget/constant_widgets.dart';
+import 'package:property_app/constant_widget/delete_widgets.dart';
 import 'package:property_app/controllers/dasboard_controller/dashoard_controller.dart';
 import 'package:property_app/models/authentication_model/register_model.dart';
 import 'package:property_app/models/stat_models/landlord_stat.dart';
@@ -26,7 +28,10 @@ class DashBoardScreen extends GetView<DashboardController> {
         menuOnTap:  () => controller.key.currentState!.openDrawer(),
         back: false
       ),
-      drawer: customDrawer(context),
+
+      drawer: customDrawer(context, onDeleteAccount: (){
+        deleteFunction(context, controller);
+      }),
       body: SafeArea(
 
         child: Obx(

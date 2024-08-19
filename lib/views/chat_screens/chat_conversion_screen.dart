@@ -416,7 +416,7 @@ class _ChatScreen1State extends State<ChatScreen1> {
                                     formatDate(lastSeen,
                                         snapshot.data["online"]),
                                     style: GoogleFonts.poppins(
-                                      textStyle: TextStyle(
+                                      textStyle: const TextStyle(
                                         fontSize: 10,
                                         color: whiteColor,
                                       ),
@@ -429,9 +429,9 @@ class _ChatScreen1State extends State<ChatScreen1> {
                         ),
                       ),
                     ),
-                    Padding(
+                    const Padding(
                       padding: EdgeInsets.only(right: 8),
-                      child: const Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: <Widget>[
                           // InkWell(

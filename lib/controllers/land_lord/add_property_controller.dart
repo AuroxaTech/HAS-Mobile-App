@@ -7,7 +7,7 @@ import '../../utils/utils.dart';
 
 class AddPropertyController extends GetxController{
   RxBool isSale = false.obs;
-  RxInt selectedArea = 0.obs;
+  RxString selectedRange = "1 sq ft".obs;
   RxInt selectedBedroom = 1.obs;
   RxInt selectedBathrooms = 1.obs;
   RxString selectedBothList = "1".obs;
@@ -34,6 +34,12 @@ class AddPropertyController extends GetxController{
     "7",
     "7  1/2"
   ] ;
+  var currentRange = const RangeValues(1, 1000).obs;
+
+  void updateRangeValues(RangeValues values) {
+    currentRange.value = values;
+  }
+
   TextEditingController newYorkController = TextEditingController();
   RxBool newYorkField = true.obs;
   TextEditingController amountController = TextEditingController();

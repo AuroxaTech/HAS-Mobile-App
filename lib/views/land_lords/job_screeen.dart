@@ -13,14 +13,16 @@ import '../../route_management/constant_routes.dart';
 import '../../utils/api_urls.dart';
 
 class JobsScreen extends GetView<JobScreenController> {
-  JobsScreen({super.key});
+  final bool isBack;
+  JobsScreen({super.key, required this.isBack});
+
   @override
   final controller = Get.put(JobScreenController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: whiteColor,
-      appBar: homeAppBar(context, text: "Jobs" , isBack: true, back: false),
+      appBar: homeAppBar(context, text: "Jobs" , isBack: false, back: isBack),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: ()async{
@@ -52,6 +54,7 @@ class JobsScreen extends GetView<JobScreenController> {
                             },
                             text: "Pending(${controller.pendingJobController.itemList?.length ?? 0})",
                             textColor: controller.pending.value ? primaryColor : greyColor,
+
                             borderColor: controller.pending.value ? primaryColor : greyColor,
                           ),
                         ),
@@ -249,12 +252,12 @@ class JobsScreen extends GetView<JobScreenController> {
           border: Border.all(color: borderColor!),
           borderRadius: BorderRadius.circular(30),
         ),
-        padding: const EdgeInsets.only(top: 8, bottom: 8, left: 8, right: 8),
+        padding: const EdgeInsets.only(top: 8, bottom: 8, left: 2, right: 2),
         child: Center(
           child: customText(
               text: text,
               color: textColor,
-              fontSize: 12
+              fontSize: 10
           ),
         ),
       ),

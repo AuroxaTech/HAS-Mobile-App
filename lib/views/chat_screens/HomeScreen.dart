@@ -59,12 +59,12 @@ class _ChatListingState extends State<ChatListing>
     notificationServices.forgroundMessage();
     notificationServices.firebaseInit(context);
 
-    notificationServices.getDeviceToken().then((value){
-      if (kDebugMode) {
-        print('device token');
-        print(value);
-      }
-    });
+    // notificationServices.getDeviceToken().then((value){
+    //   if (kDebugMode) {
+    //     print('device token');
+    //     print(value);
+    //   }
+    // });
   //  getUserId();
     getCheck();
     _updateUserStatus(true);
@@ -193,7 +193,7 @@ class _ChatListingState extends State<ChatListing>
             searchBox = !searchBox;
           });
         },
-            icon:  searchBox ?  Icon(Icons.close ) : Icon(Icons.search ))
+            icon:  searchBox ?  const Icon(Icons.close ) : Icon(Icons.search ))
         ],
       ),
       // backgroundColor: whiteColor,

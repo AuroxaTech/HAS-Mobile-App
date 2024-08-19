@@ -189,16 +189,28 @@ class NewServiceRequestScreen extends GetView<NewServiceRequestScreenController>
                   h10,
                   labelText("Preferred  Date & Time :"),
                   h10,
-                  CustomTextField(
-                    readOnly: true,
-                    onTap: (){
-                      controller.selectDateTime(context);
-                    },
-                    hintText: 'Weekdays, ${controller.startTime.value.format(context)} - ${controller.endTime.value.format(context)}',
-                    suffixIcon: IconButton(onPressed: (){
-                      controller.selectDateTime(context);
-                    }, icon: const Icon(Icons.calendar_month)),
+                  Obx(
+                    () => CustomTextField(
+                      readOnly: true,
+                      onTap: () {
+                        controller.selectDateTime(context);
+                      },
+                      hintText: '${controller.selectedWeekdayRange.value.isEmpty ? 'Select range' : controller.selectedWeekdayRange.value}, ${controller.startTime.value.format(context)} - ${controller.endTime.value.format(context)}',
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          controller.selectDateTime(context);
+                        },
+                        icon: const Icon(Icons.calendar_month),
+                      ),
+                    ),
                   ),
+                  const SizedBox(height: 16),
+                  // Obx(() {
+                  //   return Text(
+                  //     'Selected: ${controller.selectedWeekdayRange.value}, ${controller.startTime.value.format(context)} - ${controller.endTime.value.format(context)}',
+                  //     style: TextStyle(fontSize: 16),
+                  //   );
+                  // }),
                   h10,
                   labelText("Additional Instructions: (Optional)"),
                   h10,
@@ -237,7 +249,7 @@ class NewServiceRequestScreen extends GetView<NewServiceRequestScreenController>
                                     lat: 33.3334,
                                     lng: 77.3843,
                                     propertyType: controller.propertyTypeIndex.value,
-                                    date: controller.startTime.value.format(context),
+                                    date: controller.selectedWeekdayRange.value + controller.startTime.value.format(context),
                                     time: controller.endTime.value.format(context),
                                     price: int.tryParse(controller.priceController.text)!,
                                     description: controller.descriptionController.text,

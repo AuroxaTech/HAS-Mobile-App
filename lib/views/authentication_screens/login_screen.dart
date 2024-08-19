@@ -186,18 +186,18 @@ class LoginScreen extends GetView<LoginScreenController> {
                     // ),
                     h20,
 
-                    Center(
-                      child: GestureDetector(
-                        onTap: (){
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => LocationScreen()));
-                        },
-                        child: customText(
-                            text: "Location",
-                            color: primaryColor,
-                            fontSize: 14
-                        ),
-                      ),
-                    ),
+                    // Center(
+                    //   child: GestureDetector(
+                    //     onTap: (){
+                    //     Navigator.push(context, MaterialPageRoute(builder: (context) => LocationScreen()));
+                    //     },
+                    //     child: customText(
+                    //         text: "Location",
+                    //         color: primaryColor,
+                    //         fontSize: 14
+                    //     ),
+                    //   ),
+                    // ),
                     SizedBox(
                       height: 50,
                     ),

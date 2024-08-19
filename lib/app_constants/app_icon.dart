@@ -4,6 +4,9 @@ class AppIcons {
   //PNG
 
   static const String appLogo = 'assets/png/app_logo.png';
+  static const String p1 = 'assets/png/p1.jpg';
+  static const String p2 = 'assets/png/p2.jpg';
+  static const String p3 = 'assets/png/p3.jpg';
   static const String intro1 = 'assets/png/intro1.png';
   static const String intro2 = 'assets/png/intro2.png';
   static const String intro3 = 'assets/png/intro3.png';

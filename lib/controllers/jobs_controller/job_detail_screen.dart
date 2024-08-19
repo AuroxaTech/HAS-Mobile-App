@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../models/service_provider_model/calendar_service.dart';
 import '../../models/service_provider_model/service_request_model.dart';
+import '../../route_management/constant_routes.dart';
 import '../../services/property_services/add_services.dart';
 import '../../utils/utils.dart';
 
@@ -55,6 +56,7 @@ class JobDetailController extends GetxController{
       }
     } catch (e) {
       print("Error fetching service request: $e");
+      rethrow;
     } finally {
       isLoading.value = false;
     }
@@ -70,9 +72,7 @@ class JobDetailController extends GetxController{
       );
       print(result);
       if (result['status'] == true) {
-        Get.back();
-        Get.back();
-        Get.back();
+        Get.toNamed(kRateExperienceScreen , arguments: jobId);
         AppUtils.getSnackBar("Success", result['message']);
       } else {
         AppUtils.errorSnackBar("Error", result['message']);

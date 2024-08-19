@@ -17,7 +17,12 @@ class RateExperience extends GetView<RateExperienceController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: whiteColor,
-      appBar: backAppBar(text: "FeedBack", isTitle: true),
+      appBar: backAppBar(text: "FeedBack", isTitle: true, leading: IconButton(onPressed: (){
+        Get.back();
+        Get.back();
+        Get.back();
+        Get.back();
+      }, icon: Icon(Icons.arrow_back)) ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(18.0),
@@ -107,7 +112,7 @@ class RateExperience extends GetView<RateExperienceController> {
                               AppUtils.errorSnackBar("Rating", "Please add rating");
                             }else{
                               controller.sendFeedback(
-                                  serviceId: 48, rate: controller.rating.value,
+                                  serviceId: controller.serviceId.value, rate: controller.rating.value,
                                   description: controller.descriptionController.text,
                                   propertySubTypeId: controller.selectedIndex.value,
                                  );

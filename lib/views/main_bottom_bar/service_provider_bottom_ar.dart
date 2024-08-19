@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:property_app/app_constants/app_icon.dart';
+import 'package:property_app/utils/utils.dart';
 import 'package:property_app/views/chat_screens/chat_screen_list.dart';
 import 'package:property_app/views/dashoard_screens/congrate_screen.dart';
 import 'package:property_app/views/dashoard_screens/dashboard_screen.dart';
@@ -35,55 +36,8 @@ class _ServiceProviderBottomBarState extends State<ServiceProviderBottomBar> {
   final AppState _appState = AppState();
 
 
-  _updateUserStatus(bool isOnline) async{
-    var userId = await Preferences.getUserID();
-    if (userId != null) {
-      FirebaseFirestore.instance.collection('users').doc(userId.toString()).update({
-        'online': isOnline,
-        'lastSeen': FieldValue.serverTimestamp(),
-      });
-      print(isOnline);
-    }
-  }
 
-  void dialog(){
-    showDialog(context: context,
-        builder: (context){
-          return AlertDialog(
-            surfaceTintColor: Colors.white,
-            backgroundColor: Colors.white,
-            title: const Text("Exit App"),
-            content: const Text("Are you sure you want to exit the app?"),
-            actions: [
 
-              MaterialButton(onPressed: (){
-                Navigator.pop(context);
-              },
-                color: Colors.red,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)
-                ),
-                child:  const Text("No", style: TextStyle(
-                    color: Colors.white
-                ),),
-              ),
-
-              MaterialButton(onPressed: ()async{
-                await _updateUserStatus(false);
-                SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-              },
-                color: greenColor,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)
-                ),
-                child:  const Text("Yes", style: TextStyle(
-                    color: Colors.white
-                ),),
-              ),
-            ],
-          );
-        });
-  }
 
   @override
 
@@ -91,8 +45,8 @@ class _ServiceProviderBottomBarState extends State<ServiceProviderBottomBar> {
     WidgetsBinding.instance.addObserver(_appState);
     return PopScope(
       canPop: false,
-      onPopInvoked: (val){
-        dialog();
+      onPopInvoked: (val)async{
+       await AppUtils.dialog(context);
       },
       child: Scaffold(
         backgroundColor: whiteColor,
@@ -103,7 +57,7 @@ class _ServiceProviderBottomBarState extends State<ServiceProviderBottomBar> {
           //  AllPropertyScreen(),
             const PropertyTabsScreen(),
             const ChatListing(),
-            const CalendarScreen(),
+            const CalendarScreen(isBack: false,),
             ServiceProviderScreen(),
             //  Center(child: Text("People Settings")),
             //  Center(child: Text("Wallet")),

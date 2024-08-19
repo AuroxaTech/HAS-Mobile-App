@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_rx/get_rx.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 import '../../models/propert_model/ladlord_property_model.dart';
@@ -20,12 +21,30 @@ class AllPropertyController extends GetxController with GetTickerProviderStateMi
     "400 sq ft"
   ];
 
+  List<String> bathroomsList = [
+    "1",
+    "1  1/2",
+    "2",
+    "2  1/2",
+    "3",
+    "3  1/2",
+    "4",
+    "4  1/2",
+    "5",
+    "5  1/2",
+    "6",
+    "6  1/2",
+    "7",
+    "7  1/2"
+  ] ;
+
   late TabController tabController;
   RxInt selectedIndex = 0.obs;
 
-  RxInt selectedArea = 0.obs;
+  RxString selectedRange = "1 sq ft".obs;
   RxInt selectedBedroom = 1.obs;
   RxInt selectedBathrooms = 1.obs;
+  RxString selectedBothList = "1".obs;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   RxBool isSale = false.obs;
   var description = TextEditingController();
@@ -35,11 +54,18 @@ class AllPropertyController extends GetxController with GetTickerProviderStateMi
   RxBool plots = false.obs;
   RxBool commercial = false.obs;
 
+  var currentRange = const RangeValues(1, 1000).obs;
+
+  void updateRangeValues(RangeValues values) {
+    currentRange.value = values;
+  }
+
+
   var selectedHome = <String, bool>{
     'House': false,
     'Flat': false,
-    'Upper Portion': false,
-    'Lower Portion': false,
+    'Apartments': false,
+   // 'Lower Portion': false,
     'Farm House': false,
     'Room': false,
     'Penthouse': false,
@@ -102,8 +128,6 @@ class AllPropertyController extends GetxController with GetTickerProviderStateMi
   Rx<bool> isLoading = false.obs;
   RxList<Property> getLandLordPropertiesList = <Property>[].obs;
 
-  final PagingController<int, Property> pagingController = PagingController(firstPageKey: 1);
-
 
   @override
   void onInit() {
@@ -117,6 +141,8 @@ class AllPropertyController extends GetxController with GetTickerProviderStateMi
    // getLandLordProperties();
     super.onInit();
   }
+  final PagingController<int, Property> pagingController = PagingController(firstPageKey: 1);
+
 
   Future<void> getProperties(int pageKey, [Map<String, dynamic>? filters]) async {
     try {
@@ -125,12 +151,14 @@ class AllPropertyController extends GetxController with GetTickerProviderStateMi
       // Include the filters in the API request
       var result = await propertyServices.getAllProperties(pageKey, filters: filters);
       isLoading.value = false;
-
+      if(filters != null){
+        print(filters);
+      }
       if (result['status'] == true) {
         final List<Property> newItems = (result['data']['data'] as List)
             .map((json) => Property.fromJson(json))
             .toList();
-
+       // print(filters);
         final isLastPage = result['data']['current_page'] == result['data']['last_page'];
         if (isLastPage) {
           pagingController.appendLastPage(newItems);

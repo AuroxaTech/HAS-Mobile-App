@@ -58,7 +58,7 @@ class AllPropertyDetailScreen extends GetView<AllPropertyDetailController> {
                       imageUrl: AppUrls.propertyImages + imageList[index] ,
                       fit: BoxFit.cover,
                       errorWidget: (context, e , b){
-                        return Image.asset(AppIcons.appLogo);
+                        return Image.asset(AppIcons.p2, fit: BoxFit.fill,);
                       },
                     ),
 
@@ -184,7 +184,7 @@ class MyDraggable extends GetView<AllPropertyDetailController> {
                                                     padding: const EdgeInsets.only(left: 10, right: 10, top: 5, bottom: 5),
                                                     child: Center(
                                                       child: customText(
-                                                          text:  controller.getPropertyOne.value!.type == "1" ? "Rent" : "Sale",
+                                                          text:  controller.getPropertyOne.value!.type == 1 ? "Rent" : "Sale",
                                                           fontSize: 18,
                                                           color: whiteColor
                                                       ),
@@ -281,7 +281,7 @@ class MyDraggable extends GetView<AllPropertyDetailController> {
                                    controller.uId.value == controller.getPropertyOne.value!.userId ? const SizedBox() :  Row(
                                        mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                        controller.getPropertyOne.value!.type == "1" ?     Center(
+                                        controller.getPropertyOne.value!.type == 1 ?     Center(
                                           child: CustomButton(
                                             height: screenHeight(context) * 0.06,
                                             borderRadius: BorderRadius.circular(50),

@@ -3,14 +3,14 @@ class AppUrls {
   static const mapKey = "AIzaSyDyeWs6PDrJbaqLv_AL0m1aww0munJ_vlc";
 
  // static const baseUrl = "https://pktours.pk";
-  static const baseUrl = "http://138.197.174.41:8080";
-  static const profileImageBaseUrl = "$baseUrl/public/assets/profile_images/";
-  static const electricityBillBaseUrl = "$baseUrl/public/assets/electricity_bill/";
-  static const certificateImagesBaseUrl = "$baseUrl/public/assets/certification_images/";
-  static const CNIC = "$baseUrl/public/assets/cnic/";
-  static const propertyImages = "$baseUrl/public/assets/property_images/";
-  static const servicesImages = "$baseUrl/public/assets/service_images/";
-  static const mediaImages = "$baseUrl/public/assets/media_images/";
+  static const baseUrl = "https://haservices.ca:8080";
+  static const profileImageBaseUrl = "$baseUrl/assets/profile_images/";
+  static const electricityBillBaseUrl = "$baseUrl/assets/electricity_bill/";
+  static const certificateImagesBaseUrl = "$baseUrl/assets/certification_images/";
+  static const CNIC = "$baseUrl/assets/cnic/";
+  static const propertyImages = "$baseUrl/assets/property_images/";
+  static const servicesImages = "$baseUrl/assets/service_images/";
+  static const mediaImages = "$baseUrl/assets/media_images/";
 
   //Registration
   static const registerUrl = "$baseUrl/register";
@@ -67,4 +67,7 @@ class AppUrls {
   static const updateProfile = "$baseUrl/update-profile";
   static const updatePassword = "$baseUrl/update-password";
   static const forgotPassword = "$baseUrl/forgot-password";
+  static const deleteUser = "$baseUrl/user/delete";
+
+  static const makeFeedBack = "$baseUrl/make-service-feedback";
 }

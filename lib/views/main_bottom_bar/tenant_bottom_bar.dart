@@ -65,7 +65,7 @@ class _TenantBottomBarState extends State<TenantBottomBar> {
     const PropertyTabsScreen(),
     const ChatListing(),
     ServicesListingScreen(),
-     JobsScreen(),
+     JobsScreen(isBack:  false,),
     const TenantDashboard(),
     // const Center(child: Text("People Settings")),
     // const Center(child: Text("Wallet")),

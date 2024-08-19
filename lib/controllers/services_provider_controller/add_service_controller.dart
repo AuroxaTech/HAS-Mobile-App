@@ -20,9 +20,6 @@ class AddServiceController extends GetxController{
   var locationController = TextEditingController();
   var additionalInfoController = TextEditingController();
 
-  DateTime selectedDate = DateTime.now();
-  Rx<TimeOfDay> startTime = const TimeOfDay(hour: 9, minute: 0).obs;
-  Rx<TimeOfDay> endTime = const TimeOfDay(hour: 17, minute: 0).obs;
 
   var selectedCountry = RxnString();
   var countriesList = <String>[].obs;
@@ -216,55 +213,41 @@ class AddServiceController extends GetxController{
       );
     }
   }
+
+
+  Rx<TimeOfDay> startTime = const TimeOfDay(hour: 9, minute: 0).obs;
+  Rx<TimeOfDay> endTime = const TimeOfDay(hour: 17, minute: 0).obs;
+  RxString selectedWeekdayRange = ''.obs;
+
+  final List<String> weekdayRanges = ['Monday to Friday', 'Full Week'];
+
   Future<void> selectDateTime(BuildContext context) async {
-    showModalBottomSheet(
+    await _selectWeekdayRange(context);
+    await _selectTime(context, true);
+    await _selectTime(context, false);
+
+    availabilityController.text = "${selectedWeekdayRange.value.isEmpty ? '' : selectedWeekdayRange.value}, ${startTime.value.format(context)} - ${endTime.value.format(context)}";
+  }
+
+  Future<void> _selectWeekdayRange(BuildContext context) async {
+    await showModalBottomSheet(
       context: context,
       builder: (BuildContext builder) {
-        return Container(
-          decoration: const BoxDecoration(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-            )
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ListTile(
-                  title: const Text('Select Start Time', style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                  ),),
-                  onTap: () async {
-                    //Navigator.pop(context);
-                    await _selectTime(context, true);
-                  },
-                ),
-                ListTile(
-                  title: const Text('Select End Time', style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                  ),),
-                  onTap: () async {
-                    Navigator.pop(context);
-                    await _selectTime(context, false);
-                  },
-                ),
-                SizedBox(
-                  height: 20,
-                )
-              ],
-            ),
-          ),
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: weekdayRanges.map((range) {
+            return ListTile(
+              title: Text(range),
+              onTap: () {
+                selectedWeekdayRange.value = range;
+                Navigator.pop(context);
+              },
+            );
+          }).toList(),
         );
       },
     );
   }
-
 
   Future<void> _selectTime(BuildContext context, bool isStartTime) async {
     final TimeOfDay? picked = await showTimePicker(
@@ -278,11 +261,10 @@ class AddServiceController extends GetxController{
       } else {
         endTime.value = picked;
       }
-      // Update the availabilityController text after both start and end times are updated
-      availabilityController.text =
-      '${startTime.value.format(context)} - ${endTime.value.format(context)}';
     }
   }
+
+
 
 
   RxList<XFile> images = <XFile>[].obs;

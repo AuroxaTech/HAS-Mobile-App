@@ -17,6 +17,8 @@ class AuthServices {
     required String fullName,
     required String email,
     required String phoneNumber,
+    String? address,
+    String? postalCode,
     required String password,
     required String deviceToken,
     required String platform,
@@ -30,6 +32,8 @@ class AuthServices {
           'email': email,
           'fullname': fullName,
           'phone_number': phoneNumber,
+          'address': address!,
+          'postal_code': postalCode!,
           'password': password,
           'device_token': deviceToken,
           'platform': platform,
@@ -67,7 +71,7 @@ class AuthServices {
     required int type,
     required String city,
     required double amount,
-    required String address,
+    String? address,
     required double lat,
     required double long,
     required String areaRange,
@@ -81,15 +85,41 @@ class AuthServices {
     required String availabilityStartTime,
     required String availabilityEndTime,
     required String description,
+    String? postalCode,
   }) async {
     if (await ConnectivityUtility.checkInternetConnectivity() == true) {
       var url = Uri.parse(AppUrls.registerUrl);
+      var data = {
+        'fullname': fullName,
+        'email': email,
+        'phone_number': phoneNumber,
+        'password': password,
+        'device_token': deviceToken,
+        'platform': platform,
+        'password_confirmation': cPassword,
+        'role_id': roleId.toString(),
+        'type': type.toString(),
+        'city': city,
+        'amount': amount.toString(),
+        'address': address,
+        'lat': lat.toString(),
+        'long': long.toString(),
+        'area_range': areaRange,
+        'bedroom': bedroom.toString(),
+        'bathroom': bathroom.toString(),
+        'description': description.toString(),
+        'postal_code': postalCode.toString(),
+        'no_of_property': noOfProperty.toString(),
+        'property_type': propertyType,
+        'property_sub_type': subtype,
+        'availability_start_time': availabilityStartTime,
+        'availability_end_time': availabilityEndTime,
+      };
 
+      print(data);
       var request = http.MultipartRequest('POST', url)
         ..headers.addAll({
-          'Content-Type': 'multipart/form-data', // Add your desired content type
-          // 'Authorization': 'Bearer YOUR_ACCESS_TOKEN', // Add your authorization token if needed
-          // Add other headers as needed
+          'Content-Type': 'multipart/form-data',
         })
         ..fields.addAll({
           'fullname': fullName,
@@ -103,13 +133,16 @@ class AuthServices {
           'type': type.toString(),
           'city': city,
           'amount': amount.toString(),
-          'address': address,
+          'address': address!,
           'lat': lat.toString(),
           'long': long.toString(),
           'area_range': areaRange,
           'bedroom': bedroom.toString(),
           'bathroom': bathroom.toString(),
           'description': description.toString(),
+          'postal_code': postalCode.toString(),
+          'property_images[]' : propertyImages.toString(),
+          'electricity_bill' : electricityBill.name,
         });
 
       // Add profile image if provided
@@ -150,10 +183,11 @@ class AuthServices {
       try {
         var response = await request.send();
         var responseBody = await response.stream.bytesToString();
-        return json.decode(responseBody);
+        print("Response body : $responseBody");
+        return jsonDecode(responseBody);
       } catch (e) {
         // Handle general errors
-        throw Exception('Failed to register property: $e');
+        rethrow;
       }
     } else {
       AppUtils.getSnackBarNoInternet();
@@ -168,6 +202,8 @@ class AuthServices {
     required String email,
     required String phoneNumber,
     required String password,
+     String? address,
+     String? postalCode,
     required String cPassword,
     required String deviceToken,
     required String platform,
@@ -195,6 +231,7 @@ class AuthServices {
       'year_experience': yearExperience.toString(),
       'availability_start_time': availabilityStartTime,
       'availability_end_time': availabilityEndTime,
+
       if (certification != null) 'certification': certification,
     };
 
@@ -211,6 +248,8 @@ class AuthServices {
         'password_confirmation' : cPassword,
         'role_id': "3",
         'services': "2",
+        'address': address!,
+        'postal_code': postalCode!,
         'year_experience': yearExperience.toString(),
         'availability_start_time': "9 : am",
         'availability_end_time': "5 : PM",
@@ -260,6 +299,8 @@ class AuthServices {
     required String phoneNumber,
     required String password,
     required String cPassword,
+     String? address,
+     String? postalCode,
     required String deviceToken,
     required String platform,
     required int roleId,
@@ -288,6 +329,8 @@ class AuthServices {
           'password': password,
           'device_token': deviceToken,
           'platform': platform,
+          'address': address!,
+          'postal_code': postalCode!,
           'password_confirmation': cPassword,
           'role_id': roleId.toString(),
           'last_status': lastStatus.toString(),
@@ -314,6 +357,7 @@ class AuthServices {
       try {
         var response = await request.send();
         var responseBody = await response.stream.bytesToString();
+        print(responseBody);
         return json.decode(responseBody);
       } catch (e) {
         // Handle general errors

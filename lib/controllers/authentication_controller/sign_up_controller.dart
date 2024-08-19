@@ -24,7 +24,7 @@ class SignUpController extends GetxController{
   RxString yesValue = 'Any Certificate ?'.obs;
   RxBool isSale = false.obs;
   RxInt selectedArea = 0.obs;
-  RxString selectedRange = "50 sq ft".obs;
+  RxString selectedRange = "1 sq ft".obs;
   RxString selectedBothList = "1".obs;
   RxInt selectedBedroom = 1.obs;
   RxInt selectedBathrooms = 1.obs;
@@ -35,6 +35,12 @@ class SignUpController extends GetxController{
     "300 sq ft",
     "400 sq ft"
   ] ;
+  var currentRange = RangeValues(1, 1000).obs;
+
+  void updateRangeValues(RangeValues values) {
+    currentRange.value = values;
+  }
+
   var map ={};
 
   List<String> bathroomsList = [
@@ -91,12 +97,14 @@ class SignUpController extends GetxController{
   TextEditingController amountController = TextEditingController();
   RxBool amountField = true.obs;
   TextEditingController streetController = TextEditingController();
+  TextEditingController postalAddressController = TextEditingController();
   RxBool streetField = true.obs;
  TextEditingController description = TextEditingController();
 
 
   String phone = "";
   String countryCode = "";
+  String addressPostalCode = "";
   String selectedAddress = "";
   double selectedLat = 0.0;
   double selectedLng = 0.0;
@@ -166,58 +174,42 @@ class SignUpController extends GetxController{
       images.addAll(pickedFiles);
     }
   }
-
+  NotificationServices notificationServices = NotificationServices();
   void removeImage(int index) {
     images.removeAt(index);
   }
 
-  DateTime selectedDate = DateTime.now();
   Rx<TimeOfDay> startTime = const TimeOfDay(hour: 9, minute: 0).obs;
   Rx<TimeOfDay> endTime = const TimeOfDay(hour: 17, minute: 0).obs;
+  RxString selectedWeekdayRange = ''.obs;
+
+  final List<String> weekdayRanges = ['Monday to Friday', 'Full Week'];
 
   Future<void> selectDateTime(BuildContext context) async {
-    showModalBottomSheet(
+    await _selectWeekdayRange(context);
+    await _selectTime(context, true);
+    await _selectTime(context, false);
+  }
+
+  Future<void> _selectWeekdayRange(BuildContext context) async {
+    await showModalBottomSheet(
       context: context,
       builder: (BuildContext builder) {
-        return Container(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                title: const Text('Select Start Time'),
-                onTap: () async {
-                  //Navigator.pop(context);
-
-                  await _selectTime(context, true);
-                },
-              ),
-              ListTile(
-                title: const Text('Select End Time'),
-                onTap: () async {
-                  Navigator.pop(context);
-                  await _selectTime(context, false);
-                },
-              ),
-            ],
-          ),
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: weekdayRanges.map((range) {
+            return ListTile(
+              title: Text(range),
+              onTap: () {
+                selectedWeekdayRange.value = range;
+                Navigator.pop(context);
+              },
+            );
+          }).toList(),
         );
       },
     );
   }
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(2021),
-      lastDate: DateTime(2030),
-    );
-
-    if (picked != null && picked != selectedDate) {
-        selectedDate = picked;
-    }
-  }
-  NotificationServices notificationServices = NotificationServices();
 
   Future<void> _selectTime(BuildContext context, bool isStartTime) async {
     final TimeOfDay? picked = await showTimePicker(
@@ -226,11 +218,11 @@ class SignUpController extends GetxController{
     );
 
     if (picked != null) {
-        if (isStartTime) {
-          startTime.value = picked;
-        } else {
-          endTime.value = picked;
-        }
+      if (isStartTime) {
+        startTime.value = picked;
+      } else {
+        endTime.value = picked;
+      }
     }
   }
 
@@ -284,6 +276,8 @@ class SignUpController extends GetxController{
       String fullName,
       String email,
       String phoneNumber,
+      String address,
+      String postalCode,
       String password,
       String conPassword,
       {XFile? profileImage,}
@@ -297,6 +291,8 @@ class SignUpController extends GetxController{
         fullName: fullName,
         email: email,
         phoneNumber: phoneNumber,
+        address: address,
+        postalCode: postalCode,
         password: password,
         conPassword: conPassword,
         profileImage: profileImage,
@@ -334,7 +330,7 @@ class SignUpController extends GetxController{
   required int type,
   required String city,
   required double amount,
-  required String address,
+    String? address,
   required double lat,
   required double long,
   required String areaRange,
@@ -348,11 +344,17 @@ class SignUpController extends GetxController{
   required String availabilityStartTime,
   required String availabilityEndTime,
   required String description,
+   String? postalCode,
   }) async {
     isLoading.value = true;
 
     try {
-      var deviceId = await notificationServices.getDeviceToken();
+      var deviceId;
+      if(Platform.isAndroid){
+        deviceId = await notificationServices.getDeviceToken();
+       }else{
+        deviceId = await notificationServices.getIOSDeviceToken();
+      }
       print("deviceToken : $deviceId" );
       var data = await authServices.registerProperty(
         fullName: fullName,
@@ -380,7 +382,8 @@ class SignUpController extends GetxController{
         availabilityStartTime: availabilityStartTime,
         availabilityEndTime: availabilityEndTime,
         description: description,
-        subtype: subType
+        subtype: subType,
+        postalCode: postalCode
       );
 
       print("Data : $data");
@@ -396,7 +399,7 @@ class SignUpController extends GetxController{
       } else {
         // Handle error scenario
         isLoading.value = false;
-        AppUtils.errorSnackBar("Error", data['messages']["email"][0]);
+        AppUtils.errorSnackBar("Error", data['messages'][0]);
       }
     } catch (e) {
       // Handle general errors
@@ -416,6 +419,8 @@ class SignUpController extends GetxController{
     required String phoneNumber,
     required String password,
     required String cPassword,
+     String? address,
+     String? postalCode,
     XFile? profileImage,
     required String services,
     required String yearExperience,
@@ -439,6 +444,8 @@ class SignUpController extends GetxController{
         password: password,
         cPassword: cPassword,
         deviceToken: deviceId,
+        address: address,
+        postalCode: postalCode,
         platform: Platform.isAndroid ? "android" : "ios",
         profileImage: profileImage,
         services: services,
@@ -477,6 +484,8 @@ class SignUpController extends GetxController{
     required String password,
     required String cPassword,
     required int roleId,
+     String? address,
+     String? postalCode,
     XFile? profileImage,
     required int lastStatus,
     String? lastLandlordName,
@@ -493,6 +502,8 @@ class SignUpController extends GetxController{
         fullName: fullName,
         email: email,
         phoneNumber: phoneNumber,
+        address: address,
+        postalCode: postalCode,
         password: password,
         cPassword: cPassword,
         roleId: roleId,

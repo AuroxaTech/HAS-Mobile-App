@@ -59,7 +59,7 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
                             status: item.description,
                             time: item.time,
                             date: item.date,
-                            acceptTap: item.approved == "1" ? null :  (){
+                            acceptTap: item.approved == 1 ? null :  (){
                               animatedDialog(context,
                                   title: "Accept Request",
                                   subTitle: "Are you sure to accept this request",
@@ -76,15 +76,15 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
 
                               );
                             },
-                            acceptColor:  item.approved == "1" ? const Color(0xff14C034).withOpacity(0.3) : Color(0xff14C034) ,
-                            declineColor:  item.decline == "1" ? redColor.withOpacity(0.3) : redColor ,
+                            acceptColor:  item.approved == 1 ? const Color(0xff14C034).withOpacity(0.3) : Color(0xff14C034) ,
+                            declineColor:  item.decline == 1 ? redColor.withOpacity(0.3) : redColor ,
                             onTap: (){
                               Get.toNamed(kServiceRequestDetailScreen, arguments: item.id);
                             },
                             detailTap: (){
                               Get.toNamed(kServiceRequestDetailScreen, arguments: item.id);
                             },
-                            declineTap: item.decline == "1" ? null : (){
+                            declineTap: item.decline == 1 ? null : (){
                               animatedDialog(context,
                                   title: "Decline Request",
                                   subTitle: "Are you sure to decline this request",

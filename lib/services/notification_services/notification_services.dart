@@ -150,6 +150,11 @@ class NotificationServices {
     return token!;
   }
 
+  Future<String> getIOSDeviceToken() async {
+    String? token = await messaging.getAPNSToken();
+    return token!;
+  }
+
   void isTokenRefresh()async{
     messaging.onTokenRefresh.listen((event) {
       event.toString();
