@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:property_app/app_constants/animations.dart';
 import 'package:property_app/app_constants/app_icon.dart';
 import 'package:property_app/app_constants/app_sizes.dart';
 import 'package:property_app/app_constants/color_constants.dart';
@@ -13,6 +14,7 @@ import 'package:property_app/models/stat_models/landlord_stat.dart';
 import '../../constant_widget/drawer.dart';
 import '../../route_management/constant_routes.dart';
 import '../../utils/api_urls.dart';
+import '../chat_screens/HomeScreen.dart';
 
 class DashBoardScreen extends GetView<DashboardController> {
   const DashBoardScreen({Key? key}) : super(key: key);
@@ -115,6 +117,9 @@ class DashBoardScreen extends GetView<DashboardController> {
                                       dashboardContainer(
                                         title: "Messages",
                                         image: AppIcons.messages,
+                                        onTap: (){
+                                          Get.to(()=> ChatListing(), transition:  routeTransition);
+                                        }
                                       ),
                                       dashboardContainer(
                                           title: "Tenant",

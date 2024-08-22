@@ -431,7 +431,7 @@ class CustomBorderTextField extends StatefulWidget {
     this.textAlign,
     this.textAlignVertical,
     this.height,
-    this.inputBorder
+    this.inputBorder, this.labelText, this.initialValue, this.labelStyle
   });
 
   final double? width;
@@ -446,6 +446,7 @@ class CustomBorderTextField extends StatefulWidget {
   final int? minLines;
   final int? maxLength;
   final String? hintText;
+  final String? labelText;
   final String? errorText;
   final Widget? prefix;
   final BoxConstraints? prefixConstraints;
@@ -459,6 +460,8 @@ class CustomBorderTextField extends StatefulWidget {
   final TextAlign? textAlign;
   final TextAlignVertical? textAlignVertical;
   final InputBorder? inputBorder;
+  final String? initialValue;
+  final TextStyle? labelStyle;
 
   @override
   State<CustomBorderTextField> createState() => _CustomBorderTextFieldState();
@@ -474,6 +477,7 @@ class _CustomBorderTextFieldState extends State<CustomBorderTextField> {
       //  height: height ?? size.height * 0.07,
       margin: widget.margin,
       child: TextFormField(
+        initialValue: widget.initialValue,
         enableSuggestions: true,
         smartDashesType: SmartDashesType.enabled,
         autocorrect: true,
@@ -502,6 +506,8 @@ class _CustomBorderTextFieldState extends State<CustomBorderTextField> {
 
   _buildDecoration() {
     return InputDecoration(
+      labelText:widget.labelText??"" ,
+      labelStyle: widget.labelStyle,
       hintText: widget.hintText ?? "",
       errorText: widget.errorText,
       hintStyle:  GoogleFonts.poppins(color: hintColor, fontWeight: FontWeight.w400, fontSize: 16),

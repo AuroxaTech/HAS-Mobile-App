@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -9,9 +9,6 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:property_app/app_constants/app_icon.dart';
 import 'package:property_app/custom_widgets/custom_button.dart';
 import 'package:property_app/route_management/constant_routes.dart';
-import 'package:property_app/utils/api_urls.dart';
-import 'package:property_app/utils/shared_preferences/preferences.dart';
-
 import '../../app_constants/app_sizes.dart';
 import '../../constant_widget/constant_widgets.dart';
 import '../../models/propert_model/ladlord_property_model.dart';
@@ -31,17 +28,79 @@ class _PropertyMapState extends State<PropertyMap> {
   final PagingController<int, Property> pagingController = PagingController(firstPageKey: 1);
   final PropertyServices propertyServices = PropertyServices();
 
+  double? currentLatitude;
+  double? currentLongitude;
+
   @override
   void initState() {
     super.initState();
     loadCustomMarkerIcon();
     getProperties(1);
+    getCurrentLocation();
+  }
+
+  Future<void> getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled, handle accordingly.
+      Get.snackbar("Location", "Location services are disabled.");
+      return;
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied, next time you could try to request permissions again.
+        Get.snackbar("Location", "Location permissions are denied.");
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle accordingly.
+      Get.snackbar("Location", "Location permissions are permanently denied, we cannot request permissions.");
+      return;
+    }
+    try {
+      await Geolocator.isLocationServiceEnabled();
+      await Geolocator.checkPermission();
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+
+      double latitude = position.latitude;
+      double longitude = position.longitude;
+      setState(() {
+        currentLatitude = latitude;
+        currentLongitude = longitude;
+      });
+
+      _moveCameraToCurrentLocation();
+
+    } catch (e) {
+      print('Error getting location: $e');
+    }
+  }
+
+  void _moveCameraToCurrentLocation() async {
+    if (currentLatitude != null && currentLongitude != null) {
+      final GoogleMapController controller = await _mapController.future;
+      controller.animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: LatLng(currentLatitude!, currentLongitude!),
+          zoom: 10,
+        ),
+      ));
+    }
   }
 
   Future<void> getProperties(int pageKey, [Map<String, dynamic>? filters]) async {
     isLoading.value = true;
     try {
-
       var result = await propertyServices.getAllProperties(pageKey, filters: filters);
       isLoading.value = false;
       print("Result: $result");
@@ -76,7 +135,6 @@ class _PropertyMapState extends State<PropertyMap> {
         'assets/png/house_bitmap.png'
     );
   }
-
 
   void updateMarkers(List<Property> properties) {
     Set<Marker> newMarkers = {};
@@ -117,11 +175,6 @@ class _PropertyMapState extends State<PropertyMap> {
           onTap: (){
             _onMarkerTapped(property, LatLng(lat!, lng!));
           },
-          // infoWindow: InfoWindow(
-          //   title: property.address,
-          //   snippet: 'Price: \$${property.amount}',
-          //
-          // ),
         );
         newMarkers.add(marker);
       }
@@ -167,12 +220,12 @@ class _PropertyMapState extends State<PropertyMap> {
                   Image.asset(AppIcons.appLogo, height: 50,), // Assuming imageURL is available in the property
                   h10,
                   customText(
-                    text: property.address,
-                    fontWeight: FontWeight.bold
+                      text: property.address,
+                      fontWeight: FontWeight.bold
                   ),
                   h10,
                   customText(
-                    text: "Price: \$${property.amount}"
+                      text: "Price: \$${property.amount}"
                   ),
                   h10,
                   CustomButton(
@@ -181,9 +234,9 @@ class _PropertyMapState extends State<PropertyMap> {
                       _overlayEntry = null;
                       Get.toNamed(kAllPropertyDetailScreen, arguments: property.id);
                     },
-                      height: 30,
-                      text: "Go",
-                  fontSize: 12,
+                    height: 30,
+                    text: "Go",
+                    fontSize: 12,
                   ),
                 ],
               ),
@@ -196,11 +249,15 @@ class _PropertyMapState extends State<PropertyMap> {
 
   @override
   Widget build(BuildContext context) {
+    print("Latitude==> ${currentLatitude} Longitude===> ${currentLongitude}");
     return Scaffold(
-      body:Obx(() => GoogleMap(
+      body: Obx(() => GoogleMap(
+        myLocationEnabled: true,
         mapType: MapType.normal,
-        initialCameraPosition: const CameraPosition(
-          target: LatLng(33.6995, 73.0363), // Adjust based on your needs
+        initialCameraPosition: CameraPosition(
+          target: currentLatitude != null && currentLongitude != null
+              ? LatLng(currentLatitude!, currentLongitude!)
+              : const LatLng(33.6995, 73.0363), // Fallback to a default position if location is not available
           zoom: 10,
         ),
         markers: Set<Marker>.of(_markers),
@@ -211,7 +268,7 @@ class _PropertyMapState extends State<PropertyMap> {
           _overlayEntry?.remove();
           _overlayEntry = null;
         },
-      ))
+      )),
     );
   }
 }

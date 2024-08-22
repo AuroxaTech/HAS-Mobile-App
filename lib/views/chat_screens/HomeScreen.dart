@@ -1,15 +1,11 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
 import 'package:property_app/app_constants/color_constants.dart';
 import 'package:property_app/utils/shared_preferences/preferences.dart';
 import 'package:property_app/utils/utils.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../constant_widget/constant_widgets.dart';
 import '../../services/notification_services/notification_services.dart';
 import 'chat_view.dart';
@@ -187,7 +183,7 @@ class _ChatListingState extends State<ChatListing>
     print("home build");
     return Scaffold(
       backgroundColor: whiteColor,
-      appBar: titleAppBar("Inbox", action: [
+      appBar: titleAppBar("Chats", action: [
         IconButton(onPressed: (){
           setState(() {
             searchBox = !searchBox;
