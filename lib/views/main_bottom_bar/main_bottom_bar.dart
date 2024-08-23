@@ -28,7 +28,6 @@ class _MainBottomBarState extends State<MainBottomBar> {
   bool isLoading = false;
   NotificationServices notificationServices = NotificationServices();
 
-
   @override
   void initState() {
     // TODO: implement initState
@@ -37,6 +36,7 @@ class _MainBottomBarState extends State<MainBottomBar> {
     notificationServices.forgroundMessage();
     notificationServices.firebaseInit(context);
     notificationServices.setupInteractMessage(context);
+    _updateUserStatus(true);
     // notificationServices.isTokenRefresh();
 
     // notificationServices.getDeviceToken().then((value){

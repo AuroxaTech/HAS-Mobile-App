@@ -10,6 +10,7 @@ import 'package:property_app/app_constants/color_constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:property_app/custom_widgets/custom_button.dart';
 import 'package:property_app/utils/api_urls.dart';
+import 'package:geolocator/geolocator.dart';
 
 enum AddressType { Home, Office, Other }
 
@@ -24,21 +25,153 @@ class LocationScreen extends StatefulWidget {
 
 class _LocationScreenState extends State<LocationScreen> {
   RxBool isFirstTime = true.obs;
-
   RxDouble lat = 33.6995.obs, lng = 73.0363.obs;
   GoogleMapController? mapStyleController;
   String address = "";
   String postalCode = "";
   Rx<TextEditingController> searchController = TextEditingController().obs;
-
   final Completer<GoogleMapController> _mapController = Completer();
+  late CameraPosition kGooglePlex;
+  RxBool isCard = false.obs;
+  final TextEditingController _controller = TextEditingController();
+  List<String> _autocompleteSuggestions = [];
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    kGooglePlex = CameraPosition(
+      target: LatLng(lat.value, lng.value),
+      zoom: 14.4746,
+    );
+    getCurrentLocation(); // Initialize camera with the current location
+  }
+
+  Future<void> getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Check if location services are enabled
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      Get.snackbar("Location", "Location services are disabled.");
+      return;
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        Get.snackbar("Location", "Location permissions are denied.");
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      Get.snackbar("Location", "Location permissions are permanently denied, we cannot request permissions.");
+      return;
+    }
+
+    try {
+      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      lat.value = position.latitude;
+      lng.value = position.longitude;
+
+      _moveCameraToCurrentLocation();
+      updateMarkerPin(lat.value, lng.value);
+
+    } catch (e) {
+      print('Error getting location: $e');
+    }
+  }
+
+  void _moveCameraToCurrentLocation() async {
+    if (lat.value != null && lng.value != null) {
+      final GoogleMapController controller = await _mapController.future;
+      controller.animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: LatLng(lat.value, lng.value),
+          zoom: 10,
+        ),
+      ));
+    }
+  }
 
   updateMarkerPin(double lat, double lng) async {
-    print("Lat : $lat , Lng : $lng");
     final GoogleMapController controller = await _mapController.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(lat, lng), zoom: 17)));
-    setState(() {});
-    isFirstTime.value = false;
+    setState(() {
+      isFirstTime.value = false;
+    });
+  }
+
+  Future<void> _getAutocomplete(String input) async {
+    if (input.isEmpty) {
+      setState(() {
+        _autocompleteSuggestions = [];
+      });
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    const String url = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
+
+    Map<String, dynamic> parameters = {
+      'input': input,
+      'key': AppUrls.mapKey,
+      'components': 'country:ca',
+      'language': 'en',
+    };
+
+    if (lat.value != null && lng.value != null) {
+      parameters.addAll({
+        "location": "${lat.value},${lng.value}",
+        "radius": "500",
+      });
+    }
+
+    try {
+      final response = await http.get(
+        Uri.parse(url).replace(queryParameters: parameters),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      final data = json.decode(response.body);
+      if (data != null && data['predictions'] != null) {
+        setState(() {
+          _autocompleteSuggestions = List<String>.from(data['predictions'].map((s) => s['description'] as String));
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _autocompleteSuggestions = [];
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() => _isLoading = false);
+      print("Failed to fetch suggestions: $e");
+    }
+  }
+
+  Future<String?> fetchPostalCodeFallback(double latitude, double longitude) async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(latitude, longitude);
+
+      // Find a placemark that has a postal code
+      for (Placemark place in placemarks) {
+        if (place.postalCode != null) {
+          return place.postalCode;  // Return the first postal code found
+        }
+      }
+      return null;  // Return null if no postal code is found
+    } catch (e) {
+      print("Failed to get postal code: $e");
+      return null;
+    }
   }
 
   void _returnSelectedLocation() {
@@ -52,20 +185,6 @@ class _LocationScreenState extends State<LocationScreen> {
   }
 
   @override
-  void initState() {
-    kGooglePlex = CameraPosition(
-      target: LatLng(lat.value, lng.value),
-      zoom: 14.4746,
-    );
-    super.initState();
-
-    updateMarkerPin(lat.value, lng.value);
-  }
-
-  late CameraPosition kGooglePlex;
-  RxBool isCard = false.obs;
-
-  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
@@ -77,7 +196,7 @@ class _LocationScreenState extends State<LocationScreen> {
           child: AppBar(
             titleSpacing: 0.0,
             title: const Text(
-              "Hangi",
+              "Search",
               style: TextStyle(fontSize: 16.7),
             ),
           ),
@@ -95,9 +214,12 @@ class _LocationScreenState extends State<LocationScreen> {
                     alignment: Alignment.center,
                     children: [
                       GoogleMap(
+                        myLocationEnabled: true,
                         mapType: MapType.normal,
                         initialCameraPosition: kGooglePlex,
-                        onMapCreated: onMapCreated,
+                        onMapCreated: (GoogleMapController controller) {
+                          _mapController.complete(controller);
+                        },
                         onCameraMove: (pos) async {
                           if (!isFirstTime.value) {
                             lat.value = pos.target.latitude;
@@ -106,9 +228,6 @@ class _LocationScreenState extends State<LocationScreen> {
                             var results = await geocoder.findAddressesFromCoordinates(Coordinates(lat.value, lng.value));
                             var fullAddress = results.first.addressLine;
                             var postal = results.first.postalCode;
-
-                            print('Full Address: $fullAddress'); // Debugging
-                            print('Postal Code: $postal'); // Debugging
 
                             if (postal == null) {
                               // Fallback to Google Geocoding API if postal code is null
@@ -127,9 +246,6 @@ class _LocationScreenState extends State<LocationScreen> {
                               address = displayAddress;
                               postalCode = postal ?? "Unknown"; // Set to "Unknown" if postal is null
                             });
-
-                            print('Assigned Address: $address'); // Debugging
-                            print('Assigned Postal Code: $postalCode'); // Debugging
                           }
                         },
                       ),
@@ -165,7 +281,6 @@ class _LocationScreenState extends State<LocationScreen> {
                                         : IconButton(
                                       onPressed: () {
                                         setState(() {
-                                          print(address);
                                           _controller.clear();
                                           _autocompleteSuggestions.clear();
                                         });
@@ -207,9 +322,6 @@ class _LocationScreenState extends State<LocationScreen> {
                                           postalCode = (results.first.postalCode ?? await fetchPostalCodeFallback(lat.value, lng.value))!;
                                           updateMarkerPin(lat.value, lng.value);
                                         }
-
-                                        print('Selected Address: $address'); // Debugging
-                                        print('Selected Postal Code: $postalCode'); // Debugging
                                       },
                                     );
                                   },
@@ -265,300 +377,6 @@ class _LocationScreenState extends State<LocationScreen> {
                 ),
               ],
             ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void onLocationSelected(String selectedLocation) {
-    Get.back(result: selectedLocation);
-  }
-
-  void onMapCreated(GoogleMapController controller) async {
-    setState(() {
-      _mapController.complete(controller);
-      mapStyleController = controller;
-      controller.setMapStyle('''
-  [
-    {
-      "featureType": "all",
-      "elementType": "labels.text.fill",
-      "stylers": [
-        {
-          "color": "#7c93a3"
-        },
-        {
-          "lightness": "-10"
-        }
-      ]
-    },
-    {
-      "featureType": "administrative.country",
-      "elementType": "geometry",
-      "stylers": [
-        {
-          "visibility": "simplified"
-        }
-      ]
-    },
-    {
-      "featureType": "administrative.land_parcel",
-      "elementType": "all",
-      "stylers": [
-        {
-          "visibility": "off"
-        }
-      ]
-    },
-    {
-      "featureType": "administrative.province",
-      "elementType": "all",
-      "stylers": [
-        {
-          "visibility": "off"
-        }
-      ]
-    },
-    {
-      "featureType": "landscape",
-      "elementType": "geometry",
-      "stylers": [
-        {
-          "visibility": "simplified"
-        },
-        {
-          "color": "#e9e5dc"
-        }
-      ]
-    },
-    {
-      "featureType": "poi",
-      "elementType": "labels",
-      "stylers": [
-        {
-          "visibility": "on"
-        }
-      ]
-    },
-    {
-      "featureType": "poi.park",
-      "elementType": "geometry.fill",
-      "stylers": [
-        {
-          "color": "#a5b076"
-        }
-      ]
-    },
-    {
-      "featureType": "poi.park",
-      "elementType": "labels.text",
-      "stylers": [
-        {
-          "visibility": "simplified"
-        },
-        {
-          "color": "#447530"
-        }
-      ]
-    },
-    {
-      "featureType": "road",
-      "elementType": "geometry",
-      "stylers": [
-        {
-          "color": "#ffffff"
-        }
-      ]
-    },
-    {
-      "featureType": "road",
-      "elementType": "geometry.fill",
-      "stylers": [
-        {
-          "color": "#ffffff"
-        }
-      ]
-    },
-    {
-      "featureType": "road.arterial",
-      "elementType": "geometry",
-      "stylers": [
-        {
-          "color": "#ffffff"
-        }
-      ]
-    },
-    {
-      "featureType": "road.highway",
-      "elementType": "geometry",
-      "stylers": [
-        {
-          "color": "#f9d29d"
-        }
-      ]
-    },
-    {
-      "featureType": "road.highway",
-      "elementType": "geometry.fill",
-      "stylers": [
-        {
-          "color": "#f9d29d"
-        }
-      ]
-    },
-    {
-      "featureType": "transit",
-      "elementType": "labels",
-      "stylers": [
-        {
-          "visibility": "simplified"
-        },
-        {
-          "color": "#82868c"
-        }
-      ]
-    },
-    {
-      "featureType": "water",
-      "elementType": "geometry.fill",
-      "stylers": [
-        {
-          "color": "#a6cbe3"
-        }
-      ]
-    }
-  ]
-  ''');
-    });
-  }
-
-  final TextEditingController _controller = TextEditingController();
-  List<String> _autocompleteSuggestions = [];
-  bool _isLoading = false;
-
-  Future<void> _getAutocomplete(String input) async {
-    if (input.isEmpty) {
-      setState(() {
-        _autocompleteSuggestions = [];
-      });
-      return;
-    }
-
-    setState(() => _isLoading = true);
-
-    const String url = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
-
-    Map<String, dynamic> parameters = {
-      'input': input,
-      'key': AppUrls.mapKey,
-      'components': 'country:pk',
-      'language': 'en',
-    };
-
-    if (lat.value != null && lng.value != null) {
-      parameters.addAll({
-        "location": "${lat.value},${lng.value}",
-        "radius": "500",
-      });
-    }
-
-    try {
-      final response = await http.get(
-        Uri.parse(url).replace(queryParameters: parameters),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      );
-
-      final data = json.decode(response.body);
-      print(data);
-      if (data != null && data['predictions'] != null) {
-        setState(() {
-          _autocompleteSuggestions = List<String>.from(data['predictions'].map((s) => s['description'] as String));
-          _isLoading = false;
-        });
-      } else {
-        setState(() {
-          _autocompleteSuggestions = [];
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      setState(() => _isLoading = false);
-      print("Failed to fetch suggestions: $e");
-      }
-      }
-
-  Future<String?> fetchPostalCodeFallback(double latitude, double longitude) async {
-    try {
-      List<Placemark> placemarks = await placemarkFromCoordinates(latitude, longitude);
-
-      // Find a placemark that has a postal code
-      for (Placemark place in placemarks) {
-        if (place.postalCode != null) {
-          return place.postalCode;  // Return the first postal code found
-        }
-      }
-      return null;  // Return null if no postal code is found
-    } catch (e) {
-      print("Failed to get postal code: $e");
-      return null;
-    }
-  }
-
-  // Future<String?> fetchPostalCodeFallback(double lat, double lng) async {
-  //   const String url = 'https://maps.googleapis.com/maps/api/geocode/json';
-  //   Map<String, dynamic> parameters = {
-  //     'latlng': '$lat,$lng',
-  //     'key': AppUrls.mapKey,
-  //   };
-  //
-  //   try {
-  //     final response = await http.get(
-  //       Uri.parse(url).replace(queryParameters: parameters),
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //     );
-  //
-  //     final data = json.decode(response.body);
-  //     print('Geocoding API Fallback Response: $data'); // Debugging
-  //
-  //     if (data['results'] != null && data['results'].isNotEmpty) {
-  //       for (var component in data['results'][0]['address_components']) {
-  //         if (component['types'].contains('postal_code')) {
-  //           return component['long_name'];
-  //         }
-  //       }
-  //     }
-  //   } catch (e) {
-  //     print("Failed to fetch postal code: $e");
-  //   }
-  //   return null;
-  // }
-}
-
-class BottomBar extends StatelessWidget {
-  final Function onTap;
-  final String? text;
-  final Color? color;
-  final Color? textColor;
-
-  BottomBar({required this.onTap, required this.text, this.color, this.textColor});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap as void Function()?,
-      child: Container(
-        decoration: BoxDecoration(color: color ?? primaryColor, borderRadius: BorderRadius.all(Radius.circular(30.0))),
-        margin: EdgeInsets.symmetric(horizontal: 15.0, vertical: 20.0),
-        height: 55.0,
-        child: Center(
-          child: Text(
-            text!,
-            style: textColor != null ? TextStyle(color: Colors.black) : TextStyle(color: Colors.black),
           ),
         ),
       ),

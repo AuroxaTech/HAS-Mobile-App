@@ -62,6 +62,8 @@ class SignUpController extends GetxController{
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final GlobalKey<FormState> formKeyDetail = GlobalKey<FormState>();
   TextEditingController nameController = TextEditingController();
+  TextEditingController userNameController = TextEditingController();
+
   TextEditingController addressController = TextEditingController();
   TextEditingController postalCode = TextEditingController();
   RxBool nameField = true.obs;

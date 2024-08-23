@@ -4,12 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:property_app/controllers/land_lord/my_service_request_controller.dart';
 import 'package:property_app/route_management/constant_routes.dart';
-
 import '../../app_constants/app_icon.dart';
 import '../../app_constants/app_sizes.dart';
 import '../../app_constants/color_constants.dart';
 import '../../constant_widget/constant_widgets.dart';
-import '../../controllers/jobs_controller/jobs_screen_controller.dart';
 import '../../custom_widgets/custom_button.dart';
 import '../../utils/api_urls.dart';
 class MyServiceRequest extends GetView<MyServiceRequestController> {

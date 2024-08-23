@@ -186,25 +186,47 @@ class AddPropertyScreen extends GetView<AddPropertyController> {
                     h15,
                     labelText("Area Range"),
                     h10,
-                    Obx(()=> RangeSlider(
-                      values: controller.currentRange.value,
-                      min: 1,
-                      max: 1000,
-                      divisions: 99,
-                      activeColor: primaryColor,
-                      inactiveColor: Colors.grey.shade300,
-                      labels: RangeLabels(
-                        "${controller.currentRange.value.start.round()} sq ft",
-                        controller.currentRange.value.end.round().toString(),
-                      ),
-                      onChanged: (RangeValues values) {
-                        controller.currentRange.value = values;
-                        controller.selectedRange.value = controller.currentRange.value.start.round().toString();
-
-                        print(controller.selectedRange.value );
-                      },
-                    ),
-                    ),
+                    Obx(() => Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Expanded(
+                          child: CustomBorderTextField(
+                            keyboaredtype: TextInputType.number,
+                            labelText: 'Min Area (sq ft)',
+                            labelStyle: const TextStyle(fontSize: 15,color: Colors.black),
+                            initialValue: controller.currentRange.value.start.round().toString(),
+                            onChanged: (value) {
+                              double? minValue = double.tryParse(value);
+                              if (minValue != null && minValue >= 1 && minValue <= controller.currentRange.value.end) {
+                                controller.currentRange.value = RangeValues(minValue, controller.currentRange.value.end);
+                                print("Min Range ${controller.currentRange.value.start}");
+                              } else {
+                                // Handle invalid input if necessary
+                              }
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                        Expanded(
+                          child: CustomBorderTextField(
+                            keyboaredtype: TextInputType.number,
+                            labelText: 'Max Area (sq ft)',
+                            labelStyle: const TextStyle(fontSize: 15,color: Colors.black),
+                            initialValue: controller.currentRange.value.end.round().toString(),
+                            onChanged: (value) {
+                              double? maxValue = double.tryParse(value);
+                              if (maxValue != null && maxValue >= controller.currentRange.value.start && maxValue <= 1000) {
+                                controller.currentRange.value = RangeValues(controller.currentRange.value.start, maxValue);
+                                controller.selectedRange.value = maxValue.toString();
+                                print("Max Range ${controller.currentRange.value.end}");
+                              } else {
+                                // Handle invalid input if necessary
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    )),
                     h15,
                     Row(
                       children: [

@@ -24,39 +24,45 @@ class ServiceProviderController extends GetxController {
   }
 
   Future<void> getUserState() async {
-    print("we are in get service");
-    print("we are in get${await Preferences.getUserID()}");
-    isLoading.value = true;
-    print(await Preferences.getUserID());
-    var result = await authServices.getUserState();
-    print("Service Result : $result");
+    try {
+      print("Getting service for user ID: ${await Preferences.getUserID()}");
+      isLoading.value = true;
 
-    isLoading.value = false;
+      var result = await authServices.getUserState();
+      print("Service Result : $result");
 
-    if (result['data'] != null && result['data'] is Map) {
-      var data = result['data'] as Map<String, dynamic>;
-      print("Data :: $data");
-
-    if (getServiceOne != null) {
-        getServiceOne.value = Provider.fromJson(data);
-      } else {
+      if (result['status'] == "Unauthorized") {
+        Get.snackbar("Profile Status", result['message'] ?? "Your profile is not approved.");
         isLoading.value = false;
-        print("getServiceOne is null");
+        return;
       }
-    } else {
-      isLoading.value = false;
-      print("Invalid or null data format");
-    }
 
+      if (result['data'] != null && result['data'] is Map) {
+        var data = result['data'] as Map<String, dynamic>;
+        print("Data received: $data");
+
+        if (data.containsKey('serviceprovider')) {
+          getServiceOne.value = Provider.fromJson(data);
+        } else {
+          getServiceOne.value = null;
+        }
+      } else {
+        getServiceOne.value = null;
+      }
+    } catch (e) {
+      print("Error in getUserState: $e");
+    } finally {
+      isLoading.value = false;
+    }
   }
 
-  Future<void> deleteUser() async {
 
+  Future<void> deleteUser() async {
     try {
       isLoading(true);
       var userId = await Preferences.getUserID();
       var userToken = await Preferences.getToken();
-      // Making the HTTP POST request
+      // Making the HTTP DELETE request
       final response = await http.delete(
         Uri.parse(AppUrls.deleteUser),
         headers: getHeader(userToken: userToken),

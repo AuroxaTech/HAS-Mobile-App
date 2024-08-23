@@ -79,6 +79,16 @@ class SignUpScreen extends GetView<SignUpController> {
                       hintText: "Full Name",),
                     h15,
                     CustomTextField(
+                      controller: controller.userNameController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'User Name is required';
+                        }
+                        return null;
+                      },
+                      hintText: "User Name",),
+                    h15,
+                    CustomTextField(
                       controller: controller.emailController,
                       validator: (value) => GetUtils.isEmail(value)
                           ? null
@@ -255,7 +265,6 @@ class SignUpScreen extends GetView<SignUpController> {
                           text: "Register",
                           onTap: (){
                             if(controller.formKey.currentState!.validate()){
-
                             }
                           },
                         ),
