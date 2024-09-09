@@ -473,6 +473,55 @@ class AuthServices {
     }
   }
 
+  Future<Map<String, dynamic>> checkEmailExists(String email) async {
+    try {
+      // API endpoint to check if email exists
+      final url = Uri.parse('/api/check-email');
+
+      // Assuming it's a POST request, but could also be a GET request
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({"email": email}),
+      );
+
+      if (response.statusCode == 200) {
+        // Assuming the backend returns a JSON like { "exists": true }
+        return json.decode(response.body);
+      } else {
+        throw Exception('Failed to check email');
+      }
+    } catch (e) {
+      print('Error in checkEmailExists: $e');
+      return {"exists": false};  // Returning false if there's an error
+    }
+  }
+
+  // Function to send a verification email to the user
+  Future<Map<String, dynamic>> sendVerificationEmail(String email) async {
+    try {
+      // API endpoint to send a verification email
+      final url = Uri.parse('/api/send-verification-email');
+
+      // Assuming it's a POST request
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({"email": email}),
+      );
+
+      if (response.statusCode == 200) {
+        // Assuming the backend returns a JSON like { "status": true }
+        return json.decode(response.body);
+      } else {
+        throw Exception('Failed to send verification email');
+      }
+    } catch (e) {
+      print('Error in sendVerificationEmail: $e');
+      return {"status": false};  // Returning false if there's an error
+    }
+  }
+
 }
 
 

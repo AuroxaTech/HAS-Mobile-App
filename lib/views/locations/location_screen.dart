@@ -40,11 +40,11 @@ class _LocationScreenState extends State<LocationScreen> {
   @override
   void initState() {
     super.initState();
+    getCurrentLocation(); // Initialize camera with the current location
     kGooglePlex = CameraPosition(
       target: LatLng(lat.value, lng.value),
       zoom: 14.4746,
     );
-    getCurrentLocation(); // Initialize camera with the current location
   }
 
   Future<void> getCurrentLocation() async {

@@ -281,15 +281,27 @@ class SignUpController extends GetxController{
       String address,
       String postalCode,
       String password,
-      String conPassword,
-      {XFile? profileImage,}
-      ) async {
+      String conPassword, {
+        XFile? profileImage,
+      }) async {
     isLoading.value = true;
-    try {
-      var deviceId = await notificationServices.getDeviceToken();
-      print("deviceToken : $deviceId" );
 
-      var data = await authServices.registerVisitor(
+    try {
+      // Step 1: Check if the email is already in use
+      var emailCheckResponse = await authServices.checkEmailExists(email);
+
+      if (emailCheckResponse['exists'] == true) {
+        // If email already exists, show an error message and return
+        isLoading.value = false;
+        AppUtils.errorSnackBar("Error", "Email is already registered.");
+        return;
+      }
+
+      // Step 2: If email is not registered, proceed with registration
+      var deviceId = await notificationServices.getDeviceToken();
+      print("deviceToken : $deviceId");
+
+      var registrationData = await authServices.registerVisitor(
         fullName: fullName,
         email: email,
         phoneNumber: phoneNumber,
@@ -302,24 +314,29 @@ class SignUpController extends GetxController{
         platform: Platform.isAndroid ? "android" : "ios",
       );
 
-      if (data['status'] == true) {
-        // Handle success
-
-        isLoading.value = false;
-        Get.back();
-        AppUtils.getSnackBar("Success", data["messages"]);
-
+      if (registrationData['status'] == true) {
+        // Step 3: Send a verification email
+        var verificationResponse = await authServices.sendVerificationEmail(email);
+        if (verificationResponse['status'] == true) {
+          isLoading.value = false;
+          AppUtils.getSnackBar("Success", "Verification email sent. Please check your inbox.");
+        } else {
+          isLoading.value = false;
+          AppUtils.errorSnackBar("Error", "Failed to send verification email.");
+        }
       } else {
-        // Handle error
+        // If registration failed, show error message
         isLoading.value = false;
-        AppUtils.errorSnackBar("Error", data['messages']["email"][0]);
+        AppUtils.errorSnackBar("Error", registrationData['messages']["email"][0]);
       }
     } catch (e) {
       // Handle exception
       print(e);
       isLoading.value = false;
+      AppUtils.errorSnackBar("Error", "Something went wrong. Please try again.");
     }
   }
+
 
   Future<void> registerProperty({
   required String fullName,
