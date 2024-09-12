@@ -15,6 +15,7 @@ class AuthServices {
 
   Future<Map<String, dynamic>> registerVisitor({
     required String fullName,
+    required String userName,
     required String email,
     required String phoneNumber,
     String? address,
@@ -31,6 +32,7 @@ class AuthServices {
         request.fields.addAll({
           'email': email,
           'fullname': fullName,
+          'username':userName,
           'phone_number': phoneNumber,
           'address': address!,
           'postal_code': postalCode!,
@@ -60,6 +62,7 @@ class AuthServices {
 
   Future<Map<String, dynamic>> registerProperty({
     required String fullName,
+    required String userName,
     required String email,
     required String phoneNumber,
     required String password,
@@ -91,6 +94,7 @@ class AuthServices {
       var url = Uri.parse(AppUrls.registerUrl);
       var data = {
         'fullname': fullName,
+        'username': userName,
         'email': email,
         'phone_number': phoneNumber,
         'password': password,
@@ -123,6 +127,7 @@ class AuthServices {
         })
         ..fields.addAll({
           'fullname': fullName,
+          'username': userName,
           'email': email,
           'phone_number': phoneNumber,
           'password': password,
@@ -199,6 +204,7 @@ class AuthServices {
 
   Future<Map<String, dynamic>> registerServiceProvider({
     required String fullName,
+    required String userName,
     required String email,
     required String phoneNumber,
     required String password,
@@ -220,6 +226,7 @@ class AuthServices {
     var url = Uri.parse(AppUrls.registerUrl); // Replace with your actual API endpoint
     var data = {
       'fullname': fullName,
+      'username': userName,
       'email': email,
       'phone_number': phoneNumber,
       'password': password,
@@ -240,6 +247,7 @@ class AuthServices {
       ..headers['Content-Type'] = 'multipart/form-data'
       ..fields.addAll({
         'fullname': fullName,
+        'username': userName,
         'email': email,
         'phone_number': phoneNumber,
         'password': password,
@@ -295,6 +303,7 @@ class AuthServices {
 
   Future<Map<String, dynamic>> registerTenant({
     required String fullName,
+    required String userName,
     required String email,
     required String phoneNumber,
     required String password,
@@ -324,6 +333,7 @@ class AuthServices {
         })
         ..fields.addAll({
           'fullname': fullName,
+          'username': userName,
           'email': email,
           'phone_number': phoneNumber,
           'password': password,

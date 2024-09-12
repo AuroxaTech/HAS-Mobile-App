@@ -16,7 +16,7 @@ class ChatScreenList extends GetView<ChatScreenListController> {
       length: 3,
       child: Scaffold(
         backgroundColor: whiteColor,
-        appBar: titleAppBar("Inbox", action: [
+        appBar: titleAppBar("Chats", action: [
           IconButton(onPressed: (){},
               icon: const Icon(Icons.search))
         ],

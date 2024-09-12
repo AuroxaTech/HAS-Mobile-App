@@ -255,6 +255,8 @@ class AddPropertyDetailScreen extends GetView<SignUpController> {
                         ),
                       ],
                     )),
+
+
                     // h10,
                     // SizedBox(
                     //   height: 35,
@@ -381,6 +383,7 @@ class AddPropertyDetailScreen extends GetView<SignUpController> {
                             if(controller.profileImage.value == null){
                               controller.registerProperty(
                                 fullName: controller.nameController.text,
+                                userName: controller.userNameController.text,
                                 email: controller.emailController.text,
                                 phoneNumber: controller.phoneController.text,
                                 password: controller.passwordController.text,
@@ -393,7 +396,7 @@ class AddPropertyDetailScreen extends GetView<SignUpController> {
                                 postalCode:  controller.postalCode.text.isEmpty ? "00000" : controller.postalCode.text,
                                 lat: controller.selectedLat,
                                 long: controller.selectedLng,
-                                areaRange: "${controller.selectedRange.value} sq ft",
+                                areaRange: controller.selectedRange.value,
                                 bedroom: controller.selectedBedroom.value,
                                 bathroom: controller.selectedBothList.value,
                                 electricityBill: controller.images[0],
@@ -410,6 +413,7 @@ class AddPropertyDetailScreen extends GetView<SignUpController> {
                             else{
                               controller.registerProperty(
                                 fullName: controller.nameController.text,
+                                userName: controller.userNameController.text,
                                 email: controller.emailController.text,
                                 phoneNumber: controller.phoneController.text,
                                 password: controller.passwordController.text,

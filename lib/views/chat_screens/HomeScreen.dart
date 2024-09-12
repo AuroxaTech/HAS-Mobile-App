@@ -6,6 +6,7 @@ import 'package:path/path.dart' as path;
 import 'package:property_app/app_constants/color_constants.dart';
 import 'package:property_app/utils/shared_preferences/preferences.dart';
 import 'package:property_app/utils/utils.dart';
+import 'package:property_app/views/chat_screens/contacts_screen.dart';
 import '../../constant_widget/constant_widgets.dart';
 import '../../services/notification_services/notification_services.dart';
 import 'chat_view.dart';
@@ -376,26 +377,26 @@ class _ChatListingState extends State<ChatListing>
       //   // ),
       // ),
       body: ChatView(userImg: '', searchBox: searchBox),
-    //   floatingActionButton: _controller.index == 0
-    //       ? Padding(
-    //           padding: const EdgeInsets.only(right: 10.0, bottom: 30.0),
-    //           child: SizedBox(
-    //             width: 50,
-    //             height: 50,
-    //             child: FloatingActionButton(
-    //               onPressed: () {
-    //                 // Navigator.push(
-    //                 //     context,
-    //                 //     MaterialPageRoute(
-    //                 //         builder: (context) => const ContactScreen()));
-    //               },
-    //               backgroundColor: redColor,
-    //               elevation: 8.0,
-    //               child: Image.asset('assets/images/message.png'),
-    //             ),
-    //           ),
-    //         )
-    //       : const SizedBox(),
+      floatingActionButton: _controller.index == 0
+          ? Padding(
+              padding: const EdgeInsets.only(right: 10.0, bottom: 30.0),
+              child: SizedBox(
+                width: 50,
+                height: 50,
+                child: FloatingActionButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ContactsPage()));
+                  },
+                  backgroundColor: Colors.white,
+                  elevation: 8.0,
+                  child: const Icon(Icons.add),
+                ),
+              ),
+            )
+          : const SizedBox(),
     );
   }
 }

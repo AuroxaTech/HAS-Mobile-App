@@ -136,6 +136,58 @@ class _CustomTextFieldState extends State<CustomTextField> {
   }
 }
 
+class UsernameTextField extends StatefulWidget {
+  final TextEditingController controller;
+  final String? Function(String?)? validator;
+
+  const UsernameTextField({super.key,
+    required this.controller,
+    this.validator,
+  });
+
+  @override
+  UsernameTextFieldState createState() => UsernameTextFieldState();
+}
+
+class UsernameTextFieldState extends State<UsernameTextField> {
+  @override
+  Widget build(BuildContext context) {
+    return CustomTextField(
+      controller: widget.controller,
+      hintText: 'User Name',
+      prefix: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Text(
+          '@',
+          style: GoogleFonts.poppins(
+            color: Colors.grey,
+            fontWeight: FontWeight.w400,
+            fontSize: 16,
+          ),
+        ),
+      ),
+      inputFormatter: [
+        FilteringTextInputFormatter.deny(RegExp(r'^@')), // Prevents user from typing "@"
+      ],
+      onChanged: (value) {
+        // Clear previous value and set the new value if necessary
+        if (value.isNotEmpty && widget.controller.text != value) {
+          widget.controller.text = value;
+          widget.controller.selection = TextSelection.fromPosition(TextPosition(offset: widget.controller.text.length));
+        }
+      },
+      validator: widget.validator ??
+              (value) {
+            if (value == null || value.isEmpty) {
+              return 'User Name is required';
+            }
+            return null;
+          },
+    );
+  }
+}
+
+
 
 class CustomDropDown extends StatelessWidget {
   final String value;

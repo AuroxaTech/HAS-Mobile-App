@@ -86,7 +86,8 @@ class SignUpScreen extends GetView<SignUpController> {
                         }
                         return null;
                       },
-                      hintText: "User Name",),
+                    hintText: "Unique User Name",
+                    ),
                     h15,
                     CustomTextField(
                       controller: controller.emailController,
@@ -222,6 +223,7 @@ class SignUpScreen extends GetView<SignUpController> {
                                 if(controller.profileImage.value == null){
                                   controller.registerVisitor(context,
                                       controller.nameController.text,
+                                      controller.userNameController.text,
                                       controller.emailController.text,
                                       controller.phoneController.text,
                                       controller.addressController.text.isEmpty ? "Test" : controller.addressController.text,
@@ -232,6 +234,7 @@ class SignUpScreen extends GetView<SignUpController> {
                                   print("uploaded with image");
                                   controller.registerVisitor(context,
                                       controller.nameController.text,
+                                      controller.userNameController.text,
                                       controller.emailController.text,
                                       controller.addressController.text.isEmpty ? "Test" : controller.addressController.text,
                                       controller.postalCode.text.isEmpty ? "00000" : controller.postalCode.text,
@@ -554,6 +557,7 @@ class SignUpScreen extends GetView<SignUpController> {
                   print("own house");
                   await controller.registerTenant(
                     fullName: controller.nameController.text,
+                   userName: controller.userNameController.text,
                     address: controller.addressController.text.isEmpty ? "Test" : controller.addressController.text,
                     postalCode:  controller.postalCode.text.isEmpty ? "00000" : controller.postalCode.text,
                     email: controller.emailController.text,
@@ -571,6 +575,7 @@ class SignUpScreen extends GetView<SignUpController> {
                   print("own rent");
                   await controller.registerTenant(
                     fullName: controller.nameController.text,
+                    userName: controller.userNameController.text,
                     address: controller.addressController.text.isEmpty ? "Test" : controller.addressController.text,
                     postalCode:  controller.postalCode.text.isEmpty ? "00000" : controller.postalCode.text,
                     phoneNumber: controller.phoneController.text,
@@ -595,6 +600,7 @@ class SignUpScreen extends GetView<SignUpController> {
                     address: controller.addressController.text.isEmpty ? "Test" : controller.addressController.text,
                     postalCode:  controller.postalCode.text.isEmpty ? "00000" : controller.postalCode.text,
                     fullName: controller.nameController.text,
+                    userName: controller.userNameController.text,
                     email: controller.emailController.text,
                     phoneNumber: controller.phoneController.text,
                     password: controller.passwordController.text,
@@ -612,6 +618,7 @@ class SignUpScreen extends GetView<SignUpController> {
                     address: controller.addressController.text.isEmpty ? "Test" : controller.addressController.text,
                     postalCode:  controller.postalCode.text.isEmpty ? "00000" : controller.postalCode.text,
                     fullName: controller.nameController.text,
+                    userName: controller.userNameController.text,
                     phoneNumber: controller.phoneController.text,
                     email: controller.emailController.text,
                     password: controller.passwordController.text,
@@ -1022,6 +1029,7 @@ class SignUpScreen extends GetView<SignUpController> {
                     try {
                       await controller.registerServiceProvider(
                         fullName: controller.nameController.text,
+                        userName: controller.userNameController.text,
                         email: controller.emailController.text,
                         address: controller.addressController.text.isEmpty ? "Test" : controller.addressController.text,
                         postalCode:  controller.postalCode.text.isEmpty ? "00000" : controller.postalCode.text,
@@ -1045,6 +1053,7 @@ class SignUpScreen extends GetView<SignUpController> {
                     try {
                       await controller.registerServiceProvider(
                         fullName: controller.nameController.text,
+                        userName: controller.userNameController.text,
                         email: controller.emailController.text,
                         address: controller.addressController.text.isEmpty ? "Test" : controller.addressController.text,
                         postalCode:  controller.postalCode.text.isEmpty ? "00000" : controller.postalCode.text,
@@ -1078,6 +1087,7 @@ class SignUpScreen extends GetView<SignUpController> {
                         address: controller.addressController.text.isEmpty ? "Test" : controller.addressController.text,
                         postalCode:  controller.postalCode.text.isEmpty ? "00000" : controller.postalCode.text,
                         fullName: controller.nameController.text,
+                        userName: controller.userNameController.text,
                         email: controller.emailController.text,
                         phoneNumber: controller.phoneController.text,
                         password: controller.passwordController.text,
@@ -1103,11 +1113,11 @@ class SignUpScreen extends GetView<SignUpController> {
                         address: controller.addressController.text.isEmpty ? "Test" : controller.addressController.text,
                         postalCode:  controller.postalCode.text.isEmpty ? "00000" : controller.postalCode.text,
                         fullName: controller.nameController.text,
+                        userName: controller.userNameController.text,
                         email: controller.emailController.text,
                         phoneNumber: controller.phoneController.text,
                         password: controller.passwordController.text,
                         cPassword: controller.confirmPasswordController.text,
-
                         profileImage: controller.profileImage.value!,
                         services: controller.electricalValue.value,
                         yearExperience: controller.experienceController.text,

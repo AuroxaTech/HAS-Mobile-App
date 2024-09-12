@@ -90,7 +90,7 @@ class Property {
   String createdAt;
   String updatedAt;
   bool isFavorite;
-  User user;
+  User? user;
 
   Property({
     required this.id,
@@ -132,7 +132,7 @@ class Property {
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
       isFavorite: json["is_favorite"] ?? false,
-      user: User.fromJson(json["user"]),
+      user: json["user"] == null ? null : User.fromJson(json["user"]),
     );
   }
 }

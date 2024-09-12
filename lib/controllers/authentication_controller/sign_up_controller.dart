@@ -35,7 +35,7 @@ class SignUpController extends GetxController{
     "300 sq ft",
     "400 sq ft"
   ] ;
-  var currentRange = RangeValues(1, 1000).obs;
+  var currentRange = const RangeValues(1, 1000).obs;
 
   void updateRangeValues(RangeValues values) {
     currentRange.value = values;
@@ -63,10 +63,8 @@ class SignUpController extends GetxController{
   final GlobalKey<FormState> formKeyDetail = GlobalKey<FormState>();
   TextEditingController nameController = TextEditingController();
   TextEditingController userNameController = TextEditingController();
-
   TextEditingController addressController = TextEditingController();
   TextEditingController postalCode = TextEditingController();
-  RxBool nameField = true.obs;
   TextEditingController emailController = TextEditingController();
   RxBool emailField = true.obs;
   TextEditingController phoneController = TextEditingController();
@@ -77,7 +75,6 @@ class SignUpController extends GetxController{
   TextEditingController confirmPasswordController = TextEditingController();
   RxBool cPasswordObscure = true.obs;
   RxBool isConfirmPasswordValid = true.obs;
-
   TextEditingController lastTenancyController = TextEditingController();
   RxBool lastTenancyField = true.obs;
   TextEditingController lastLandLordController = TextEditingController();
@@ -90,7 +87,6 @@ class SignUpController extends GetxController{
   RxBool leasedDurationField = true.obs;
   TextEditingController noOfOccupants = TextEditingController();
   RxBool occupantsField = true.obs;
-
   TextEditingController experienceController = TextEditingController();
   RxBool experienceField = true.obs;
   //Add Detail screen
@@ -123,6 +119,7 @@ class SignUpController extends GetxController{
   @override
   void onClose() {
     nameController.dispose();
+    userNameController.dispose();
     super.onClose();
   }
 
@@ -262,20 +259,10 @@ class SignUpController extends GetxController{
   RxBool isLoading = false.obs;
   RxString errorMessage = "".obs;
 
-  Future<void> updateProfileInfo(String userId, Map<String, dynamic> profileData) async {
-    try {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .set(profileData, SetOptions(merge: true));
-    } catch (e) {
-      print('Error updating profile info: $e');
-    }
-  }
-
   Future<void> registerVisitor(
       BuildContext context,
       String fullName,
+      String userName,
       String email,
       String phoneNumber,
       String address,
@@ -290,12 +277,12 @@ class SignUpController extends GetxController{
       // Step 1: Check if the email is already in use
       var emailCheckResponse = await authServices.checkEmailExists(email);
 
-      if (emailCheckResponse['exists'] == true) {
-        // If email already exists, show an error message and return
-        isLoading.value = false;
-        AppUtils.errorSnackBar("Error", "Email is already registered.");
-        return;
-      }
+      // if (emailCheckResponse['exists'] == true) {
+      //   // If email already exists, show an error message and return
+      //   isLoading.value = false;
+      //   AppUtils.errorSnackBar("Error", "Email is already registered.");
+      //   return;
+      // }
 
       // Step 2: If email is not registered, proceed with registration
       var deviceId = await notificationServices.getDeviceToken();
@@ -303,6 +290,7 @@ class SignUpController extends GetxController{
 
       var registrationData = await authServices.registerVisitor(
         fullName: fullName,
+        userName: userName,
         email: email,
         phoneNumber: phoneNumber,
         address: address,
@@ -315,15 +303,9 @@ class SignUpController extends GetxController{
       );
 
       if (registrationData['status'] == true) {
-        // Step 3: Send a verification email
-        var verificationResponse = await authServices.sendVerificationEmail(email);
-        if (verificationResponse['status'] == true) {
-          isLoading.value = false;
-          AppUtils.getSnackBar("Success", "Verification email sent. Please check your inbox.");
-        } else {
-          isLoading.value = false;
-          AppUtils.errorSnackBar("Error", "Failed to send verification email.");
-        }
+        // Registration successful
+        isLoading.value = false;
+        AppUtils.getSnackBar("Success", "Registration successful. You can now log in.");
       } else {
         // If registration failed, show error message
         isLoading.value = false;
@@ -338,8 +320,10 @@ class SignUpController extends GetxController{
   }
 
 
+
   Future<void> registerProperty({
   required String fullName,
+  required String userName,
   required String email,
   required String phoneNumber,
   required String password,
@@ -377,6 +361,7 @@ class SignUpController extends GetxController{
       print("deviceToken : $deviceId" );
       var data = await authServices.registerProperty(
         fullName: fullName,
+        userName: userName,
         email: email,
         password: password,
         phoneNumber: phoneNumber,
@@ -418,7 +403,18 @@ class SignUpController extends GetxController{
       } else {
         // Handle error scenario
         isLoading.value = false;
-        AppUtils.errorSnackBar("Error", data['messages'][0]);
+        if (data['messages'] != null) {
+          if (data['messages']['username'] != null) {
+            // Show the username error message
+            AppUtils.errorSnackBar("Error", data['messages']['username'][0]);
+          } else if (data['messages']['email'] != null) {
+            // Show the email error message
+            AppUtils.errorSnackBar("Error", data['messages']['email'][0]);
+          } else {
+            // Show a general error message if neither username nor email has a specific error
+            AppUtils.errorSnackBar("Error", "An unknown error occurred.");
+          }
+        }
       }
     } catch (e) {
       // Handle general errors
@@ -434,6 +430,7 @@ class SignUpController extends GetxController{
 
   Future<void> registerServiceProvider({
     required String fullName,
+    required String userName,
     required String email,
     required String phoneNumber,
     required String password,
@@ -458,6 +455,7 @@ class SignUpController extends GetxController{
 
       var data = await authServices.registerServiceProvider(
         fullName: fullName,
+        userName: userName,
         email: email,
         phoneNumber: phoneNumber,
         password: password,
@@ -498,6 +496,7 @@ class SignUpController extends GetxController{
 
   Future<void> registerTenant({
     required String fullName,
+    required String userName,
     required String email,
     required String phoneNumber,
     required String password,
@@ -519,6 +518,7 @@ class SignUpController extends GetxController{
       var deviceId = await notificationServices.getDeviceToken();
       var data = await authServices.registerTenant(
         fullName: fullName,
+        userName: userName,
         email: email,
         phoneNumber: phoneNumber,
         address: address,

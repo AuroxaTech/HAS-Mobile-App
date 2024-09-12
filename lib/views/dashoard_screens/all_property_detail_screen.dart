@@ -300,9 +300,9 @@ class MyDraggable extends GetView<AllPropertyDetailController> {
                                                 Get.toNamed(kContractScreen, arguments: [
                                                   controller.getPropertyOne.value!.id,
                                                   controller.getPropertyOne.value!.userId,
-                                                  controller.getPropertyOne.value!.user.fullname,
-                                                  controller.getPropertyOne.value!.user.email,
-                                                  controller.getPropertyOne.value!.user.phoneNumber,
+                                                  controller.getPropertyOne.value!.user!.fullname,
+                                                  controller.getPropertyOne.value!.user!.email,
+                                                  controller.getPropertyOne.value!.user!.phoneNumber,
                                                 ]);
                                               }
                                             },
@@ -321,16 +321,16 @@ class MyDraggable extends GetView<AllPropertyDetailController> {
                                           width: screenWidth(context) * 0.4,
                                           onTap: ()async{
 
-                                            print(controller.getPropertyOne.value!.user.fullname.toString());
-                                            print(controller.getPropertyOne.value!.user.id.toString());
-                                            print(controller.getPropertyOne.value!.user.profileimage.toString());
+                                            print(controller.getPropertyOne.value!.user!.fullname.toString());
+                                            print(controller.getPropertyOne.value!.user!.id.toString());
+                                            print(controller.getPropertyOne.value!.user!.profileimage.toString());
 
                                          //  Get.toNamed(kChatConversionScreen);
                                             var roleId = await Preferences.getRoleID();
                                             if(roleId == "3"){
                                               AppUtils.errorSnackBar("Oops", "You must login as tenant");
                                             }else{
-                                              createConversation(controller.getPropertyOne.value!.user.fullname.toString(), controller.getPropertyOne.value!.user.profileimage.toString(), controller.getPropertyOne.value!.user.id.toString(), context);
+                                              createConversation(controller.getPropertyOne.value!.user!.fullname.toString(), controller.getPropertyOne.value!.user!.profileimage.toString(), controller.getPropertyOne.value!.user!.id.toString(), context);
                                               // Get.toNamed(kContractScreen, arguments: controller.getPropertyOne.value!.id);
                                             }
                                           },
