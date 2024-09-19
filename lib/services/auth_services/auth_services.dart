@@ -392,7 +392,7 @@ class AuthServices {
         '${AppUrls.loginUrl}?email=$email&password=$password&device_token=$deviceToken&platform=$platform',
       );
       try {
-        var res = await http.get(
+        var res = await http.post(
           url,
           headers: {
             'Content-Type': 'application/json',

@@ -107,7 +107,12 @@ class LoginScreenController extends GetxController{
         AppUtils.getSnackBar("Success", data["messages"]);
       } else {
         isLoading.value = false;
-        handleErrorResponse(data['messages']);
+        handleErrorResponse(
+        data['error']!=null?data['error']:data['messages']
+
+
+
+    );
       }
     } on FormatException catch (e) {
       isLoading.value = false;

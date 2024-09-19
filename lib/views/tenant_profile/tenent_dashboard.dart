@@ -13,6 +13,7 @@ import '../../app_constants/color_constants.dart';
 import '../../constant_widget/constant_widgets.dart';
 import '../../route_management/constant_routes.dart';
 import '../../utils/api_urls.dart';
+import '../chat_screens/HomeScreen.dart';
 class TenantDashboard extends GetView<TenantDashboardController> {
   const TenantDashboard({Key? key}) : super(key: key);
 
@@ -116,10 +117,13 @@ class TenantDashboard extends GetView<TenantDashboardController> {
                                         dashboardContainer(
                                           title: "Messages",
                                           image: AppIcons.messages,
+                                            onTap: (){
+                                              Get.to(()=> ChatListing(), transition:  routeTransition);
+                                            }
                                         ),
                                         dashboardContainer(
                                             onTap: (){
-                                            //  Get.toNamed(kMyServiceRequestScreen);
+                                            Get.toNamed(kMyServiceRequestScreen);
                                             },
                                             title: "Request service",
                                             image: AppIcons.service

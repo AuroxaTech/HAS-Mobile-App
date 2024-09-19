@@ -376,6 +376,7 @@ class AddPropertyDetailScreen extends GetView<SignUpController> {
                       text: "Register",
                       isLoading: controller.isLoading.value,
                       onTap: (){
+                        print("Area Range on Submit: ${controller.selectedRange.value}");
                         if(controller.formKeyDetail.currentState!.validate()){
                           if(controller.images.length > 4){
                             double amount = double.parse(controller.amountController.text);

@@ -23,11 +23,12 @@ class SignUpController extends GetxController{
   RxString electricalValue = 'Choose service'.obs;
   RxString yesValue = 'Any Certificate ?'.obs;
   RxBool isSale = false.obs;
-  RxInt selectedArea = 0.obs;
-  RxString selectedRange = "1 sq ft".obs;
+
   RxString selectedBothList = "1".obs;
   RxInt selectedBedroom = 1.obs;
   RxInt selectedBathrooms = 1.obs;
+  RxInt selectedArea = 0.obs;
+  RxString selectedRange = "1 sq ft".obs;
   List<String> areaRange = [
     "50 sq ft",
     "100 sq ft",
@@ -61,6 +62,7 @@ class SignUpController extends GetxController{
   ] ;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final GlobalKey<FormState> formKeyDetail = GlobalKey<FormState>();
+
   TextEditingController nameController = TextEditingController();
   TextEditingController userNameController = TextEditingController();
   TextEditingController addressController = TextEditingController();
@@ -107,21 +109,12 @@ class SignUpController extends GetxController{
   double selectedLat = 0.0;
   double selectedLng = 0.0;
   @override
-  void onInit() {
-    super.onInit();
-    print("hello controller");
-  }
 
 
 
 
 
-  @override
-  void onClose() {
-    nameController.dispose();
-    userNameController.dispose();
-    super.onClose();
-  }
+
 
 
   RxList<XFile> images = <XFile>[].obs;
@@ -483,8 +476,20 @@ class SignUpController extends GetxController{
         AppUtils.getSnackBar("Success",data["messages"]);
 
       } else {
+        // Handle error scenario
         isLoading.value = false;
-        AppUtils.errorSnackBar("Error", data['messages']["email"][0]);
+        if (data['messages'] != null) {
+          if (data['messages']['username'] != null) {
+            // Show the username error message
+            AppUtils.errorSnackBar("Error", data['messages']['username'][0]);
+          } else if (data['messages']['email'] != null) {
+            // Show the email error message
+            AppUtils.errorSnackBar("Error", data['messages']['email'][0]);
+          } else {
+            // Show a general error message if neither username nor email has a specific error
+            AppUtils.errorSnackBar("Error", "An unknown error occurred.");
+          }
+        }
       }
     // } catch (e) {
     //   print(e);
@@ -546,9 +551,20 @@ class SignUpController extends GetxController{
         AppUtils.getSnackBar("Success",data['messages']);
 
       } else {
+        // Handle error scenario
         isLoading.value = false;
-        AppUtils.errorSnackBar("Error",data['messages']["email"][0]);
-
+        if (data['messages'] != null) {
+          if (data['messages']['username'] != null) {
+            // Show the username error message
+            AppUtils.errorSnackBar("Error", data['messages']['username'][0]);
+          } else if (data['messages']['email'] != null) {
+            // Show the email error message
+            AppUtils.errorSnackBar("Error", data['messages']['email'][0]);
+          } else {
+            // Show a general error message if neither username nor email has a specific error
+            AppUtils.errorSnackBar("Error", "An unknown error occurred.");
+          }
+        }
       }
     } catch (e) {
 

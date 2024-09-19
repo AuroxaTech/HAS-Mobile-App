@@ -5,7 +5,6 @@ import 'package:property_app/views/authentication_screens/forgot_password/new_pa
 import 'package:property_app/views/authentication_screens/forgot_password/verification_screen.dart';
 import 'package:property_app/views/authentication_screens/login_screen.dart';
 import 'package:property_app/views/authentication_screens/sign_up_screen.dart';
-import 'package:property_app/views/chat_screens/chat_conversion_screen.dart';
 import 'package:property_app/views/dashoard_screens/all_property_detail_screen.dart';
 import 'package:property_app/views/dashoard_screens/all_property_screen.dart';
 import 'package:property_app/views/dashoard_screens/dashboard_screen.dart';
@@ -83,7 +82,7 @@ class Routes {
       ),
       GetPage(
           name: kAddDetailScreen,
-          page: () => const AddPropertyDetailScreen(),
+          page: () => AddPropertyDetailScreen(),
           binding: ScreenBindings(),
           transition: routeTransition
       ),

@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:property_app/app_constants/app_icon.dart';
 import 'package:property_app/app_constants/color_constants.dart';
+import 'package:property_app/views/stripe_payment_screen/stripe_payment_screen.dart';
 
 import '../../app_constants/app_sizes.dart';
 import '../../constant_widget/constant_widgets.dart';
@@ -20,8 +21,8 @@ class HomeScreen extends GetView<HomeScreenController> {
       appBar: titleAppBar("My Properties", action: [
         SvgPicture.asset(AppIcons.addCircle),
         w10,
-
       ]),
+
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(15.0),
