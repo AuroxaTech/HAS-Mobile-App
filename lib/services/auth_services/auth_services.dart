@@ -2,17 +2,16 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:property_app/constant_widget/constant_widgets.dart';
 import 'package:property_app/utils/api_urls.dart';
-import 'package:http/http.dart' as http;
 import 'package:property_app/utils/shared_preferences/preferences.dart';
 import 'package:property_app/utils/utils.dart';
+
 import '../../utils/connectivity.dart';
 
 class AuthServices {
-
   Future<Map<String, dynamic>> registerVisitor({
     required String fullName,
     required String userName,
@@ -28,11 +27,12 @@ class AuthServices {
   }) async {
     if (await ConnectivityUtility.checkInternetConnectivity() == true) {
       try {
-        var request = http.MultipartRequest('POST', Uri.parse(AppUrls.registerUrl));
+        var request =
+            http.MultipartRequest('POST', Uri.parse(AppUrls.registerUrl));
         request.fields.addAll({
           'email': email,
           'fullname': fullName,
-          'username':userName,
+          'username': userName,
           'phone_number': phoneNumber,
           'address': address!,
           'postal_code': postalCode!,
@@ -44,7 +44,8 @@ class AuthServices {
         });
         // Add profileImage to the request if it's not null
         if (profileImage != null) {
-          request.files.add(await http.MultipartFile.fromPath('profileimage', profileImage.path));
+          request.files.add(await http.MultipartFile.fromPath(
+              'profileimage', profileImage.path));
         }
         var response = await request.send();
         var responseBody = await response.stream.bytesToString();
@@ -146,8 +147,8 @@ class AuthServices {
           'bathroom': bathroom.toString(),
           'description': description.toString(),
           'postal_code': postalCode.toString(),
-          'property_images[]' : propertyImages.toString(),
-          'electricity_bill' : electricityBill.name,
+          'property_images[]': propertyImages.toString(),
+          'electricity_bill': electricityBill.name,
         });
 
       // Add profile image if provided
@@ -184,14 +185,20 @@ class AuthServices {
         'availability_start_time': availabilityStartTime,
         'availability_end_time': availabilityEndTime,
       });
+      var response = await request.send();
+
+      var responseBody = await response.stream.bytesToString();
+      print("Response body : $responseBody");
+      print("Response body : ${response.statusCode}");
+      return jsonDecode(responseBody);
 
       try {
         var response = await request.send();
         var responseBody = await response.stream.bytesToString();
         print("Response body : $responseBody");
-        return jsonDecode(responseBody);
       } catch (e) {
         // Handle general errors
+        print("Error ===> $e");
         rethrow;
       }
     } else {
@@ -208,8 +215,8 @@ class AuthServices {
     required String email,
     required String phoneNumber,
     required String password,
-     String? address,
-     String? postalCode,
+    String? address,
+    String? postalCode,
     required String cPassword,
     required String deviceToken,
     required String platform,
@@ -223,7 +230,8 @@ class AuthServices {
     String? certification,
     XFile? certificationFile,
   }) async {
-    var url = Uri.parse(AppUrls.registerUrl); // Replace with your actual API endpoint
+    var url =
+        Uri.parse(AppUrls.registerUrl); // Replace with your actual API endpoint
     var data = {
       'fullname': fullName,
       'username': userName,
@@ -232,13 +240,12 @@ class AuthServices {
       'password': password,
       'device_token': deviceToken,
       'platform': platform,
-      'password_confirmation' : cPassword,
+      'password_confirmation': cPassword,
       'role_id': "3",
       'services': "2",
       'year_experience': yearExperience.toString(),
       'availability_start_time': availabilityStartTime,
       'availability_end_time': availabilityEndTime,
-
       if (certification != null) 'certification': certification,
     };
 
@@ -253,7 +260,7 @@ class AuthServices {
         'password': password,
         'device_token': deviceToken,
         'platform': platform,
-        'password_confirmation' : cPassword,
+        'password_confirmation': cPassword,
         'role_id': "3",
         'services': "2",
         'address': address!,
@@ -291,15 +298,12 @@ class AuthServices {
 
     var responseBody = await response.stream.bytesToString();
     print("Response : $responseBody");
-     return json.decode(responseBody);
-    try {
-
-    } catch (e) {
+    return json.decode(responseBody);
+    try {} catch (e) {
       rethrow;
       throw Exception('Failed to register service provider: $e');
     }
   }
-
 
   Future<Map<String, dynamic>> registerTenant({
     required String fullName,
@@ -308,8 +312,8 @@ class AuthServices {
     required String phoneNumber,
     required String password,
     required String cPassword,
-     String? address,
-     String? postalCode,
+    String? address,
+    String? postalCode,
     required String deviceToken,
     required String platform,
     required int roleId,
@@ -327,7 +331,8 @@ class AuthServices {
 
       var request = http.MultipartRequest('POST', url)
         ..headers.addAll({
-          'Content-Type': 'multipart/form-data', // Add your desired content type
+          'Content-Type':
+              'multipart/form-data', // Add your desired content type
           //'Authorization': 'Bearer YOUR_ACCESS_TOKEN', // Add your authorization token if needed
           // Add other headers as needed
         })
@@ -344,9 +349,11 @@ class AuthServices {
           'password_confirmation': cPassword,
           'role_id': roleId.toString(),
           'last_status': lastStatus.toString(),
-          if (lastLandlordName != null) 'last_landlord_name': lastLandlordName ?? '',
+          if (lastLandlordName != null)
+            'last_landlord_name': lastLandlordName ?? '',
           if (lastTenancy != null) 'last_tenancy': lastTenancy ?? '',
-          if (lastLandlordContact != null) 'last_landlord_contact': lastLandlordContact ?? '',
+          if (lastLandlordContact != null)
+            'last_landlord_contact': lastLandlordContact ?? '',
         });
 
       // Add these fields outside the conditional statements
@@ -414,12 +421,11 @@ class AuthServices {
   getUserState() async {
     var data = await Preferences.getUserID();
     var token = await Preferences.getToken();
-    Uri url = Uri.parse("${AppUrls.userState}?serviceprovider_id=$data",);
+    Uri url = Uri.parse(
+      "${AppUrls.userState}?serviceprovider_id=$data",
+    );
     try {
-      var res = await http.post(
-          url,
-          headers: getHeader(userToken: token)
-      );
+      var res = await http.post(url, headers: getHeader(userToken: token));
       return json.decode(res.body);
     } catch (e) {
       if (kDebugMode) {
@@ -432,12 +438,11 @@ class AuthServices {
   getLandLordState() async {
     var data = await Preferences.getUserID();
     var token = await Preferences.getToken();
-    Uri url = Uri.parse("${AppUrls.landlordStat}?landlord_id=$data",);
+    Uri url = Uri.parse(
+      "${AppUrls.landlordStat}?landlord_id=$data",
+    );
     try {
-      var res = await http.post(
-          url,
-          headers: getHeader(userToken: token)
-      );
+      var res = await http.post(url, headers: getHeader(userToken: token));
       return json.decode(res.body);
     } catch (e) {
       if (kDebugMode) {
@@ -450,12 +455,11 @@ class AuthServices {
   getTenantState() async {
     var data = await Preferences.getUserID();
     var token = await Preferences.getToken();
-    Uri url = Uri.parse("${AppUrls.tenantStat}?tenant_id=$data",);
+    Uri url = Uri.parse(
+      "${AppUrls.tenantStat}?tenant_id=$data",
+    );
     try {
-      var res = await http.post(
-          url,
-          headers: getHeader(userToken: token)
-      );
+      var res = await http.post(url, headers: getHeader(userToken: token));
       return json.decode(res.body);
     } catch (e) {
       if (kDebugMode) {
@@ -468,12 +472,11 @@ class AuthServices {
   getVisitorState() async {
     var data = await Preferences.getUserID();
     var token = await Preferences.getToken();
-    Uri url = Uri.parse("${AppUrls.visitorStat}?visitor_id=$data",);
+    Uri url = Uri.parse(
+      "${AppUrls.visitorStat}?visitor_id=$data",
+    );
     try {
-      var res = await http.post(
-          url,
-          headers: getHeader(userToken: token)
-      );
+      var res = await http.post(url, headers: getHeader(userToken: token));
       return json.decode(res.body);
     } catch (e) {
       if (kDebugMode) {
@@ -503,7 +506,7 @@ class AuthServices {
       }
     } catch (e) {
       print('Error in checkEmailExists: $e');
-      return {"exists": false};  // Returning false if there's an error
+      return {"exists": false}; // Returning false if there's an error
     }
   }
 
@@ -528,10 +531,7 @@ class AuthServices {
       }
     } catch (e) {
       print('Error in sendVerificationEmail: $e');
-      return {"status": false};  // Returning false if there's an error
+      return {"status": false}; // Returning false if there's an error
     }
   }
-
 }
-
-
