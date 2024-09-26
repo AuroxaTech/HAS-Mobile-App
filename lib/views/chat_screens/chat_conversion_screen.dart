@@ -125,15 +125,14 @@
 //   }
 // }
 
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
+import 'package:flutter/foundation.dart' as foundation;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter/foundation.dart' as foundation;
 import 'package:intl/intl.dart';
 import 'package:property_app/app_constants/color_constants.dart';
 import 'package:property_app/controllers/theme_controller.dart';
@@ -149,7 +148,6 @@ import '../../services/notification_services/notification_services.dart';
 import '../../utils/shared_preferences/preferences.dart';
 import 'ToBeReplyMessageWidget.dart';
 
-
 class ChatScreen1 extends StatefulWidget {
   final String name;
   final String image;
@@ -163,10 +161,10 @@ class ChatScreen1 extends StatefulWidget {
 
   const ChatScreen1(
       {super.key,
-        required this.name,
-        required this.image,
-        required this.data,
-        required this.group});
+      required this.name,
+      required this.image,
+      required this.data,
+      required this.group});
 
   @override
   State<ChatScreen1> createState() => _ChatScreen1State();
@@ -203,40 +201,43 @@ class _ChatScreen1State extends State<ChatScreen1> {
   String id = "";
   var userId;
 
- Future<void> getUserId() async {
+  Future<void> getUserId() async {
     var id = await Preferences.getUserID();
     setState(() {
       userId = id;
     });
   }
 
-  void setupStream()async {
+  void setupStream() async {
     userId = await Preferences.getUserID();
-    stream =   FirebaseFirestore.instance
-        .collection('messagesListing')
-        .doc(userId.toString())
-        .collection('messages')
-        .where('conversationId', isEqualTo: widget.data.id)
-        .orderBy('created', descending: true) // Add this line
-        .snapshots();
+    if (widget.data.id != null && widget.data.id.isNotEmpty) {
+      stream = FirebaseFirestore.instance
+          .collection('messagesListing')
+          .doc(userId.toString())
+          .collection('messages')
+          .where('conversationId', isEqualTo: widget.data.id)
+          .orderBy('created', descending: true)
+          .snapshots();
 
-    print("my user id $userId");
+      print("my user id $userId");
 
+      markAllMessagesAsSeen();
 
-    markAllMessagesAsSeen();
+      String receiverId = widget.data["user1"].toString() == userId.toString()
+          ? widget.data["user2"].toString()
+          : widget.data["user1"].toString();
 
-    String receiverId = widget.data["user1"].toString() == userId.toString()
-        ? widget.data["user2"].toString()
-        : widget.data["user1"].toString();
+      setState(() {
+        id = receiverId;
+      });
 
-    setState(() {
-      id = receiverId;
-    });
-    tappedStates = List<bool>.generate(10, (index) => false);
-    print(widget.name);
-    print(widget.data.id);
-    print("user id ${receiverId}");
-
+      tappedStates = List<bool>.generate(10, (index) => false);
+      print(widget.name);
+      print(widget.data.id);
+      print("receiver id $receiverId");
+    } else {
+      print("Invalid conversation ID");
+    }
   }
 
   @override
@@ -253,10 +254,10 @@ class _ChatScreen1State extends State<ChatScreen1> {
     //     .orderBy('created', descending: true) // Add this line
     //     .snapshots();
 
-
     ChatScreen1.showSelectedMessages = false;
     super.initState();
   }
+
   late List<bool> tappedStates;
   Future<void> markAllMessagesAsSeen() async {
     userId = await Preferences.getUserID();
@@ -298,6 +299,7 @@ class _ChatScreen1State extends State<ChatScreen1> {
       tappedStates[index] = !tappedStates[index];
     });
   }
+
   var themeController = Get.put(ThemeController());
   @override
   Widget build(BuildContext context) {
@@ -307,7 +309,7 @@ class _ChatScreen1State extends State<ChatScreen1> {
 
     return PopScope(
       onPopInvoked: (v) {
-      //  Get.offAll(const HomeScreen());
+        //  Get.offAll(const HomeScreen());
       },
       canPop: false,
       child: GestureDetector(
@@ -317,181 +319,183 @@ class _ChatScreen1State extends State<ChatScreen1> {
           appBar: PreferredSize(
             preferredSize: Size.fromHeight(60),
             child: ChatScreen1.showSelectedMessages
-                ? showSelectionPanel(themeController, chatController.index.value)
+                ? showSelectionPanel(
+                    themeController, chatController.index.value)
                 : Container(
-              decoration: const BoxDecoration(
-                color: primaryColor,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(
-                    top: 30, bottom: 5, left: 8, right: 2),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    InkWell(
-                        child: const Icon(
-                          Icons.arrow_back_ios_new,
-                          size: 20.0,
-                          color: whiteColor,
-                        ),
-                        onTap: () {
-                          Navigator.pop(context);
-                          // Navigator.pushReplacement(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //         builder: (context) =>
-                          //         const HomeScreen()));
-                        }),
-                    SizedBox(
-                      width: 8,
+                    decoration: const BoxDecoration(
+                      color: primaryColor,
                     ),
-                    CircleAvatar(
-                      radius: 24,
-                      backgroundColor: whiteColor,
-                      child: CachedNetworkImage(
-                        imageUrl: widget.image,
-                        errorWidget: (w,e, r){
-                          return CircleAvatar(
-                            child: Text(widget.name[0].toUpperCase()), // Display the first letter of the name
-                          );
-                        },
-                      ),
-                      // backgroundImage: CachedNetworkImageProvider(
-                      //   widget.group
-                      //       ? widget.data['groupPictureUrl']
-                      //       : widget.image,
-                      // ),
-                    ),
-                    SizedBox(
-                      width: 12,
-                    ),
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: (context) =>
-                          //         ProfileDetails(
-                          //           img: widget.image,
-                          //           name: widget.name,
-                          //         ),
-                          //   ),
-                          // );
-                        },
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              toBeginningOfSentenceCase(
-                                  widget.name)!,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.poppins(
-                                textStyle: TextStyle(
-                                  fontSize: 14,
-                                  color: whiteColor,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          top: 30, bottom: 5, left: 8, right: 2),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          InkWell(
+                              child: const Icon(
+                                Icons.arrow_back_ios_new,
+                                size: 20.0,
+                                color: whiteColor,
                               ),
+                              onTap: () {
+                                Navigator.pop(context);
+                                // Navigator.pushReplacement(
+                                //     context,
+                                //     MaterialPageRoute(
+                                //         builder: (context) =>
+                                //         const HomeScreen()));
+                              }),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          CircleAvatar(
+                            radius: 24,
+                            backgroundColor: whiteColor,
+                            child: CachedNetworkImage(
+                              imageUrl: widget.image,
+                              errorWidget: (w, e, r) {
+                                return CircleAvatar(
+                                  child: Text(widget.name[0]
+                                      .toUpperCase()), // Display the first letter of the name
+                                );
+                              },
                             ),
-                            SizedBox(
-                              height: 4,
-                            ),
-                            StreamBuilder(
-                                stream: FirebaseFirestore.instance
-                                    .collection("users")
-                                    .doc(id.toString())
-                                    .snapshots(),
-                                builder:
-                                    (context, AsyncSnapshot snapshot) {
-                                  if (!snapshot.hasData) {
-                                    return const Text("Loading...");
-                                  }
-                                  Timestamp lastSeenTimestamp = snapshot.data['lastSeen'];
-                                  DateTime lastSeen =
-                                  lastSeenTimestamp.toDate();
-                                  return Text(
-                                    formatDate(lastSeen,
-                                        snapshot.data["online"]),
-                                    style: GoogleFonts.poppins(
-                                      textStyle: const TextStyle(
-                                        fontSize: 10,
-                                        color: whiteColor,
-                                      ),
-                                    ),
+                            // backgroundImage: CachedNetworkImageProvider(
+                            //   widget.group
+                            //       ? widget.data['groupPictureUrl']
+                            //       : widget.image,
+                            // ),
+                          ),
+                          SizedBox(
+                            width: 12,
+                          ),
+                          Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                // Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //     builder: (context) =>
+                                //         ProfileDetails(
+                                //           img: widget.image,
+                                //           name: widget.name,
+                                //         ),
+                                //   ),
+                                // );
+                              },
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    toBeginningOfSentenceCase(widget.name)!,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                  );
-                                }),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(right: 8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          // InkWell(
-                          //   child: SizedBox(
-                          //     width: 19.0,
-                          //     height: 20.0,
-                          //     child: Image.asset(
-                          //       "assets/images/video.png",
-                          //       color: colorWhite,
-                          //     ),
-                          //   ),
-                          //   onTap: () {
-                          //     Navigator.push(
-                          //       context,
-                          //       MaterialPageRoute(
-                          //         builder: (context) => VideoCallScreen(
-                          //           img: widget.image,
-                          //           name: widget.name,
-                          //           userImage: widget.userImage,
-                          //         ),
-                          //       ),
-                          //     );
-                          //   },
-                          // ),
-                          // InkWell(
-                          //   child: SizedBox(
-                          //       height: 20.0,
-                          //       child: const Icon(
-                          //         Icons.call,
-                          //         color: colorWhite,
-                          //         size: 21.0,
-                          //       )),
-                          //   onTap: () {
-                          //     Navigator.push(
-                          //       context,
-                          //       MaterialPageRoute(
-                          //         builder: (context) => CallingScreen(
-                          //           img: widget.image,
-                          //           name: widget.name,
-                          //         ),
-                          //       ),
-                          //     );
-                          //   },
-                          // ),
-                          // SizedBox(
-                          //   height: 16.0,
-                          //   width: 16.0,
-                          //   child: Image.asset(
-                          //     "assets/images/menu.png",
-                          //     color: colorWhite,
-                          //   ),
-                          // ),
-                          // const SizedBox(),
+                                    style: GoogleFonts.poppins(
+                                      textStyle: TextStyle(
+                                        fontSize: 14,
+                                        color: whiteColor,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 4,
+                                  ),
+                                  StreamBuilder(
+                                      stream: FirebaseFirestore.instance
+                                          .collection("users")
+                                          .doc(id.toString())
+                                          .snapshots(),
+                                      builder:
+                                          (context, AsyncSnapshot snapshot) {
+                                        if (!snapshot.hasData) {
+                                          return const Text("Loading...");
+                                        }
+                                        Timestamp lastSeenTimestamp =
+                                            snapshot.data['lastSeen'];
+                                        DateTime lastSeen =
+                                            lastSeenTimestamp.toDate();
+                                        return Text(
+                                          formatDate(lastSeen,
+                                              snapshot.data["online"]),
+                                          style: GoogleFonts.poppins(
+                                            textStyle: const TextStyle(
+                                              fontSize: 10,
+                                              color: whiteColor,
+                                            ),
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        );
+                                      }),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.only(right: 8),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: <Widget>[
+                                // InkWell(
+                                //   child: SizedBox(
+                                //     width: 19.0,
+                                //     height: 20.0,
+                                //     child: Image.asset(
+                                //       "assets/images/video.png",
+                                //       color: colorWhite,
+                                //     ),
+                                //   ),
+                                //   onTap: () {
+                                //     Navigator.push(
+                                //       context,
+                                //       MaterialPageRoute(
+                                //         builder: (context) => VideoCallScreen(
+                                //           img: widget.image,
+                                //           name: widget.name,
+                                //           userImage: widget.userImage,
+                                //         ),
+                                //       ),
+                                //     );
+                                //   },
+                                // ),
+                                // InkWell(
+                                //   child: SizedBox(
+                                //       height: 20.0,
+                                //       child: const Icon(
+                                //         Icons.call,
+                                //         color: colorWhite,
+                                //         size: 21.0,
+                                //       )),
+                                //   onTap: () {
+                                //     Navigator.push(
+                                //       context,
+                                //       MaterialPageRoute(
+                                //         builder: (context) => CallingScreen(
+                                //           img: widget.image,
+                                //           name: widget.name,
+                                //         ),
+                                //       ),
+                                //     );
+                                //   },
+                                // ),
+                                // SizedBox(
+                                //   height: 16.0,
+                                //   width: 16.0,
+                                //   child: Image.asset(
+                                //     "assets/images/menu.png",
+                                //     color: colorWhite,
+                                //   ),
+                                // ),
+                                // const SizedBox(),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ),
+                  ),
           ),
           body: Stack(
             children: [
@@ -509,816 +513,748 @@ class _ChatScreen1State extends State<ChatScreen1> {
                     //     topRight: Radius.circular(30.h)),
                   ),
                   child: Obx(
-                        () =>
-                        Column(
-                          children: <Widget>[
-                            // Center(
-                            //   child: Container(
-                            //     height: 24.h,
-                            //     width: 100.w,
-                            //     decoration: BoxDecoration(
-                            //       borderRadius: BorderRadius.circular(6.h),
-                            //       color: const Color(0xFF34B7F1).withOpacity(0.45),
-                            //     ),
-                            //     child: Center(
-                            //       child: Text(
-                            //         '17th August 2021',
-                            //         style: GoogleFonts.roboto(
-                            //           textStyle: TextStyle(
-                            //             fontSize: 10.sp,
-                            //             fontWeight: FontWeight.bold,
-                            //           ),
-                            //         ),
-                            //       ),
-                            //     ),
-                            //   ),
-                            // ),
-                            // SizedBox(
-                            //   height: 12.h,
-                            // ),
+                    () => Column(
+                      children: <Widget>[
+                        // Center(
+                        //   child: Container(
+                        //     height: 24.h,
+                        //     width: 100.w,
+                        //     decoration: BoxDecoration(
+                        //       borderRadius: BorderRadius.circular(6.h),
+                        //       color: const Color(0xFF34B7F1).withOpacity(0.45),
+                        //     ),
+                        //     child: Center(
+                        //       child: Text(
+                        //         '17th August 2021',
+                        //         style: GoogleFonts.roboto(
+                        //           textStyle: TextStyle(
+                        //             fontSize: 10.sp,
+                        //             fontWeight: FontWeight.bold,
+                        //           ),
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
+                        // SizedBox(
+                        //   height: 12.h,
+                        // ),
 
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                  left: 12,
-                                  right: 6,
-                                ),
-                                child: StreamBuilder<QuerySnapshot>(
-                                  stream: stream,
-                                  builder: (context,
-                                      AsyncSnapshot<QuerySnapshot> snapshot) {
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.waiting) {
-                                      return const SizedBox();
-                                    } else if (snapshot.hasError) {
-                                      // Handle error case
-                                      print(snapshot.error);
-                                      return Text('Error: ${snapshot.error}');
-                                    } else {
-                                      List<DocumentSnapshot> documents =
-                                          snapshot.data!.docs;
-                                      documents.sort((a, b) {
-                                        // Get the timestamps from the documents
-                                        Timestamp timestampA = a['created'];
-                                        Timestamp timestampB = b['created'];
-                                        // Compare the timestamps
-                                        return timestampB.compareTo(
-                                            timestampA);
-                                      });
-                                      if (documents.isEmpty) {
-                                        return Container();
-                                      } else {
-                                        markAllMessagesAsSeen();
-                                        return ListView.builder(
-                                          reverse: true,
-                                          controller:
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                              left: 12,
+                              right: 6,
+                            ),
+                            child: StreamBuilder<QuerySnapshot>(
+                              stream: stream,
+                              builder: (context,
+                                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const SizedBox();
+                                } else if (snapshot.hasError) {
+                                  // Handle error case
+                                  print(snapshot.error);
+                                  return Text('Error: ${snapshot.error}');
+                                } else {
+                                  List<DocumentSnapshot> documents =
+                                      snapshot.data!.docs;
+                                  documents.sort((a, b) {
+                                    // Get the timestamps from the documents
+                                    Timestamp timestampA = a['created'];
+                                    Timestamp timestampB = b['created'];
+                                    // Compare the timestamps
+                                    return timestampB.compareTo(timestampA);
+                                  });
+                                  if (documents.isEmpty) {
+                                    return Container();
+                                  } else {
+                                    markAllMessagesAsSeen();
+                                    return ListView.builder(
+                                      reverse: true,
+                                      controller:
                                           chatController.scrollController,
-                                          shrinkWrap: true,
-                                          itemCount: documents.length,
-                                          itemBuilder: (context, index) {
-                                            if (documents[index]['file']) {
-                                              if (!chatController.imageUrls
-                                                  .contains(documents[index]
-                                              ['filePath'])) {
-                                                chatController.imageUrls.add(
-                                                    documents[index]['filePath']);
-                                              }
-                                            }
-                                            String senderId =
-                                            documents[index]['senderId'].toString();
-                                            String message =
+                                      shrinkWrap: true,
+                                      itemCount: documents.length,
+                                      itemBuilder: (context, index) {
+                                        if (documents[index]['file']) {
+                                          if (!chatController.imageUrls
+                                              .contains(documents[index]
+                                                  ['filePath'])) {
+                                            chatController.imageUrls.add(
+                                                documents[index]['filePath']);
+                                          }
+                                        }
+                                        String senderId = documents[index]
+                                                ['senderId']
+                                            .toString();
+                                        String message =
                                             documents[index]['content'];
-                                            bool replyMessage =
+                                        bool replyMessage =
                                             documents[index]['replyMessage'];
-                                            bool delivered =
+                                        bool delivered =
                                             documents[index]['delivered'];
-                                            bool seen = documents[index]['read'];
-                                            var messageTime =
+                                        bool seen = documents[index]['read'];
+                                        var messageTime =
                                             documents[index]['created'];
-                                            return Padding(
-                                              padding: const EdgeInsets.only(
-                                                  bottom: 8.0),
-                                              child: Column(
-                                                crossAxisAlignment:
+                                        return Padding(
+                                          padding: const EdgeInsets.only(
+                                              bottom: 8.0),
+                                          child: Column(
+                                            crossAxisAlignment:
                                                 CrossAxisAlignment.stretch,
-                                                children: <Widget>[
-                                                  SizedBox(
-                                                    height: 5,
-                                                  ),
-                                                  senderId !=
-                                                      userId.toString()
-                                                      ?Material(
-                                                    color: Colors.transparent,
-                                                    child: InkWell(
-                                                      splashColor: primaryColor.withOpacity(0.5),
-                                                      child: ReceivedMsg(
-                                                        group: widget.group,
-                                                        index: index,
-                                                        dataProvider: themeController,
-                                                        imageUrls:
-                                                        chatController
-                                                            .imageUrls,
-                                                        showSelectedBox:
-                                                        ChatScreen1
-                                                            .showSelectedMessages,
-                                                        message:
-                                                        documents[index],
-                                                        msg: message,
-                                                        time: formatTime(
-                                                            messageTime
-                                                                .toDate()),
-                                                        onSwipeMessage:
-                                                            (replyMessage) {
-                                                          chatController
-                                                              .replyToMessage(
-                                                              documents[
-                                                              index]);
-                                                          // chatController
-                                                          //     .focusNode
-                                                          //     .requestFocus();
-                                                        },
-                                                      ),
-                                                      onLongPress: () {},
-                                                      onTapDown: (details) {
-                                                        if (ChatScreen1
-                                                            .showSelectedMessages ==
-                                                            false) {
-                                                          setState(() {
-                                                            themeController
-                                                                .selectedMessages.value =
-                                                            [];
-                                                            themeController
-                                                                .selectedUsers.value =
-                                                            [];
-                                                            ChatScreen1
-                                                                .showSelectedMessages =
-                                                            true;
-                                                          });
-                                                        }
-                                                        Reactionpopup
-                                                            .showReaction(
-                                                          context,
-                                                          offset: details
-                                                              .globalPosition,
-                                                          emotionPicked:
-                                                          Emotions.angry,
-                                                          handlePressed: (emotion) {
-                                                            print(emotion);
-                                                            toggleReaction(
-                                                                documents[
-                                                                index]
-                                                                    .id,
-                                                                emotion.name, themeController);
-                                                          },
-                                                        );
-                                                      },
-                                                    ),
-                                                  )
-                                                      : Material(
-                                                    color: Colors.transparent,
-                                                    child: InkWell(
-                                                      splashColor: primaryColor.withOpacity(0.5),
-                                                      child: SendMessage(
-                                                        dataProvider:
-                                                        themeController,
-                                                        imageUrls:
-                                                        chatController
-                                                            .imageUrls,
-                                                        showSelectedBox:
-                                                        ChatScreen1
-                                                            .showSelectedMessages,
-                                                        replyMessage:
-                                                        replyMessage,
-                                                        document:
-                                                        documents[index],
-                                                        message: message,
-                                                        messageTime:
-                                                        messageTime,
-                                                        seen: seen,
-                                                        delivered: delivered,
-                                                        index: index,
-                                                        onSwipeMessage:
-                                                            (replyMessage) {
-                                                          chatController
-                                                              .replyToMessage(
-                                                              documents[
-                                                              index]);
-                                                          // chatController
-                                                          //     .focusNode
-                                                          //     .requestFocus();
-                                                        },
-                                                      ),
-                                                      // onLongPress: () {
-                                                      //   if (ChatScreen1
-                                                      //           .showSelectedMessages ==
-                                                      //       false) {
-                                                      //     setState(() {
-                                                      //       dataProvider
-                                                      //           .selectedMessages = [];
-                                                      //       dataProvider
-                                                      //           .selectedUsers = [];
-                                                      //       ChatScreen1
-                                                      //               .showSelectedMessages =
-                                                      //           true;
-                                                      //     });
-                                                      //   }
-                                                      // },
-
-                                                      onTapDown: (details) {
-                                                        if (ChatScreen1
-                                                            .showSelectedMessages ==
-                                                            false) {
-                                                          setState(() {
-                                                            themeController
-                                                                .selectedMessages.value =
-                                                            [];
-                                                            themeController
-                                                                .selectedUsers.value =
-                                                            [];
-                                                            ChatScreen1
-                                                                .showSelectedMessages =
-                                                            true;
-                                                          });
-                                                        }
-                                                        Reactionpopup
-                                                            .showReaction(
-                                                          context,
-                                                          offset: details
-                                                              .globalPosition,
-                                                          emotionPicked:
-                                                          Emotions.angry,
-                                                          handlePressed:
-                                                              (emotion) {
-                                                            print(emotion);
-                                                            print(
-                                                                emotion.name);
-                                                            toggleReaction(
-                                                                documents[
-                                                                index]
-                                                                    .id,
-                                                                emotion.name, themeController);
-                                                          },
-                                                        );
-                                                      },
-                                                    ),
-                                                  ),
-                                                ],
+                                            children: <Widget>[
+                                              SizedBox(
+                                                height: 5,
                                               ),
-                                            );
-                                          },
+                                              senderId != userId.toString()
+                                                  ? Material(
+                                                      color: Colors.transparent,
+                                                      child: InkWell(
+                                                        splashColor:
+                                                            primaryColor
+                                                                .withOpacity(
+                                                                    0.5),
+                                                        child: ReceivedMsg(
+                                                          group: widget.group,
+                                                          index: index,
+                                                          dataProvider:
+                                                              themeController,
+                                                          imageUrls:
+                                                              chatController
+                                                                  .imageUrls,
+                                                          showSelectedBox:
+                                                              ChatScreen1
+                                                                  .showSelectedMessages,
+                                                          message:
+                                                              documents[index],
+                                                          msg: message,
+                                                          time: formatTime(
+                                                              messageTime
+                                                                  .toDate()),
+                                                          onSwipeMessage:
+                                                              (replyMessage) {
+                                                            chatController
+                                                                .replyToMessage(
+                                                                    documents[
+                                                                        index]);
+                                                            // chatController
+                                                            //     .focusNode
+                                                            //     .requestFocus();
+                                                          },
+                                                        ),
+                                                        onLongPress: () {},
+                                                        onTapDown: (details) {
+                                                          if (ChatScreen1
+                                                                  .showSelectedMessages ==
+                                                              false) {
+                                                            setState(() {
+                                                              themeController
+                                                                  .selectedMessages
+                                                                  .value = [];
+                                                              themeController
+                                                                  .selectedUsers
+                                                                  .value = [];
+                                                              ChatScreen1
+                                                                      .showSelectedMessages =
+                                                                  true;
+                                                            });
+                                                          }
+                                                          Reactionpopup
+                                                              .showReaction(
+                                                            context,
+                                                            offset: details
+                                                                .globalPosition,
+                                                            emotionPicked:
+                                                                Emotions.angry,
+                                                            handlePressed:
+                                                                (emotion) {
+                                                              print(emotion);
+                                                              toggleReaction(
+                                                                  documents[
+                                                                          index]
+                                                                      .id,
+                                                                  emotion.name,
+                                                                  themeController);
+                                                            },
+                                                          );
+                                                        },
+                                                      ),
+                                                    )
+                                                  : Material(
+                                                      color: Colors.transparent,
+                                                      child: InkWell(
+                                                        splashColor:
+                                                            primaryColor
+                                                                .withOpacity(
+                                                                    0.5),
+                                                        child: SendMessage(
+                                                          dataProvider:
+                                                              themeController,
+                                                          imageUrls:
+                                                              chatController
+                                                                  .imageUrls,
+                                                          showSelectedBox:
+                                                              ChatScreen1
+                                                                  .showSelectedMessages,
+                                                          replyMessage:
+                                                              replyMessage,
+                                                          document:
+                                                              documents[index],
+                                                          message: message,
+                                                          messageTime:
+                                                              messageTime,
+                                                          seen: seen,
+                                                          delivered: delivered,
+                                                          index: index,
+                                                          onSwipeMessage:
+                                                              (replyMessage) {
+                                                            chatController
+                                                                .replyToMessage(
+                                                                    documents[
+                                                                        index]);
+                                                            // chatController
+                                                            //     .focusNode
+                                                            //     .requestFocus();
+                                                          },
+                                                        ),
+                                                        // onLongPress: () {
+                                                        //   if (ChatScreen1
+                                                        //           .showSelectedMessages ==
+                                                        //       false) {
+                                                        //     setState(() {
+                                                        //       dataProvider
+                                                        //           .selectedMessages = [];
+                                                        //       dataProvider
+                                                        //           .selectedUsers = [];
+                                                        //       ChatScreen1
+                                                        //               .showSelectedMessages =
+                                                        //           true;
+                                                        //     });
+                                                        //   }
+                                                        // },
+
+                                                        onTapDown: (details) {
+                                                          if (ChatScreen1
+                                                                  .showSelectedMessages ==
+                                                              false) {
+                                                            setState(() {
+                                                              themeController
+                                                                  .selectedMessages
+                                                                  .value = [];
+                                                              themeController
+                                                                  .selectedUsers
+                                                                  .value = [];
+                                                              ChatScreen1
+                                                                      .showSelectedMessages =
+                                                                  true;
+                                                            });
+                                                          }
+                                                          Reactionpopup
+                                                              .showReaction(
+                                                            context,
+                                                            offset: details
+                                                                .globalPosition,
+                                                            emotionPicked:
+                                                                Emotions.angry,
+                                                            handlePressed:
+                                                                (emotion) {
+                                                              print(emotion);
+                                                              print(
+                                                                  emotion.name);
+                                                              toggleReaction(
+                                                                  documents[
+                                                                          index]
+                                                                      .id,
+                                                                  emotion.name,
+                                                                  themeController);
+                                                            },
+                                                          );
+                                                        },
+                                                      ),
+                                                    ),
+                                            ],
+                                          ),
                                         );
+                                      },
+                                    );
+                                  }
+                                }
+                              },
+                            ),
+                          ),
+                        ),
+
+                        if (chatController.replyMessage.value != null)
+                          Obx(
+                            () => buildReply(
+                              messageDetails: chatController.replyMessage.value,
+                              onCancelReply: chatController.cancelReply,
+                              userName: widget.name,
+                            ),
+                          ),
+                        Obx(
+                          () => Padding(
+                            padding: EdgeInsets.only(
+                              left: 5,
+                              right: 5,
+                              bottom: 5,
+                            ),
+                            child: Row(
+                              children: <Widget>[
+                                Expanded(
+                                  child: Container(
+                                    height: 40,
+                                    width: 288,
+                                    decoration: BoxDecoration(
+                                      color: whiteColor,
+                                      border: Border.all(
+                                        color: primaryColor,
+                                        // Set the border color here
+                                        width: 1.0, // Set the border width here
+                                      ),
+                                      borderRadius: chatController
+                                                  .replyMessage.value ==
+                                              null
+                                          ? BorderRadius.circular(50)
+                                          : BorderRadius.only(
+                                              bottomLeft: Radius.circular(10),
+                                              bottomRight: Radius.circular(10),
+                                            ),
+                                    ),
+                                    child: Padding(
+                                      padding:
+                                          EdgeInsets.only(left: 17, right: 15),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: <Widget>[
+                                          GestureDetector(
+                                            child: const Icon(
+                                              Icons.emoji_emotions_outlined,
+                                              color: primaryColor,
+                                              size: 22.0,
+                                            ),
+                                            onTap: () {
+                                              chatController
+                                                      .emojiShowing.value =
+                                                  !chatController
+                                                      .emojiShowing.value;
+                                            },
+                                          ),
+                                          SizedBox(
+                                            width: 9,
+                                          ),
+                                          Expanded(
+                                            child: TextFormField(
+                                              controller: chatController
+                                                  .messageController,
+                                              decoration:
+                                                  InputDecoration.collapsed(
+                                                hintText:
+                                                    'Type your message ...',
+                                                hintStyle: GoogleFonts.poppins(
+                                                  textStyle: TextStyle(
+                                                    color: greyColor,
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+                                              ),
+                                              onTap: () {
+                                                if (chatController
+                                                    .emojiShowing.value) {
+                                                  chatController
+                                                          .emojiShowing.value =
+                                                      !chatController
+                                                          .emojiShowing.value;
+                                                }
+                                              },
+                                            ),
+                                          ),
+                                          Row(
+                                            children: <Widget>[
+                                              SizedBox(
+                                                width: 8,
+                                              ),
+                                              SizedBox(
+                                                width: 8,
+                                              ),
+                                              InkWell(
+                                                child: const Icon(
+                                                  Icons.attach_file,
+                                                  color: primaryColor,
+                                                  size: 23.0,
+                                                ),
+                                                onTap: () {
+                                                  showModalBottomSheet(
+                                                      backgroundColor:
+                                                          Colors.transparent,
+                                                      barrierColor:
+                                                          Colors.transparent,
+                                                      context: context,
+                                                      builder: (context) {
+                                                        return Padding(
+                                                          padding:
+                                                              EdgeInsets.only(
+                                                                  left: 10,
+                                                                  right: 10,
+                                                                  bottom: 55),
+                                                          child: Container(
+                                                            width:
+                                                                double.infinity,
+                                                            height: 140,
+                                                            decoration: BoxDecoration(
+                                                                color: primaryColor
+                                                                    .withOpacity(
+                                                                        0.9),
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            25)),
+                                                            child: Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .only(
+                                                                      left: 30,
+                                                                      right: 30,
+                                                                      top: 20,
+                                                                      bottom:
+                                                                          20),
+                                                              child: Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceBetween,
+                                                                children: [
+                                                                  Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceBetween,
+                                                                    children: [
+                                                                      Column(
+                                                                        children: [
+                                                                          InkWell(
+                                                                            onTap:
+                                                                                () async {
+                                                                              chatController.selectCamera(context).then((value) {
+                                                                                chatController.isLoading.value = false;
+
+                                                                                if (chatController.selectedMedia != null && chatController.selectedMedia!.isNotEmpty) {
+                                                                                  Navigator.push(
+                                                                                      context,
+                                                                                      MaterialPageRoute(
+                                                                                          builder: (context) => SendPicture(
+                                                                                                data: widget.data,
+                                                                                                userId: userId.toString(),
+                                                                                                selectedImages: chatController.selectedMedia!,
+                                                                                                group: widget.group,
+                                                                                              ))).then((e) {
+                                                                                    chatController.scrollToBottom();
+                                                                                    Navigator.pop(context);
+                                                                                  });
+                                                                                }
+                                                                              });
+                                                                            },
+                                                                            child:
+                                                                                const CircleAvatar(
+                                                                              backgroundColor: Colors.purple,
+                                                                              radius: 35,
+                                                                              child: Icon(
+                                                                                Icons.camera_alt,
+                                                                                color: Colors.white,
+                                                                                size: 35,
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                          const SizedBox(
+                                                                            height:
+                                                                                5,
+                                                                          ),
+                                                                          const Text(
+                                                                            "Camera",
+                                                                            style:
+                                                                                TextStyle(color: Colors.white),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                      Column(
+                                                                        children: [
+                                                                          InkWell(
+                                                                            onTap:
+                                                                                () {
+                                                                              chatController.selectMedia(context).then((value) {
+                                                                                chatController.isLoading.value = false;
+
+                                                                                if (chatController.selectedMedia != null && chatController.selectedMedia!.isNotEmpty) {
+                                                                                  Navigator.push(
+                                                                                      context,
+                                                                                      MaterialPageRoute(
+                                                                                          builder: (context) => SendPicture(
+                                                                                                data: widget.data,
+                                                                                                userId: userId.toString(),
+                                                                                                selectedImages: chatController.selectedMedia!,
+                                                                                                group: widget.group,
+                                                                                              ))).then((e) {
+                                                                                    chatController.scrollToBottom();
+                                                                                    Navigator.pop(context);
+                                                                                  });
+                                                                                }
+                                                                              });
+                                                                            },
+                                                                            child:
+                                                                                CircleAvatar(
+                                                                              backgroundColor: Colors.pink.shade900,
+                                                                              radius: 35,
+                                                                              child: const Icon(
+                                                                                Icons.photo,
+                                                                                color: Colors.white,
+                                                                                size: 35,
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                          const SizedBox(
+                                                                            height:
+                                                                                5,
+                                                                          ),
+                                                                          const Text(
+                                                                            "Gallery",
+                                                                            style:
+                                                                                TextStyle(color: Colors.white),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                      Column(
+                                                                        children: [
+                                                                          InkWell(
+                                                                            onTap:
+                                                                                () {
+                                                                              chatController.pickPDFFile(widget.data);
+                                                                              //  chatController.createPdfMessage(context, widget.data, widget.group);
+                                                                            },
+                                                                            child:
+                                                                                CircleAvatar(
+                                                                              backgroundColor: Colors.blue.shade400,
+                                                                              radius: 35,
+                                                                              child: const Icon(
+                                                                                Icons.description,
+                                                                                color: Colors.white,
+                                                                                size: 35,
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                          const SizedBox(
+                                                                            height:
+                                                                                5,
+                                                                          ),
+                                                                          const Text(
+                                                                            "Document",
+                                                                            style:
+                                                                                TextStyle(color: Colors.white),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  // const SizedBox(
+                                                                  //   height:
+                                                                  //   20,
+                                                                  // ),
+                                                                  // Row(
+                                                                  //   mainAxisAlignment:
+                                                                  //   MainAxisAlignment
+                                                                  //       .spaceBetween,
+                                                                  //   children: [
+                                                                  //     Column(
+                                                                  //       children: [
+                                                                  //         InkWell(
+                                                                  //           onTap: () {
+                                                                  //             // chatController
+                                                                  //             //     .pickDOCFile(
+                                                                  //             //     widget
+                                                                  //             //         .data);
+                                                                  //           },
+                                                                  //           child: const CircleAvatar(
+                                                                  //             backgroundColor: Colors
+                                                                  //                 .deepOrange,
+                                                                  //             radius: 35,
+                                                                  //             child: Icon(
+                                                                  //               Icons
+                                                                  //                   .description,
+                                                                  //               color: Colors
+                                                                  //                   .white,
+                                                                  //               size: 35,
+                                                                  //             ),
+                                                                  //           ),
+                                                                  //         ),
+                                                                  //         SizedBox(
+                                                                  //           height: 5,
+                                                                  //         ),
+                                                                  //         Text(
+                                                                  //           "Document",
+                                                                  //           style: TextStyle(
+                                                                  //               color: Colors
+                                                                  //                   .white),
+                                                                  //         ),
+                                                                  //       ],
+                                                                  //     ),
+                                                                  //
+                                                                  //     Column(
+                                                                  //       children: [
+                                                                  //         CircleAvatar(
+                                                                  //           backgroundColor: Colors
+                                                                  //               .cyan,
+                                                                  //           radius: 35,
+                                                                  //           child: Icon(
+                                                                  //             Icons
+                                                                  //                 .file_present,
+                                                                  //             color: Colors
+                                                                  //                 .white,
+                                                                  //             size: 35,
+                                                                  //           ),
+                                                                  //         ),
+                                                                  //         SizedBox(
+                                                                  //           height: 5,
+                                                                  //         ),
+                                                                  //         Text(
+                                                                  //           "Excel",
+                                                                  //           style: TextStyle(
+                                                                  //               color: Colors
+                                                                  //                   .white),
+                                                                  //         ),
+                                                                  //       ],
+                                                                  //     ),
+                                                                  //
+                                                                  //     SizedBox(
+                                                                  //       width:
+                                                                  //       70,
+                                                                  //     ),
+                                                                  //
+                                                                  //     // Column(
+                                                                  //     //   children: [
+                                                                  //     //     CircleAvatar(
+                                                                  //     //       backgroundColor: Colors.purple.shade400,
+                                                                  //     //       radius: 35,
+                                                                  //     //       child: Icon(Icons.picture_as_pdf, color: Colors.white, size: 35,),
+                                                                  //     //     ),
+                                                                  //     //     SizedBox(
+                                                                  //     //       height: 5,
+                                                                  //     //     ),
+                                                                  //     //     Text("Pdf" , style: TextStyle(color: Colors.white),),
+                                                                  //     //   ],
+                                                                  //     // ),
+                                                                  //   ],
+                                                                  // )
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        );
+                                                      });
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 5.0),
+                                GestureDetector(
+                                  child: Container(
+                                    width: 50,
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(25),
+                                      color: redColor,
+                                    ),
+                                    child: const Center(
+                                      child: Icon(
+                                        Icons.send,
+                                        color: whiteColor,
+                                        size: 23.0,
+                                      ),
+                                    ),
+                                  ),
+                                  onTap: () {
+                                    if (chatController
+                                        .messageController.text.isNotEmpty) {
+                                      if (chatController.replyMessage.value ==
+                                          null) {
+                                        createMessage(context);
+                                      } else {
+                                        chatController.createReplyMessage(
+                                            widget.data,
+                                            widget.group,
+                                            userId.toString());
                                       }
+                                      chatController.scrollToBottom();
                                     }
                                   },
                                 ),
-                              ),
+                              ],
                             ),
-
-                            if (chatController.replyMessage.value != null)
-                              Obx(
-                                    () =>
-                                    buildReply(
-                                      messageDetails:
-                                      chatController.replyMessage.value,
-                                      onCancelReply: chatController
-                                          .cancelReply,
-                                      userName: widget.name,
-                                    ),
-                              ),
-                            Obx(
-                                  () =>
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                      left: 5,
-                                      right: 5,
-                                      bottom: 5,
-                                    ),
-                                    child: Row(
-                                      children: <Widget>[
-                                        Expanded(
-                                          child: Container(
-                                            height: 40,
-                                            width: 288,
-                                            decoration: BoxDecoration(
-                                              color: whiteColor,
-                                              border: Border.all(
-                                                color: primaryColor,
-                                                // Set the border color here
-                                                width:
-                                                1.0, // Set the border width here
-                                              ),
-                                              borderRadius:
-                                              chatController.replyMessage
-                                                  .value ==
-                                                  null
-                                                  ? BorderRadius.circular(
-                                                  50)
-                                                  : BorderRadius.only(
-                                                bottomLeft:
-                                                Radius.circular(10),
-                                                bottomRight:
-                                                Radius.circular(10),
-                                              ),
-                                            ),
-                                            child: Padding(
-                                              padding: EdgeInsets.only(
-                                                  left: 17, right: 15),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                MainAxisAlignment.spaceAround,
-                                                children: <Widget>[
-                                                  GestureDetector(
-                                                    child: const Icon(
-                                                      Icons
-                                                          .emoji_emotions_outlined,
-                                                      color: primaryColor,
-                                                      size: 22.0,
-                                                    ),
-                                                    onTap: () {
-                                                      chatController
-                                                          .emojiShowing
-                                                          .value =
-                                                      !chatController
-                                                          .emojiShowing.value;
-                                                    },
-                                                  ),
-                                                  SizedBox(
-                                                    width: 9,
-                                                  ),
-                                                  Expanded(
-                                                    child: TextFormField(
-                                                      controller: chatController
-                                                          .messageController,
-                                                      decoration:
-                                                      InputDecoration
-                                                          .collapsed(
-                                                        hintText:
-                                                        'Type your message ...',
-                                                        hintStyle:
-                                                        GoogleFonts.poppins(
-                                                          textStyle: TextStyle(
-                                                            color: greyColor,
-                                                            fontSize: 12,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      onTap: () {
-                                                        if (chatController
-                                                            .emojiShowing
-                                                            .value) {
-                                                          chatController
-                                                              .emojiShowing
-                                                              .value =
-                                                          !chatController
-                                                              .emojiShowing
-                                                              .value;
-                                                        }
-                                                      },
-                                                    ),
-                                                  ),
-                                                  Row(
-                                                    children: <Widget>[
-
-                                                      SizedBox(
-                                                        width: 8,
-                                                      ),
-                                                      SizedBox(
-                                                        width: 8,
-                                                      ),
-                                                      InkWell(
-                                                        child: const Icon(
-                                                          Icons.attach_file,
-                                                          color: primaryColor,
-                                                          size: 23.0,
-                                                        ),
-                                                        onTap: () {
-                                                          showModalBottomSheet(
-                                                              backgroundColor:
-                                                              Colors
-                                                                  .transparent,
-                                                              barrierColor:
-                                                              Colors
-                                                                  .transparent,
-                                                              context: context,
-                                                              builder: (
-                                                                  context) {
-                                                                return Padding(
-                                                                  padding:
-                                                                  EdgeInsets
-                                                                      .only(
-                                                                      left: 10, right: 10, bottom: 55),
-                                                                  child: Container(
-                                                                    width: double
-                                                                        .infinity,
-                                                                    height: 140,
-                                                                    decoration: BoxDecoration(
-                                                                        color: primaryColor
-                                                                            .withOpacity(
-                                                                            0.9),
-                                                                        borderRadius:
-                                                                        BorderRadius
-                                                                            .circular(
-                                                                            25)),
-                                                                    child: Padding(
-                                                                      padding:
-                                                                      const EdgeInsets
-                                                                          .only(
-                                                                          left:
-                                                                          30,
-                                                                          right:
-                                                                          30,
-                                                                          top: 20,
-                                                                          bottom:
-                                                                          20),
-                                                                      child: Column(
-                                                                        crossAxisAlignment:
-                                                                        CrossAxisAlignment
-                                                                            .start,
-                                                                        mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .spaceBetween,
-                                                                        children: [
-                                                                          Row(
-                                                                            mainAxisAlignment:
-                                                                            MainAxisAlignment
-                                                                                .spaceBetween,
-                                                                            children: [
-                                                                              Column(
-                                                                                children: [
-                                                                                  InkWell(
-                                                                                    onTap: () async{
-                                                                                      chatController
-                                                                                          .selectCamera(
-                                                                                          context)
-                                                                                          .then((
-                                                                                          value) {
-                                                                                        chatController
-                                                                                            .isLoading
-                                                                                            .value =
-                                                                                        false;
-
-                                                                                        if (chatController
-                                                                                            .selectedMedia !=
-                                                                                            null &&
-                                                                                            chatController
-                                                                                                .selectedMedia!
-                                                                                                .isNotEmpty) {
-                                                                                          Navigator
-                                                                                              .push(
-                                                                                              context,
-                                                                                              MaterialPageRoute(
-                                                                                                  builder: (
-                                                                                                      context) =>
-                                                                                                      SendPicture(
-                                                                                                        data: widget.data,
-                                                                                                        userId: userId.toString(),
-                                                                                                        selectedImages: chatController
-                                                                                                            .selectedMedia!,
-                                                                                                        group: widget
-                                                                                                            .group,
-                                                                                                      )))
-                                                                                              .then((
-                                                                                              e) {
-                                                                                            chatController
-                                                                                                .scrollToBottom();
-                                                                                            Navigator
-                                                                                                .pop(
-                                                                                                context);
-                                                                                          });
-                                                                                        }
-                                                                                      });
-                                                                                    },
-                                                                                    child: const CircleAvatar(
-                                                                                      backgroundColor: Colors
-                                                                                          .purple,
-                                                                                      radius: 35,
-                                                                                      child: Icon(
-                                                                                        Icons
-                                                                                            .camera_alt,
-                                                                                        color: Colors
-                                                                                            .white,
-                                                                                        size: 35,
-                                                                                      ),
-                                                                                    ),
-                                                                                  ),
-                                                                                  const SizedBox(
-                                                                                    height: 5,
-                                                                                  ),
-                                                                                  const Text(
-                                                                                    "Camera",
-                                                                                    style: TextStyle(
-                                                                                        color: Colors
-                                                                                            .white),
-                                                                                  ),
-                                                                                ],
-                                                                              ),
-                                                                              Column(
-                                                                                children: [
-                                                                                  InkWell(
-                                                                                    onTap: () {
-                                                                                      chatController
-                                                                                          .selectMedia(
-                                                                                          context)
-                                                                                          .then((
-                                                                                          value) {
-                                                                                        chatController
-                                                                                            .isLoading
-                                                                                            .value =
-                                                                                        false;
-
-                                                                                        if (chatController
-                                                                                            .selectedMedia !=
-                                                                                            null &&
-                                                                                            chatController
-                                                                                                .selectedMedia!
-                                                                                                .isNotEmpty) {
-                                                                                          Navigator
-                                                                                              .push(
-                                                                                              context,
-                                                                                              MaterialPageRoute(
-                                                                                                  builder: (
-                                                                                                      context) =>
-                                                                                                      SendPicture(
-                                                                                                        data: widget
-                                                                                                            .data,
-                                                                                                        userId: userId.toString(),
-                                                                                                        selectedImages: chatController
-                                                                                                            .selectedMedia!,
-                                                                                                        group: widget
-                                                                                                            .group,
-                                                                                                      )))
-                                                                                              .then((
-                                                                                              e) {
-                                                                                            chatController
-                                                                                                .scrollToBottom();
-                                                                                            Navigator
-                                                                                                .pop(
-                                                                                                context);
-                                                                                          });
-                                                                                        }
-                                                                                      });
-                                                                                    },
-                                                                                    child: CircleAvatar(
-                                                                                      backgroundColor: Colors
-                                                                                          .pink
-                                                                                          .shade900,
-                                                                                      radius: 35,
-                                                                                      child: const Icon(
-                                                                                        Icons
-                                                                                            .photo,
-                                                                                        color: Colors
-                                                                                            .white,
-                                                                                        size: 35,
-                                                                                      ),
-                                                                                    ),
-                                                                                  ),
-                                                                                  const SizedBox(
-                                                                                    height: 5,
-                                                                                  ),
-                                                                                  const Text(
-                                                                                    "Gallery",
-                                                                                    style: TextStyle(
-                                                                                        color: Colors
-                                                                                            .white),
-                                                                                  ),
-                                                                                ],
-                                                                              ),
-                                                                              Column(
-                                                                                children: [
-                                                                                  InkWell(
-                                                                                    onTap: () {
-                                                                                      chatController
-                                                                                          .pickPDFFile(
-                                                                                          widget
-                                                                                              .data);
-                                                                                      //  chatController.createPdfMessage(context, widget.data, widget.group);
-                                                                                    },
-                                                                                    child: CircleAvatar(
-                                                                                      backgroundColor: Colors
-                                                                                          .blue
-                                                                                          .shade400,
-                                                                                      radius: 35,
-                                                                                      child: const Icon(
-                                                                                        Icons
-                                                                                            .description,
-                                                                                        color: Colors
-                                                                                            .white,
-                                                                                        size: 35,
-                                                                                      ),
-                                                                                    ),
-                                                                                  ),
-                                                                                  const SizedBox(
-                                                                                    height: 5,
-                                                                                  ),
-                                                                                  const Text(
-                                                                                    "Document",
-                                                                                    style: TextStyle(
-                                                                                        color: Colors
-                                                                                            .white),
-                                                                                  ),
-                                                                                ],
-                                                                              ),
-                                                                            ],
-                                                                          ),
-                                                                          // const SizedBox(
-                                                                          //   height:
-                                                                          //   20,
-                                                                          // ),
-                                                                          // Row(
-                                                                          //   mainAxisAlignment:
-                                                                          //   MainAxisAlignment
-                                                                          //       .spaceBetween,
-                                                                          //   children: [
-                                                                          //     Column(
-                                                                          //       children: [
-                                                                          //         InkWell(
-                                                                          //           onTap: () {
-                                                                          //             // chatController
-                                                                          //             //     .pickDOCFile(
-                                                                          //             //     widget
-                                                                          //             //         .data);
-                                                                          //           },
-                                                                          //           child: const CircleAvatar(
-                                                                          //             backgroundColor: Colors
-                                                                          //                 .deepOrange,
-                                                                          //             radius: 35,
-                                                                          //             child: Icon(
-                                                                          //               Icons
-                                                                          //                   .description,
-                                                                          //               color: Colors
-                                                                          //                   .white,
-                                                                          //               size: 35,
-                                                                          //             ),
-                                                                          //           ),
-                                                                          //         ),
-                                                                          //         SizedBox(
-                                                                          //           height: 5,
-                                                                          //         ),
-                                                                          //         Text(
-                                                                          //           "Document",
-                                                                          //           style: TextStyle(
-                                                                          //               color: Colors
-                                                                          //                   .white),
-                                                                          //         ),
-                                                                          //       ],
-                                                                          //     ),
-                                                                          //
-                                                                          //     Column(
-                                                                          //       children: [
-                                                                          //         CircleAvatar(
-                                                                          //           backgroundColor: Colors
-                                                                          //               .cyan,
-                                                                          //           radius: 35,
-                                                                          //           child: Icon(
-                                                                          //             Icons
-                                                                          //                 .file_present,
-                                                                          //             color: Colors
-                                                                          //                 .white,
-                                                                          //             size: 35,
-                                                                          //           ),
-                                                                          //         ),
-                                                                          //         SizedBox(
-                                                                          //           height: 5,
-                                                                          //         ),
-                                                                          //         Text(
-                                                                          //           "Excel",
-                                                                          //           style: TextStyle(
-                                                                          //               color: Colors
-                                                                          //                   .white),
-                                                                          //         ),
-                                                                          //       ],
-                                                                          //     ),
-                                                                          //
-                                                                          //     SizedBox(
-                                                                          //       width:
-                                                                          //       70,
-                                                                          //     ),
-                                                                          //
-                                                                          //     // Column(
-                                                                          //     //   children: [
-                                                                          //     //     CircleAvatar(
-                                                                          //     //       backgroundColor: Colors.purple.shade400,
-                                                                          //     //       radius: 35,
-                                                                          //     //       child: Icon(Icons.picture_as_pdf, color: Colors.white, size: 35,),
-                                                                          //     //     ),
-                                                                          //     //     SizedBox(
-                                                                          //     //       height: 5,
-                                                                          //     //     ),
-                                                                          //     //     Text("Pdf" , style: TextStyle(color: Colors.white),),
-                                                                          //     //   ],
-                                                                          //     // ),
-                                                                          //   ],
-                                                                          // )
-                                                                        ],
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                );
-                                                              });
-                                                        },
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 5.0),
-                                        GestureDetector(
-                                          child: Container(
-                                            width: 50,
-                                            height: 50,
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius
-                                                  .circular(25),
-                                              color: redColor,
-                                            ),
-                                            child: const Center(
-                                              child: Icon(
-                                                Icons.send,
-                                                color: whiteColor,
-                                                size: 23.0,
-                                              ),
-                                            ),
-                                          ),
-                                          onTap: () {
-                                            if (chatController
-                                                .messageController.text
-                                                .isNotEmpty) {
-                                              if (chatController.replyMessage
-                                                  .value ==
-                                                  null) {
-                                                createMessage(context);
-                                              } else {
-                                                chatController
-                                                    .createReplyMessage(
-                                                    widget.data,
-                                                    widget.group,  userId.toString());
-                                              }
-                                              chatController.scrollToBottom();
-                                            }
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                            ),
-
-                            Offstage(
-                              offstage: !chatController.emojiShowing.value,
-                              child: EmojiPicker(
-                                textEditingController:
-                                chatController.messageController,
-                                config: Config(
-                                  height: 256,
-                                  checkPlatformCompatibility: true,
-                                  emojiViewConfig: EmojiViewConfig(
-                                    emojiSizeMax: 28 *
-                                        (foundation.defaultTargetPlatform ==
-                                            TargetPlatform.iOS
-                                            ? 1.2
-                                            : 1.0),
-                                  ),
-                                  swapCategoryAndBottomBar: true,
-                                  skinToneConfig: const SkinToneConfig(),
-                                  categoryViewConfig: const CategoryViewConfig(
-                                    indicatorColor: primaryColor,
-                                  ),
-                                  bottomActionBarConfig:
-                                  const BottomActionBarConfig(
-                                    backgroundColor: primaryColor,
-                                  ),
-                                  searchViewConfig: const SearchViewConfig(
-                                    buttonColor: primaryColor,
-                                    backgroundColor: primaryColor,
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                            SizedBox(
-                              height: 5,
-                            ),
-                          ],
+                          ),
                         ),
+
+                        Offstage(
+                          offstage: !chatController.emojiShowing.value,
+                          child: EmojiPicker(
+                            textEditingController:
+                                chatController.messageController,
+                            config: Config(
+                              height: 256,
+                              checkPlatformCompatibility: true,
+                              emojiViewConfig: EmojiViewConfig(
+                                emojiSizeMax: 28 *
+                                    (foundation.defaultTargetPlatform ==
+                                            TargetPlatform.iOS
+                                        ? 1.2
+                                        : 1.0),
+                              ),
+                              swapCategoryAndBottomBar: true,
+                              skinToneConfig: const SkinToneConfig(),
+                              categoryViewConfig: const CategoryViewConfig(
+                                indicatorColor: primaryColor,
+                              ),
+                              bottomActionBarConfig:
+                                  const BottomActionBarConfig(
+                                backgroundColor: primaryColor,
+                              ),
+                              searchViewConfig: const SearchViewConfig(
+                                buttonColor: primaryColor,
+                                backgroundColor: primaryColor,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        SizedBox(
+                          height: 5,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 onTap: () {
                   if (chatController.emojiShowing.value) {
                     chatController.emojiShowing.value =
-                    !chatController.emojiShowing.value;
+                        !chatController.emojiShowing.value;
                   }
                 },
               ),
               chatController.isLoading.value
                   ? Container(
-                    width: Get.width,
-                    height: Get.height,
-                     color: Colors.black.withOpacity(0.5),
-                     child: const Center(
-                    child: CircularProgressIndicator(color: primaryColor)),
-              )
+                      width: Get.width,
+                      height: Get.height,
+                      color: Colors.black.withOpacity(0.5),
+                      child: const Center(
+                          child:
+                              CircularProgressIndicator(color: primaryColor)),
+                    )
                   : Container(),
             ],
           ),
@@ -1333,9 +1269,7 @@ class _ChatScreen1State extends State<ChatScreen1> {
     required String userName,
   }) {
     chatController.repliedTo.value =
-    messageDetails!['senderId'] == userId.toString()
-        ? 'You'
-        : userName;
+        messageDetails!['senderId'] == userId.toString() ? 'You' : userName;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5.0),
       child: Row(
@@ -1391,10 +1325,7 @@ class _ChatScreen1State extends State<ChatScreen1> {
         color: primaryColor,
       ),
       child: Padding(
-        padding: EdgeInsets.only(
-          top: 35,
-          bottom: 15
-        ),
+        padding: EdgeInsets.only(top: 35, bottom: 15),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1431,36 +1362,36 @@ class _ChatScreen1State extends State<ChatScreen1> {
             ),
             dataProvider.selectedMessages.length == 1
                 ? InkWell(
-              child: const Icon(
-                Icons.reply_outlined,
-                color: whiteColor,
-              ),
-              onTap: () {
-                chatController.replyMessage.value =
-                    chatController.replyMessage1.value;
-                chatController.index.value = chatController.index1.value;
-              },
-            )
+                    child: const Icon(
+                      Icons.reply_outlined,
+                      color: whiteColor,
+                    ),
+                    onTap: () {
+                      chatController.replyMessage.value =
+                          chatController.replyMessage1.value;
+                      chatController.index.value = chatController.index1.value;
+                    },
+                  )
                 : const SizedBox(),
             const SizedBox(
               width: 20,
             ),
             dataProvider.selectedMessages.length == 1
                 ? InkWell(
-              child: const Icon(
-                Icons.info_outline,
-                color: whiteColor,
-              ),
-              onTap: () {
-                // Get.to(MessageInfoScreen(
-                //   time: chatController.replyMessage1.value!.get("created"), message:
-                // chatController.replyMessage1.value!.get("content"),
-                //   send: true,
-                //   delivered: true,
-                //
-                // ));
-              },
-            )
+                    child: const Icon(
+                      Icons.info_outline,
+                      color: whiteColor,
+                    ),
+                    onTap: () {
+                      // Get.to(MessageInfoScreen(
+                      //   time: chatController.replyMessage1.value!.get("created"), message:
+                      // chatController.replyMessage1.value!.get("content"),
+                      //   send: true,
+                      //   delivered: true,
+                      //
+                      // ));
+                    },
+                  )
                 : const SizedBox(),
             const SizedBox(
               width: 20,
@@ -1516,7 +1447,7 @@ class _ChatScreen1State extends State<ChatScreen1> {
                               Navigator.pop(context);
                               if (dataProvider.selectedMessages.isNotEmpty) {
                                 for (var data
-                                in dataProvider.selectedMessages) {
+                                    in dataProvider.selectedMessages) {
                                   if (kDebugMode) {
                                     print(data);
                                   }
@@ -1769,7 +1700,6 @@ class _ChatScreen1State extends State<ChatScreen1> {
 
     String messageId = _firestore.collection('messagesListing').doc().id;
 
-
     String messageContent = chatController.messageController.text.trim();
     Map<String, dynamic> messagesData = {
       'conversationId': widget.data.id,
@@ -1813,7 +1743,6 @@ class _ChatScreen1State extends State<ChatScreen1> {
         .doc(messageId)
         .set(messagesData);
 
-
     try {
       await FirebaseFirestore.instance
           .collection('conversationListing')
@@ -1836,7 +1765,7 @@ class _ChatScreen1State extends State<ChatScreen1> {
     String id = "";
 
     DocumentSnapshot documentSnapshot =
-    await FirebaseFirestore.instance.collection('users').doc(email).get();
+        await FirebaseFirestore.instance.collection('users').doc(email).get();
 
     if (documentSnapshot.exists) {
       id = documentSnapshot.get("deviceToken");
@@ -1848,15 +1777,18 @@ class _ChatScreen1State extends State<ChatScreen1> {
     print("token : $id");
 
     // String? accessToken = await NotificationServices.generateFCMAccessToken();
-    NotificationServices().sendNotification(context,
-        "HAS Notification", messageContent, id, "msg",);
+    NotificationServices().sendNotification(
+      context,
+      "HAS Notification",
+      messageContent,
+      id,
+      "msg",
+    );
     // NotificationServices().firebaseInit(context);
   }
 
-
   Future<void> deleteSelectedMessagesAndUpdateLastMessage(
       ThemeController dataProvider) async {
-
     setState(() {
       ChatScreen1.showSelectedMessages = false;
     });
@@ -1890,14 +1822,14 @@ class _ChatScreen1State extends State<ChatScreen1> {
             .collection("messages")
             .where('conversationId', isEqualTo: conversationId)
             .where('isMessageDelete',
-            isEqualTo: false) // Consider only non-deleted messages
+                isEqualTo: false) // Consider only non-deleted messages
             .orderBy('created', descending: true)
             .limit(1)
             .get();
 
         if (remainingMessages.docs.isNotEmpty) {
           var lastMessageData =
-          remainingMessages.docs.first.data() as Map<String, dynamic>;
+              remainingMessages.docs.first.data() as Map<String, dynamic>;
           FirebaseFirestore.instance
               .collection('conversationListing')
               .doc(conversationId)
@@ -1933,7 +1865,6 @@ class _ChatScreen1State extends State<ChatScreen1> {
   }
 
   Future<void> starSelectedMessages(ThemeController dataProvider) async {
-
     setState(() {
       ChatScreen1.showSelectedMessages = false;
     });
@@ -1968,15 +1899,12 @@ class _ChatScreen1State extends State<ChatScreen1> {
     }
   }
 
-
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<void> toggleReaction(String messageId, String emotion, ThemeController dataProvider) async {
-
+  Future<void> toggleReaction(
+      String messageId, String emotion, ThemeController dataProvider) async {
     setState(() {
-      ChatScreen1
-          .showSelectedMessages =
-      false;
+      ChatScreen1.showSelectedMessages = false;
     });
 
     String currentUserId = userId.toString();
@@ -2000,8 +1928,10 @@ class _ChatScreen1State extends State<ChatScreen1> {
     try {
       await _firestore.runTransaction((transaction) async {
         // First, read both documents
-        DocumentSnapshot senderSnapshot = await transaction.get(messageRefSender);
-        DocumentSnapshot receiverSnapshot = await transaction.get(messageRefReceiver);
+        DocumentSnapshot senderSnapshot =
+            await transaction.get(messageRefSender);
+        DocumentSnapshot receiverSnapshot =
+            await transaction.get(messageRefReceiver);
 
         if (!senderSnapshot.exists || !receiverSnapshot.exists) {
           throw Exception("Message does not exist!");
@@ -2013,9 +1943,11 @@ class _ChatScreen1State extends State<ChatScreen1> {
         transaction.update(messageRefSender, {'reactions': senderReactions});
 
         // Process reactions for receiver
-        List<dynamic> receiverReactions = receiverSnapshot.get("reactions") ?? [];
+        List<dynamic> receiverReactions =
+            receiverSnapshot.get("reactions") ?? [];
         _processReactions(receiverReactions, currentUserId, emotion);
-        transaction.update(messageRefReceiver, {'reactions': receiverReactions});
+        transaction
+            .update(messageRefReceiver, {'reactions': receiverReactions});
       });
 
       print("Reaction toggled successfully for both sender and receiver.");
@@ -2024,7 +1956,8 @@ class _ChatScreen1State extends State<ChatScreen1> {
     }
   }
 
-  void _processReactions(List<dynamic> reactions, String userId, String emotion) {
+  void _processReactions(
+      List<dynamic> reactions, String userId, String emotion) {
     // Check if the user already has a reaction in the list
     int existingIndex = reactions.indexWhere((r) => r['userId'] == userId);
 
@@ -2042,5 +1975,4 @@ class _ChatScreen1State extends State<ChatScreen1> {
       reactions.add({'userId': userId, 'emotion': emotion});
     }
   }
-
 }

@@ -19,6 +19,7 @@ import '../../route_management/constant_routes.dart';
 import '../../utils/api_urls.dart';
 import '../chat_screens/chat_conversion_screen.dart';
 
+//Changes
 class AllPropertyDetailScreen extends GetView<AllPropertyDetailController> {
   const AllPropertyDetailScreen({Key? key}) : super(key: key);
 
@@ -481,17 +482,17 @@ class MyDraggable extends GetView<AllPropertyDetailController> {
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
-        print("EXIST");
-        // Conversation already exists, navigate to chat screen
         DocumentSnapshot conversationSnapshot = querySnapshot.docs.first;
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ChatScreen1(
-                    group: false,
-                    image: profilePicture,
-                    name: name,
-                    data: conversationSnapshot)));
+        if (conversationSnapshot.exists && conversationSnapshot.id.isNotEmpty) {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ChatScreen1(
+                      group: false,
+                      image: profilePicture,
+                      name: name,
+                      data: conversationSnapshot)));
+        }
       } else {
         print("Not EXIST");
         // Conversation doesn't exist, create new conversation
