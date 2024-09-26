@@ -191,16 +191,6 @@ class AuthServices {
       print("Response body : $responseBody");
       print("Response body : ${response.statusCode}");
       return jsonDecode(responseBody);
-
-      try {
-        var response = await request.send();
-        var responseBody = await response.stream.bytesToString();
-        print("Response body : $responseBody");
-      } catch (e) {
-        // Handle general errors
-        print("Error ===> $e");
-        rethrow;
-      }
     } else {
       AppUtils.getSnackBarNoInternet();
       throw Exception('No internet connectivity');
