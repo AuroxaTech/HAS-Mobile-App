@@ -150,6 +150,7 @@ import 'ToBeReplyMessageWidget.dart';
 
 class ChatScreen1 extends StatefulWidget {
   final String name;
+  final String id;
   final String image;
   final bool group;
 
@@ -164,7 +165,8 @@ class ChatScreen1 extends StatefulWidget {
       required this.name,
       required this.image,
       required this.data,
-      required this.group});
+      required this.group,
+      required this.id});
 
   @override
   State<ChatScreen1> createState() => _ChatScreen1State();
@@ -208,9 +210,19 @@ class _ChatScreen1State extends State<ChatScreen1> {
     });
   }
 
+  Future<void> getId() async {
+    String receiverId = widget.id.toString();
+
+    setState(() {
+      id = receiverId.toString();
+    });
+  }
+
   void setupStream() async {
     userId = await Preferences.getUserID();
-    if (widget.data.id != null && widget.data.id.isNotEmpty) {
+
+    // Check if the conversation ID is valid before proceeding
+    if (widget.data != null && widget.data.id.isNotEmpty) {
       stream = FirebaseFirestore.instance
           .collection('messagesListing')
           .doc(userId.toString())
@@ -219,8 +231,6 @@ class _ChatScreen1State extends State<ChatScreen1> {
           .orderBy('created', descending: true)
           .snapshots();
 
-      print("my user id $userId");
-
       markAllMessagesAsSeen();
 
       String receiverId = widget.data["user1"].toString() == userId.toString()
@@ -228,13 +238,8 @@ class _ChatScreen1State extends State<ChatScreen1> {
           : widget.data["user1"].toString();
 
       setState(() {
-        id = receiverId;
+        id = receiverId.toString();
       });
-
-      tappedStates = List<bool>.generate(10, (index) => false);
-      print(widget.name);
-      print(widget.data.id);
-      print("receiver id $receiverId");
     } else {
       print("Invalid conversation ID");
     }
@@ -242,9 +247,10 @@ class _ChatScreen1State extends State<ChatScreen1> {
 
   @override
   void initState() {
-    getUserId();
     chatController = Get.put(ChatController());
-    stream = Stream.empty();
+    getUserId();
+    getId();
+    stream = const Stream.empty();
     setupStream();
     // stream = FirebaseFirestore.instance
     //     .collection('messagesListing')
@@ -303,6 +309,11 @@ class _ChatScreen1State extends State<ChatScreen1> {
   var themeController = Get.put(ThemeController());
   @override
   Widget build(BuildContext context) {
+    if (widget.data == null || widget.data.id.isEmpty) {
+      return const Scaffold(
+        body: Center(child: Text('Invalid conversation data.')),
+      );
+    }
     print("Build called");
     print("reciver id $id");
     print("user id $userId");
@@ -552,11 +563,15 @@ class _ChatScreen1State extends State<ChatScreen1> {
                                   AsyncSnapshot<QuerySnapshot> snapshot) {
                                 if (snapshot.connectionState ==
                                     ConnectionState.waiting) {
-                                  return const SizedBox();
+                                  return Center(
+                                      child: CircularProgressIndicator());
                                 } else if (snapshot.hasError) {
-                                  // Handle error case
-                                  print(snapshot.error);
-                                  return Text('Error: ${snapshot.error}');
+                                  return Center(
+                                      child: Text('Error: ${snapshot.error}'));
+                                } else if (!snapshot.hasData ||
+                                    snapshot.data!.docs.isEmpty) {
+                                  return Center(
+                                      child: Text('No messages available.'));
                                 } else {
                                   List<DocumentSnapshot> documents =
                                       snapshot.data!.docs;

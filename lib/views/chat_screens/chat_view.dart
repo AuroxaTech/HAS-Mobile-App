@@ -9,7 +9,6 @@ import '../../custom_widgets/custom_button.dart';
 import '../../utils/shared_preferences/preferences.dart';
 import 'chat_conversion_screen.dart';
 
-
 class ChatView extends StatefulWidget {
   final String userImg;
   final bool searchBox;
@@ -21,7 +20,6 @@ class ChatView extends StatefulWidget {
 }
 
 class _ChatViewState extends State<ChatView> {
-
   int userId = 0;
 
   getUserId() async {
@@ -46,14 +44,14 @@ class _ChatViewState extends State<ChatView> {
 
   Future<void> getUserIdAndSetupStream() async {
     userId = await Preferences.getUserID();
-      stream = FirebaseFirestore.instance
-          .collection('conversationListing')
-          .where('user', arrayContains: userId.toString())
-          .orderBy('lastMessage.time', descending: true)
-          .snapshots();
+    stream = FirebaseFirestore.instance
+        .collection('conversationListing')
+        .where('user', arrayContains: userId.toString())
+        .orderBy('lastMessage.time', descending: true)
+        .snapshots();
 
-      // Trigger a rebuild after stream is initialized
-      setState(() {});
+    // Trigger a rebuild after stream is initialized
+    setState(() {});
   }
 
   // void setupStream()async {
@@ -67,8 +65,7 @@ class _ChatViewState extends State<ChatView> {
 
   @override
   Widget build(BuildContext context) {
-
-    return  Scaffold(
+    return Scaffold(
       backgroundColor: whiteColor,
       body: Container(
         width: MediaQuery.of(context).size.width,
@@ -89,30 +86,28 @@ class _ChatViewState extends State<ChatView> {
             children: <Widget>[
               widget.searchBox
                   ? Container(
-                padding: EdgeInsets.all(18.0),
-                child: TextFormField(
-                  controller: searchController,
-                  decoration: InputDecoration(
-                    hintText: 'Search...',
-
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12.0),
-                      borderSide: BorderSide(color: Colors.grey),
-
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12.0),
-                      borderSide: BorderSide(color: Colors.grey),
-                    ),
-                    prefixIcon: Icon(Icons.search),
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      searchQuery = value;
-                    });
-                  },
-                ),
-              )
+                      padding: EdgeInsets.all(18.0),
+                      child: TextFormField(
+                        controller: searchController,
+                        decoration: InputDecoration(
+                          hintText: 'Search...',
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                            borderSide: BorderSide(color: Colors.grey),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                            borderSide: BorderSide(color: Colors.grey),
+                          ),
+                          prefixIcon: Icon(Icons.search),
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            searchQuery = value;
+                          });
+                        },
+                      ),
+                    )
                   : SizedBox(),
               // Padding(
               //   padding: EdgeInsets.only(left: 12.w, bottom: 20.h),
@@ -148,8 +143,10 @@ class _ChatViewState extends State<ChatView> {
                   } else {
                     List<DocumentSnapshot> documents = snapshot.data!.docs;
                     documents.sort((a, b) {
-                      Timestamp timestampA = a['lastMessage']['time'] ?? a['created'];
-                      Timestamp timestampB = b['lastMessage']['time'] ?? b['created'];
+                      Timestamp timestampA =
+                          a['lastMessage']['time'] ?? a['created'];
+                      Timestamp timestampB =
+                          b['lastMessage']['time'] ?? b['created'];
                       return timestampB.compareTo(timestampA);
                     });
 
@@ -158,12 +155,15 @@ class _ChatViewState extends State<ChatView> {
                         var participants = doc['members'];
                         String otherParticipantName = '';
                         for (var participant in participants) {
-                          if (participant['userId'].toString() != userId.toString()) {
+                          if (participant['userId'].toString() !=
+                              userId.toString()) {
                             otherParticipantName = participant['userName'];
                             break;
                           }
                         }
-                        return otherParticipantName.toLowerCase().contains(searchQuery.toLowerCase());
+                        return otherParticipantName
+                            .toLowerCase()
+                            .contains(searchQuery.toLowerCase());
                       }).toList();
                     }
 
@@ -183,308 +183,305 @@ class _ChatViewState extends State<ChatView> {
                             var participants = documents[index]['members'];
                             String otherParticipantName = '';
                             for (var participant in participants) {
-                              if (participant['userId'].toString() != userId.toString()) {
+                              if (participant['userId'].toString() !=
+                                  userId.toString()) {
                                 otherParticipantName = participant['userName'];
-                                profilePictureUrl = participant['profilePictureUrl'];
+                                profilePictureUrl =
+                                    participant['profilePictureUrl'];
                                 break;
                               }
                             }
                             if (otherParticipantName.isEmpty) {
                               otherParticipantName = 'YOU';
-                              profilePictureUrl = participants[0]['profilePictureUrl'];
+                              profilePictureUrl =
+                                  participants[0]['profilePictureUrl'];
                             }
 
                             var lastMessage = documents[index]['lastMessage'];
                             var createdTime = documents[index]['created'];
                             String id = documents[index].id;
 
-                            return lastMessage['time'] == null && lastMessage['message'] == "" ? Container () :
-                            Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                splashColor: primaryColor.withOpacity(0.5),
-                                child: Center(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Row(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: <Widget>[
-                                          CircleAvatar(
-                                            radius: 25,
-                                            backgroundColor: primaryColor,
-                                            child: CircleAvatar(
-                                              radius: 24,
-                                              backgroundColor: whiteColor,
-                                              child: CachedNetworkImage(imageUrl: profilePictureUrl,
-                                              errorWidget: (e, r, f){
-                                               return CircleAvatar(
-                                                  child: Text(otherParticipantName[0].toUpperCase()), // Display the first letter of the name
-                                                );
-                                              },
-                                              ),
-                                             // backgroundImage: CachedNetworkImageProvider(profilePictureUrl),
-                                            ),
-                                          ),
-                                          Flexible(
-                                            child: Container(
-                                              padding: EdgeInsets.only(left: 12),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                                children: <Widget>[
-                                                  lastMessage['seen']
-                                                      ? Text(
-                                                    toBeginningOfSentenceCase(otherParticipantName.toString())! ,
-                                                    style: GoogleFonts.roboto(
-                                                      textStyle: TextStyle(
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                        FontWeight.bold,
-                                                      ),
+                            return lastMessage['time'] == null &&
+                                    lastMessage['message'] == ""
+                                ? Container()
+                                : Material(
+                                    color: Colors.transparent,
+                                    child: InkWell(
+                                      splashColor:
+                                          primaryColor.withOpacity(0.5),
+                                      child: Center(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: <Widget>[
+                                                CircleAvatar(
+                                                  radius: 25,
+                                                  backgroundColor: primaryColor,
+                                                  child: CircleAvatar(
+                                                    radius: 24,
+                                                    backgroundColor: whiteColor,
+                                                    child: CachedNetworkImage(
+                                                      imageUrl:
+                                                          profilePictureUrl,
+                                                      errorWidget: (e, r, f) {
+                                                        return CircleAvatar(
+                                                          child: Text(
+                                                              otherParticipantName[
+                                                                      0]
+                                                                  .toUpperCase()), // Display the first letter of the name
+                                                        );
+                                                      },
                                                     ),
-                                                  )
-                                                      : FutureBuilder<String>(
-                                                      future: unReadMessages(id),
-                                                      builder:
-                                                          (context, snapshot) {
-                                                        if (snapshot
-                                                            .connectionState ==
-                                                            ConnectionState
-                                                                .waiting) {
-                                                          return const CircularProgressIndicator(
-                                                            color: whiteColor,
-                                                          );
-                                                        } else if (snapshot
-                                                            .hasError) {
-                                                          return Text(
-                                                              'Error: ${snapshot.error}');
-                                                        } else {
-                                                          String unreadCount =
-                                                          snapshot.data!;
-                                                          return Row(
-                                                            mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                            children: <Widget>[
-                                                              Text(
-                                                               toBeginningOfSentenceCase(otherParticipantName)! ,
-                                                                style: GoogleFonts
-                                                                    .roboto(
+                                                    // backgroundImage: CachedNetworkImageProvider(profilePictureUrl),
+                                                  ),
+                                                ),
+                                                Flexible(
+                                                  child: Container(
+                                                    padding: EdgeInsets.only(
+                                                        left: 12),
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: <Widget>[
+                                                        lastMessage['seen']
+                                                            ? Text(
+                                                                toBeginningOfSentenceCase(
+                                                                    otherParticipantName
+                                                                        .toString())!,
+                                                                style:
+                                                                    GoogleFonts
+                                                                        .roboto(
                                                                   textStyle:
-                                                                  TextStyle(
+                                                                      TextStyle(
                                                                     fontSize:
-                                                                    14,
+                                                                        14,
                                                                     fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
+                                                                        FontWeight
+                                                                            .bold,
                                                                   ),
                                                                 ),
-                                                              ),
-                                                              unreadCount == "0"
-                                                                  ? Container()
-                                                                  : Padding(
-                                                                padding: EdgeInsets.only(
-                                                                    right: 15),
-                                                                child:
-                                                                Material(
-                                                                  elevation:
-                                                                  2.0,
-                                                                  borderRadius:
-                                                                  BorderRadius.circular(
-                                                                      16),
-                                                                  child:
-                                                                  Container(
-                                                                    width:
-                                                                    16,
-                                                                    height:
-                                                                    16,
-                                                                    decoration:
-                                                                    BoxDecoration(
+                                                              )
+                                                            : FutureBuilder<
+                                                                    String>(
+                                                                future:
+                                                                    unReadMessages(
+                                                                        id),
+                                                                builder: (context,
+                                                                    snapshot) {
+                                                                  if (snapshot
+                                                                          .connectionState ==
+                                                                      ConnectionState
+                                                                          .waiting) {
+                                                                    return const CircularProgressIndicator(
                                                                       color:
-                                                                      primaryColor,
-                                                                      borderRadius:
-                                                                      BorderRadius.circular(8),
-                                                                    ),
-                                                                    child:
-                                                                    Center(
-                                                                      child:
-                                                                      Text(
-                                                                        unreadCount.toString(),
-                                                                        style:
-                                                                        GoogleFonts.poppins(
-                                                                          textStyle: TextStyle(
-                                                                            fontSize: 8,
-                                                                            color: whiteColor,
-                                                                            fontWeight: FontWeight.bold,
+                                                                          whiteColor,
+                                                                    );
+                                                                  } else if (snapshot
+                                                                      .hasError) {
+                                                                    return Text(
+                                                                        'Error: ${snapshot.error}');
+                                                                  } else {
+                                                                    String
+                                                                        unreadCount =
+                                                                        snapshot
+                                                                            .data!;
+                                                                    return Row(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .spaceBetween,
+                                                                      children: <Widget>[
+                                                                        Text(
+                                                                          toBeginningOfSentenceCase(
+                                                                              otherParticipantName)!,
+                                                                          style:
+                                                                              GoogleFonts.roboto(
+                                                                            textStyle:
+                                                                                TextStyle(
+                                                                              fontSize: 14,
+                                                                              fontWeight: FontWeight.bold,
+                                                                            ),
                                                                           ),
                                                                         ),
+                                                                        unreadCount ==
+                                                                                "0"
+                                                                            ? Container()
+                                                                            : Padding(
+                                                                                padding: EdgeInsets.only(right: 15),
+                                                                                child: Material(
+                                                                                  elevation: 2.0,
+                                                                                  borderRadius: BorderRadius.circular(16),
+                                                                                  child: Container(
+                                                                                    width: 16,
+                                                                                    height: 16,
+                                                                                    decoration: BoxDecoration(
+                                                                                      color: primaryColor,
+                                                                                      borderRadius: BorderRadius.circular(8),
+                                                                                    ),
+                                                                                    child: Center(
+                                                                                      child: Text(
+                                                                                        unreadCount.toString(),
+                                                                                        style: GoogleFonts.poppins(
+                                                                                          textStyle: TextStyle(
+                                                                                            fontSize: 8,
+                                                                                            color: whiteColor,
+                                                                                            fontWeight: FontWeight.bold,
+                                                                                          ),
+                                                                                        ),
+                                                                                      ),
+                                                                                    ),
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                      ],
+                                                                    );
+                                                                  }
+                                                                }),
+                                                        lastMessage['seen']
+                                                            ? Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceBetween,
+                                                                children: <Widget>[
+                                                                  Expanded(
+                                                                    child: Text(
+                                                                      lastMessage['time'] ==
+                                                                              null
+                                                                          ? group
+                                                                              ? lastMessage['message']
+                                                                              : "No previous messages"
+                                                                          : lastMessage['message'],
+                                                                      style: GoogleFonts
+                                                                          .roboto(
+                                                                        textStyle:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              12,
+                                                                          color:
+                                                                              blackColor,
+                                                                        ),
                                                                       ),
+                                                                      maxLines:
+                                                                          1,
+                                                                      overflow:
+                                                                          TextOverflow
+                                                                              .ellipsis,
                                                                     ),
                                                                   ),
-                                                                ),
+                                                                  Text(
+                                                                    lastMessage['time'] !=
+                                                                            null
+                                                                        ? formatTime(lastMessage['time']
+                                                                            .toDate())
+                                                                        : formatTime(
+                                                                            createdTime.toDate()),
+                                                                    style: GoogleFonts
+                                                                        .poppins(
+                                                                      textStyle:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            10,
+                                                                      ),
+                                                                    ),
+                                                                  )
+                                                                ],
+                                                              )
+                                                            : FutureBuilder(
+                                                                future:
+                                                                    unReadMessages(
+                                                                        id),
+                                                                builder: (context,
+                                                                    snapshot) {
+                                                                  if (snapshot
+                                                                          .connectionState ==
+                                                                      ConnectionState
+                                                                          .waiting) {
+                                                                    return const CircularProgressIndicator(
+                                                                      color:
+                                                                          whiteColor,
+                                                                    );
+                                                                  } else if (snapshot
+                                                                      .hasError) {
+                                                                    return Text(
+                                                                        'Error: ${snapshot.error}');
+                                                                  } else {
+                                                                    String
+                                                                        unreadCount =
+                                                                        snapshot
+                                                                            .data!;
+                                                                    return Padding(
+                                                                      padding: EdgeInsets
+                                                                          .only(
+                                                                              top: 5),
+                                                                      child:
+                                                                          Row(
+                                                                        mainAxisAlignment:
+                                                                            MainAxisAlignment.spaceBetween,
+                                                                        children: <Widget>[
+                                                                          Expanded(
+                                                                            child:
+                                                                                Text(
+                                                                              lastMessage['time'] == null ? "No previous messages" : lastMessage['message'],
+                                                                              style: GoogleFonts.roboto(
+                                                                                textStyle: TextStyle(fontSize: 12, color: greyColor, fontWeight: unreadCount == "0" ? FontWeight.normal : FontWeight.bold),
+                                                                              ),
+                                                                              maxLines: 1,
+                                                                              overflow: TextOverflow.ellipsis,
+                                                                            ),
+                                                                          ),
+                                                                          Text(
+                                                                            lastMessage['time'] != null
+                                                                                ? formatTime(lastMessage['time'].toDate())
+                                                                                : formatTime(createdTime.toDate()),
+                                                                            style:
+                                                                                GoogleFonts.poppins(
+                                                                              textStyle: TextStyle(
+                                                                                color: unreadCount == "0" ? blackColor : redColor,
+                                                                                fontWeight: unreadCount == "0" ? FontWeight.normal : FontWeight.bold,
+                                                                                fontSize: 10,
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                    );
+                                                                  }
+                                                                },
                                                               ),
-                                                            ],
-                                                          );
-                                                        }
-                                                      }),
-                                                  lastMessage['seen']
-                                                      ? Row(
-                                                    mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                    children: <Widget>[
-                                                      Expanded(
-                                                        child: Text(
-                                                          lastMessage['time'] ==
-                                                              null
-                                                              ? group ? lastMessage['message'] :  "No previous messages"
-                                                              : lastMessage[
-                                                          'message'],
-                                                          style: GoogleFonts
-                                                              .roboto(
-                                                            textStyle:
-                                                            TextStyle(
-                                                              fontSize: 12,
-                                                              color: blackColor,
-                                                            ),
-                                                          ),
-                                                          maxLines: 1,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                        ),
-                                                      ),
-                                                      Text(
-                                                        lastMessage['time'] !=
-                                                            null
-                                                            ? formatTime(
-                                                            lastMessage[
-                                                            'time']
-                                                                .toDate())
-                                                            : formatTime(
-                                                            createdTime
-                                                                .toDate()),
-                                                        style:
-                                                        GoogleFonts.poppins(
-                                                          textStyle: TextStyle(
-                                                            fontSize: 10,
-                                                          ),
-                                                        ),
-                                                      )
-                                                    ],
-                                                  )
-                                                      : FutureBuilder(
-                                                    future: unReadMessages(id),
-                                                    builder:
-                                                        (context, snapshot) {
-                                                      if (snapshot
-                                                          .connectionState ==
-                                                          ConnectionState
-                                                              .waiting) {
-                                                        return const CircularProgressIndicator(
-                                                          color: whiteColor,
-                                                        );
-                                                      } else if (snapshot
-                                                          .hasError) {
-                                                        return Text(
-                                                            'Error: ${snapshot.error}');
-                                                      } else {
-                                                        String unreadCount =
-                                                        snapshot.data!;
-                                                        return Padding(
-                                                          padding:
-                                                          EdgeInsets.only(
-                                                              top: 5),
-                                                          child: Row(
-                                                            mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                            children: <Widget>[
-                                                              Expanded(
-                                                                child: Text(
-                                                                  lastMessage['time'] ==
-                                                                      null
-                                                                      ? "No previous messages"
-                                                                      : lastMessage[
-                                                                  'message'],
-                                                                  style:
-                                                                  GoogleFonts
-                                                                      .roboto(
-                                                                    textStyle: TextStyle(
-                                                                        fontSize: 12,
-                                                                        color:
-                                                                        greyColor,
-                                                                        fontWeight: unreadCount ==
-                                                                            "0"
-                                                                            ? FontWeight.normal
-                                                                            : FontWeight.bold),
-                                                                  ),
-                                                                  maxLines: 1,
-                                                                  overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                                ),
-                                                              ),
-                                                              Text(
-                                                                lastMessage['time'] !=
-                                                                    null
-                                                                    ? formatTime(
-                                                                    lastMessage['time']
-                                                                        .toDate())
-                                                                    : formatTime(
-                                                                    createdTime
-                                                                        .toDate()),
-                                                                style:
-                                                                GoogleFonts
-                                                                    .poppins(
-                                                                  textStyle:
-                                                                  TextStyle(
-                                                                    color: unreadCount ==
-                                                                        "0"
-                                                                        ? blackColor
-                                                                        : redColor,
-                                                                    fontWeight: unreadCount == "0"
-                                                                        ? FontWeight
-                                                                        .normal
-                                                                        : FontWeight
-                                                                        .bold,
-                                                                    fontSize:
-                                                                    10,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        );
-                                                      }
-                                                    },
+                                                      ],
+                                                    ),
                                                   ),
-                                                ],
-                                              ),
+                                                ),
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              height: 14,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      onTap: () async {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => ChatScreen1(
+                                              group: group,
+                                              data: documents[index],
+                                              name: otherParticipantName,
+                                              image: profilePictureUrl,
+                                              id: id.toString(),
                                             ),
                                           ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 14,),
-                                    ],
-                                  ),
-                                ),
-                                onTap: () async {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ChatScreen1(
-                                        group: group,
-                                        data: documents[index],
-                                        name: otherParticipantName,
-                                        image: profilePictureUrl,
-                                      ),
+                                        );
+                                      },
                                     ),
                                   );
-                                },
-                              ),
-                            );
                           },
                         ),
                       );

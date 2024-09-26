@@ -1,4 +1,5 @@
 import 'dart:async'; // For debounce functionality
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:property_app/constant_widget/constant_widgets.dart';
@@ -77,67 +78,61 @@ class _ContactsPageState extends State<ContactsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: whiteColor,
-      appBar: AppBar(
-          backgroundColor: whiteColor,
-        title: customText(text: "Contacts",fontSize: 24,fontWeight: FontWeight.w500)
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: TextFormField(
-              controller: searchController,
-              decoration: InputDecoration(
-                    hintText: 'Search...',
-
-                    enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12.0),
-            borderSide: BorderSide(color: Colors.grey),
-
-                    ),
-                    focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12.0),
-            borderSide: BorderSide(color: Colors.grey),
-                    ),
-                    prefixIcon: Icon(Icons.search),
+        appBar: AppBar(
+            backgroundColor: whiteColor,
+            title: customText(
+                text: "Contacts", fontSize: 24, fontWeight: FontWeight.w500)),
+        body: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: TextFormField(
+                controller: searchController,
+                decoration: InputDecoration(
+                  hintText: 'Search...',
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                    borderSide: BorderSide(color: Colors.grey),
                   ),
-              onChanged: _onSearchChanged, // Triggers real-time search
-            ),
-          ),
-          isLoading
-              ? Center(child: CircularProgressIndicator())
-              : searchResults.isEmpty
-              ? Center(child: Text('No users found'))
-              : Expanded(
-                child: ListView.builder(
-                            itemCount: searchResults.length,
-                            itemBuilder: (context, index) {
-                final user = searchResults[index];
-                return ListTile(
-                  title: Text(user['fullname']),
-                  subtitle: Text(user['email']),
-                  onTap: () {
-                    createConversation(user['fullname'], user['profileimage'], user['id'].toString(), context);
-
-                  },
-                );
-                            },
-                          ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                    borderSide: BorderSide(color: Colors.grey),
+                  ),
+                  prefixIcon: Icon(Icons.search),
+                ),
+                onChanged: _onSearchChanged, // Triggers real-time search
               ),
-        ],
-      )
-
-
-    );
+            ),
+            isLoading
+                ? Center(child: CircularProgressIndicator())
+                : searchResults.isEmpty
+                    ? Center(child: Text('No users found'))
+                    : Expanded(
+                        child: ListView.builder(
+                          itemCount: searchResults.length,
+                          itemBuilder: (context, index) {
+                            final user = searchResults[index];
+                            return ListTile(
+                              title: Text(user['fullname']),
+                              subtitle: Text(user['email']),
+                              onTap: () {
+                                createConversation(
+                                    user['fullname'],
+                                    user['profileimage'],
+                                    user['id'].toString(),
+                                    context);
+                              },
+                            );
+                          },
+                        ),
+                      ),
+          ],
+        ));
   }
-  createConversation(
-      String name,
-      String profilePicture,
-      String id,
-      context
-      ) async {
-    try {
 
+  createConversation(
+      String name, String profilePicture, String id, context) async {
+    try {
       var userId = await Preferences.getUserID();
       var userName = await Preferences.getUserName();
 
@@ -152,11 +147,16 @@ class _ContactsPageState extends State<ContactsPage> {
         print("EXIST");
         // Conversation already exists, navigate to chat screen
         DocumentSnapshot conversationSnapshot = querySnapshot.docs.first;
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ChatScreen1(
-            group: false,
-            image: profilePicture,
-            name: name,
-            data: conversationSnapshot)));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ChatScreen1(
+                      group: false,
+                      image: profilePicture,
+                      name: name,
+                      data: conversationSnapshot,
+                      id: id.toString(),
+                    )));
         // Navigator.pushAndRemoveUntil(
         //   context,
         //   MaterialPageRoute(
@@ -171,7 +171,7 @@ class _ContactsPageState extends State<ContactsPage> {
         print("Not EXIST");
         // Conversation doesn't exist, create new conversation
         Map<String, dynamic> conversationData = {
-          'group' : false,
+          'group': false,
           'profilePictureUrl': profilePicture,
           "members": [
             {
@@ -181,7 +181,6 @@ class _ContactsPageState extends State<ContactsPage> {
                   ? profilePicture
                   : await Preferences.getToken(),
             },
-
             {
               'userId': id,
               'userName': name,
@@ -189,8 +188,8 @@ class _ContactsPageState extends State<ContactsPage> {
             },
           ],
           "created": DateTime.now(),
-          "user1" : userId.toString(),
-          "user2" : id,
+          "user1": userId.toString(),
+          "user2": id,
           "user": [userId.toString(), id],
           "lastMessage": {
             "message": "",
@@ -198,7 +197,9 @@ class _ContactsPageState extends State<ContactsPage> {
             "seen": false,
           },
         };
-        DocumentReference conversationRef = await FirebaseFirestore.instance.collection('conversationListing').add(conversationData);
+        DocumentReference conversationRef = await FirebaseFirestore.instance
+            .collection('conversationListing')
+            .add(conversationData);
         DocumentSnapshot conversationSnapshot = await conversationRef.get();
         // Navigator.pushAndRemoveUntil(
         //   context,
@@ -211,19 +212,19 @@ class _ContactsPageState extends State<ContactsPage> {
         //       (Route<dynamic> route) => false,
         // );
 
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ChatScreen1(
-            group: false,
-            image: profilePicture,
-            name: name,
-            data: conversationSnapshot)));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ChatScreen1(
+                      group: false,
+                      image: profilePicture,
+                      name: name,
+                      data: conversationSnapshot,
+                      id: id.toString(),
+                    )));
       }
     } catch (e) {
       print('Error creating or navigating to conversation: $e');
     }
   }
 }
-
-
-
-
-

@@ -410,14 +410,13 @@ class MyDraggable extends GetView<AllPropertyDetailController> {
                                                 screenHeight(context) * 0.06,
                                             borderRadius:
                                                 BorderRadius.circular(50),
-                                            text: "Contact",
+                                            text: "Messages",
                                             fontSize: 20,
                                             gradientColor: greenGradient(),
                                             width: screenWidth(context) * 0.4,
                                             onTap: () async {
-                                              print(controller.getPropertyOne
-                                                  .value!.user!.fullname
-                                                  .toString());
+                                              print(
+                                                  "Name == ${controller.getPropertyOne.value!.user!.fullname.toString()}");
                                               print(controller.getPropertyOne
                                                   .value!.user!.id
                                                   .toString());
@@ -470,85 +469,95 @@ class MyDraggable extends GetView<AllPropertyDetailController> {
 
   createConversation(
       String name, String profilePicture, String id, context) async {
-    try {
-      var userId = await Preferences.getUserID();
-      var userName = await Preferences.getUserName();
+    var userId = await Preferences.getUserID();
+    var userName = await Preferences.getUserName();
+    print("Id ==> $id");
+    print("userId ==> $userId");
 
-      // Query Firestore to check if a conversation already exists
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+    // Query Firestore to check if a conversation already exists
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('conversationListing')
+        .where('user1', isEqualTo: userId.toString())
+        .where('user2', isEqualTo: id.toString())
+        .get();
+
+    if (querySnapshot.docs.isEmpty) {
+      // Check in reverse if the conversation doesn't exist in this order
+      querySnapshot = await FirebaseFirestore.instance
           .collection('conversationListing')
-          .where('user1', isEqualTo: userId.toString())
-          .where('user2', isEqualTo: id)
+          .where('user1', isEqualTo: id.toString())
+          .where('user2', isEqualTo: userId.toString())
           .get();
+    }
 
-      if (querySnapshot.docs.isNotEmpty) {
-        DocumentSnapshot conversationSnapshot = querySnapshot.docs.first;
-        if (conversationSnapshot.exists && conversationSnapshot.id.isNotEmpty) {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => ChatScreen1(
-                      group: false,
-                      image: profilePicture,
-                      name: name,
-                      data: conversationSnapshot)));
-        }
-      } else {
-        print("Not EXIST");
-        // Conversation doesn't exist, create new conversation
-        Map<String, dynamic> conversationData = {
-          'group': false,
-          'profilePictureUrl': profilePicture,
-          "members": [
-            {
-              'userId': userId.toString(),
-              'userName': userName,
-              'profilePictureUrl': id == userId.toString()
-                  ? profilePicture
-                  : await Preferences.getToken(),
-            },
-            {
-              'userId': id,
-              'userName': name,
-              'profilePictureUrl': profilePicture
-            },
-          ],
-          "created": DateTime.now(),
-          "user1": userId.toString(),
-          "user2": id,
-          "user": [userId.toString(), id],
-          "lastMessage": {
-            "message": "",
-            "time": null,
-            "seen": false,
-          },
-        };
-        DocumentReference conversationRef = await FirebaseFirestore.instance
-            .collection('conversationListing')
-            .add(conversationData);
-        DocumentSnapshot conversationSnapshot = await conversationRef.get();
-        // Navigator.pushAndRemoveUntil(
-        //   context,
-        //   MaterialPageRoute(
-        //       builder: (context) => ChatScreen1(
-        //           group: false,
-        //           image: profilePicture,
-        //           name: name,
-        //           data: conversationSnapshot)),
-        //       (Route<dynamic> route) => false,
-        // );
-
+    if (querySnapshot.docs.isNotEmpty) {
+      DocumentSnapshot conversationSnapshot = querySnapshot.docs.first;
+      if (conversationSnapshot.exists && conversationSnapshot.id.isNotEmpty) {
+        // Proceed to ChatScreen1 if the conversation data is valid
         Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ChatScreen1(
-                    group: false,
-                    image: profilePicture,
-                    name: name,
-                    data: conversationSnapshot)));
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatScreen1(
+              group: false,
+              image: profilePicture,
+              name: name,
+              data: conversationSnapshot,
+              id: id.toString(),
+            ),
+          ),
+        );
       }
-    } catch (e) {
-      print('Error creating or navigating to conversation: $e');
+    } else {
+      // Conversation doesn't exist, create new conversation
+      print("Creating new conversation...");
+
+      Map<String, dynamic> conversationData = {
+        'group': false,
+        'profilePictureUrl': profilePicture,
+        "members": [
+          {
+            'userId': userId.toString(),
+            'userName': userName,
+            'profilePictureUrl': id == userId.toString()
+                ? profilePicture
+                : await Preferences.getToken(),
+          },
+          {'userId': id, 'userName': name, 'profilePictureUrl': profilePicture},
+        ],
+        "created": DateTime.now(),
+        "user1": userId.toString(),
+        "user2": id,
+        "user": [userId.toString(), id],
+        "lastMessage": {
+          "message": "",
+          "time": null,
+          "seen": false,
+        },
+      };
+
+      DocumentReference conversationRef = await FirebaseFirestore.instance
+          .collection('conversationListing')
+          .add(conversationData);
+
+      DocumentSnapshot conversationSnapshot = await conversationRef.get();
+
+      if (conversationSnapshot.exists && conversationSnapshot.id.isNotEmpty) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatScreen1(
+              group: false,
+              image: profilePicture,
+              name: name,
+              data: conversationSnapshot,
+              id: id.toString(),
+            ),
+          ),
+        );
+      } else {
+        // Handle error if for some reason the document was not created
+        print("Failed to create a valid conversation.");
+      }
     }
   }
 }
