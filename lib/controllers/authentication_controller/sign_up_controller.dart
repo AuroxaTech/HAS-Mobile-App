@@ -277,7 +277,7 @@ class SignUpController extends GetxController {
 
     try {
       // Step 1: Check if the email is already in use
-      var emailCheckResponse = await authServices.checkEmailExists(email);
+      //var emailCheckResponse = await authServices.checkEmailExists(email);
 
       // if (emailCheckResponse['exists'] == true) {
       //   // If email already exists, show an error message and return
@@ -287,8 +287,8 @@ class SignUpController extends GetxController {
       // }
 
       // Step 2: If email is not registered, proceed with registration
-      var deviceId = await notificationServices.getDeviceToken();
-      print("deviceToken : $deviceId");
+      // var deviceId = await notificationServices.getDeviceToken();
+      // print("deviceToken : $deviceId");
 
       var registrationData = await authServices.registerVisitor(
         fullName: fullName,
@@ -300,7 +300,7 @@ class SignUpController extends GetxController {
         password: password,
         conPassword: conPassword,
         profileImage: profileImage,
-        deviceToken: deviceId,
+        deviceToken: "deviceId",
         platform: Platform.isAndroid ? "android" : "ios",
       );
 
