@@ -503,6 +503,7 @@ class MyDraggable extends GetView<AllPropertyDetailController> {
               name: name,
               data: conversationSnapshot,
               id: id.toString(),
+              userId: userId.toString(),
             ),
           ),
         );
@@ -551,6 +552,7 @@ class MyDraggable extends GetView<AllPropertyDetailController> {
               name: name,
               data: conversationSnapshot,
               id: id.toString(),
+              userId: userId.toString(),
             ),
           ),
         );

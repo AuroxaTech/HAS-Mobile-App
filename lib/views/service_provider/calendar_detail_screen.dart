@@ -331,6 +331,7 @@ class MyDraggable extends GetView<CalendarDetailController> {
                       name: name,
                       data: conversationSnapshot,
                       id: id.toString(),
+                      userId: userId.toString(),
                     )));
         // Navigator.pushAndRemoveUntil(
         //   context,
@@ -396,6 +397,7 @@ class MyDraggable extends GetView<CalendarDetailController> {
                       name: name,
                       data: conversationSnapshot,
                       id: id.toString(),
+                      userId: userId.toString(),
                     )));
       }
     } catch (e) {

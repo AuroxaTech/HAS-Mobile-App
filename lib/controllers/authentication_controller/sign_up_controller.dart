@@ -47,6 +47,13 @@ class SignUpController extends GetxController {
     currentRange.value = values;
   }
 
+  @override
+  void onClose() {
+    nameController.dispose();
+    userNameController.dispose();
+    super.onClose();
+  }
+
   var map = {};
 
   List<String> bathroomsList = [
@@ -111,18 +118,6 @@ class SignUpController extends GetxController {
   String selectedAddress = "";
   double selectedLat = 0.0;
   double selectedLng = 0.0;
-  @override
-  void onInit() {
-    super.onInit();
-    print("hello controller");
-  }
-
-  @override
-  void onClose() {
-    nameController.dispose();
-    userNameController.dispose();
-    super.onClose();
-  }
 
   RxList<XFile> images = <XFile>[].obs;
   Rx<XFile?> certificateImage = Rx<XFile?>(null);

@@ -544,6 +544,7 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                       name: name,
                       data: conversationSnapshot,
                       id: id.toString(),
+                      userId: userId.toString(),
                     )));
         // Navigator.pushAndRemoveUntil(
         //   context,
@@ -604,11 +605,13 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
             context,
             MaterialPageRoute(
                 builder: (context) => ChatScreen1(
-                    group: false,
-                    image: profilePicture,
-                    name: name,
-                    data: conversationSnapshot,
-                    id: id.toString())));
+                      group: false,
+                      image: profilePicture,
+                      name: name,
+                      data: conversationSnapshot,
+                      id: id.toString(),
+                      userId: userId.toString(),
+                    )));
       }
     } catch (e) {
       print('Error creating or navigating to conversation: $e');

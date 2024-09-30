@@ -4,9 +4,7 @@ import 'package:get/get.dart';
 import 'package:property_app/constant_widget/delete_widgets.dart';
 import 'package:property_app/constant_widget/drawer.dart';
 import 'package:property_app/controllers/services_provider_controller/service_provide_controller.dart';
-import 'package:property_app/controllers/tenant_controllers/tenant_dashboard_controller.dart';
 import 'package:property_app/utils/api_urls.dart';
-import 'package:property_app/views/service_provider/rate_experience.dart';
 import 'package:property_app/views/service_provider/rating_screen.dart';
 
 import '../../app_constants/animations.dart';
@@ -15,7 +13,7 @@ import '../../app_constants/app_sizes.dart';
 import '../../app_constants/color_constants.dart';
 import '../../constant_widget/constant_widgets.dart';
 import '../../route_management/constant_routes.dart';
-import '../main_bottom_bar/service_provider_bottom_ar.dart';
+import '../chat_screens/HomeScreen.dart';
 
 class ServiceProviderScreen extends GetView<ServiceProviderController> {
   ServiceProviderScreen({Key? key}) : super(key: key);
@@ -26,10 +24,13 @@ class ServiceProviderScreen extends GetView<ServiceProviderController> {
     return Scaffold(
       key: controller.key,
       backgroundColor: whiteColor,
-      appBar: homeAppBar(context, text: "Service Provider", showNotification: true, isBack: true,
-          menuOnTap:  () => controller.key.currentState!.openDrawer(), back: false
-      ),
-      drawer: providerDrawer(context,onDeleteAccount: (){
+      appBar: homeAppBar(context,
+          text: "Service Provider",
+          showNotification: true,
+          isBack: true,
+          menuOnTap: () => controller.key.currentState!.openDrawer(),
+          back: false),
+      drawer: providerDrawer(context, onDeleteAccount: () {
         deleteFunction(context, controller);
       }),
       body: SafeArea(
@@ -57,7 +58,9 @@ class ServiceProviderScreen extends GetView<ServiceProviderController> {
                           fit: BoxFit.cover,
                           width: 60,
                           height: 60,
-                          imageUrl: AppUrls.servicesImages + controller.getServiceOne.value!.serviceprovider.user.profileimage,
+                          imageUrl: AppUrls.servicesImages +
+                              controller.getServiceOne.value!.serviceprovider
+                                  .user.profileimage,
                           errorWidget: (context, e, b) {
                             return Image.asset(AppIcons.personIcon);
                           },
@@ -65,20 +68,25 @@ class ServiceProviderScreen extends GetView<ServiceProviderController> {
                       ),
                     ),
                     title: headingText(
-                        text: controller.getServiceOne.value!.serviceprovider.user.fullname,
-                        fontSize: 24
-                    ),
+                        text: controller
+                            .getServiceOne.value!.serviceprovider.user.fullname,
+                        fontSize: 24),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         customText(
-                            text: controller.getServiceOne.value!.serviceprovider.providerService == null ? "Nothing mentioned" :  controller.getServiceOne.value!.serviceprovider.providerService!.name,
-                            fontSize: 14
-                        ),
+                            text: controller.getServiceOne.value!
+                                        .serviceprovider.providerService ==
+                                    null
+                                ? "Nothing mentioned"
+                                : controller.getServiceOne.value!
+                                    .serviceprovider.providerService!.name,
+                            fontSize: 14),
                         RatingWidget(
                           maxRating: 5,
                           isRating: false,
-                          initialRating: controller.getServiceOne.value!.rate.toInt(),
+                          initialRating:
+                              controller.getServiceOne.value!.rate.toInt(),
                           onRatingChanged: (rating) {
                             print('Selected rating: $rating');
                           },
@@ -89,9 +97,7 @@ class ServiceProviderScreen extends GetView<ServiceProviderController> {
                   h10,
                   Container(
                     height: screenHeight(context) * 1,
-                    decoration: const BoxDecoration(
-                        color: Colors.white
-                    ),
+                    decoration: const BoxDecoration(color: Colors.white),
                     child: Stack(
                       children: [
                         midStackContainer(context),
@@ -106,77 +112,65 @@ class ServiceProviderScreen extends GetView<ServiceProviderController> {
                               ),
                             ),
                             child: Padding(
-                              padding: const EdgeInsets.only(left: 40, right: 40, top: 30),
+                              padding: const EdgeInsets.only(
+                                  left: 40, right: 40, top: 30),
                               child: Column(
                                 children: [
-                                  rowMainAxis(
-                                      children: [
-                                        dashboardContainer(
-                                            onTap: () {
-                                              Get.toNamed(kServiceRequestScreen);
-                                            },
-                                            title: "Service Requests",
-                                            image: AppIcons.tenant
-                                        ),
-                                        dashboardContainer(
-                                            onTap: () {
-                                              Get.toNamed(kCalendarScreen);
-                                            },
-                                            title: "Job calendar",
-                                            image: AppIcons.calendar
-                                        )
-                                      ]
-                                  ),
+                                  rowMainAxis(children: [
+                                    dashboardContainer(
+                                        onTap: () {
+                                          Get.toNamed(kServiceRequestScreen);
+                                        },
+                                        title: "Service Requests",
+                                        image: AppIcons.tenant),
+                                    dashboardContainer(
+                                        onTap: () {
+                                          Get.toNamed(kCalendarScreen);
+                                        },
+                                        title: "Job calendar",
+                                        image: AppIcons.calendar)
+                                  ]),
                                   h20,
-                                  rowMainAxis(
-                                      children: [
-                                        dashboardContainer(
-                                            onTap: () {
-                                              Get.toNamed(kRatingScreen);
-                                            },
-                                            title: "Rating & reviews",
-                                            image: AppIcons.rating
-                                        ),
-                                        dashboardContainer(
-                                          onTap: () {
-                                            Get.toNamed(kRateExperienceScreen);
-                                          },
-                                          title: "Messages",
-                                          image: AppIcons.messages,
-                                        ),
-                                      ]
-                                  ),
+                                  rowMainAxis(children: [
+                                    dashboardContainer(
+                                        onTap: () {
+                                          Get.toNamed(kRatingScreen);
+                                        },
+                                        title: "Rating & reviews",
+                                        image: AppIcons.rating),
+                                    dashboardContainer(
+                                      onTap: () {
+                                        Get.to(() => const ChatListing(),
+                                            transition: routeTransition);
+                                      },
+                                      title: "Messages",
+                                      image: AppIcons.messages,
+                                    ),
+                                  ]),
                                   h20,
-                                  rowMainAxis(
-                                      children: [
-                                        dashboardContainer(
-                                            onTap: () {
-                                              Get.toNamed(kMyServicesScreen);
-                                            },
-                                            title: "My services",
-                                            image: AppIcons.myServices
-                                        ),
-                                        dashboardContainer(
-                                            onTap: () {
-                                              Get.toNamed(kAddServiceScreen);
-                                            },
-                                            title: "Add service",
-                                            image: AppIcons.addServices
-                                        ),
-                                      ]
-                                  ),
+                                  rowMainAxis(children: [
+                                    dashboardContainer(
+                                        onTap: () {
+                                          Get.toNamed(kMyServicesScreen);
+                                        },
+                                        title: "My services",
+                                        image: AppIcons.myServices),
+                                    dashboardContainer(
+                                        onTap: () {
+                                          Get.toNamed(kAddServiceScreen);
+                                        },
+                                        title: "Add service",
+                                        image: AppIcons.addServices),
+                                  ]),
                                   h20,
-                                  rowMainAxis(
-                                      children: [
-                                        dashboardContainer(
-                                            onTap: () {
-                                              Get.toNamed(kMyFavouriteScreen);
-                                            },
-                                            title: "My Favourites",
-                                            image: AppIcons.favourite
-                                        ),
-                                      ]
-                                  ),
+                                  rowMainAxis(children: [
+                                    dashboardContainer(
+                                        onTap: () {
+                                          Get.toNamed(kMyFavouriteScreen);
+                                        },
+                                        title: "My Favourites",
+                                        image: AppIcons.favourite),
+                                  ]),
                                 ],
                               ),
                             ),
@@ -194,9 +188,7 @@ class ServiceProviderScreen extends GetView<ServiceProviderController> {
     );
   }
 
-
-
-  Widget midStackContainer(context){
+  Widget midStackContainer(context) {
     return Container(
       width: double.infinity,
       height: screenHeight(context) * 0.2,
@@ -216,21 +208,27 @@ class ServiceProviderScreen extends GetView<ServiceProviderController> {
               children: [
                 dashboardSmallContainer(
                   context,
-                  title:  controller.getServiceOne.value == null ? "0" :  controller.getServiceOne.value!.totalJobs.toString(),
+                  title: controller.getServiceOne.value == null
+                      ? "0"
+                      : controller.getServiceOne.value!.totalJobs.toString(),
                   subTitle: "Total",
                   thirdTitle: "Jobs",
                 ),
                 w25,
                 dashboardSmallContainer(
                   context,
-                  title: controller.getServiceOne.value == null ? "0" : controller.getServiceOne.value!.totalPrice.toString(),
+                  title: controller.getServiceOne.value == null
+                      ? "0"
+                      : controller.getServiceOne.value!.totalPrice.toString(),
                   subTitle: "Total",
                   thirdTitle: "earning",
                 ),
                 w25,
                 dashboardSmallContainer(
                   context,
-                  title: controller.getServiceOne.value == null ? "0" : controller.getServiceOne.value!.totalService.toString(),
+                  title: controller.getServiceOne.value == null
+                      ? "0"
+                      : controller.getServiceOne.value!.totalService.toString(),
                   subTitle: "Total",
                   thirdTitle: "services",
                 ),

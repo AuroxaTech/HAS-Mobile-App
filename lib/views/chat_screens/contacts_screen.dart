@@ -156,6 +156,7 @@ class _ContactsPageState extends State<ContactsPage> {
                       name: name,
                       data: conversationSnapshot,
                       id: id.toString(),
+                      userId: userId.toString(),
                     )));
         // Navigator.pushAndRemoveUntil(
         //   context,
@@ -221,6 +222,7 @@ class _ContactsPageState extends State<ContactsPage> {
                       name: name,
                       data: conversationSnapshot,
                       id: id.toString(),
+                      userId: userId.toString(),
                     )));
       }
     } catch (e) {

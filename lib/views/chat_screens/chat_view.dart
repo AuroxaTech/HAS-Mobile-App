@@ -476,6 +476,7 @@ class _ChatViewState extends State<ChatView> {
                                               name: otherParticipantName,
                                               image: profilePictureUrl,
                                               id: id.toString(),
+                                              userId: userId.toString(),
                                             ),
                                           ),
                                         );

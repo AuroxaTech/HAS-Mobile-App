@@ -151,6 +151,7 @@ import 'ToBeReplyMessageWidget.dart';
 class ChatScreen1 extends StatefulWidget {
   final String name;
   final String id;
+  final String userId;
   final String image;
   final bool group;
 
@@ -166,7 +167,8 @@ class ChatScreen1 extends StatefulWidget {
       required this.image,
       required this.data,
       required this.group,
-      required this.id});
+      required this.id,
+      required this.userId});
 
   @override
   State<ChatScreen1> createState() => _ChatScreen1State();
@@ -204,7 +206,7 @@ class _ChatScreen1State extends State<ChatScreen1> {
   var userId;
 
   Future<void> getUserId() async {
-    var id = await Preferences.getUserID();
+    var id = widget.userId.toString();
     setState(() {
       userId = id;
     });

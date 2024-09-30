@@ -631,6 +631,7 @@ class ServiceListingDetailScreen
                       name: name,
                       data: conversationSnapshot,
                       id: id.toString(),
+                      userId: userId.toString(),
                     )));
         // Navigator.pushAndRemoveUntil(
         //   context,
@@ -696,6 +697,7 @@ class ServiceListingDetailScreen
                       name: name,
                       data: conversationSnapshot,
                       id: id.toString(),
+                      userId: userId.toString(),
                     )));
       }
     } catch (e) {
