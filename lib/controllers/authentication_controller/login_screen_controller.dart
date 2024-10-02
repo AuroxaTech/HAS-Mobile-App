@@ -34,21 +34,21 @@ class LoginScreenController extends GetxController{
     isLoading.value = true;
 
     try {
-      var deviceId;
-      if(Platform.isAndroid){
-         deviceId = await notificationServices.getDeviceToken();
-      }else if(Platform.isIOS){
-        deviceId = await notificationServices.getIOSDeviceToken();
-      }else if(Platform.isMacOS){
-        deviceId = await notificationServices.getIOSDeviceToken();
-      }
+      // var deviceId;
+      // if(Platform.isAndroid){
+      //    deviceId = await notificationServices.getDeviceToken();
+      // }else if(Platform.isIOS){
+      //   deviceId = await notificationServices.getIOSDeviceToken();
+      // }else if(Platform.isMacOS){
+      //   deviceId = await notificationServices.getIOSDeviceToken();
+      // }
 
-      print("deviceToken : $deviceId");
+      //print("deviceToken : $deviceId");
 
       var data = await authServices.login(
         email: email,
         password: password,
-        deviceToken: deviceId,
+        deviceToken: "deviceId",
         platform: Platform.isAndroid ? "android" : "ios",
       );
 
@@ -84,7 +84,7 @@ class LoginScreenController extends GetxController{
             "online" : true,
             'profileimage': data["data"]["profileimage"],
             'lastSeen': FieldValue.serverTimestamp(),
-            "deviceToken" : deviceId
+            "deviceToken" : "deviceId"
           });
           print("user updated");
         } else {
@@ -98,7 +98,7 @@ class LoginScreenController extends GetxController{
             'mobileNumber': data["data"]["phone_number"],
             'lastSeen': FieldValue.serverTimestamp(),
             "createdAT" : FieldValue.serverTimestamp(),
-            "deviceToken" : deviceId
+            "deviceToken" : "deviceId"
           });
           print("user added");
         }
@@ -108,11 +108,10 @@ class LoginScreenController extends GetxController{
       } else {
         isLoading.value = false;
         handleErrorResponse(
-        data['error']!=null?data['error']:data['messages']
+            data['error'] != null ? data['error'] : data['messages']
+        );
+        handleErrorResponse(data['error']!=null?data['error']:data['messages']);
 
-
-
-    );
       }
     } on FormatException catch (e) {
       isLoading.value = false;

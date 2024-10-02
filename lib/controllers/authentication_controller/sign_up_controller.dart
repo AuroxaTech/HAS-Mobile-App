@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -10,12 +9,19 @@ import 'package:property_app/utils/utils.dart';
 
 import '../../services/notification_services/notification_services.dart';
 
-class SignUpController extends GetxController{
+class SignUpController extends GetxController {
   RxString userRoleValue = 'Select Role'.obs;
   RxString noOfPropertiesValue = 'No of Properties'.obs;
   RxString propertiesTypeValue = 'Choose Property Type'.obs;
   RxInt propertyTypeIndex = 0.obs;
-  final items = ['Choose Property Type', "Apartment", "House", "Condo", "Townhouse", "Other"];
+  final items = [
+    'Choose Property Type',
+    "Apartment",
+    "House",
+    "Condo",
+    "Townhouse",
+    "Other"
+  ];
   RxString contactMethodValue = 'Preferred Contact Method'.obs;
   RxString onRentValue = 'Select last status'.obs;
   RxString leasedDuration = 'Select Leased Duration'.obs;
@@ -23,26 +29,32 @@ class SignUpController extends GetxController{
   RxString electricalValue = 'Choose service'.obs;
   RxString yesValue = 'Any Certificate ?'.obs;
   RxBool isSale = false.obs;
-
+  RxInt selectedArea = 0.obs;
+  RxString selectedRange = "1 sq ft".obs;
   RxString selectedBothList = "1".obs;
   RxInt selectedBedroom = 1.obs;
   RxInt selectedBathrooms = 1.obs;
-  RxInt selectedArea = 0.obs;
-  RxString selectedRange = "1 sq ft".obs;
   List<String> areaRange = [
     "50 sq ft",
     "100 sq ft",
     "200 sq ft",
     "300 sq ft",
     "400 sq ft"
-  ] ;
+  ];
   var currentRange = const RangeValues(1, 1000).obs;
 
   void updateRangeValues(RangeValues values) {
     currentRange.value = values;
   }
 
-  var map ={};
+  @override
+  void onClose() {
+    nameController.dispose();
+    userNameController.dispose();
+    super.onClose();
+  }
+
+  var map = {};
 
   List<String> bathroomsList = [
     "1",
@@ -59,10 +71,9 @@ class SignUpController extends GetxController{
     "6  1/2",
     "7",
     "7  1/2"
-  ] ;
+  ];
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final GlobalKey<FormState> formKeyDetail = GlobalKey<FormState>();
-
   TextEditingController nameController = TextEditingController();
   TextEditingController userNameController = TextEditingController();
   TextEditingController addressController = TextEditingController();
@@ -99,8 +110,7 @@ class SignUpController extends GetxController{
   TextEditingController streetController = TextEditingController();
   TextEditingController postalAddressController = TextEditingController();
   RxBool streetField = true.obs;
- TextEditingController description = TextEditingController();
-
+  TextEditingController description = TextEditingController();
 
   String phone = "";
   String countryCode = "";
@@ -108,14 +118,6 @@ class SignUpController extends GetxController{
   String selectedAddress = "";
   double selectedLat = 0.0;
   double selectedLng = 0.0;
-  @override
-
-
-
-
-
-
-
 
   RxList<XFile> images = <XFile>[].obs;
   Rx<XFile?> certificateImage = Rx<XFile?>(null);
@@ -125,7 +127,8 @@ class SignUpController extends GetxController{
 
   void pickProfileImage() async {
     final imagePicker = ImagePicker();
-    final pickedFile = await imagePicker.pickImage(source: ImageSource.gallery);
+    final pickedFile = await imagePicker.pickImage(
+        source: ImageSource.gallery, imageQuality: 70);
 
     if (pickedFile != null) {
       profileImage.value = XFile(pickedFile.path);
@@ -140,6 +143,7 @@ class SignUpController extends GetxController{
       certificateImage.value = XFile(pickedFile.path);
     }
   }
+
   void frontCNIC() async {
     final imagePicker = ImagePicker();
     final pickedFile = await imagePicker.pickImage(source: ImageSource.gallery);
@@ -166,6 +170,7 @@ class SignUpController extends GetxController{
       images.addAll(pickedFiles);
     }
   }
+
   NotificationServices notificationServices = NotificationServices();
   void removeImage(int index) {
     images.removeAt(index);
@@ -218,7 +223,6 @@ class SignUpController extends GetxController{
     }
   }
 
-
   Rx<PlatformFile?> pickFile = Rx<PlatformFile?>(null);
   void pickFiles() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -234,41 +238,41 @@ class SignUpController extends GetxController{
 
   Icon getFileIcon(String fileName) {
     if (fileName.endsWith('.pdf')) {
-      return const Icon(Icons.picture_as_pdf, size: 35,);
+      return const Icon(
+        Icons.picture_as_pdf,
+        size: 35,
+      );
     } else if (fileName.endsWith('.doc') || fileName.endsWith('.docx')) {
-      return const Icon(Icons.description, size: 35,);
+      return const Icon(
+        Icons.description,
+        size: 35,
+      );
     } else {
       return const Icon(Icons.insert_drive_file);
     }
   }
-
-
-
-
-
-
 
   AuthServices authServices = AuthServices();
   RxBool isLoading = false.obs;
   RxString errorMessage = "".obs;
 
   Future<void> registerVisitor(
-      BuildContext context,
-      String fullName,
-      String userName,
-      String email,
-      String phoneNumber,
-      String address,
-      String postalCode,
-      String password,
-      String conPassword, {
-        XFile? profileImage,
-      }) async {
+    BuildContext context,
+    String fullName,
+    String userName,
+    String email,
+    String phoneNumber,
+    String address,
+    String postalCode,
+    String password,
+    String conPassword, {
+    XFile? profileImage,
+  }) async {
     isLoading.value = true;
 
     try {
       // Step 1: Check if the email is already in use
-      var emailCheckResponse = await authServices.checkEmailExists(email);
+      //var emailCheckResponse = await authServices.checkEmailExists(email);
 
       // if (emailCheckResponse['exists'] == true) {
       //   // If email already exists, show an error message and return
@@ -278,8 +282,8 @@ class SignUpController extends GetxController{
       // }
 
       // Step 2: If email is not registered, proceed with registration
-      var deviceId = await notificationServices.getDeviceToken();
-      print("deviceToken : $deviceId");
+      // var deviceId = await notificationServices.getDeviceToken();
+      // print("deviceToken : $deviceId");
 
       var registrationData = await authServices.registerVisitor(
         fullName: fullName,
@@ -291,97 +295,97 @@ class SignUpController extends GetxController{
         password: password,
         conPassword: conPassword,
         profileImage: profileImage,
-        deviceToken: deviceId,
+        deviceToken: "deviceId",
         platform: Platform.isAndroid ? "android" : "ios",
       );
 
       if (registrationData['status'] == true) {
         // Registration successful
         isLoading.value = false;
-        AppUtils.getSnackBar("Success", "Registration successful. You can now log in.");
+        AppUtils.getSnackBar(
+            "Success", "Registration successful. You can now log in.");
       } else {
         // If registration failed, show error message
         isLoading.value = false;
-        AppUtils.errorSnackBar("Error", registrationData['messages']["email"][0]);
+        AppUtils.errorSnackBar(
+            "Error", registrationData['messages']["email"][0]);
       }
     } catch (e) {
       // Handle exception
       print(e);
       isLoading.value = false;
-      AppUtils.errorSnackBar("Error", "Something went wrong. Please try again.");
+      AppUtils.errorSnackBar(
+          "Error", "Something went wrong. Please try again.");
     }
   }
 
-
-
   Future<void> registerProperty({
-  required String fullName,
-  required String userName,
-  required String email,
-  required String phoneNumber,
-  required String password,
-  required String cPassword,
-  required int roleId,
-  XFile? profileImage,
-  required int type,
-  required String city,
-  required double amount,
+    required String fullName,
+    required String userName,
+    required String email,
+    required String phoneNumber,
+    required String password,
+    required String cPassword,
+    required int roleId,
+    XFile? profileImage,
+    required int type,
+    required String city,
+    required double amount,
     String? address,
-  required double lat,
-  required double long,
-  required String areaRange,
-  required int bedroom,
-  required String bathroom,
-  required XFile electricityBill,
-  required List<XFile> propertyImages,
-  required int noOfProperty,
-  required String propertyType,
-  required String subType,
-  required String availabilityStartTime,
-  required String availabilityEndTime,
-  required String description,
-   String? postalCode,
+    required double lat,
+    required double long,
+    required String areaRange,
+    required int bedroom,
+    required String bathroom,
+    required XFile electricityBill,
+    required List<XFile> propertyImages,
+    required int noOfProperty,
+    required String propertyType,
+    required String subType,
+    required String availabilityStartTime,
+    required String availabilityEndTime,
+    required String description,
+    String? postalCode,
   }) async {
     isLoading.value = true;
 
     try {
       var deviceId;
-      if(Platform.isAndroid){
+      if (Platform.isAndroid) {
         deviceId = await notificationServices.getDeviceToken();
-       }else{
+      } else {
         deviceId = await notificationServices.getIOSDeviceToken();
       }
-      print("deviceToken : $deviceId" );
+      print("deviceToken : $deviceId");
       var data = await authServices.registerProperty(
-        fullName: fullName,
-        userName: userName,
-        email: email,
-        password: password,
-        phoneNumber: phoneNumber,
-        deviceToken: deviceId,
-        platform: Platform.isAndroid ? "android" : "ios",
-        cPassword: cPassword,
-        roleId: roleId,
-        profileImage: profileImage,
-        type: type,
-        city: city,
-        amount: amount,
-        address: address,
-        lat: lat,
-        long: long,
-        areaRange: areaRange,
-        bedroom: bedroom,
-        bathroom: bathroom,
-        electricityBill: electricityBill,
-        propertyImages: propertyImages,
-        noOfProperty: noOfProperty,
-        propertyType: propertyType,
-        availabilityStartTime: availabilityStartTime,
-        availabilityEndTime: availabilityEndTime,
-        description: description,
-        subtype: subType,
-        postalCode: postalCode
-      );
+          fullName: fullName,
+          userName: userName,
+          email: email,
+          password: password,
+          phoneNumber: phoneNumber,
+          deviceToken: deviceId,
+          platform: Platform.isAndroid ? "android" : "ios",
+          cPassword: cPassword,
+          roleId: roleId,
+          profileImage: profileImage,
+          type: type,
+          city: city,
+          amount: amount,
+          address: address,
+          lat: lat,
+          long: long,
+          areaRange: areaRange,
+          bedroom: bedroom,
+          bathroom: bathroom,
+          electricityBill: electricityBill,
+          propertyImages: propertyImages,
+          noOfProperty: noOfProperty,
+          propertyType: propertyType,
+          availabilityStartTime: availabilityStartTime,
+          availabilityEndTime: availabilityEndTime,
+          description: description,
+          subtype: subType,
+          postalCode: postalCode);
 
       print("Data : $data");
 
@@ -390,7 +394,7 @@ class SignUpController extends GetxController{
         debugPrint("Print if ${data["messages"]}");
         Get.back();
         Get.back();
-        AppUtils.getSnackBar("Success",data["messages"]);
+        AppUtils.getSnackBar("Success", data["messages"]);
 
         isLoading.value = false;
       } else {
@@ -420,7 +424,6 @@ class SignUpController extends GetxController{
 
   //Service Provider
 
-
   Future<void> registerServiceProvider({
     required String fullName,
     required String userName,
@@ -428,8 +431,8 @@ class SignUpController extends GetxController{
     required String phoneNumber,
     required String password,
     required String cPassword,
-     String? address,
-     String? postalCode,
+    String? address,
+    String? postalCode,
     XFile? profileImage,
     required String services,
     required String yearExperience,
@@ -442,55 +445,53 @@ class SignUpController extends GetxController{
   }) async {
     isLoading.value = true;
 
-  //  try {
-      var deviceId = await notificationServices.getDeviceToken();
-      print("deviceToken : $deviceId" );
+    //  try {
+    var deviceId = await notificationServices.getDeviceToken();
+    print("deviceToken : $deviceId");
 
-      var data = await authServices.registerServiceProvider(
-        fullName: fullName,
-        userName: userName,
-        email: email,
-        phoneNumber: phoneNumber,
-        password: password,
-        cPassword: cPassword,
-        deviceToken: deviceId,
-        address: address,
-        postalCode: postalCode,
-        platform: Platform.isAndroid ? "android" : "ios",
-        profileImage: profileImage,
-        services: services,
-        yearExperience: yearExperience,
-        availabilityStartTime: availabilityStartTime,
-        availabilityEndTime: availabilityEndTime,
-        cnicFront: cnicFront,
-        cnicBack: cnicBack,
-        certification: certification,
-        certificationFile: certificationFile,
-      );
+    var data = await authServices.registerServiceProvider(
+      fullName: fullName,
+      userName: userName,
+      email: email,
+      phoneNumber: phoneNumber,
+      password: password,
+      cPassword: cPassword,
+      deviceToken: deviceId,
+      address: address,
+      postalCode: postalCode,
+      platform: Platform.isAndroid ? "android" : "ios",
+      profileImage: profileImage,
+      services: services,
+      yearExperience: yearExperience,
+      availabilityStartTime: availabilityStartTime,
+      availabilityEndTime: availabilityEndTime,
+      cnicFront: cnicFront,
+      cnicBack: cnicBack,
+      certification: certification,
+      certificationFile: certificationFile,
+    );
 
-
-      if (data['status'] == true) {
-        isLoading.value = false;
-        print("Data : $data");
-        Get.back();
-        AppUtils.getSnackBar("Success",data["messages"]);
-
-      } else {
-        // Handle error scenario
-        isLoading.value = false;
-        if (data['messages'] != null) {
-          if (data['messages']['username'] != null) {
-            // Show the username error message
-            AppUtils.errorSnackBar("Error", data['messages']['username'][0]);
-          } else if (data['messages']['email'] != null) {
-            // Show the email error message
-            AppUtils.errorSnackBar("Error", data['messages']['email'][0]);
-          } else {
-            // Show a general error message if neither username nor email has a specific error
-            AppUtils.errorSnackBar("Error", "An unknown error occurred.");
-          }
+    if (data['status'] == true) {
+      isLoading.value = false;
+      print("Data : $data");
+      Get.back();
+      AppUtils.getSnackBar("Success", data["messages"]);
+    } else {
+      // Handle error scenario
+      isLoading.value = false;
+      if (data['messages'] != null) {
+        if (data['messages']['username'] != null) {
+          // Show the username error message
+          AppUtils.errorSnackBar("Error", data['messages']['username'][0]);
+        } else if (data['messages']['email'] != null) {
+          // Show the email error message
+          AppUtils.errorSnackBar("Error", data['messages']['email'][0]);
+        } else {
+          // Show a general error message if neither username nor email has a specific error
+          AppUtils.errorSnackBar("Error", "An unknown error occurred.");
         }
       }
+    }
     // } catch (e) {
     //   print(e);
     //   isLoading.value = false;
@@ -507,8 +508,8 @@ class SignUpController extends GetxController{
     required String password,
     required String cPassword,
     required int roleId,
-     String? address,
-     String? postalCode,
+    String? address,
+    String? postalCode,
     XFile? profileImage,
     required int lastStatus,
     String? lastLandlordName,
@@ -548,8 +549,7 @@ class SignUpController extends GetxController{
       if (data['status'] == true) {
         isLoading.value = false;
         Get.back();
-        AppUtils.getSnackBar("Success",data['messages']);
-
+        AppUtils.getSnackBar("Success", data['messages']);
       } else {
         // Handle error scenario
         isLoading.value = false;
@@ -567,10 +567,8 @@ class SignUpController extends GetxController{
         }
       }
     } catch (e) {
-
       isLoading.value = false;
       AppUtils.errorSnackBar("Error", "Failed to register tenant");
     }
   }
-
 }
