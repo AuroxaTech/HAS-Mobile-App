@@ -1,26 +1,21 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 
-import '../../models/service_provider_model/all_services.dart';
 import '../../models/service_provider_model/calendar_service.dart';
-import '../../models/service_provider_model/get_services.dart';
-import '../../models/service_provider_model/provider_job.dart';
 import '../../services/property_services/add_services.dart';
 import '../../utils/utils.dart';
 
-class CalendarDetailController extends GetxController{
-
+class CalendarDetailController extends GetxController {
   final sheet = GlobalKey();
   final controller = DraggableScrollableController();
-  final PageController pageController = PageController();
+  late PageController pageController = PageController();
   ServiceProviderServices servicesService = ServiceProviderServices();
   Rx<bool> isLoading = false.obs;
   Rx<CalendarData?> getCalendarOne = Rx<CalendarData?>(null);
   RxInt id = 0.obs;
   @override
   void onInit() {
+    pageController = PageController(initialPage: 0);
     var data = Get.arguments;
     print("IDDDDDD $data");
     print("Hello");
@@ -28,6 +23,7 @@ class CalendarDetailController extends GetxController{
     getServiceJob(id: data);
     super.onInit();
   }
+
   List<String> images = [];
 
   Future<void> getServiceJob({required int id}) async {
@@ -42,12 +38,18 @@ class CalendarDetailController extends GetxController{
 
       if (result['data'] != null) {
         if (result['data'] is Map) {
-          var data = result['data'] ;
+          var data = result['data'];
           print("Data :: $data");
           getCalendarOne.value = CalendarData.fromJson(data);
-          String imagesString = getCalendarOne.value!.request.service!.media.toString();
-          List<String> imageList = imagesString.split(',');
-          images = imageList;
+
+          // Check if the necessary fields are not null
+          if (getCalendarOne.value?.request?.service?.media != null) {
+            String imagesString = getCalendarOne.value!.request.service!.media!;
+            List<String> imageList = imagesString.split(',');
+            images = imageList;
+          } else {
+            print("Media is null or not available");
+          }
         } else {
           print("Data is not a Map");
         }
@@ -56,6 +58,7 @@ class CalendarDetailController extends GetxController{
       }
     } catch (e) {
       print("Error fetching service request: $e");
+      rethrow;
     } finally {
       isLoading.value = false;
     }
@@ -82,7 +85,4 @@ class CalendarDetailController extends GetxController{
     }
     isLoading.value = false;
   }
-
-
-
 }

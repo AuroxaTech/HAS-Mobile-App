@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:property_app/utils/api_urls.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:http/http.dart' as http;
+
 import '../../constant_widget/constant_widgets.dart';
 import '../../models/service_provider_model/provider_job.dart';
-import '../../models/service_provider_model/rating.dart';
 import '../../services/property_services/add_services.dart';
 import '../../utils/shared_preferences/preferences.dart';
 import '../../utils/utils.dart';
 import '../../views/authentication_screens/login_screen.dart';
 
-class CalendarScreenController extends GetxController{
+class CalendarScreenController extends GetxController {
   Rx<CalendarFormat> calendarFormat = CalendarFormat.month.obs;
   Rx<DateTime> focusedDay = DateTime.now().obs;
   Rx<DateTime> selectedDay = DateTime.now().obs;
@@ -21,37 +21,48 @@ class CalendarScreenController extends GetxController{
   RxSet<DateTime> highlightedDates = <DateTime>{}.obs;
   void updateHighlightedDates() {
     Set<DateTime> tempSet = {};
-    for (var job in pagingController.itemList!) { // Assuming allJobList is your list of jobs
-      String createdAtStr = job.createdAt.toString(); // Get the date string
-      DateTime parsedDate = DateTime.parse(createdAtStr);
-      DateTime dateWithoutTime = DateTime(parsedDate.year, parsedDate.month, parsedDate.day);
-      tempSet.add(dateWithoutTime); // Add the date to the set
+
+    // Iterate through the list of jobs
+    for (var job in pagingController.itemList!) {
+      if (job.createdAt != null) {
+        // Check if createdAt is not null
+        try {
+          DateTime parsedDate = job
+              .createdAt!; // Directly use DateTime object (since createdAt is already a DateTime)
+          DateTime dateWithoutTime =
+              DateTime(parsedDate.year, parsedDate.month, parsedDate.day);
+          tempSet.add(dateWithoutTime); // Add the date without time to the set
+        } catch (e) {
+          print("Error parsing date: $e");
+        }
+      } else {
+        print("createdAt is null for job with id: ${job.id}");
+      }
     }
+
     highlightedDates.value = tempSet; // Update the reactive variable
   }
-
 
   ServiceProviderServices servicesService = ServiceProviderServices();
   Rx<bool> isLoading = false.obs;
   RxList<ProviderJobData> allJobList = <ProviderJobData>[].obs;
   @override
   void onInit() {
-
-   // getProviderJOB();
+    // getProviderJOB();
 
     super.onInit();
     pagingController.addPageRequestListener((pageKey) {
-      Future.microtask(() =>  getMyJob(pageKey));
+      Future.microtask(() => getMyJob(pageKey));
     });
   }
 
   Future<void> getProviderJOB() async {
-    List<ProviderJobData>  list  = <ProviderJobData>[];
+    List<ProviderJobData> list = <ProviderJobData>[];
     print("we are in get job");
     isLoading.value = true;
     var result = await servicesService.getAllProviderJob(1);
-    print("Service result : $result" );
-    if(result["status"] == true ){
+    print("Service result : $result");
+    if (result["status"] == true) {
       isLoading.value = false;
       for (var data in result['data']["data"]) {
         print("Service List :: $data");
@@ -60,16 +71,13 @@ class CalendarScreenController extends GetxController{
 
       allJobList.value = list;
       updateHighlightedDates();
-    }else{
+    } else {
       isLoading.value = false;
     }
-
   }
 
-
-
-  final PagingController<int, ProviderJobData> pagingController = PagingController(firstPageKey: 1);
-
+  final PagingController<int, ProviderJobData> pagingController =
+      PagingController(firstPageKey: 1);
 
   Future<void> getMyJob(int pageKey) async {
     try {
@@ -82,7 +90,8 @@ class CalendarScreenController extends GetxController{
             .map((json) => ProviderJobData.fromJson(json))
             .toList();
 
-        final isLastPage = result['data']['current_page'] == result['data']['last_page'];
+        final isLastPage =
+            result['data']['current_page'] == result['data']['last_page'];
 
         if (isLastPage) {
           pagingController.appendLastPage(newItems);
@@ -94,7 +103,6 @@ class CalendarScreenController extends GetxController{
       } else {
         pagingController.error = Exception('Failed to fetch services');
       }
-
     } catch (error) {
       isLoading.value = false;
       print(error);
@@ -106,7 +114,6 @@ class CalendarScreenController extends GetxController{
   }
 
   Future<void> deleteUser() async {
-
     try {
       isLoading(true);
       var userId = await Preferences.getUserID();
@@ -114,7 +121,6 @@ class CalendarScreenController extends GetxController{
       // Making the HTTP POST request
       final response = await http.delete(
         Uri.parse(AppUrls.deleteUser),
-
         headers: getHeader(userToken: userToken),
       );
       print(response.body);
@@ -138,6 +144,4 @@ class CalendarScreenController extends GetxController{
       isLoading(false);
     }
   }
-
-
 }

@@ -78,6 +78,7 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                         print(
                             "Image list contents: $imageList, accessing index: 0");
                         print(item.isFavorite);
+                        print(item.isApplied);
                         return Padding(
                           padding: const EdgeInsets.only(top: 15),
                           child: InkWell(
@@ -221,22 +222,16 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                                         ],
                                       ),
                                       h10,
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          customText(
-                                              text:
-                                                  "${item.startTime}  ${item.endTime}",
-                                              fontSize: 16,
-                                              color: blackColor),
-                                          customText(
-                                              text: "${item.location}",
-                                              fontSize: 16,
-                                              color: blackColor),
-                                          w30
-                                        ],
-                                      ),
+                                      customText(
+                                          text:
+                                              "${item.startTime}  ${item.endTime}",
+                                          fontSize: 16,
+                                          color: blackColor),
+                                      h10,
+                                      customText(
+                                          text: "${item.location}",
+                                          fontSize: 16,
+                                          color: blackColor),
                                       h10,
                                       customText(
                                           text: "Description :",
@@ -270,27 +265,40 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                                           ),
                                           w15,
                                           Expanded(
-                                            child: CustomButton(
-                                              height:
-                                                  screenHeight(context) * 0.06,
-                                              text: "Book Service",
-                                              fontSize: 18,
-                                              gradientColor: gradient(),
-                                              onTap: () {
-                                                Get.toNamed(
-                                                    kNewServiceRequestScreen,
-                                                    arguments: [
-                                                      (item.serviceName),
-                                                      item.user == null
-                                                          ? ""
-                                                          : item.user!.email,
-                                                      (item.description),
-                                                      item.userId,
-                                                      item.id,
-                                                      imageList[0]
-                                                    ]);
-                                              },
-                                            ),
+                                            child: item.isApplied == 0
+                                                ? CustomButton(
+                                                    height:
+                                                        screenHeight(context) *
+                                                            0.06,
+                                                    text: "Book Service",
+                                                    fontSize: 18,
+                                                    gradientColor: gradient(),
+                                                    onTap: () {
+                                                      Get.toNamed(
+                                                          kNewServiceRequestScreen,
+                                                          arguments: [
+                                                            (item.serviceName),
+                                                            item.user == null
+                                                                ? ""
+                                                                : item.user!
+                                                                    .email,
+                                                            (item.description),
+                                                            item.userId,
+                                                            item.id,
+                                                            imageList[0]
+                                                          ]);
+                                                    },
+                                                  )
+                                                : CustomButton(
+                                                    gradientColor:
+                                                        detailGradient(),
+                                                    height:
+                                                        screenHeight(context) *
+                                                            0.06,
+                                                    text: "Pending",
+                                                    fontSize: 18,
+                                                    onTap: () {},
+                                                  ),
                                           ),
                                         ],
                                       )

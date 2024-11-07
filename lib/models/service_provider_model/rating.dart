@@ -4,7 +4,8 @@
 
 import 'dart:convert';
 
-RatingProvider ratingProviderFromJson(String str) => RatingProvider.fromJson(json.decode(str));
+RatingProvider ratingProviderFromJson(String str) =>
+    RatingProvider.fromJson(json.decode(str));
 
 String ratingProviderToJson(RatingProvider data) => json.encode(data.toJson());
 
@@ -18,14 +19,14 @@ class RatingProvider {
   });
 
   factory RatingProvider.fromJson(Map<String, dynamic> json) => RatingProvider(
-    status: json["status"],
-    data: Data.fromJson(json["data"]),
-  );
+        status: json["status"],
+        data: Data.fromJson(json["data"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "status": status,
-    "data": data.toJson(),
-  };
+        "status": status,
+        "data": data.toJson(),
+      };
 }
 
 class Data {
@@ -46,22 +47,22 @@ class Data {
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-    oneRate: json["one_rate"],
-    twoRate: json["two_rate"],
-    threeRate: json["three_rate"],
-    fourRate: json["four_rate"],
-    fiveRate: json["five_rate"],
-    ratingData: RatingData.fromJson(json["rating_data"]),
-  );
+        oneRate: json["one_rate"],
+        twoRate: json["two_rate"],
+        threeRate: json["three_rate"],
+        fourRate: json["four_rate"],
+        fiveRate: json["five_rate"],
+        ratingData: RatingData.fromJson(json["rating_data"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "one_rate": oneRate,
-    "two_rate": twoRate,
-    "three_rate": threeRate,
-    "four_rate": fourRate,
-    "five_rate": fiveRate,
-    "rating_data": ratingData.toJson(),
-  };
+        "one_rate": oneRate,
+        "two_rate": twoRate,
+        "three_rate": threeRate,
+        "four_rate": fourRate,
+        "five_rate": fiveRate,
+        "rating_data": ratingData.toJson(),
+      };
 }
 
 class RatingData {
@@ -96,36 +97,37 @@ class RatingData {
   });
 
   factory RatingData.fromJson(Map<String, dynamic> json) => RatingData(
-    currentPage: json["current_page"],
-    data: List<RatingDatum>.from(json["data"].map((x) => RatingDatum.fromJson(x))),
-    firstPageUrl: json["first_page_url"],
-    from: json["from"],
-    lastPage: json["last_page"],
-    lastPageUrl: json["last_page_url"],
-    links: List<Link>.from(json["links"].map((x) => Link.fromJson(x))),
-    nextPageUrl: json["next_page_url"],
-    path: json["path"],
-    perPage: json["per_page"],
-    prevPageUrl: json["prev_page_url"],
-    to: json["to"],
-    total: json["total"],
-  );
+        currentPage: json["current_page"],
+        data: List<RatingDatum>.from(
+            json["data"].map((x) => RatingDatum.fromJson(x))),
+        firstPageUrl: json["first_page_url"],
+        from: json["from"] ?? 0,
+        lastPage: json["last_page"],
+        lastPageUrl: json["last_page_url"],
+        links: List<Link>.from(json["links"].map((x) => Link.fromJson(x))),
+        nextPageUrl: json["next_page_url"],
+        path: json["path"],
+        perPage: json["per_page"] ?? 0,
+        prevPageUrl: json["prev_page_url"],
+        to: json["to"] ?? 0,
+        total: json["total"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "current_page": currentPage,
-    "data": List<dynamic>.from(data.map((x) => x.toJson())),
-    "first_page_url": firstPageUrl,
-    "from": from,
-    "last_page": lastPage,
-    "last_page_url": lastPageUrl,
-    "links": List<dynamic>.from(links.map((x) => x.toJson())),
-    "next_page_url": nextPageUrl,
-    "path": path,
-    "per_page": perPage,
-    "prev_page_url": prevPageUrl,
-    "to": to,
-    "total": total,
-  };
+        "current_page": currentPage,
+        "data": List<dynamic>.from(data.map((x) => x.toJson())),
+        "first_page_url": firstPageUrl,
+        "from": from,
+        "last_page": lastPage,
+        "last_page_url": lastPageUrl,
+        "links": List<dynamic>.from(links.map((x) => x.toJson())),
+        "next_page_url": nextPageUrl,
+        "path": path,
+        "per_page": perPage,
+        "prev_page_url": prevPageUrl,
+        "to": to,
+        "total": total,
+      };
 }
 
 class RatingDatum {
@@ -152,28 +154,28 @@ class RatingDatum {
   });
 
   factory RatingDatum.fromJson(Map<String, dynamic> json) => RatingDatum(
-    id: json["id"],
-    userId: json["user_id"],
-    serviceId: json["service_id"],
-    propertySubTypeId: json["property_sub_type_id"],
-    rate: json["rate"],
-    description: json["description"],
-    createdAt: DateTime.parse(json["created_at"]),
-    updatedAt: DateTime.parse(json["updated_at"]),
-    subpropertytype: Subpropertytype.fromJson(json["subpropertytype"]),
-  );
+        id: json["id"],
+        userId: json["user_id"],
+        serviceId: json["service_id"],
+        propertySubTypeId: json["property_sub_type_id"],
+        rate: json["rate"],
+        description: json["description"],
+        createdAt: DateTime.parse(json["created_at"]),
+        updatedAt: DateTime.parse(json["updated_at"]),
+        subpropertytype: Subpropertytype.fromJson(json["subpropertytype"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "user_id": userId,
-    "service_id": serviceId,
-    "property_sub_type_id": propertySubTypeId,
-    "rate": rate,
-    "description": description,
-    "created_at": createdAt.toIso8601String(),
-    "updated_at": updatedAt.toIso8601String(),
-    "subpropertytype": subpropertytype.toJson(),
-  };
+        "id": id,
+        "user_id": userId,
+        "service_id": serviceId,
+        "property_sub_type_id": propertySubTypeId,
+        "rate": rate,
+        "description": description,
+        "created_at": createdAt.toIso8601String(),
+        "updated_at": updatedAt.toIso8601String(),
+        "subpropertytype": subpropertytype.toJson(),
+      };
 }
 
 class Subpropertytype {
@@ -185,15 +187,16 @@ class Subpropertytype {
     required this.name,
   });
 
-  factory Subpropertytype.fromJson(Map<String, dynamic> json) => Subpropertytype(
-    id: json["id"],
-    name: json["name"],
-  );
+  factory Subpropertytype.fromJson(Map<String, dynamic> json) =>
+      Subpropertytype(
+        id: json["id"],
+        name: json["name"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "name": name,
-  };
+        "id": id,
+        "name": name,
+      };
 }
 
 class Link {
@@ -208,14 +211,14 @@ class Link {
   });
 
   factory Link.fromJson(Map<String, dynamic> json) => Link(
-    url: json["url"],
-    label: json["label"],
-    active: json["active"],
-  );
+        url: json["url"],
+        label: json["label"],
+        active: json["active"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "url": url,
-    "label": label,
-    "active": active,
-  };
+        "url": url,
+        "label": label,
+        "active": active,
+      };
 }

@@ -7,7 +7,7 @@ import 'package:property_app/controllers/payment_controller/payment_screen_contr
 
 import '../../app_constants/app_icon.dart';
 import '../../app_constants/app_sizes.dart';
-import '../../custom_widgets/custom_button.dart';
+
 class PaymentsScreen extends GetView<PaymentScreenController> {
   const PaymentsScreen({Key? key}) : super(key: key);
 
@@ -16,10 +16,9 @@ class PaymentsScreen extends GetView<PaymentScreenController> {
     return Scaffold(
       backgroundColor: whiteColor,
       appBar: titleAppBar("Payments", action: [
-        IconButton(onPressed: (){
-        }, icon: const Icon(Icons.search)),
+        IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
       ]),
-      body:  SafeArea(
+      body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(18.0),
           child: SingleChildScrollView(
@@ -57,24 +56,22 @@ class PaymentsScreen extends GetView<PaymentScreenController> {
                                     text: "Oakwood",
                                     fontSize: 22,
                                     fontWeight: FontWeight.w500,
-
-                                  ),  customText(
+                                  ),
+                                  customText(
                                     text: "123 Main St, Cityville",
                                     fontSize: 18,
                                     fontWeight: FontWeight.w300,
-
                                   ),
                                 ],
                               ),
                             ],
                           ),
-
                           Container(
                             decoration: BoxDecoration(
                                 color: Colors.green.shade100,
-                                borderRadius: BorderRadius.circular(8)
-                            ),
-                            padding: EdgeInsets.only(left: 10, right: 10, top: 3, bottom: 3),
+                                borderRadius: BorderRadius.circular(8)),
+                            padding: EdgeInsets.only(
+                                left: 10, right: 10, top: 3, bottom: 3),
                             child: Center(
                               child: customText(
                                 text: "Paid",
@@ -84,7 +81,7 @@ class PaymentsScreen extends GetView<PaymentScreenController> {
                             ),
                           )
                         ],
-                      ) ,
+                      ),
                       h10,
                       Row(
                         children: [
@@ -110,10 +107,10 @@ class PaymentsScreen extends GetView<PaymentScreenController> {
                         fontWeight: FontWeight.w300,
                       ),
                       h10,
-
                     ],
                   ),
-                )
+                ),
+                h10,
               ],
             ),
           ),

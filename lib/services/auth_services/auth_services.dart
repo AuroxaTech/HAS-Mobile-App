@@ -376,6 +376,62 @@ class AuthServices {
     }
   }
 
+  Future<void> createConnectedAccount(
+      {required int userId, required String email}) async {
+    try {
+      var response = await http.post(
+        Uri.parse('https://yourapi.com/api/stripe/create-connected-account'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'user_id': userId,
+          'email': email,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        // Optionally handle the account_id
+        print('Connected account created successfully: ${data['account_id']}');
+      } else {
+        // Handle error response
+        final data = jsonDecode(response.body);
+        print('Error creating connected account: ${data['error']}');
+        // You might want to throw an exception or handle it accordingly
+      }
+    } catch (e) {
+      // Handle exception
+      print('Exception creating connected account: $e');
+      // You might want to throw the exception or handle it accordingly
+    }
+  }
+
+  Future<String> createPaymentIntent({
+    required int amount,
+    required String currency,
+    required String connectedAccountId,
+  }) async {
+    final url =
+        Uri.parse('https://your-backend.com/api/stripe/create-payment-intent');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'amount': amount,
+        'currency': currency,
+        'connected_account_id': connectedAccountId,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body);
+      return body['clientSecret'];
+    } else {
+      // Handle error
+      throw Exception('Failed to create Payment Intent: ${response.body}');
+    }
+  }
+
   // Login APi
 
   Future<Map<String, dynamic>> login({

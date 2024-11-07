@@ -1,4 +1,3 @@
-
 import 'package:get/get.dart';
 import 'package:property_app/controllers/authentication_controller/change_password_controller.dart';
 import 'package:property_app/controllers/authentication_controller/forgot_password_controller.dart';
@@ -35,9 +34,7 @@ import 'package:property_app/controllers/services_provider_controller/service_re
 import 'package:property_app/controllers/tenant_controllers/current_reneted.dart';
 import 'package:property_app/controllers/tenant_controllers/tenant_contract_controller.dart';
 import 'package:property_app/controllers/tenant_controllers/tenant_dashboard_controller.dart';
-import 'package:property_app/views/land_lords/contract_status_screen.dart';
 import 'package:property_app/views/land_lords/property_filter_screen.dart';
-import 'package:property_app/views/service_provider/new_service_request_screen.dart';
 
 import '../controllers/authentication_controller/login_screen_controller.dart';
 import '../controllers/authentication_controller/splash_screen_controller.dart';
@@ -47,6 +44,7 @@ import '../controllers/land_lord/my_property_detail_controller.dart';
 import '../controllers/land_lord/my_service_request_detail_controller.dart';
 import '../controllers/services_provider_controller/ew_service_request_controller.dart';
 import '../controllers/services_provider_controller/rate_expereince_controller.dart';
+import '../controllers/stripe_payment_controller/stripe_payment_controller.dart';
 import '../controllers/visitor_controllers/visitor_dashboard_controller.dart';
 
 class ScreenBindings extends Bindings {
@@ -68,34 +66,49 @@ class ScreenBindings extends Bindings {
     Get.lazyPut<CreateOfferController>(() => CreateOfferController());
     Get.lazyPut<CalendarScreenController>(() => CalendarScreenController());
     Get.lazyPut<ServiceRequestController>(() => ServiceRequestController());
-    Get.lazyPut<ServiceRequestDetailScreenController>(() => ServiceRequestDetailScreenController());
+    Get.lazyPut<ServiceRequestDetailScreenController>(
+        () => ServiceRequestDetailScreenController());
     Get.lazyPut<PropertyFilterScreen>(() => const PropertyFilterScreen());
-    Get.lazyPut<ServiceListingScreenController>(() => ServiceListingScreenController());
-    Get.lazyPut<NewServiceRequestScreenController>(() =>  NewServiceRequestScreenController());
-    Get.lazyPut<MyFavouriteScreenController>(() =>  MyFavouriteScreenController());
-    Get.lazyPut<MyServicesDetailScreenController>(() =>  MyServicesDetailScreenController());
-    Get.lazyPut<NotificationScreenController>(() =>  NotificationScreenController());
-    Get.lazyPut<HomeScreenController>(() =>  HomeScreenController());
-    Get.lazyPut<ForgotPasswordController>(() =>  ForgotPasswordController());
-    Get.lazyPut<ChatScreenListController>(() =>  ChatScreenListController());
-    Get.lazyPut<ChatConversionScreenController>(() =>  ChatConversionScreenController());
-    Get.lazyPut<ServiceListingDetailScreenController>(() =>  ServiceListingDetailScreenController());
-    Get.lazyPut<PaymentScreenController>(() =>  PaymentScreenController());
-    Get.lazyPut<ProfileSettingsScreenController>(() =>  ProfileSettingsScreenController());
-    Get.lazyPut<ContractStatusScreenController>(() =>  ContractStatusScreenController());
-    Get.lazyPut<RateExperienceController>(() =>  RateExperienceController());
-    Get.lazyPut<JobScreenController>(() =>  JobScreenController());
-    Get.lazyPut<JobDetailController>(() =>  JobDetailController());
-    Get.lazyPut<MyPropertyDetailController>(() =>  MyPropertyDetailController());
-    Get.lazyPut<MyServiceRequestController>(() =>  MyServiceRequestController());
-    Get.lazyPut<MyServiceRequestDetailController>(() =>  MyServiceRequestDetailController());
-    Get.lazyPut<CalendarDetailController>(() =>  CalendarDetailController());
-    Get.lazyPut<AllPropertyController>(() =>  AllPropertyController());
-    Get.lazyPut<AllPropertyDetailController>(() =>  AllPropertyDetailController());
-    Get.lazyPut<TenantContractController>(() =>  TenantContractController());
-    Get.lazyPut<ContractDetailController>(() =>  ContractDetailController());
-    Get.lazyPut<ChangePasswordController>(() =>  ChangePasswordController());
-    Get.lazyPut<VisitorDashboardController>(() =>  VisitorDashboardController());
-    Get.lazyPut<CurrentRantedPropertiesController>(() =>  CurrentRantedPropertiesController());
+    Get.lazyPut<ServiceListingScreenController>(
+        () => ServiceListingScreenController());
+    Get.lazyPut<NewServiceRequestScreenController>(
+        () => NewServiceRequestScreenController());
+    Get.lazyPut<MyFavouriteScreenController>(
+        () => MyFavouriteScreenController());
+    Get.lazyPut<MyServicesDetailScreenController>(
+        () => MyServicesDetailScreenController());
+    Get.lazyPut<NotificationScreenController>(
+        () => NotificationScreenController());
+    Get.lazyPut<HomeScreenController>(() => HomeScreenController());
+    Get.lazyPut<ForgotPasswordController>(() => ForgotPasswordController());
+    Get.lazyPut<ChatScreenListController>(() => ChatScreenListController());
+    Get.lazyPut<ChatConversionScreenController>(
+        () => ChatConversionScreenController());
+    Get.lazyPut<ServiceListingDetailScreenController>(
+        () => ServiceListingDetailScreenController());
+    Get.lazyPut<PaymentScreenController>(() => PaymentScreenController());
+    Get.lazyPut<ProfileSettingsScreenController>(
+        () => ProfileSettingsScreenController());
+    Get.lazyPut<ContractStatusScreenController>(
+        () => ContractStatusScreenController());
+    Get.lazyPut<RateExperienceController>(() => RateExperienceController());
+    Get.lazyPut<JobScreenController>(() => JobScreenController());
+    Get.lazyPut<JobDetailController>(() => JobDetailController());
+    Get.lazyPut<MyPropertyDetailController>(() => MyPropertyDetailController());
+    Get.lazyPut<MyServiceRequestController>(() => MyServiceRequestController());
+    Get.lazyPut<MyServiceRequestDetailController>(
+        () => MyServiceRequestDetailController());
+    Get.lazyPut<CalendarDetailController>(() => CalendarDetailController());
+    Get.lazyPut<AllPropertyController>(() => AllPropertyController());
+    Get.lazyPut<AllPropertyDetailController>(
+        () => AllPropertyDetailController());
+    Get.lazyPut<TenantContractController>(() => TenantContractController());
+    Get.lazyPut<ContractDetailController>(() => ContractDetailController());
+    Get.lazyPut<ChangePasswordController>(() => ChangePasswordController());
+    Get.lazyPut<VisitorDashboardController>(() => VisitorDashboardController());
+    Get.lazyPut<CurrentRantedPropertiesController>(
+        () => CurrentRantedPropertiesController());
+    Get.lazyPut<StripePaymentScreenController>(
+        () => StripePaymentScreenController());
   }
 }

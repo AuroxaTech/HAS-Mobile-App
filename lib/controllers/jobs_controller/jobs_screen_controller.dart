@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:property_app/models/propert_model/service_job_status.dart';
@@ -10,14 +9,14 @@ import '../../models/service_provider_model/service_request_model.dart';
 import '../../services/property_services/add_services.dart';
 
 class JobScreenController extends GetxController {
-
   RxBool pending = true.obs;
   RxBool completed = false.obs;
   RxBool reject = false.obs;
 
   ServiceProviderServices servicesService = ServiceProviderServices();
   Rx<bool> isLoading = false.obs;
-  RxList<ServiceRequestUser> getServicesRequestList = <ServiceRequestUser>[].obs;
+  RxList<ServiceRequestUser> getServicesRequestList =
+      <ServiceRequestUser>[].obs;
 
   @override
   void onInit() {
@@ -25,26 +24,26 @@ class JobScreenController extends GetxController {
     print("IDDDDDD $data");
     print("Hello");
     pendingJobController.addPageRequestListener((pageKey) {
-      Future.microtask(() =>  getServiceJobs(pageKey));
+      Future.microtask(() => getServiceJobs(pageKey));
     });
     super.onInit();
   }
 
   Future<void> getServicesRequest() async {
-    List<ServiceRequestUser>  list  = <ServiceRequestUser>[];
+    List<ServiceRequestUser> list = <ServiceRequestUser>[];
     print("we are in get services");
     isLoading.value = true;
     var id = await Preferences.getUserID();
     var result = await servicesService.getServiceUserRequest(userId: id);
-    print("Service result : $result" );
-    if(result["status"] == true){
+    print("Service result : $result");
+    if (result["status"] == true) {
       isLoading.value = false;
       for (var data in result['data']) {
         print("Service List :: $data");
         list.add(ServiceRequestUser.fromJson(data));
       }
       getServicesRequestList.value = list;
-    }else {
+    } else {
       isLoading.value = false;
     }
   }
@@ -57,7 +56,7 @@ class JobScreenController extends GetxController {
     isLoading.value = true;
     try {
       var id = await Preferences.getUserID();
-      var result = await servicesService.getMyJobs( userId: id, page: 1);
+      var result = await servicesService.getMyJobs(userId: id, page: 1);
       print("result $result");
       if (result['status'] == true) {
         DataStatus providerFavorite = DataStatus.fromJson(result);
@@ -76,10 +75,12 @@ class JobScreenController extends GetxController {
     }
   }
 
-  final PagingController<int, PendingJob> pendingJobController = PagingController(firstPageKey: 1);
-  final PagingController<int, CompletedJob> completedJobController = PagingController(firstPageKey: 1);
-  final PagingController<int, RejectedJob> rejectedJobController = PagingController(firstPageKey: 1);
-
+  final PagingController<int, PendingJob> pendingJobController =
+      PagingController(firstPageKey: 1);
+  final PagingController<int, CompletedJob> completedJobController =
+      PagingController(firstPageKey: 1);
+  final PagingController<int, RejectedJob> rejectedJobController =
+      PagingController(firstPageKey: 1);
 
   // Future<void> getServiceJobs(int pageKey) async {
   //   isLoading.value = true;
@@ -127,37 +128,37 @@ class JobScreenController extends GetxController {
     try {
       var id = await Preferences.getUserID();
       var result = await servicesService.getMyJobs(userId: id, page: pageKey);
-      print("API Result: ${json.encode(result)}");  // Log the full result to see what is exactly coming from the API
+      print("API Result: ${json.encode(result)}"); // Log the full result
 
       if (result['status'] == true) {
         var data = result['data'];
-        print("Data to be parsed: $data");  // Check the raw data just before parsing
+        print("Data to be parsed: $data"); // Check raw data before parsing
 
         DataStatus dataStatus = DataStatus.fromJson(data);
 
-        print("Parsed Pending Jobs: ${dataStatus.pendingJobs.length}"); // Check how many pending jobs were parsed
-
-        updatePagination(pendingJobController, dataStatus.pendingJobs, dataStatus.pendingJobsPagination, pageKey);
-        updatePagination(completedJobController, dataStatus.completedJobs, dataStatus.completedJobsPagination, pageKey);
-        updatePagination(rejectedJobController, dataStatus.rejectedJobs, dataStatus.rejectedJobsPagination, pageKey);
+        updatePagination(pendingJobController, dataStatus.pendingJobs,
+            dataStatus.pendingJobsPagination, pageKey);
+        updatePagination(completedJobController, dataStatus.completedJobs,
+            dataStatus.completedJobsPagination, pageKey);
+        updatePagination(rejectedJobController, dataStatus.rejectedJobs,
+            dataStatus.rejectedJobsPagination, pageKey);
       } else {
         print("API Error: ${result['message']}");
       }
     } catch (e) {
-      print("Exception caught during parsing or API call: $e");
+      print("Exception during parsing or API call: $e");
       rethrow;
     } finally {
       isLoading.value = false;
-
     }
   }
 
-  void updatePagination<T>(PagingController<int, T> controller, List<T> jobs, Pagination pagination, int pageKey) {
+  void updatePagination<T>(PagingController<int, T> controller, List<T> jobs,
+      Pagination pagination, int pageKey) {
     if (pagination.currentPage == pagination.lastPage) {
       controller.appendLastPage(jobs);
     } else {
       controller.appendPage(jobs, pageKey + 1);
     }
   }
-
 }

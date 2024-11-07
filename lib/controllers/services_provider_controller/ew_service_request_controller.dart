@@ -3,18 +3,26 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:property_app/utils/shared_preferences/preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:property_app/utils/shared_preferences/preferences.dart';
+
 import '../../constant_widget/constant_widgets.dart';
 import '../../models/authentication_model/user_model.dart';
 import '../../services/property_services/add_services.dart';
 import '../../utils/api_urls.dart';
 import '../../utils/utils.dart';
 
-class NewServiceRequestScreenController extends GetxController{
+class NewServiceRequestScreenController extends GetxController {
   RxString propertyType = "Choose Property Type".obs;
   RxInt propertyTypeIndex = 0.obs;
-  final items = ['Choose Property Type', "Apartment", "House", "Condo", "Townhouse", "Other"];
+  final items = [
+    'Choose Property Type',
+    "Apartment",
+    "House",
+    "Condo",
+    "Townhouse",
+    "Other"
+  ];
 
   List<dynamic> data = [];
 
@@ -27,6 +35,7 @@ class NewServiceRequestScreenController extends GetxController{
   var descriptionController = TextEditingController();
   var instructionController = TextEditingController();
   var priceController = TextEditingController();
+  var postalCodeController = TextEditingController();
 
   RxBool isLoading = false.obs;
 
@@ -34,12 +43,21 @@ class NewServiceRequestScreenController extends GetxController{
   Rx<TimeOfDay> endTime = const TimeOfDay(hour: 17, minute: 0).obs;
   RxString selectedWeekdayRange = ''.obs;
 
-  final List<String> weekdayRanges = ['Monday to Friday', 'Full Week'];
+  final List<String> weekdayRanges = [
+    'Monday to Friday',
+    'Full Week',
+    "Request Now"
+  ];
 
   Future<void> selectDateTime(BuildContext context) async {
+    // Open the weekday range selection first
     await _selectWeekdayRange(context);
-    await _selectTime(context, true);
-    await _selectTime(context, false);
+
+    // If selectedWeekdayRange is not 'Request Now', show time picker
+    if (selectedWeekdayRange.value != 'Request Now') {
+      await _selectTime(context, true); // Start time
+      await _selectTime(context, false); // End time
+    }
   }
 
   Future<void> _selectWeekdayRange(BuildContext context) async {
@@ -94,7 +112,8 @@ class NewServiceRequestScreenController extends GetxController{
     profileimage: '',
     createdAt: DateTime.now(),
     updatedAt: DateTime.now(),
-    platform: '', deviceToken: '',
+    platform: '',
+    deviceToken: '',
   ).obs;
 
   var isLoadingGet = true.obs;
@@ -105,9 +124,11 @@ class NewServiceRequestScreenController extends GetxController{
       isLoadingGet(true);
       var id = await Preferences.getUserID();
       var token = await Preferences.getToken();
-      final response = await http.get(Uri.parse("${AppUrls.getUser}/$id",),
-          headers: getHeader(userToken: token)
-      );
+      final response = await http.get(
+          Uri.parse(
+            "${AppUrls.getUser}/$id",
+          ),
+          headers: getHeader(userToken: token));
 
       if (response.statusCode == 200) {
         var data = User.fromJson(jsonDecode(response.body)["data"]);
@@ -118,7 +139,6 @@ class NewServiceRequestScreenController extends GetxController{
         emailController.text = userData.value.email;
         contactController.text = userData.value.phoneNumber;
         isLoadingGet(false);
-
       } else {
         isLoadingGet(false);
         throw Exception('Failed to load user data');
@@ -140,21 +160,26 @@ class NewServiceRequestScreenController extends GetxController{
     required String time,
     required String description,
     required String additionalInfo,
+    required int postalCode,
+    required int isApplied,
   }) async {
     isLoading.value = true;
 
     try {
       var data = await ServiceProviderServices().newServiceRequest(
-          serviceId: serviceId,
-          serviceProviderId: serviceProviderId,
-          address: address,
-          lat: lat,
-          lng: lng,
-          propertyType: 1,
-          date: date, time: time,
-          description: description,
-          additionalInfo: additionalInfo,
-          price: price
+        serviceId: serviceId,
+        serviceProviderId: serviceProviderId,
+        address: address,
+        lat: lat,
+        lng: lng,
+        propertyType: 1,
+        date: date,
+        time: time,
+        description: description,
+        additionalInfo: additionalInfo,
+        price: price,
+        postalCode: postalCode,
+        isApplied: isApplied,
       );
 
       if (kDebugMode) {
@@ -179,5 +204,4 @@ class NewServiceRequestScreenController extends GetxController{
       AppUtils.errorSnackBar("Error", "Failed to add service");
     }
   }
-
 }

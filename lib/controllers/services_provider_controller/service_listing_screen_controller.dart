@@ -4,9 +4,7 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:property_app/models/service_provider_model/all_services.dart';
 import 'package:property_app/services/property_services/add_services.dart';
 
-class ServiceListingScreenController extends GetxController{
-
-
+class ServiceListingScreenController extends GetxController {
   final sheet = GlobalKey();
   final controller = DraggableScrollableController();
   List<String> areaRange = [
@@ -33,23 +31,27 @@ class ServiceListingScreenController extends GetxController{
   RxList<AllService> allServicesList = <AllService>[].obs;
   AllService? alltServiceOne;
 
-  final PagingController<int, AllService> pagingController = PagingController(firstPageKey: 1);
+  final PagingController<int, AllService> pagingController =
+      PagingController(firstPageKey: 1);
 
-
-  Future<void> getServices(int pageKey,  [Map<String, dynamic>? filters]) async {
+  Future<void> getServices(int pageKey, [Map<String, dynamic>? filters]) async {
     try {
       isLoading.value = true;
-      var result = await servicesService.getAllServices(pageKey, filters: filters);
+      var result =
+          await servicesService.getAllServices(pageKey, filters: filters);
       isLoading.value = false;
-
-      print(result);
 
       if (result['status'] == true) {
         final List<AllService> newItems = (result['data']['data'] as List)
             .map((json) => AllService.fromJson(json))
             .toList();
 
-        final isLastPage = result['data']['current_page'] == result['data']['last_page'];
+        // Print the entire list of services in the console
+        print('Fetched Services:');
+        newItems.forEach((service) => print(service.toJson()));
+
+        final isLastPage =
+            result['data']['current_page'] == result['data']['last_page'];
 
         if (isLastPage) {
           pagingController.appendLastPage(newItems);
@@ -76,11 +78,12 @@ class ServiceListingScreenController extends GetxController{
     print("IDDDDDD $data");
     print("Hello");
     pagingController.addPageRequestListener((pageKey) {
-        getServices(pageKey);
+      getServices(pageKey);
     });
     //data == null ? null : getService(data);
     super.onInit();
   }
+
   RxInt page = 1.obs;
 
   // Future<void> getServices(int pageKey) async {
@@ -104,7 +107,7 @@ class ServiceListingScreenController extends GetxController{
     print("we are in get service");
     isLoading.value = true;
     var result = await servicesService.getService(id: id);
-    print("Service : $result" );
+    print("Service : $result");
 
     isLoading.value = false;
     for (var data in result['data']) {
@@ -115,13 +118,15 @@ class ServiceListingScreenController extends GetxController{
 
   void toggleFavorite(int userId, int providerId) async {
     isFavorite.value = !isFavorite.value; // Toggle the favorite status
-    int favFlag = isFavorite.value ? 1 : 2; // 1 for favorite, 2 for not favorite
+    int favFlag =
+        isFavorite.value ? 1 : 2; // 1 for favorite, 2 for not favorite
     bool result = await servicesService.addFavorite(providerId, favFlag);
     if (!result) {
       // If the API call failed, revert the favorite status
       isFavorite.value = !isFavorite.value;
     }
   }
+
   var isFavorite = false.obs;
 
   // void toggleFavorite1(int index, int serviceId) async {
@@ -163,7 +168,8 @@ class ServiceListingScreenController extends GetxController{
     // Attempt to update the backend with the new favorite status
     try {
       // Make the API call
-      bool result = await servicesService.addFavorite(serviceId, newFavoriteStatus ? 1 : 2);
+      bool result = await servicesService.addFavorite(
+          serviceId, newFavoriteStatus ? 1 : 2);
       if (!result) {
         throw Exception('API call to add favorite failed.');
       }
@@ -178,4 +184,3 @@ class ServiceListingScreenController extends GetxController{
     pagingController.notifyListeners();
   }
 }
-

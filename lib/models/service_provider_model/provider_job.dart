@@ -4,7 +4,8 @@
 
 import 'dart:convert';
 
-ProviderJob providerJobFromJson(String str) => ProviderJob.fromJson(json.decode(str));
+ProviderJob providerJobFromJson(String str) =>
+    ProviderJob.fromJson(json.decode(str));
 
 String providerJobToJson(ProviderJob data) => json.encode(data.toJson());
 
@@ -20,26 +21,27 @@ class ProviderJob {
   });
 
   factory ProviderJob.fromJson(Map<String, dynamic> json) => ProviderJob(
-    status: json["status"],
-    data: List<ProviderJobData>.from(json["data"].map((x) => ProviderJobData.fromJson(x))),
-    message: json["message"],
-  );
+        status: json["status"],
+        data: List<ProviderJobData>.from(
+            json["data"].map((x) => ProviderJobData.fromJson(x))),
+        message: json["message"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "status": status,
-    "data": List<dynamic>.from(data.map((x) => x.toJson())),
-    "message": message,
-  };
+        "status": status,
+        "data": List<dynamic>.from(data.map((x) => x.toJson())),
+        "message": message,
+      };
 }
 
 class ProviderJobData {
   int id;
-  String userId;
-  String requestId;
-  String providerId;
-  String status;
-  DateTime createdAt;
-  DateTime updatedAt;
+  int userId;
+  int requestId;
+  int providerId;
+  int status;
+  DateTime? createdAt;
+  DateTime? updatedAt;
   Request request;
   Provider provider;
 
@@ -49,35 +51,40 @@ class ProviderJobData {
     required this.requestId,
     required this.providerId,
     required this.status,
-    required this.createdAt,
-    required this.updatedAt,
+    this.createdAt,
+    this.updatedAt,
     required this.request,
     required this.provider,
   });
 
-  factory ProviderJobData.fromJson(Map<String, dynamic> json) => ProviderJobData(
-    id: json["id"],
-    userId: json["user_id"],
-    requestId: json["request_id"],
-    providerId: json["provider_id"],
-    status: json["status"],
-    createdAt: DateTime.parse(json["created_at"]),
-    updatedAt: DateTime.parse(json["updated_at"]),
-    request: Request.fromJson(json["request"]),
-    provider: Provider.fromJson(json["provider"]),
-  );
+  factory ProviderJobData.fromJson(Map<String, dynamic> json) =>
+      ProviderJobData(
+        id: json["id"],
+        userId: json["user_id"],
+        requestId: json["request_id"],
+        providerId: json["provider_id"],
+        status: json["status"],
+        createdAt: json["created_at"] != null
+            ? DateTime.parse(json["created_at"])
+            : null,
+        updatedAt: json["updated_at"] != null
+            ? DateTime.parse(json["updated_at"])
+            : null,
+        request: Request.fromJson(json["request"]),
+        provider: Provider.fromJson(json["provider"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "user_id": userId,
-    "request_id": requestId,
-    "provider_id": providerId,
-    "status": status,
-    "created_at": createdAt.toIso8601String(),
-    "updated_at": updatedAt.toIso8601String(),
-    "request": request.toJson(),
-    "provider": provider.toJson(),
-  };
+        "id": id,
+        "user_id": userId,
+        "request_id": requestId,
+        "provider_id": providerId,
+        "status": status,
+        "created_at": createdAt?.toIso8601String(),
+        "updated_at": updatedAt?.toIso8601String(),
+        "request": request.toJson(),
+        "provider": provider.toJson(),
+      };
 }
 
 class Provider {
@@ -85,7 +92,7 @@ class Provider {
   String fullname;
   String email;
   String phoneNumber;
-  String roleId;
+  int roleId;
   String profileimage;
   DateTime createdAt;
   DateTime updatedAt;
@@ -102,44 +109,44 @@ class Provider {
   });
 
   factory Provider.fromJson(Map<String, dynamic> json) => Provider(
-    id: json["id"],
-    fullname: json["fullname"],
-    email: json["email"],
-    phoneNumber: json["phone_number"],
-    roleId: json["role_id"],
-    profileimage: json["profileimage"],
-    createdAt: DateTime.parse(json["created_at"]),
-    updatedAt: DateTime.parse(json["updated_at"]),
-  );
+        id: json["id"],
+        fullname: json["fullname"],
+        email: json["email"],
+        phoneNumber: json["phone_number"],
+        roleId: json["role_id"],
+        profileimage: json["profileimage"],
+        createdAt: DateTime.parse(json["created_at"]),
+        updatedAt: DateTime.parse(json["updated_at"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "fullname": fullname,
-    "email": email,
-    "phone_number": phoneNumber,
-    "role_id": roleId,
-    "profileimage": profileimage,
-    "created_at": createdAt.toIso8601String(),
-    "updated_at": updatedAt.toIso8601String(),
-  };
+        "id": id,
+        "fullname": fullname,
+        "email": email,
+        "phone_number": phoneNumber,
+        "role_id": roleId,
+        "profileimage": profileimage,
+        "created_at": createdAt.toIso8601String(),
+        "updated_at": updatedAt.toIso8601String(),
+      };
 }
 
 class Request {
   int id;
-  String userId;
-  String serviceproviderId;
-  String serviceId;
+  int userId;
+  int serviceproviderId;
+  int serviceId;
   String address;
   String lat;
   String long;
   String price;
-  String propertyType;
+  int propertyType;
   String date;
   String time;
   String description;
   String additionalInfo;
-  String approved;
-  String decline;
+  int approved;
+  int decline;
   DateTime createdAt;
   DateTime updatedAt;
 
@@ -164,42 +171,42 @@ class Request {
   });
 
   factory Request.fromJson(Map<String, dynamic> json) => Request(
-    id: json["id"],
-    userId: json["user_id"],
-    serviceproviderId: json["serviceprovider_id"],
-    serviceId: json["service_id"],
-    address: json["address"],
-    lat: json["lat"],
-    long: json["long"],
-    price: json["price"],
-    propertyType: json["property_type"],
-    date: json["date"],
-    time: json["time"],
-    description: json["description"],
-    additionalInfo: json["additional_info"]?? "",
-    approved: json["approved"],
-    decline: json["decline"],
-    createdAt: DateTime.parse(json["created_at"]),
-    updatedAt: DateTime.parse(json["updated_at"]),
-  );
+        id: json["id"],
+        userId: json["user_id"],
+        serviceproviderId: json["serviceprovider_id"],
+        serviceId: json["service_id"],
+        address: json["address"],
+        lat: json["lat"],
+        long: json["long"],
+        price: json["price"],
+        propertyType: json["property_type"],
+        date: json["date"],
+        time: json["time"],
+        description: json["description"],
+        additionalInfo: json["additional_info"] ?? "",
+        approved: json["approved"],
+        decline: json["decline"],
+        createdAt: DateTime.parse(json["created_at"]),
+        updatedAt: DateTime.parse(json["updated_at"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "user_id": userId,
-    "serviceprovider_id": serviceproviderId,
-    "service_id": serviceId,
-    "address": address,
-    "lat": lat,
-    "long": long,
-    "price": price,
-    "property_type": propertyType,
-    "date": date,
-    "time": time,
-    "description": description,
-    "additional_info": additionalInfo,
-    "approved": approved,
-    "decline": decline,
-    "created_at": createdAt.toIso8601String(),
-    "updated_at": updatedAt.toIso8601String(),
-  };
+        "id": id,
+        "user_id": userId,
+        "serviceprovider_id": serviceproviderId,
+        "service_id": serviceId,
+        "address": address,
+        "lat": lat,
+        "long": long,
+        "price": price,
+        "property_type": propertyType,
+        "date": date,
+        "time": time,
+        "description": description,
+        "additional_info": additionalInfo,
+        "approved": approved,
+        "decline": decline,
+        "created_at": createdAt.toIso8601String(),
+        "updated_at": updatedAt.toIso8601String(),
+      };
 }

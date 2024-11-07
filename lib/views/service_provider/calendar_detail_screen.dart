@@ -30,33 +30,48 @@ class CalendarDetailScreen extends GetView<CalendarDetailController> {
               : Stack(
                   children: [
                     PageView.builder(
-                      itemCount: controller.images.length,
+                      itemCount: controller.images.isNotEmpty
+                          ? controller.images.length
+                          : 1, // Ensure we have at least 1 item to avoid errors
                       scrollDirection: Axis.horizontal,
                       controller: controller.pageController,
                       itemBuilder: (context, index) {
-                        String imagesString = controller
-                            .getCalendarOne.value!.request.service!.media
-                            .toString();
-                        List<String> imageList = imagesString.split(',');
-                        controller.images = imageList;
-                        return InkWell(
-                          onTap: () {
-                            Get.to(
-                                () => ViewImage(
-                                      photo: AppUrls.mediaImages + imageList[0],
-                                    ),
-                                transition: routeTransition);
-                          },
-                          child: CachedNetworkImage(
-                            width: double.infinity,
-                            height: screenHeight(context) * 0.5,
-                            imageUrl: AppUrls.mediaImages + imageList[0],
-                            fit: BoxFit.cover,
-                            errorWidget: (context, e, b) {
-                              return Image.asset(AppIcons.appLogo);
+                        // Ensure getCalendarOne and service data exist
+                        if (controller.getCalendarOne.value?.request?.service !=
+                            null) {
+                          String imagesString = controller
+                              .getCalendarOne.value!.request.service!.media
+                              .toString();
+                          List<String> imageList = imagesString.split(',');
+                          controller.images = imageList;
+
+                          return InkWell(
+                            onTap: () {
+                              if (imageList.isNotEmpty) {
+                                Get.to(
+                                  () => ViewImage(
+                                    photo: AppUrls.mediaImages + imageList[0],
+                                  ),
+                                  transition: routeTransition,
+                                );
+                              }
                             },
-                          ),
-                        );
+                            child: CachedNetworkImage(
+                              width: double.infinity,
+                              height: screenHeight(context) * 0.5,
+                              imageUrl: imageList.isNotEmpty
+                                  ? AppUrls.mediaImages + imageList[0]
+                                  : '', // Fallback for empty image list
+                              fit: BoxFit.cover,
+                              errorWidget: (context, e, b) {
+                                return Image.asset(AppIcons.appLogo);
+                              },
+                            ),
+                          );
+                        } else {
+                          // Return a fallback widget when service data is missing
+                          return SizedBox();
+                        }
                       },
                     ),
                     Positioned(
@@ -74,15 +89,6 @@ class CalendarDetailScreen extends GetView<CalendarDetailController> {
                                 child: SvgPicture.asset(AppIcons.backIcon),
                               ),
                             ),
-                            // InkWell(
-                            //   onTap: (){
-                            //     //Get.toNamed(kEditPropertyScreen);
-                            //   },
-                            //   child: CircleAvatar(
-                            //     backgroundColor: whiteColor,
-                            //     child: SvgPicture.asset(AppIcons.editIcon),
-                            //   ),
-                            // )
                           ],
                         ),
                       ),
@@ -93,13 +99,14 @@ class CalendarDetailScreen extends GetView<CalendarDetailController> {
                         child: Align(
                           alignment: Alignment.topCenter,
                           child: SmoothPageIndicator(
-                            controller: controller
-                                .pageController, // Connect the indicator to the controller
-                            count: controller.images.length,
+                            controller: controller.pageController,
+                            count: controller.images.isNotEmpty
+                                ? controller.images.length
+                                : 1, // Ensure the count is valid
                             effect: const WormEffect(
                                 dotColor: whiteColor,
                                 dotHeight: 10,
-                                dotWidth: 10), // Feel free to choose any effect
+                                dotWidth: 10), // Choose any effect
                           ),
                         ),
                       ),
@@ -178,6 +185,8 @@ class MyDraggable extends GetView<CalendarDetailController> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
@@ -199,23 +208,29 @@ class MyDraggable extends GetView<CalendarDetailController> {
                                                       fontSize: 16),
                                                 ],
                                               ),
-                                              Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  customText(
-                                                      text: "Contact Details :",
-                                                      color: greyColor,
-                                                      fontSize: 15),
-                                                  customText(
-                                                      text: controller
-                                                          .getCalendarOne
-                                                          .value!
-                                                          .provider
-                                                          .email,
-                                                      color: blackColor,
-                                                      fontSize: 16),
-                                                ],
+                                              const SizedBox(
+                                                width: 30,
+                                              ),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    customText(
+                                                        text:
+                                                            "Contact Details :",
+                                                        color: greyColor,
+                                                        fontSize: 15),
+                                                    customText(
+                                                        text: controller
+                                                            .getCalendarOne
+                                                            .value!
+                                                            .provider
+                                                            .email,
+                                                        color: blackColor,
+                                                        fontSize: 16),
+                                                  ],
+                                                ),
                                               ),
                                             ],
                                           ),
