@@ -1,10 +1,8 @@
-import 'package:flutter/material.dart';
 const String kSplashScreen = "/splash_screen";
 const String kIntroScreen = "/intro_screen";
 const String kLoginScreen = "/login_screen";
 const String kSignupScreen = "/signup_screen";
 const String kAddDetailScreen = "/add_detail_screen";
-
 
 const String kDashboardScreen = "/dashboard_screen";
 const String kMyProperties = "/my_property_screen";
@@ -41,7 +39,8 @@ const String kJobDetailScreen = "/job_detail_screen";
 const String kEditPropertyScreen = "/edit_property_screen";
 const String kEditServiceScreen = "/edit_service_screen";
 const String kMyServiceRequestScreen = "/my_service_request_screen";
-const String kMyServiceRequestDetailScreen = "/my_service_request_detail_screen";
+const String kMyServiceRequestDetailScreen =
+    "/my_service_request_detail_screen";
 const String kCalendarDetailScreen = "/calendar_detail_screen";
 const String kAllPropertyScreen = "/all_property_screen";
 const String kAllPropertyDetailScreen = "/all_property_screen_detail";
@@ -51,3 +50,4 @@ const String kTenantContractDetailScreen = "/tenant_contract_detail_screen";
 const String kChangePasswordScreen = "/change_password_screen";
 const String kServiceFilterScreen = "/service_listing_filter_screen";
 const String kCurrentRentedScreen = "/current_rented_screen";
+const String kStripePaymentScreen = "/stripe_payment_screen";

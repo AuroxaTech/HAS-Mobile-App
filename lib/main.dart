@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:property_app/app_constants/theme.dart';
 import 'package:property_app/controllers/authentication_controller/splash_screen_controller.dart';
 import 'package:property_app/route_management/routes.dart';
+
 import 'firebase_options.dart';
 import 'route_management/constant_routes.dart';
 import 'route_management/screen_bindings.dart';
@@ -15,12 +16,11 @@ import 'route_management/screen_bindings.dart';
 // key id :  ZF877N5RJQ
 
 @pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message)async {
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
 }
 
-
-void main()async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -29,13 +29,14 @@ void main()async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   Get.put(SplashScreenController());
   HttpOverrides.global = MyHttpOverrides();
+
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   static FirebaseAnalytics analytics = FirebaseAnalytics.instance;
   static FirebaseAnalyticsObserver observer =
-  FirebaseAnalyticsObserver(analytics: analytics);
+      FirebaseAnalyticsObserver(analytics: analytics);
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
@@ -48,13 +49,11 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.theme,
       builder: (_, child) => TextScaleFactorClamper(
-        minTextScaleFactor: 1.0,
-        maxTextScaleFactor: 1.0,
-        child: child!
-      ),
+          minTextScaleFactor: 1.0, maxTextScaleFactor: 1.0, child: child!),
     );
   }
 }
+
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
@@ -66,7 +65,6 @@ class MyHttpOverrides extends HttpOverrides {
 
 // MUX_TOKEN_ID=15d0fe63-213f-443d-abf1-847edde2b710
 // MUX_TOKEN_SECRET=gaHuGszH71j1pT210WIMa3OGSfWvqCXxSARBObQAeFeYOUG/qQr9R4AA+T36bUsV6Hzmky/YlHi
-
 
 //  h25,
 //                 Center(
@@ -108,17 +106,17 @@ class TextScaleFactorClamper extends StatelessWidget {
     required this.child,
     this.minTextScaleFactor,
     this.maxTextScaleFactor,
-  }) : assert(
-  minTextScaleFactor == null ||
-      maxTextScaleFactor == null ||
-      minTextScaleFactor <= maxTextScaleFactor,
-  'minTextScaleFactor must be less than maxTextScaleFactor',
-  ),
+  })  : assert(
+          minTextScaleFactor == null ||
+              maxTextScaleFactor == null ||
+              minTextScaleFactor <= maxTextScaleFactor,
+          'minTextScaleFactor must be less than maxTextScaleFactor',
+        ),
         assert(
-        maxTextScaleFactor == null ||
-            minTextScaleFactor == null ||
-            maxTextScaleFactor >= minTextScaleFactor,
-        'maxTextScaleFactor must be greater than minTextScaleFactor',
+          maxTextScaleFactor == null ||
+              minTextScaleFactor == null ||
+              maxTextScaleFactor >= minTextScaleFactor,
+          'maxTextScaleFactor must be greater than minTextScaleFactor',
         );
 
   /// Child widget.

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:property_app/utils/shared_preferences/preferences.dart';
@@ -8,7 +7,6 @@ import '../../services/property_services/add_services.dart';
 import '../../utils/utils.dart';
 
 class MyServicesController extends GetxController {
-
   ServiceProviderServices servicesService = ServiceProviderServices();
   Rx<bool> isLoading = false.obs;
   RxList<Services> getServicesList = <Services>[].obs;
@@ -27,9 +25,8 @@ class MyServicesController extends GetxController {
     super.onInit();
   }
 
-
-  final PagingController<int, Services> pagingController = PagingController(firstPageKey: 1);
-
+  final PagingController<int, Services> pagingController =
+      PagingController(firstPageKey: 1);
 
   Future<void> getMyServices(int pageKey) async {
     try {
@@ -42,7 +39,8 @@ class MyServicesController extends GetxController {
             .map((json) => Services.fromJson(json))
             .toList();
 
-        final isLastPage = result['data']['current_page'] == result['data']['last_page'];
+        final isLastPage =
+            result['data']['current_page'] == result['data']['last_page'];
 
         if (isLastPage) {
           pagingController.appendLastPage(newItems);
@@ -53,7 +51,6 @@ class MyServicesController extends GetxController {
       } else {
         pagingController.error = Exception('Failed to fetch services');
       }
-
     } catch (error) {
       isLoading.value = false;
       print(error);
@@ -65,13 +62,14 @@ class MyServicesController extends GetxController {
   }
 
   Future<void> getServices() async {
-    List<Services>  list  = <Services>[];
+    List<Services> list = <Services>[];
     print("we are in get services");
     isLoading.value = true;
     var id = await Preferences.getUserID();
+    print("User ID ==> $id");
     var result = await servicesService.getServices(userId: id);
-    print("Service result : $result" );
-    if(result["status"] == true) {
+    print("Service result : $result");
+    if (result["status"] == true) {
       isLoading.value = false;
       for (var data in result['data']["data"]) {
         print("Service List :: $data");
@@ -81,14 +79,13 @@ class MyServicesController extends GetxController {
     } else {
       isLoading.value = false;
     }
-
   }
 
   Future<void> getService(id) async {
     print("we are in get service");
     isLoading.value = true;
     var result = await servicesService.getService(id: id);
-    print("Service : $result" );
+    print("Service : $result");
 
     isLoading.value = false;
     for (var data in result['data']) {
@@ -96,6 +93,7 @@ class MyServicesController extends GetxController {
       getServiceOne = Services.fromJson(data);
     }
   }
+
   Future<void> deleteService({required int id}) async {
     print("we are in delete service");
     isLoading.value = true;
@@ -116,5 +114,4 @@ class MyServicesController extends GetxController {
     }
     isLoading.value = false;
   }
-
 }

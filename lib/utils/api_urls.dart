@@ -1,12 +1,16 @@
 class AppUrls {
-
   static const mapKey = "AIzaSyDyeWs6PDrJbaqLv_AL0m1aww0munJ_vlc";
+  static const stripePKLiveKey =
+      "pk_live_51OzihLBFjIw5Tzwc1rtHQpQT6eLGwhPu4ofUdeiGyUXg2xg3K5SVWZqHzUmWK5FQzyOKBb6GLrQaSQ3fWT1KPah000kgnRST9A";
+  static const stripeSKLiveKey =
+      "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";
 
- // static const baseUrl = "https://pktours.pk";
+  // static const baseUrl = "https://pktours.pk";
   static const baseUrl = "https://haservices.ca:8080";
   static const profileImageBaseUrl = "$baseUrl/assets/profile_images/";
   static const electricityBillBaseUrl = "$baseUrl/assets/electricity_bill/";
-  static const certificateImagesBaseUrl = "$baseUrl/assets/certification_images/";
+  static const certificateImagesBaseUrl =
+      "$baseUrl/assets/certification_images/";
   static const CNIC = "$baseUrl/assets/cnic/";
   static const propertyImages = "$baseUrl/assets/property_images/";
   static const servicesImages = "$baseUrl/assets/service_images/";
@@ -22,15 +26,16 @@ class AppUrls {
   static const getUser = "$baseUrl/get-user-by-id";
 
   //property
-  static const getProperties  = "$baseUrl/all-properties";
-  static const getLandLordProperty  = "$baseUrl/get-properties";
-  static const getAllProperty  = "$baseUrl/all-properties";
-  static const getProperty  = "$baseUrl/get-property";
-  static const updateProperty  = "$baseUrl/update-property";
-  static const deleteProperty  = "$baseUrl/delete-property";
-  static const addProperty  = "$baseUrl/add-property";
-  static const addFavoriteProperty  = "$baseUrl/add-fav-property";
-  static const getApprovedContractProperty  = "$baseUrl/approved-contract-property";
+  static const getProperties = "$baseUrl/all-properties";
+  static const getLandLordProperty = "$baseUrl/get-properties";
+  static const getAllProperty = "$baseUrl/all-properties";
+  static const getProperty = "$baseUrl/get-property";
+  static const updateProperty = "$baseUrl/update-property";
+  static const deleteProperty = "$baseUrl/delete-property";
+  static const addProperty = "$baseUrl/add-property";
+  static const addFavoriteProperty = "$baseUrl/add-fav-property";
+  static const getApprovedContractProperty =
+      "$baseUrl/approved-contract-property";
 
   //service
   static const addServices = "$baseUrl/add-service";

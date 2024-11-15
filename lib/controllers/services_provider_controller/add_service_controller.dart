@@ -1,14 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:property_app/services/property_services/add_services.dart';
-import 'package:http/http.dart' as http;
 import 'package:property_app/utils/api_urls.dart';
+
 import '../../utils/utils.dart';
 
-class AddServiceController extends GetxController{
-
+class AddServiceController extends GetxController {
   final formKey = GlobalKey<FormState>();
   var servicesNameController = TextEditingController();
   var cityNameController = TextEditingController();
@@ -19,7 +19,6 @@ class AddServiceController extends GetxController{
   var availabilityController = TextEditingController();
   var locationController = TextEditingController();
   var additionalInfoController = TextEditingController();
-
 
   var selectedCountry = RxnString();
   var countriesList = <String>[].obs;
@@ -209,11 +208,13 @@ class AddServiceController extends GetxController{
       countriesList.assignAll(allCountries);
     } else {
       countriesList.assignAll(
-        allCountries.where((country) => country.toLowerCase().contains(query.toLowerCase())).toList(),
+        allCountries
+            .where((country) =>
+                country.toLowerCase().contains(query.toLowerCase()))
+            .toList(),
       );
     }
   }
-
 
   Rx<TimeOfDay> startTime = const TimeOfDay(hour: 9, minute: 0).obs;
   Rx<TimeOfDay> endTime = const TimeOfDay(hour: 17, minute: 0).obs;
@@ -226,7 +227,8 @@ class AddServiceController extends GetxController{
     await _selectTime(context, true);
     await _selectTime(context, false);
 
-    availabilityController.text = "${selectedWeekdayRange.value.isEmpty ? '' : selectedWeekdayRange.value}, ${startTime.value.format(context)} - ${endTime.value.format(context)}";
+    availabilityController.text =
+        "${selectedWeekdayRange.value.isEmpty ? '' : selectedWeekdayRange.value}, ${startTime.value.format(context)} - ${endTime.value.format(context)}";
   }
 
   Future<void> _selectWeekdayRange(BuildContext context) async {
@@ -264,9 +266,6 @@ class AddServiceController extends GetxController{
     }
   }
 
-
-
-
   RxList<XFile> images = <XFile>[].obs;
   void pickImages() async {
     final imagePicker = ImagePicker();
@@ -276,6 +275,7 @@ class AddServiceController extends GetxController{
       images.addAll(pickedFiles);
     }
   }
+
   void removeImage(int index) {
     images.removeAt(index);
   }
@@ -308,7 +308,7 @@ class AddServiceController extends GetxController{
         startTime: startTime,
         endTime: endTime,
         location: location,
-        country: country ,
+        country: country,
         city: city,
         lat: lat,
         long: long,
@@ -337,6 +337,7 @@ class AddServiceController extends GetxController{
       AppUtils.errorSnackBar("Error", "Failed to add service");
     }
   }
+
   Future<void> uploadDataWithImages({
     required String userId,
     required String serviceName,
@@ -351,8 +352,7 @@ class AddServiceController extends GetxController{
     required String long,
     required String additionalInformation,
     List<XFile>? mediaFiles,
-      }
-      ) async {
+  }) async {
     var uri = Uri.parse(AppUrls.updateService); // Your API endpoint as a Uri
 
     // Create a multipart request
@@ -380,14 +380,15 @@ class AddServiceController extends GetxController{
           length,
           filename: image.path.split('/').last,
           // Set the content type for each image, if known. Replace 'jpeg' if different.
-         // contentType: MediaType('image', 'jpeg'),
+          // contentType: MediaType('image', 'jpeg'),
         ),
       );
     }
 
     // Add headers if necessary (e.g., Authorization)
     request.headers.addAll({
-      'Authorization': 'Bearer 29|PE0YeLEKnEopJ7bphb5MZThmZxu7V0YmchtbRfFn71edaac4', // Replace with your actual token
+      'Authorization':
+          'Bearer 29|PE0YeLEKnEopJ7bphb5MZThmZxu7V0YmchtbRfFn71edaac4', // Replace with your actual token
       'Content-Type': 'multipart/form-data',
     });
 
@@ -406,5 +407,4 @@ class AddServiceController extends GetxController{
       print('Error occurred: $e');
     }
   }
-
 }

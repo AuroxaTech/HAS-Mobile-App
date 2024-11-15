@@ -1,15 +1,18 @@
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:http/http.dart' as http;
+import 'package:property_app/utils/api_urls.dart';
+
 class StripeService {
-  static const String _stripeSecretKey = "sk_test_51Q0Gu9I2037pL7hBy3BwYZ8esA8nCaafEwRwpvB9fA1eehlsx4HclqOzDXgUKUk7v7QZHILhWARkvOkLXmYjX9Yh00WHLsAamW"; // Replace with your test secret key
   static const String _stripeApiBase = 'https://api.stripe.com/v1';
 
   // Create a payment intent on the Stripe server
-  Future<Map<String, dynamic>?> createPaymentIntent(String amount, String currency) async {
+  Future<Map<String, dynamic>?> createPaymentIntent(
+      String amount, String currency) async {
     try {
       Map<String, dynamic> body = {
-        'amount': amount, // amount in smallest currency unit (e.g., 5000 = $50.00)
+        'amount':
+            amount, // amount in smallest currency unit (e.g., 5000 = $50.00)
         'currency': currency,
         'payment_method_types[]': 'card',
       };
@@ -18,7 +21,7 @@ class StripeService {
         Uri.parse('$_stripeApiBase/payment_intents'),
         body: body,
         headers: {
-          'Authorization': 'Bearer $_stripeSecretKey',
+          'Authorization': 'Bearer ${AppUrls.stripeSKLiveKey}',
           'Content-Type': 'application/x-www-form-urlencoded',
         },
       );
@@ -36,13 +39,14 @@ class StripeService {
   }
 
   // Confirm the payment intent with the payment method ID
-  Future<Map<String, dynamic>?> confirmPayment(String paymentIntentId, String paymentMethodId) async {
+  Future<Map<String, dynamic>?> confirmPayment(
+      String paymentIntentId, String paymentMethodId) async {
     try {
       var response = await http.post(
         Uri.parse('$_stripeApiBase/payment_intents/$paymentIntentId/confirm'),
         body: {'payment_method': paymentMethodId},
         headers: {
-          'Authorization': 'Bearer $_stripeSecretKey',
+          'Authorization': 'Bearer ${AppUrls.stripeSKLiveKey}',
           'Content-Type': 'application/x-www-form-urlencoded',
         },
       );

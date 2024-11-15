@@ -15,7 +15,7 @@ class PropertyTabsScreen extends GetView<AllPropertyController> {
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       backgroundColor: whiteColor,
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(right: 10.0, bottom: 30.0),
@@ -36,89 +36,88 @@ class PropertyTabsScreen extends GetView<AllPropertyController> {
         ),
       ),
       appBar: titleAppBar("Properties", action: [
-        IconButton(onPressed: (){
-          Get.toNamed(kPropertyFilterScreen)?.then((result) {
-            if (result != null) {
-              controller.pagingController.value.itemList!.clear();
-              return controller.getProperties(1, result);
-            }
-          });
-        }, icon: const Icon(Icons.filter_list)),
+        IconButton(
+            onPressed: () {
+              Get.toNamed(kPropertyFilterScreen)?.then((result) {
+                if (result != null) {
+                  controller.pagingController.value.itemList!.clear();
+                  return controller.getProperties(1, result);
+                }
+              });
+            },
+            icon: const Icon(Icons.filter_list)),
       ]),
-      body:  SafeArea(
-        child:  Column(
+      body: SafeArea(
+        child: Column(
           children: [
-
-           Padding(
+            Padding(
               padding: const EdgeInsets.all(15.0),
               child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                      color: Colors.grey[100], // Background color of the tab bar
-                      borderRadius: BorderRadius.circular(50.0),
-                      border: Border.all(color: borderColor)
-                  ),
-                  child: Row(
-                    children: [
-                      for (int i = 0; i < 2; i++)
-                        Obx(
-                        ()=> Expanded(
-                            child: InkWell(
-                              highlightColor: Colors.transparent,
-                              hoverColor: Colors.transparent,
-                              focusColor: Colors.transparent,
-                              splashColor: Colors.transparent,
-                              onTap: () {
-                                controller.tabController.animateTo(i);
-                                controller.selectedIndex.value = i;
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(vertical: 10), // Padding for the tab
-                                alignment: Alignment.center,
-                                child: Column(
-                                  children: [
-                                    Container(
-                                      width: 10,
-                                      height: 10,
-                                      decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: controller.selectedIndex.value == i ?   Colors.blue : Colors.transparent
-                                      ),
-                                    ),
-                                    h5,
-                                    customText(
-                                      text :  i == 0 ? 'Properties' : 'Map',
-                                      color: Colors.black,
-                                      fontSize: 15,
-                                      fontWeight: controller.selectedIndex.value == i
-                                          ? FontWeight.w600 : FontWeight.w400,
-                                    ),
-                                  ],
-                                ),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                    color: Colors.grey[100], // Background color of the tab bar
+                    borderRadius: BorderRadius.circular(50.0),
+                    border: Border.all(color: borderColor)),
+                child: Row(
+                  children: [
+                    for (int i = 0; i < 2; i++)
+                      Obx(
+                        () => Expanded(
+                          child: InkWell(
+                            highlightColor: Colors.transparent,
+                            hoverColor: Colors.transparent,
+                            focusColor: Colors.transparent,
+                            splashColor: Colors.transparent,
+                            onTap: () {
+                              controller.tabController.animateTo(i);
+                              controller.selectedIndex.value = i;
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10), // Padding for the tab
+                              alignment: Alignment.center,
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: 10,
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color:
+                                            controller.selectedIndex.value == i
+                                                ? Colors.blue
+                                                : Colors.transparent),
+                                  ),
+                                  h5,
+                                  customText(
+                                    text: i == 0 ? 'Properties' : 'Map',
+                                    color: Colors.black,
+                                    fontSize: 15,
+                                    fontWeight:
+                                        controller.selectedIndex.value == i
+                                            ? FontWeight.w600
+                                            : FontWeight.w400,
+                                  ),
+                                ],
                               ),
                             ),
                           ),
                         ),
-
-                    ],
-                  ),
+                      ),
+                  ],
                 ),
+              ),
             ),
             h20,
             Expanded(
               child: TabBarView(
                 physics: const NeverScrollableScrollPhysics(),
                 controller: controller.tabController,
-                children: [
-                  AllPropertyScreen(),
-                  const PropertyMap()
-                ],
+                children: [AllPropertyScreen(), const PropertyMap()],
               ),
             ),
-
           ],
         ),
-
       ),
     );
   }

@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../models/service_provider_model/calendar_service.dart';
-import '../../models/service_provider_model/service_request_model.dart';
 import '../../route_management/constant_routes.dart';
 import '../../services/property_services/add_services.dart';
 import '../../utils/utils.dart';
 
-class JobDetailController extends GetxController{
+class JobDetailController extends GetxController {
   final sheet = GlobalKey();
   final controller = DraggableScrollableController();
 
@@ -28,9 +27,7 @@ class JobDetailController extends GetxController{
     super.onInit();
   }
 
-
-
-  Future<void> getJobRequest({required int id}) async {
+  Future<void> getJobRequest({required int? id}) async {
     print("we are in get service");
     isLoading.value = true;
 
@@ -38,16 +35,20 @@ class JobDetailController extends GetxController{
       var result = await serviceRequestService.getServiceJob(id: id);
       print("Service Result : ${result['data']}");
 
- //     print("Type of result['data']: ${result['data']?.runtimeType}");
-
       if (result['data'] != null) {
         if (result['data'] is Map) {
-          var data = result['data'] ;
+          var data = result['data'];
           print("Data :: $data");
           getServiceRequestOne.value = CalendarData.fromJson(data);
-          String imagesString = getServiceRequestOne.value!.request.service!.media.toString();
-          List<String> imageList = imagesString.split(',');
-          images = imageList;
+
+          if (getServiceRequestOne.value!.request.service != null) {
+            String imagesString =
+                getServiceRequestOne.value!.request.service!.media.toString();
+            List<String> imageList = imagesString.split(',');
+            images = imageList;
+          } else {
+            print("Service media is null");
+          }
         } else {
           print("Data is not a Map");
         }
@@ -62,7 +63,10 @@ class JobDetailController extends GetxController{
     }
   }
 
-  Future<void> acceptServiceRequest({ required int jobId, required int status,}) async {
+  Future<void> acceptServiceRequest({
+    required int? jobId,
+    required int? status,
+  }) async {
     isLoading.value = true;
 
     try {
@@ -72,7 +76,7 @@ class JobDetailController extends GetxController{
       );
       print(result);
       if (result['status'] == true) {
-        Get.toNamed(kRateExperienceScreen , arguments: jobId);
+        await Get.toNamed(kRateExperienceScreen, arguments: jobId);
         AppUtils.getSnackBar("Success", result['message']);
       } else {
         AppUtils.errorSnackBar("Error", result['message']);

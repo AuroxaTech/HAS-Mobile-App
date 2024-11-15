@@ -1,6 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class PaymentScreenController extends GetxController{
-
-}
+class PaymentScreenController extends GetxController {}

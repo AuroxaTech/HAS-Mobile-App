@@ -391,6 +391,11 @@ class SignUpController extends GetxController {
 
       if (data['status'] == true) {
         // Handle success scenario
+        // int userId = data['user']['id']; // Adjust according to your actual response
+        //
+        // // Call method to create connected account
+        // await authServices.createConnectedAccount(userId: userId, email: email);
+
         debugPrint("Print if ${data["messages"]}");
         Get.back();
         Get.back();
@@ -472,6 +477,10 @@ class SignUpController extends GetxController {
     );
 
     if (data['status'] == true) {
+      // int userId = data['user']['id']; // Adjust according to your actual response
+      //
+      // // Call method to create connected account
+      // await authServices.createConnectedAccount(userId: userId, email: email);
       isLoading.value = false;
       print("Data : $data");
       Get.back();

@@ -2,14 +2,14 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:get/get_rx/get_rx.dart';
-import 'package:http/http.dart'as http;
+import 'package:http/http.dart' as http;
 import 'package:property_app/utils/api_urls.dart';
 import 'package:property_app/utils/shared_preferences/preferences.dart';
 
 import '../../utils/utils.dart';
-class RateExperienceController extends GetxController {
+import '../../views/land_lords/job_screeen.dart';
 
+class RateExperienceController extends GetxController {
   var descriptionController = TextEditingController();
   final formKey = GlobalKey<FormState>();
   RxInt rating = 0.obs;
@@ -23,13 +23,10 @@ class RateExperienceController extends GetxController {
     'Penthouse': false,
   }.obs;
 
-
-
   RxInt serviceId = 0.obs;
 
-
-
-  RxInt selectedIndex = 0.obs; // Add this line to declare a variable for storing the index
+  RxInt selectedIndex =
+      0.obs; // Add this line to declare a variable for storing the index
 
   void toggleHome(String key) {
     var updatedMap = Map<String, bool>.from(selectedHome);
@@ -38,8 +35,10 @@ class RateExperienceController extends GetxController {
     selectedHome.value = updatedMap;
 
     // Update selectedIndex based on the key
-    selectedIndex.value = updatedMap.keys.toList().indexOf(key) + 1; // +1 to convert from 0-based to 1-based indexing
+    selectedIndex.value = updatedMap.keys.toList().indexOf(key) +
+        1; // +1 to convert from 0-based to 1-based indexing
   }
+
   RxBool isLoading = false.obs;
 
   Future<void> sendFeedback({
@@ -47,8 +46,7 @@ class RateExperienceController extends GetxController {
     required int rate,
     required String description,
     required int propertySubTypeId,
-}) async {
-
+  }) async {
     var id = await Preferences.getUserID();
     var token = await Preferences.getToken();
     isLoading.value = true;
@@ -72,12 +70,12 @@ class RateExperienceController extends GetxController {
       isLoading.value = false;
       var jsonData = jsonDecode(response.body);
       print('Feedback sent successfully');
-      Get.back();
-      Get.back();
-      Get.back();
-      Get.back();
+      // Get.back();
+      // Get.back();
+      // Get.back();
+      // Get.back();
+      Get.off(() => const JobsScreen(isBack: true));
       AppUtils.getSnackBar("Feedback", jsonData["message"]);
-
     } else {
       isLoading.value = false;
       // If the server did not return a 200 OK response,
@@ -85,6 +83,7 @@ class RateExperienceController extends GetxController {
       throw Exception('Failed to send feedback');
     }
   }
+
   @override
   void onInit() {
     var data = Get.arguments;

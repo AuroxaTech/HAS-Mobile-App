@@ -9,26 +9,26 @@ import 'package:lottie/lottie.dart';
 import 'package:property_app/app_constants/app_icon.dart';
 import 'package:property_app/app_constants/color_constants.dart';
 import 'package:property_app/custom_widgets/custom_button.dart';
+
 import '../app_constants/app_sizes.dart';
 import '../route_management/constant_routes.dart';
-import '../views/service_provider/rating_screen.dart';
 
-Widget customText({
-  String? text,
-  TextStyle? style,
-  Color? color,
-  double? fontSize,
-  FontWeight? fontWeight,
-  FontStyle? fontStyle,
-  TextDecoration? txtDecoration,
-  TextOverflow? overFlow,
-  TextAlign? textAlign,
-  Color? decorationColor,
-  double? letterSpacing,
-  TextDirection? textDirection,
-  int? maxLines
-}){
-  return Text(text!,
+Widget customText(
+    {String? text,
+    TextStyle? style,
+    Color? color,
+    double? fontSize,
+    FontWeight? fontWeight,
+    FontStyle? fontStyle,
+    TextDecoration? txtDecoration,
+    TextOverflow? overFlow,
+    TextAlign? textAlign,
+    Color? decorationColor,
+    double? letterSpacing,
+    TextDirection? textDirection,
+    int? maxLines}) {
+  return Text(
+    text!,
     textAlign: textAlign,
     textDirection: textDirection,
     maxLines: maxLines,
@@ -38,7 +38,7 @@ Widget customText({
       fontWeight: fontWeight,
       fontStyle: fontStyle,
       decoration: txtDecoration,
-      decorationColor:decorationColor ,
+      decorationColor: decorationColor,
       decorationThickness: 2.0,
       letterSpacing: letterSpacing,
     ),
@@ -52,22 +52,22 @@ Map<String, String> getHeader({required String userToken}) {
   };
 }
 
-Widget headingText({
-  String? text,
-  TextStyle? style,
-  Color? color,
-  double? fontSize,
-  FontWeight? fontWeight,
-  FontStyle? fontStyle,
-  TextDecoration? txtDecoration,
-  TextOverflow? overFlow,
-  TextAlign? textAlign,
-  Color? decorationColor,
-  double? letterSpacing,
-  TextDirection? textDirection,
-  int? maxLines
-}){
-  return Text(text!,
+Widget headingText(
+    {String? text,
+    TextStyle? style,
+    Color? color,
+    double? fontSize,
+    FontWeight? fontWeight,
+    FontStyle? fontStyle,
+    TextDecoration? txtDecoration,
+    TextOverflow? overFlow,
+    TextAlign? textAlign,
+    Color? decorationColor,
+    double? letterSpacing,
+    TextDirection? textDirection,
+    int? maxLines}) {
+  return Text(
+    text!,
     textAlign: textAlign,
     textDirection: textDirection,
     maxLines: maxLines,
@@ -77,7 +77,7 @@ Widget headingText({
       fontWeight: FontWeight.w500,
       fontStyle: fontStyle,
       decoration: txtDecoration,
-      decorationColor:decorationColor ,
+      decorationColor: decorationColor,
       decorationThickness: 2.0,
       letterSpacing: letterSpacing,
     ),
@@ -85,7 +85,7 @@ Widget headingText({
 }
 
 LinearGradient gradient() {
-  return  const LinearGradient(
+  return const LinearGradient(
     begin: FractionalOffset(0.0, 0.0),
     end: FractionalOffset(1.0, 0.0),
     colors: [
@@ -94,8 +94,9 @@ LinearGradient gradient() {
     ],
   );
 }
+
 LinearGradient greenGradient() {
-  return  const LinearGradient(
+  return const LinearGradient(
     begin: FractionalOffset(0.0, 0.0),
     end: FractionalOffset(1.0, 0.0),
     colors: [
@@ -105,10 +106,8 @@ LinearGradient greenGradient() {
   );
 }
 
-
-
 LinearGradient yellowGradient() {
-  return  const LinearGradient(
+  return const LinearGradient(
     begin: FractionalOffset(0.0, 0.0),
     end: FractionalOffset(1.0, 0.0),
     colors: [
@@ -119,17 +118,18 @@ LinearGradient yellowGradient() {
 }
 
 LinearGradient redGradient({Color? color}) {
-  return   LinearGradient(
+  return LinearGradient(
     begin: const FractionalOffset(0.0, 0.0),
     end: const FractionalOffset(1.0, 0.0),
     colors: [
-      color ??redColor,
-      color ??redColor,
+      color ?? redColor,
+      color ?? redColor,
     ],
   );
 }
+
 LinearGradient whiteGradient() {
-  return  const LinearGradient(
+  return const LinearGradient(
     begin: FractionalOffset(0.0, 0.0),
     end: FractionalOffset(1.0, 0.0),
     colors: [
@@ -140,7 +140,7 @@ LinearGradient whiteGradient() {
 }
 
 LinearGradient acceptGradient({Color? color}) {
-  return   LinearGradient(
+  return LinearGradient(
     begin: const FractionalOffset(0.0, 0.0),
     end: const FractionalOffset(1.0, 0.0),
     colors: [
@@ -149,8 +149,9 @@ LinearGradient acceptGradient({Color? color}) {
     ],
   );
 }
+
 LinearGradient detailGradient() {
-  return  const LinearGradient(
+  return const LinearGradient(
     begin: FractionalOffset(0.0, 0.0),
     end: FractionalOffset(1.0, 0.0),
     colors: [
@@ -171,79 +172,88 @@ LinearGradient defaultGradient() {
   );
 }
 
-OutlineInputBorder shapeBorder =  OutlineInputBorder(
-  borderSide: BorderSide(color: Colors.grey.shade100,),
+OutlineInputBorder shapeBorder = OutlineInputBorder(
+  borderSide: BorderSide(
+    color: Colors.grey.shade100,
+  ),
   borderRadius: BorderRadius.circular(15),
 );
 
-PreferredSizeWidget backAppBar({String? text, bool? isTitle = false, Widget? leading}){
+PreferredSizeWidget backAppBar(
+    {String? text, bool? isTitle = false, Widget? leading}) {
   return AppBar(
     elevation: 0.0,
     backgroundColor: whiteColor,
     leading: leading,
     automaticallyImplyLeading: true,
-    title: isTitle == true ? customText(
-      text: text,
-      fontSize: 18,
-      fontWeight: FontWeight.w500,
-    ) : const SizedBox(),
+    title: isTitle == true
+        ? customText(
+            text: text,
+            fontSize: 18,
+            fontWeight: FontWeight.w500,
+          )
+        : const SizedBox(),
     centerTitle: false,
   );
 }
 
-PreferredSizeWidget titleAppBar(String text, {List<Widget>? action, PreferredSizeWidget? bottom}){
+PreferredSizeWidget titleAppBar(String text,
+    {List<Widget>? action, PreferredSizeWidget? bottom}) {
   return AppBar(
     elevation: 0.0,
     backgroundColor: whiteColor,
     automaticallyImplyLeading: true,
-    title: headingText(
-        text: text,
-        fontSize: 24
-    ),
+    title: headingText(text: text, fontSize: 24),
     centerTitle: false,
     actions: action,
     bottom: bottom,
-
   );
 }
 
-PreferredSizeWidget homeAppBar(context, {
-  String? text, PreferredSizeWidget? bottom, bool? showNotification = false, VoidCallback? menuOnTap, bool? isBack = false, VoidCallback? backTap, bool? back = true}){
+PreferredSizeWidget homeAppBar(context,
+    {String? text,
+    PreferredSizeWidget? bottom,
+    bool? showNotification = false,
+    VoidCallback? menuOnTap,
+    bool? isBack = false,
+    VoidCallback? backTap,
+    bool? back = true}) {
   return AppBar(
     elevation: 0.0,
     automaticallyImplyLeading: false,
     backgroundColor: whiteColor,
-    leading: back == true?  Builder(
-      builder: (context) {
-        return IconButton(
-          tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-          icon: const Icon(Icons.arrow_back_ios_new_rounded , size: 18, color: backIconColor,),
-          onPressed: () {
-            isBack == false ? Navigator.pop(context) : null ;
-            //Scaffold.of(context).openDrawer(),
-          }
-        );
-      }
-    ) : null,
-    title: headingText(
-      text: text ?? "Landlord profile",
-      fontSize: 20
-    ),
+    leading: back == true
+        ? Builder(builder: (context) {
+            return IconButton(
+                tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+                icon: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  size: 18,
+                  color: backIconColor,
+                ),
+                onPressed: () {
+                  isBack == false ? Navigator.pop(context) : null;
+                  //Scaffold.of(context).openDrawer(),
+                });
+          })
+        : null,
+    title: headingText(text: text ?? "Landlord profile", fontSize: 20),
     centerTitle: false,
     actions: [
-      showNotification! ? GestureDetector(
-        onTap: (){
-          Get.toNamed(kNotificationScreen);
-        },
-        child: Container(
-          decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: borderColor)
-          ),
-          padding: const EdgeInsets.all(12),
-          child: SvgPicture.asset(AppIcons.notification),
-        ),
-      ) : const SizedBox(),
+      showNotification!
+          ? GestureDetector(
+              onTap: () {
+                Get.toNamed(kNotificationScreen);
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: borderColor)),
+                padding: const EdgeInsets.all(12),
+                child: SvgPicture.asset(AppIcons.notification),
+              ),
+            )
+          : const SizedBox(),
       const SizedBox(
         width: 5,
       ),
@@ -262,9 +272,7 @@ PreferredSizeWidget homeAppBar(context, {
         onTap: menuOnTap,
         child: Container(
           decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: borderColor)
-          ),
+              shape: BoxShape.circle, border: Border.all(color: borderColor)),
           padding: const EdgeInsets.all(12),
           child: SvgPicture.asset(AppIcons.menu),
         ),
@@ -278,57 +286,51 @@ PreferredSizeWidget homeAppBar(context, {
       // }, icon: Icon(Icons.add, color: primaryColor,))
     ],
     bottom: bottom,
-
   );
 }
-PreferredSizeWidget backWithSkip(){
+
+PreferredSizeWidget backWithSkip() {
   return AppBar(
     backgroundColor: Colors.transparent,
     automaticallyImplyLeading: true,
-
     actions: [
-      TextButton(onPressed: (){
-        Get.back();
-      },
-        child: customText(
-          text: "Skip",
-          fontWeight: FontWeight.w500,
-          fontSize: 18
-      ))
+      TextButton(
+          onPressed: () {
+            Get.back();
+          },
+          child: customText(
+              text: "Skip", fontWeight: FontWeight.w500, fontSize: 18))
     ],
-
   );
 }
 
-PreferredSizeWidget notificationAppbar(context, {String? text, PreferredSizeWidget? bottom, bool? showNotification = false}){
+PreferredSizeWidget notificationAppbar(context,
+    {String? text,
+    PreferredSizeWidget? bottom,
+    bool? showNotification = false}) {
   return AppBar(
     elevation: 0.0,
     automaticallyImplyLeading: false,
     backgroundColor: whiteColor,
-    leading: Builder(
-        builder: (context) {
-          return IconButton(
-              tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-              icon: const Icon(Icons.arrow_back_ios_new_rounded , size: 18, color: backIconColor,),
-              onPressed: () {
-                Navigator.pop(context);
-                //Scaffold.of(context).openDrawer(),
-              }
-          );
-        }
-    ),
-    title: headingText(
-        text: text,
-        fontSize: 20
-    ),
+    leading: Builder(builder: (context) {
+      return IconButton(
+          tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 18,
+            color: backIconColor,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+            //Scaffold.of(context).openDrawer(),
+          });
+    }),
+    title: headingText(text: text, fontSize: 20),
     centerTitle: false,
     actions: [
-
       Container(
         decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: borderColor)
-        ),
+            shape: BoxShape.circle, border: Border.all(color: borderColor)),
         padding: const EdgeInsets.all(8),
         child: Center(child: Image.asset(AppIcons.delete)),
       ),
@@ -341,43 +343,47 @@ PreferredSizeWidget notificationAppbar(context, {String? text, PreferredSizeWidg
       // }, icon: Icon(Icons.add, color: primaryColor,))
     ],
     bottom: bottom,
-
   );
 }
 
-
-Widget imageButton({
-  Color? imageColor,
-  Color? textColor,
-  Color? borderColor,
-  double? width ,String? image, String? text, bool? isLoading = false, VoidCallback? onTap, EdgeInsets? padding}){
+Widget imageButton(
+    {Color? imageColor,
+    Color? textColor,
+    Color? borderColor,
+    double? width,
+    String? image,
+    String? text,
+    bool? isLoading = false,
+    VoidCallback? onTap,
+    EdgeInsets? padding}) {
   return GestureDetector(
-    onTap:onTap,
+    onTap: onTap,
     child: Container(
       width: width ?? double.infinity,
       decoration: BoxDecoration(
           color: Colors.white,
           border: Border.all(color: borderColor ?? Colors.grey.shade100),
-          borderRadius: BorderRadius.circular(8)
-      ),
+          borderRadius: BorderRadius.circular(8)),
       padding: padding ?? const EdgeInsets.only(top: 12, bottom: 12),
-      child: isLoading! ? const Center(child: CircularProgressIndicator()) : Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SvgPicture.asset(image!, color: imageColor,),
-          w15,
-          customText(
-              text: text,
-              fontSize: 18,
-              color: textColor
-          ),
-        ],
-      ),
+      child: isLoading!
+          ? const Center(child: CircularProgressIndicator())
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SvgPicture.asset(
+                  image!,
+                  color: imageColor,
+                ),
+                w15,
+                customText(text: text, fontSize: 18, color: textColor),
+              ],
+            ),
     ),
   );
 }
 
-Widget uploadImageContainer({VoidCallback? onTap, String? text, IconData? icon}){
+Widget uploadImageContainer(
+    {VoidCallback? onTap, String? text, IconData? icon}) {
   return GestureDetector(
     onTap: onTap,
     child: Container(
@@ -415,9 +421,7 @@ Widget uploadImageContainer({VoidCallback? onTap, String? text, IconData? icon})
                 customText(
                     text: text ?? "Upload\nImages",
                     fontSize: 15,
-                    color: blackColor
-                ),
-
+                    color: blackColor),
               ],
             ),
           ),
@@ -426,6 +430,7 @@ Widget uploadImageContainer({VoidCallback? onTap, String? text, IconData? icon})
     ),
   );
 }
+
 Widget roundedSmallButton({
   required String text,
   required bool isSelected,
@@ -448,7 +453,6 @@ Widget roundedSmallButton({
       ),
       child: Center(
         child: Row(
-
           children: [
             customText(
               text: text,
@@ -456,19 +460,21 @@ Widget roundedSmallButton({
               fontSize: 20,
               color: isSelected ? whiteColor : blackColor,
             ),
-            isSecondText! ?  w2 : const SizedBox(),
-           isSecondText ? Align(
-             alignment: Alignment.bottomLeft,
-             child: Padding(
-               padding: const EdgeInsets.only(bottom: 1),
-               child: customText(
-                  text: subTitle ?? "",
-                  fontWeight: FontWeight.w300,
-                  fontSize: 15,
-                  color: isSelected ? whiteColor : blackColor,
-                ),
-             ),
-           ) : const SizedBox(),
+            isSecondText! ? w2 : const SizedBox(),
+            isSecondText
+                ? Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 1),
+                      child: customText(
+                        text: subTitle ?? "",
+                        fontWeight: FontWeight.w300,
+                        fontSize: 15,
+                        color: isSelected ? whiteColor : blackColor,
+                      ),
+                    ),
+                  )
+                : const SizedBox(),
           ],
         ),
       ),
@@ -476,7 +482,7 @@ Widget roundedSmallButton({
   );
 }
 
-Widget fileImage({String? image, VoidCallback? onTap}){
+Widget fileImage({String? image, VoidCallback? onTap}) {
   return Container(
     padding: const EdgeInsets.only(right: 10),
     child: Stack(
@@ -494,7 +500,6 @@ Widget fileImage({String? image, VoidCallback? onTap}){
                 fit: BoxFit.cover,
               ),
             ),
-
           ),
         ),
         Positioned(
@@ -503,17 +508,20 @@ Widget fileImage({String? image, VoidCallback? onTap}){
               onTap: onTap,
               child: Container(
                   decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white
-                  ),
-                  child: Center(child: SvgPicture.asset(AppIcons.close, height: 20,width: 20,)))),
+                      shape: BoxShape.circle, color: Colors.white),
+                  child: Center(
+                      child: SvgPicture.asset(
+                    AppIcons.close,
+                    height: 20,
+                    width: 20,
+                  )))),
         ),
       ],
     ),
   );
 }
 
-Widget networkImage({String? image, VoidCallback? onTap}){
+Widget networkImage({String? image, VoidCallback? onTap}) {
   return Container(
     padding: const EdgeInsets.only(right: 10),
     child: Stack(
@@ -531,9 +539,7 @@ Widget networkImage({String? image, VoidCallback? onTap}){
                 fit: BoxFit.cover,
               ),
             ),
-
           ),
-
         ),
         Positioned(
           right: 0.0001,
@@ -541,17 +547,21 @@ Widget networkImage({String? image, VoidCallback? onTap}){
               onTap: onTap,
               child: Container(
                   decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white
-                  ),
-                  child: Center(child: SvgPicture.asset(AppIcons.close, height: 20,width: 20,)))),
+                      shape: BoxShape.circle, color: Colors.white),
+                  child: Center(
+                      child: SvgPicture.asset(
+                    AppIcons.close,
+                    height: 20,
+                    width: 20,
+                  )))),
         ),
       ],
     ),
   );
 }
 
-Widget dashboardSmallContainer(context,{String? title, String? subTitle, String? thirdTitle}){
+Widget dashboardSmallContainer(context,
+    {String? title, String? subTitle, String? thirdTitle}) {
   return Container(
     width: screenWidth(context) * 0.2,
     decoration: BoxDecoration(
@@ -561,33 +571,21 @@ Widget dashboardSmallContainer(context,{String? title, String? subTitle, String?
     padding: const EdgeInsets.all(10),
     child: Column(
       children: [
-        customText(
-            text: title,
-            fontSize: 16,
-            color: purpleTextColor
-        ),
-        customText(
-            text: subTitle,
-            fontSize: 10,
-            color: blackColor
-        ),
-        customText(
-            text: thirdTitle,
-            fontSize: 10,
-            color: blackColor
-        ),
+        customText(text: title, fontSize: 16, color: purpleTextColor),
+        customText(text: subTitle, fontSize: 10, color: blackColor),
+        customText(text: thirdTitle, fontSize: 10, color: blackColor),
       ],
     ),
   );
 }
+
 Widget labelText(text) {
   return customText(
-      text: text,
-      fontSize: 16,
-      fontWeight: FontWeight.w500,
-      color: blackColor);
+      text: text, fontSize: 16, fontWeight: FontWeight.w500, color: blackColor);
 }
-Widget dashboardContainer({String? title, String? image, VoidCallback? onTap, EdgeInsets? padding}){
+
+Widget dashboardContainer(
+    {String? title, String? image, VoidCallback? onTap, EdgeInsets? padding}) {
   return InkWell(
     onTap: onTap,
     hoverColor: Colors.transparent,
@@ -597,44 +595,51 @@ Widget dashboardContainer({String? title, String? image, VoidCallback? onTap, Ed
       height: 120,
       width: 120,
       decoration: BoxDecoration(
-        color: whiteColor,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: borderColor)
-      ),
-      padding: padding ?? const EdgeInsets.only(left: 18, right: 18, top: 10, bottom: 5),
+          color: whiteColor,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: borderColor)),
+      padding: padding ??
+          const EdgeInsets.only(left: 18, right: 18, top: 10, bottom: 5),
       child: Column(
         children: [
-
           Container(
-            width: 68, height: 64,
+            width: 68,
+            height: 64,
             decoration: BoxDecoration(
-              image: DecorationImage(image: AssetImage(image!), fit: BoxFit.fill)
-            ),
+                image: DecorationImage(
+                    image: AssetImage(image!), fit: BoxFit.fill)),
           ),
           h5,
           customText(
-            textAlign: TextAlign.center,
+              textAlign: TextAlign.center,
               text: title,
               fontSize: 9,
-              color: blackColor
-          ),
+              color: blackColor),
         ],
       ),
     ),
   );
 }
-Widget rowMainAxis({children}){
+
+Widget rowMainAxis({children}) {
   return Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: children
-  );
+      mainAxisAlignment: MainAxisAlignment.spaceBetween, children: children);
 }
 
-Widget myPropertyWidget(context,{required VoidCallback onTap, required String title, required String image, required String price,
-required String description,required String bedroom, required String bathroom, required String marla, required String rent, Widget? icon, int? index}){
-
+Widget myPropertyWidget(context,
+    {required VoidCallback onTap,
+    required String title,
+    required String image,
+    required String price,
+    required String description,
+    required String bedroom,
+    required String bathroom,
+    required String marla,
+    required String rent,
+    Widget? icon,
+    int? index}) {
   late ImageProvider imgVariable;
-  imgVariable = CachedNetworkImageProvider(image, errorListener: (ee){
+  imgVariable = CachedNetworkImageProvider(image, errorListener: (ee) {
     imgVariable = const AssetImage(AppIcons.appLogo);
   });
   return InkWell(
@@ -653,7 +658,6 @@ required String description,required String bedroom, required String bathroom, r
       ),
       child: Column(
         children: [
-
           // Container(
           //   width: double.infinity,
           //   height: screenHeight(context) *0.23,
@@ -676,15 +680,33 @@ required String description,required String bedroom, required String bathroom, r
             child: Stack(
               children: [
                 CachedNetworkImage(
-                    imageUrl: image,
-                    width: double.infinity,
-                    height: screenHeight(context) *0.23,
-                    fit: BoxFit.cover,
-                    errorWidget: (context, d , g){
-                      return index == 0 ? Image.asset(AppIcons.p3, width: double.infinity, fit: BoxFit.cover,) :  index == 1 ? Image.asset(AppIcons.p1, width: double.infinity, fit: BoxFit.cover,) : Image.asset(AppIcons.p2, width: double.infinity, fit: BoxFit.cover,);
+                  imageUrl: image,
+                  width: double.infinity,
+                  height: screenHeight(context) * 0.23,
+                  fit: BoxFit.cover,
+                  errorWidget: (context, d, g) {
+                    return index == 0
+                        ? Image.asset(
+                            AppIcons.p3,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          )
+                        : index == 1
+                            ? Image.asset(
+                                AppIcons.p1,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              )
+                            : Image.asset(
+                                AppIcons.p2,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              );
                   },
                 ),
-                Positioned(child:  icon ?? const SizedBox(),)
+                Positioned(
+                  child: icon ?? const SizedBox(),
+                )
               ],
             ),
           ),
@@ -721,18 +743,20 @@ required String description,required String bedroom, required String bathroom, r
                         Container(
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(30),
-                              border: Border.all(color: borderColor)
-                          ),
-                          padding: const EdgeInsets.only(top: 5, bottom: 5, right: 10, left: 10),
+                              border: Border.all(color: borderColor)),
+                          padding: const EdgeInsets.only(
+                              top: 5, bottom: 5, right: 10, left: 10),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              customText(
-                                  text: bedroom,
-                                  fontSize: 12
-                              ),
+                              customText(text: bedroom, fontSize: 12),
                               w10,
-                              SvgPicture.asset(AppIcons.bedroom, width: 13, height: 9, color: primaryColor,),
+                              SvgPicture.asset(
+                                AppIcons.bedroom,
+                                width: 13,
+                                height: 9,
+                                color: primaryColor,
+                              ),
                             ],
                           ),
                         ),
@@ -740,18 +764,20 @@ required String description,required String bedroom, required String bathroom, r
                         Container(
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(30),
-                              border: Border.all(color: borderColor)
-                          ),
-                          padding: const EdgeInsets.only(top: 5, bottom: 5, right: 10, left: 10),
+                              border: Border.all(color: borderColor)),
+                          padding: const EdgeInsets.only(
+                              top: 5, bottom: 5, right: 10, left: 10),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              customText(
-                                  text: bathroom,
-                                  fontSize: 12
-                              ),
+                              customText(text: bathroom, fontSize: 12),
                               w10,
-                              SvgPicture.asset(AppIcons.bathroom, width: 13, height: 9, color: primaryColor,),
+                              SvgPicture.asset(
+                                AppIcons.bathroom,
+                                width: 13,
+                                height: 9,
+                                color: primaryColor,
+                              ),
                             ],
                           ),
                         ),
@@ -759,21 +785,15 @@ required String description,required String bedroom, required String bathroom, r
                         Container(
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(30),
-                              border: Border.all(color: borderColor)
-                          ),
-                          padding: const EdgeInsets.only(top: 5, bottom: 5, right: 10, left: 10),
+                              border: Border.all(color: borderColor)),
+                          padding: const EdgeInsets.only(
+                              top: 5, bottom: 5, right: 10, left: 10),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              customText(
-                                  text: marla,
-                                  fontSize: 12
-                              ),
+                              customText(text: marla, fontSize: 12),
                               w5,
-                              customText(
-                                  text: "Marla",
-                                  fontSize: 12
-                              ),
+                              customText(text: "Marla", fontSize: 12),
                             ],
                           ),
                         ),
@@ -782,19 +802,15 @@ required String description,required String bedroom, required String bathroom, r
                     Container(
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(30),
-                          color: greyColor.withOpacity(0.5)
-                      ),
-                      padding: const EdgeInsets.only(top: 5, bottom: 5, right: 15, left: 15),
+                          color: greyColor.withOpacity(0.5)),
+                      padding: const EdgeInsets.only(
+                          top: 5, bottom: 5, right: 15, left: 15),
                       child: Center(
-                        child: customText(
-                            text: rent,
-                            fontSize: 12
-                        ),
+                        child: customText(text: rent, fontSize: 12),
                       ),
                     ),
                   ],
                 ),
-
               ],
             ),
           ),
@@ -805,13 +821,20 @@ required String description,required String bedroom, required String bathroom, r
   );
 }
 
-
-Widget myPropertyFav(context,{required VoidCallback onTap, required String title, required String image, required String price,
-  required String description,required String bedroom, required String bathroom, required String marla,
-  required String rent, required bool isFavorite, required VoidCallback onFavoriteTap}){
-
+Widget myPropertyFav(context,
+    {required VoidCallback onTap,
+    required String title,
+    required String image,
+    required String price,
+    required String description,
+    required String bedroom,
+    required String bathroom,
+    required String marla,
+    required String rent,
+    required bool isFavorite,
+    required VoidCallback onFavoriteTap}) {
   late ImageProvider imgVariable;
-  imgVariable = CachedNetworkImageProvider(image, errorListener: (ee){
+  imgVariable = CachedNetworkImageProvider(image, errorListener: (ee) {
     imgVariable = const AssetImage(AppIcons.appLogo);
   });
   return InkWell(
@@ -866,13 +889,14 @@ Widget myPropertyFav(context,{required VoidCallback onTap, required String title
                 CachedNetworkImage(
                   imageUrl: image,
                   width: double.infinity,
-                  height: screenHeight(context) *0.23,
+                  height: screenHeight(context) * 0.23,
                   fit: BoxFit.cover,
-                  errorWidget: (context, d , g){
+                  errorWidget: (context, d, g) {
                     return Image.asset(AppIcons.appLogo);
                   },
                 ),
-                Positioned(child:  Padding(
+                Positioned(
+                    child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Align(
                     alignment: Alignment.topRight,
@@ -921,18 +945,20 @@ Widget myPropertyFav(context,{required VoidCallback onTap, required String title
                         Container(
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(30),
-                              border: Border.all(color: borderColor)
-                          ),
-                          padding: const EdgeInsets.only(top: 5, bottom: 5, right: 10, left: 10),
+                              border: Border.all(color: borderColor)),
+                          padding: const EdgeInsets.only(
+                              top: 5, bottom: 5, right: 10, left: 10),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              customText(
-                                  text: bedroom,
-                                  fontSize: 12
-                              ),
+                              customText(text: bedroom, fontSize: 12),
                               w10,
-                              SvgPicture.asset(AppIcons.bedroom, width: 13, height: 9, color: primaryColor,),
+                              SvgPicture.asset(
+                                AppIcons.bedroom,
+                                width: 13,
+                                height: 9,
+                                color: primaryColor,
+                              ),
                             ],
                           ),
                         ),
@@ -940,18 +966,20 @@ Widget myPropertyFav(context,{required VoidCallback onTap, required String title
                         Container(
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(30),
-                              border: Border.all(color: borderColor)
-                          ),
-                          padding: const EdgeInsets.only(top: 5, bottom: 5, right: 10, left: 10),
+                              border: Border.all(color: borderColor)),
+                          padding: const EdgeInsets.only(
+                              top: 5, bottom: 5, right: 10, left: 10),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              customText(
-                                  text: bathroom,
-                                  fontSize: 12
-                              ),
+                              customText(text: bathroom, fontSize: 12),
                               w10,
-                              SvgPicture.asset(AppIcons.bathroom, width: 13, height: 9, color: primaryColor,),
+                              SvgPicture.asset(
+                                AppIcons.bathroom,
+                                width: 13,
+                                height: 9,
+                                color: primaryColor,
+                              ),
                             ],
                           ),
                         ),
@@ -959,21 +987,15 @@ Widget myPropertyFav(context,{required VoidCallback onTap, required String title
                         Container(
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(30),
-                              border: Border.all(color: borderColor)
-                          ),
-                          padding: const EdgeInsets.only(top: 5, bottom: 5, right: 10, left: 10),
+                              border: Border.all(color: borderColor)),
+                          padding: const EdgeInsets.only(
+                              top: 5, bottom: 5, right: 10, left: 10),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              customText(
-                                  text: marla,
-                                  fontSize: 12
-                              ),
+                              customText(text: marla, fontSize: 12),
                               w5,
-                              customText(
-                                  text: "Marla",
-                                  fontSize: 12
-                              ),
+                              customText(text: "Marla", fontSize: 12),
                             ],
                           ),
                         ),
@@ -982,19 +1004,15 @@ Widget myPropertyFav(context,{required VoidCallback onTap, required String title
                     Container(
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(30),
-                          color: greyColor.withOpacity(0.5)
-                      ),
-                      padding: const EdgeInsets.only(top: 5, bottom: 5, right: 15, left: 15),
+                          color: greyColor.withOpacity(0.5)),
+                      padding: const EdgeInsets.only(
+                          top: 5, bottom: 5, right: 15, left: 15),
                       child: Center(
-                        child: customText(
-                            text: rent,
-                            fontSize: 12
-                        ),
+                        child: customText(text: rent, fontSize: 12),
                       ),
                     ),
                   ],
                 ),
-
               ],
             ),
           ),
@@ -1005,15 +1023,24 @@ Widget myPropertyFav(context,{required VoidCallback onTap, required String title
   );
 }
 
-
-Widget myServicesWidget(
-  context,{required VoidCallback onTap, required String title,
-      required String price, required String image, required String description,
-      required String bedroom, required String bathroom, required String marla,
-      required String rent, required String serviceArea, required String duration,
-      required String pricing , VoidCallback? onTapDetail ,VoidCallback? editTap ,VoidCallback? deleteTap}){
+Widget myServicesWidget(context,
+    {required VoidCallback onTap,
+    required String title,
+    required String price,
+    required String image,
+    required String description,
+    required String bedroom,
+    required String bathroom,
+    required String marla,
+    required String rent,
+    required String serviceArea,
+    required String duration,
+    required String pricing,
+    VoidCallback? onTapDetail,
+    VoidCallback? editTap,
+    VoidCallback? deleteTap}) {
   late ImageProvider imgVariable;
-  imgVariable = CachedNetworkImageProvider(image, errorListener: (ee){
+  imgVariable = CachedNetworkImageProvider(image, errorListener: (ee) {
     imgVariable = const AssetImage(AppIcons.appLogo);
   });
   print(image);
@@ -1043,71 +1070,78 @@ Widget myServicesWidget(
                 CachedNetworkImage(
                   imageUrl: image,
                   width: double.infinity,
-                  height: screenHeight(context) *0.23,
+                  height: screenHeight(context) * 0.23,
                   fit: BoxFit.cover,
-                  errorWidget: (context, d , g){
+                  errorWidget: (context, d, g) {
                     return Image.asset(AppIcons.appLogo);
                   },
                 ),
-                Positioned(child:  Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                Positioned(
+                  child: Column(
                         children: [
-                          InkWell(
-                            onTap : editTap,
-                            child: CircleAvatar(
-                              backgroundColor: primaryColor,
-                              child: SvgPicture.asset(AppIcons.editIcon, color: Colors.white,),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                InkWell(
+                                  onTap: editTap,
+                                  child: CircleAvatar(
+                                    backgroundColor: primaryColor,
+                                    child: SvgPicture.asset(
+                                      AppIcons.editIcon,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 6,
+                                ),
+                                CircleAvatar(
+                                  backgroundColor: Colors.red,
+                                  child: IconButton(
+                                      onPressed: deleteTap,
+                                      icon: const Icon(
+                                        Icons.delete,
+                                        color: Colors.white,
+                                      )),
+                                ),
+                              ],
                             ),
                           ),
+
                           const SizedBox(
-                            width: 6,
-                          ),
-                          CircleAvatar(
-                            backgroundColor: Colors.red,
-                            child: IconButton(onPressed: deleteTap, icon: const Icon(Icons.delete, color: Colors.white,)),
+                            height: 25,
                           ),
 
+                          // Center(
+                          //   child: Padding(
+                          //     padding: const EdgeInsets.only(left: 15, right: 15),
+                          //     child: Row(
+                          //       crossAxisAlignment: CrossAxisAlignment.center,
+                          //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          //       children: [
+                          //         CircleAvatar(
+                          //           backgroundColor : Colors.white,
+                          //           child: IconButton(onPressed: (){},
+                          //               icon: const Icon(Icons.arrow_back_ios_new_rounded, color: blackColor)),
+                          //         ),
+                          //         CircleAvatar(
+                          //           backgroundColor : Colors.white,
+                          //           child: IconButton(onPressed: (){},
+                          //               icon: const Icon(Icons.arrow_forward_ios_rounded, color: blackColor,)),
+                          //         ),
+                          //       ],
+                          //     ),
+                          //   ),
+                          // ),
                         ],
-                      ),
-                    ),
-
-                    const SizedBox(
-                      height: 25,
-                    ),
-
-                    // Center(
-                    //   child: Padding(
-                    //     padding: const EdgeInsets.only(left: 15, right: 15),
-                    //     child: Row(
-                    //       crossAxisAlignment: CrossAxisAlignment.center,
-                    //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //       children: [
-                    //         CircleAvatar(
-                    //           backgroundColor : Colors.white,
-                    //           child: IconButton(onPressed: (){},
-                    //               icon: const Icon(Icons.arrow_back_ios_new_rounded, color: blackColor)),
-                    //         ),
-                    //         CircleAvatar(
-                    //           backgroundColor : Colors.white,
-                    //           child: IconButton(onPressed: (){},
-                    //               icon: const Icon(Icons.arrow_forward_ios_rounded, color: blackColor,)),
-                    //         ),
-                    //       ],
-                    //     ),
-                    //   ),
-                    // ),
-
-
-                  ],
-                ) ?? const SizedBox(),)
+                      ) ??
+                      const SizedBox(),
+                )
               ],
             ),
           ),
-
           Padding(
             padding: const EdgeInsets.only(top: 10, right: 15, left: 15),
             child: Column(
@@ -1173,31 +1207,23 @@ Widget myServicesWidget(
                   ],
                 ),
                 h5,
-                customText(
-                  text: description,
-                  fontSize: 15,
-                  color: descColor
-                ),
+                customText(text: description, fontSize: 15, color: descColor),
                 h5,
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
                       children: [
-                       Image.asset(AppIcons.clockDuration),
+                        Image.asset(AppIcons.clockDuration),
                         w10,
                         customText(
-                          text: "Duration :",
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: greyColor
-                        ),
-                        w10,
-                        customText(
-                            text: duration,
+                            text: "Duration :",
                             fontSize: 14,
-                          color: descColor
-                        ),
+                            fontWeight: FontWeight.w500,
+                            color: greyColor),
+                        w10,
+                        customText(
+                            text: duration, fontSize: 14, color: descColor),
                       ],
                     ),
                     headingText(
@@ -1215,17 +1241,12 @@ Widget myServicesWidget(
                         text: "Service Area :",
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: greyColor
-                    ),
+                        color: greyColor),
                     w10,
                     customText(
-                        text: serviceArea,
-                        fontSize: 14,
-                        color: descColor
-                    ),
+                        text: serviceArea, fontSize: 14, color: descColor),
                   ],
                 ),
-
               ],
             ),
           ),
@@ -1236,12 +1257,28 @@ Widget myServicesWidget(
   );
 }
 
-
-Widget serviceRequestWidget(context,{VoidCallback? onTap, String? title,String? clientName,
-  String? contactDetail,String? description, String? location, String? status,
-  String? requestTime, String? requestDate, VoidCallback? acceptTap, VoidCallback? declineTap,
-  VoidCallback? contactTap, VoidCallback? detailTap, Color? acceptColor,Color? declineColor, String? image,
-  String? time, String? date,}){
+Widget serviceRequestWidget(
+  context, {
+  VoidCallback? onTap,
+  String? title,
+  String? clientName,
+  String? contactDetail,
+  String? description,
+  String? postalCode,
+  String? location,
+  String? status,
+  String? requestTime,
+  String? requestDate,
+  VoidCallback? acceptTap,
+  VoidCallback? declineTap,
+  VoidCallback? contactTap,
+  VoidCallback? detailTap,
+  Color? acceptColor,
+  Color? declineColor,
+  String? image,
+  String? time,
+  String? date,
+}) {
   return InkWell(
     onTap: onTap,
     child: Container(
@@ -1268,27 +1305,25 @@ Widget serviceRequestWidget(context,{VoidCallback? onTap, String? title,String? 
                 CachedNetworkImage(
                   imageUrl: image!,
                   width: double.infinity,
-                  height: screenHeight(context) *0.15,
+                  height: screenHeight(context) * 0.15,
                   fit: BoxFit.cover,
-                  errorWidget: (context, d , g){
+                  errorWidget: (context, d, g) {
                     return Image.asset(AppIcons.appLogo);
                   },
                 ),
               ],
             ),
           ),
-
           Padding(
-            padding: const EdgeInsets.only(top: 15, right: 15, left: 15),
-            child: Column(
-              children: [
-                headingText(
-                  text: title ?? "",
-                  fontSize: 20,
-                ),
-              ],
-            )
-          ),
+              padding: const EdgeInsets.only(top: 15, right: 15, left: 15),
+              child: Column(
+                children: [
+                  headingText(
+                    text: title ?? "",
+                    fontSize: 20,
+                  ),
+                ],
+              )),
           Padding(
             padding: const EdgeInsets.all(15.0),
             child: Row(
@@ -1299,105 +1334,94 @@ Widget serviceRequestWidget(context,{VoidCallback? onTap, String? title,String? 
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     customText(
-                      text: "Client Name :",
-                      color: greyColor,
-                      fontSize: 10
-                    ) ,
+                        text: "Client Name :", color: greyColor, fontSize: 10),
                     h5,
                     customText(
-                      text: clientName ?? "",
-                      color: blackColor,
-                      fontSize: 8
-                    ),
+                        text: clientName ?? "", color: blackColor, fontSize: 8),
                     h10,
                     customText(
-                        text: "Description :",
-                        color: greyColor,
-                        fontSize: 10
-                    ) ,
+                        text: "Description :", color: greyColor, fontSize: 10),
                     h5,
                     SizedBox(
                       width: screenHeight(context) * 0.2,
                       child: customText(
-                          text: description ??"",
+                          text: description ?? "",
                           color: blackColor,
-                          fontSize: 8
-                      ),
+                          fontSize: 8),
+                    ),
+                    h10,
+                    customText(
+                        text: "Postal Code :", color: greyColor, fontSize: 10),
+                    h5,
+                    SizedBox(
+                      width: screenHeight(context) * 0.2,
+                      child: customText(
+                          text: postalCode ?? "",
+                          color: blackColor,
+                          fontSize: 8),
                     ),
                     h15,
                     customText(
                         text: "Request Date & Time : ",
                         color: greyColor,
-                        fontSize: 10
-                    ) ,
+                        fontSize: 10),
                     h5,
                     Row(
                       children: [
-                        Image.asset(AppIcons.calendar, width: 12, height: 12,),
+                        Image.asset(
+                          AppIcons.calendar,
+                          width: 12,
+                          height: 12,
+                        ),
                         customText(
-                            text: " Date :",
-                            color: greyColor,
-                            fontSize: 10
-                        ) ,
+                            text: " Date :", color: greyColor, fontSize: 10),
                         w10,
                         customText(
                             text: requestDate ?? "",
                             color: blackColor,
-                            fontSize: 8
-                        ),
+                            fontSize: 8),
                       ],
                     ),
                     h5,
                     Row(
                       children: [
-                        Image.asset(AppIcons.clockDuration, width: 12, height: 12,),
+                        Image.asset(
+                          AppIcons.clockDuration,
+                          width: 12,
+                          height: 12,
+                        ),
                         customText(
-                            text: " Time :",
-                            color: greyColor,
-                            fontSize: 10
-                        ) ,
+                            text: " Time :", color: greyColor, fontSize: 10),
                         w10,
                         customText(
                             text: requestTime ?? "",
                             color: blackColor,
-                            fontSize: 8
-                        ),
+                            fontSize: 8),
                       ],
                     ),
                   ],
                 ),
-                Expanded( 
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      customText(
-                          text: "Contact Details :",
-                          color: greyColor
-                      ),
+                      customText(text: "Contact Details :", color: greyColor),
                       h5,
                       customText(
                           text: contactDetail ?? "",
                           color: blackColor,
-                          fontSize: 8
-                      ),
+                          fontSize: 8),
                       h5,
                       customText(
-                          text: "Location :",
-                          color: greyColor,
-                          fontSize: 10
-                      ) ,
+                          text: "Location :", color: greyColor, fontSize: 10),
                       h5,
                       customText(
-                          text: location ?? "",
-                          color: blackColor,
-                          fontSize: 8
-                      ),
+                          text: location ?? "", color: blackColor, fontSize: 8),
                       h5,
                       customText(
                           text: "Request Status :",
                           color: greyColor,
-                          fontSize: 10
-                      ) ,
+                          fontSize: 10),
                       h5,
                       Row(
                         children: [
@@ -1406,8 +1430,7 @@ Widget serviceRequestWidget(context,{VoidCallback? onTap, String? title,String? 
                             child: customText(
                                 text: " $status",
                                 color: blackColor,
-                                fontSize: 8
-                            ),
+                                fontSize: 8),
                           ),
                         ],
                       ),
@@ -1415,46 +1438,40 @@ Widget serviceRequestWidget(context,{VoidCallback? onTap, String? title,String? 
                       customText(
                           text: "Client Date & Time : ",
                           color: greyColor,
-                          fontSize: 10
-                      ) ,
+                          fontSize: 10),
                       h5,
                       Row(
                         children: [
-                          Image.asset(AppIcons.calendar, width: 12, height: 12,),
+                          Image.asset(
+                            AppIcons.calendar,
+                            width: 12,
+                            height: 12,
+                          ),
                           customText(
-                              text: " Date :",
-                              color: greyColor,
-                              fontSize: 10
-                          ) ,
+                              text: " Date :", color: greyColor, fontSize: 10),
                           w10,
                           customText(
-                              text: date ?? "",
-                              color: blackColor,
-                              fontSize: 8
-                          ),
+                              text: date ?? "", color: blackColor, fontSize: 8),
                         ],
                       ),
                       h5,
                       Row(
                         children: [
-                          Image.asset(AppIcons.clockDuration, width: 12, height: 12,),
-                          customText(
-                              text: " Time :",
-                              color: greyColor,
-                              fontSize: 10
+                          Image.asset(
+                            AppIcons.clockDuration,
+                            width: 12,
+                            height: 12,
                           ),
+                          customText(
+                              text: " Time :", color: greyColor, fontSize: 10),
                           w10,
                           customText(
-                              text: time ?? "",
-                              color: blackColor,
-                              fontSize: 8
-                          ),
+                              text: time ?? "", color: blackColor, fontSize: 8),
                         ],
                       )
                     ],
                   ),
                 ),
-
               ],
             ),
           ),
@@ -1462,7 +1479,6 @@ Widget serviceRequestWidget(context,{VoidCallback? onTap, String? title,String? 
             padding: const EdgeInsets.all(12.0),
             child: Row(
               children: [
-
                 Expanded(
                   child: CustomButton(
                     onTap: acceptTap,
@@ -1472,9 +1488,7 @@ Widget serviceRequestWidget(context,{VoidCallback? onTap, String? title,String? 
                     gradientColor: acceptGradient(color: acceptColor),
                   ),
                 ),
-
                 w10,
-
                 Expanded(
                   child: CustomButton(
                     onTap: declineTap,
@@ -1485,14 +1499,12 @@ Widget serviceRequestWidget(context,{VoidCallback? onTap, String? title,String? 
                   ),
                 ),
                 w10,
-
                 Expanded(
                   child: CustomButton(
                     onTap: contactTap,
                     height: screenHeight(context) * 0.04,
                     text: "Contact",
                     fontSize: 12,
-
                   ),
                 ),
                 w10,
@@ -1505,7 +1517,6 @@ Widget serviceRequestWidget(context,{VoidCallback? onTap, String? title,String? 
                     gradientColor: detailGradient(),
                   ),
                 ),
-
               ],
             ),
           ),
@@ -1515,12 +1526,22 @@ Widget serviceRequestWidget(context,{VoidCallback? onTap, String? title,String? 
   );
 }
 
-Widget jobWidget(context,{VoidCallback? onTap, String? title,String? image,String? clientName,
-  String? contactDetail,String? description, String? location, String? status,
-  String? requestTime, String? requestDate, String? clientDate, String? clientTime,
-  VoidCallback? detailTap}){
+Widget jobWidget(context,
+    {VoidCallback? onTap,
+    String? title,
+    String? image,
+    String? clientName,
+    String? contactDetail,
+    String? description,
+    String? location,
+    String? status,
+    String? requestTime,
+    String? requestDate,
+    String? clientDate,
+    String? clientTime,
+    VoidCallback? detailTap}) {
   late ImageProvider imgVariable;
-  imgVariable = CachedNetworkImageProvider(image!, errorListener: (ee){
+  imgVariable = CachedNetworkImageProvider(image!, errorListener: (ee) {
     imgVariable = const AssetImage(AppIcons.appLogo);
   });
   return InkWell(
@@ -1541,13 +1562,17 @@ Widget jobWidget(context,{VoidCallback? onTap, String? title,String? image,Strin
         children: [
           Container(
             width: double.infinity,
-            height: screenHeight(context) *0.15,
-            decoration:   BoxDecoration(
+            height: screenHeight(context) * 0.15,
+            decoration: BoxDecoration(
               borderRadius: const BorderRadius.only(
                 topRight: Radius.circular(25),
                 topLeft: Radius.circular(25),
               ),
-              image: DecorationImage(image: image == "" ? const AssetImage(AppIcons.appLogo) : imgVariable, fit: BoxFit.cover),
+              image: DecorationImage(
+                  image: image == ""
+                      ? const AssetImage(AppIcons.appLogo)
+                      : imgVariable,
+                  fit: BoxFit.cover),
             ),
           ),
           Padding(
@@ -1559,8 +1584,7 @@ Widget jobWidget(context,{VoidCallback? onTap, String? title,String? image,Strin
                     fontSize: 20,
                   ),
                 ],
-              )
-          ),
+              )),
           Padding(
             padding: const EdgeInsets.all(15.0),
             child: Row(
@@ -1571,69 +1595,58 @@ Widget jobWidget(context,{VoidCallback? onTap, String? title,String? image,Strin
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     customText(
-                        text: "Client Name :",
-                        color: greyColor,
-                        fontSize: 10
-                    ) ,
+                        text: "Client Name :", color: greyColor, fontSize: 10),
                     h5,
                     customText(
-                        text: clientName ?? "",
-                        color: blackColor,
-                        fontSize: 8
-                    ),
+                        text: clientName ?? "", color: blackColor, fontSize: 8),
                     h10,
                     customText(
-                        text: "Description :",
-                        color: greyColor,
-                        fontSize: 10
-                    ) ,
+                        text: "Description :", color: greyColor, fontSize: 10),
                     h5,
                     SizedBox(
                       width: screenHeight(context) * 0.2,
                       child: customText(
-                          text: description ??"",
+                          text: description ?? "",
                           color: blackColor,
-                          fontSize: 8
-                      ),
+                          fontSize: 8),
                     ),
                     h15,
                     customText(
                         text: "Request Date & Time : ",
                         color: greyColor,
-                        fontSize: 10
-                    ) ,
+                        fontSize: 10),
                     h5,
                     Row(
                       children: [
-                        Image.asset(AppIcons.calendar, width: 12, height: 12,),
+                        Image.asset(
+                          AppIcons.calendar,
+                          width: 12,
+                          height: 12,
+                        ),
                         customText(
-                            text: " Date :",
-                            color: greyColor,
-                            fontSize: 10
-                        ) ,
+                            text: " Date :", color: greyColor, fontSize: 10),
                         w10,
                         customText(
                             text: requestDate ?? "",
                             color: blackColor,
-                            fontSize: 8
-                        ),
+                            fontSize: 8),
                       ],
                     ),
                     h5,
                     Row(
                       children: [
-                        Image.asset(AppIcons.clockDuration, width: 12, height: 12,),
+                        Image.asset(
+                          AppIcons.clockDuration,
+                          width: 12,
+                          height: 12,
+                        ),
                         customText(
-                            text: " Time :",
-                            color: greyColor,
-                            fontSize: 10
-                        ) ,
+                            text: " Time :", color: greyColor, fontSize: 10),
                         w10,
                         customText(
                             text: requestTime ?? "",
                             color: blackColor,
-                            fontSize: 8
-                        ),
+                            fontSize: 8),
                       ],
                     ),
                   ],
@@ -1642,34 +1655,23 @@ Widget jobWidget(context,{VoidCallback? onTap, String? title,String? image,Strin
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      customText(
-                          text: "Contact Details :",
-                          color: greyColor
-                      ),
+                      customText(text: "Contact Details :", color: greyColor),
                       h5,
                       customText(
                           text: contactDetail ?? "",
                           color: blackColor,
-                          fontSize: 8
-                      ),
+                          fontSize: 8),
                       h5,
                       customText(
-                          text: "Location :",
-                          color: greyColor,
-                          fontSize: 10
-                      ) ,
+                          text: "Location :", color: greyColor, fontSize: 10),
                       h5,
                       customText(
-                          text: location ?? "",
-                          color: blackColor,
-                          fontSize: 8
-                      ),
+                          text: location ?? "", color: blackColor, fontSize: 8),
                       h5,
                       customText(
                           text: "Request Status :",
                           color: greyColor,
-                          fontSize: 10
-                      ) ,
+                          fontSize: 10),
                       h5,
                       Row(
                         children: [
@@ -1677,54 +1679,51 @@ Widget jobWidget(context,{VoidCallback? onTap, String? title,String? image,Strin
                           customText(
                               text: " In Progress",
                               color: blackColor,
-                              fontSize: 8
-                          ),
+                              fontSize: 8),
                         ],
                       ),
                       h10,
                       customText(
                           text: "Client Date & Time : ",
                           color: greyColor,
-                          fontSize: 10
-                      ) ,
+                          fontSize: 10),
                       h5,
                       Row(
                         children: [
-                          Image.asset(AppIcons.calendar, width: 12, height: 12,),
+                          Image.asset(
+                            AppIcons.calendar,
+                            width: 12,
+                            height: 12,
+                          ),
                           customText(
-                              text: " Date :",
-                              color: greyColor,
-                              fontSize: 10
-                          ) ,
+                              text: " Date :", color: greyColor, fontSize: 10),
                           w10,
                           customText(
                               text: clientDate ?? "",
                               color: blackColor,
-                              fontSize: 8
-                          ),
+                              fontSize: 8),
                         ],
                       ),
                       h5,
                       Row(
                         children: [
-                          Image.asset(AppIcons.clockDuration, width: 12, height: 12,),
-                          customText(
-                              text: " Time :",
-                              color: greyColor,
-                              fontSize: 10
+                          Image.asset(
+                            AppIcons.clockDuration,
+                            width: 12,
+                            height: 12,
                           ),
+                          customText(
+                              text: " Time :", color: greyColor, fontSize: 10),
                           w10,
                           customText(
                               text: clientTime ?? "",
                               color: blackColor,
-                              fontSize: 8
-                          ),
+                              fontSize: 8),
                         ],
                       )
                     ],
                   ),
                 ),
-
               ],
             ),
           ),
@@ -1749,7 +1748,6 @@ Widget jobWidget(context,{VoidCallback? onTap, String? title,String? image,Strin
                     gradientColor: detailGradient(),
                   ),
                 ),
-
               ],
             ),
           ),
@@ -1759,8 +1757,7 @@ Widget jobWidget(context,{VoidCallback? onTap, String? title,String? image,Strin
   );
 }
 
-
-Widget circleAvatar({String? text, String? image}){
+Widget circleAvatar({String? text, String? image}) {
   return Center(
     child: Container(
       decoration: BoxDecoration(
@@ -1772,113 +1769,118 @@ Widget circleAvatar({String? text, String? image}){
         children: [
           Image.asset(image!),
           h10,
-          customText(
-              text: text,
-              fontSize: 12
-          ),
+          customText(text: text, fontSize: 12),
         ],
       ),
     ),
   );
 }
 
-Future<dynamic> animatedDialog(BuildContext context, {String? title, String? subTitle , String? thirdTitle,
-  VoidCallback? yesTap,  VoidCallback? cancelTap, String? yesButtonText, String? canceluttonText, bool? isLoading = false})
-{
+Future<dynamic> animatedDialog(BuildContext context,
+    {String? title,
+    String? subTitle,
+    String? thirdTitle,
+    VoidCallback? yesTap,
+    VoidCallback? cancelTap,
+    String? yesButtonText,
+    String? canceluttonText,
+    bool? isLoading = false}) {
   return showGeneralDialog(
       barrierColor: Colors.black.withOpacity(0.5),
       transitionBuilder: (context, a1, a2, widget) {
         final curvedValue = Curves.easeInOutSine.transform(a1.value) - 1.0;
         return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return Transform(
-              transform: Matrix4.translationValues(0.0, curvedValue * 200, 0.0),
-              child: Opacity(
-                opacity: a1.value,
-                child: Dialog(
-                  backgroundColor: whiteColor,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 18, right: 18, top: 10),
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Lottie.asset("assets/animation/logout.json", width: 120, height: 150),
-                          customText(
-                              text: title,
-                              color: blackColor,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          customText(
-                              text: subTitle,
-                              color: blackColor,
-                              fontSize: 17,
-                              overFlow: TextOverflow.visible,
-                              textAlign: TextAlign.center
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          // Container(
-                          //   child: customText(
-                          //     text: thirdTitle,
-                          //     color: blackColor,
-                          //     fontSize: 15,
-                          //     overFlow: TextOverflow.visible,
-                          //     textAlign: TextAlign.center,
-                          //   ),
-                          // ),
+            builder: (BuildContext context, StateSetter setState) {
+          return Transform(
+            transform: Matrix4.translationValues(0.0, curvedValue * 200, 0.0),
+            child: Opacity(
+              opacity: a1.value,
+              child: Dialog(
+                backgroundColor: whiteColor,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 18, right: 18, top: 10),
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Lottie.asset("assets/animation/logout.json",
+                            width: 120, height: 150),
+                        customText(
+                            text: title,
+                            color: blackColor,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        customText(
+                            text: subTitle,
+                            color: blackColor,
+                            fontSize: 17,
+                            overFlow: TextOverflow.visible,
+                            textAlign: TextAlign.center),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        // Container(
+                        //   child: customText(
+                        //     text: thirdTitle,
+                        //     color: blackColor,
+                        //     fontSize: 15,
+                        //     overFlow: TextOverflow.visible,
+                        //     textAlign: TextAlign.center,
+                        //   ),
+                        // ),
 
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: CustomButton(
-                                  onTap: (){
-                                    setState(() {
-                                      isLoading = true; // Make sure this updates the variable the dialog checks
-                                    });
-                                    // Then call your original tap handler and update state as necessary
-                                    yesTap?.call();
-                                  },
-                                  fontSize: 14,
-                                  isLoading: isLoading,
-                                  text: yesButtonText ?? "Complete",
-                                  width: MediaQuery.of(context).size.width,
-                                  height:MediaQuery.of(context).size.height * 0.05,
-                                ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: CustomButton(
+                                onTap: () {
+                                  setState(() {
+                                    isLoading = true;
+                                    // Make sure this updates the variable the dialog checks
+                                  });
+                                  // Then call your original tap handler and update state as necessary
+                                  yesTap?.call();
+                                },
+                                fontSize: 14,
+                                isLoading: isLoading,
+                                text: yesButtonText ?? "Complete",
+                                width: MediaQuery.of(context).size.width,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.05,
                               ),
-                              w15,
-                              Expanded(
-                                child: CustomButton(
-                                  onTap: cancelTap ?? () => Navigator.pop(context),
-                                  fontSize: 14,
-                                  gradientColor: redGradient(),
-                                  text: canceluttonText ?? "Cancel",
-                                  width: MediaQuery.of(context).size.width,
-                                  height:MediaQuery.of(context).size.height * 0.05,
-                                ),
+                            ),
+                            w15,
+                            Expanded(
+                              child: CustomButton(
+                                onTap:
+                                    cancelTap ?? () => Navigator.pop(context),
+                                fontSize: 14,
+                                gradientColor: redGradient(),
+                                text: canceluttonText ?? "Cancel",
+                                width: MediaQuery.of(context).size.width,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.05,
                               ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                        ]),
-                  ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                      ]),
                 ),
               ),
-            );
-          }
-        );
+            ),
+          );
+        });
       },
       transitionDuration: const Duration(milliseconds: 300),
       barrierDismissible: true,
@@ -1890,8 +1892,8 @@ Future<dynamic> animatedDialog(BuildContext context, {String? title, String? sub
 }
 
 bool emailValidation(String em) {
-  String p = r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$";
+  String p =
+      r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$";
   RegExp regExp = RegExp(p);
   return regExp.hasMatch(em);
 }
-
