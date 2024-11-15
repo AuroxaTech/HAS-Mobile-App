@@ -121,6 +121,7 @@ class AllService {
   bool isFavorite;
   int isApplied;
   User? user;
+  List<ServiceProviderRequest>? serviceProviderRequests;
 
   AllService({
     required this.id,
@@ -145,10 +146,10 @@ class AllService {
     required this.isFavorite,
     required this.isApplied,
     required this.user,
+    this.serviceProviderRequests,
   });
 
   factory AllService.fromJson(Map<String, dynamic> json) {
-    //print("All Services ===> ${json.toString()}");
     return AllService(
       id: json["id"],
       userId: json["user_id"],
@@ -172,33 +173,131 @@ class AllService {
       isFavorite: json["is_favorite"] ?? false,
       isApplied: json["is_applied"] ?? 0,
       user: json["user"] != null ? User.fromJson(json["user"]) : null,
+      serviceProviderRequests: json["service_provider_requests"] != null
+          ? List<ServiceProviderRequest>.from(json["service_provider_requests"]
+          .map((x) => ServiceProviderRequest.fromJson(x)))
+          : null,
     );
   }
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "user_id": userId,
-        "service_name": serviceName,
-        "description": description,
-        "pricing": pricing,
-        "start_time": startTime,
-        "end_time": endTime,
-        "location": location,
-        "lat": lat,
-        "long": long,
-        "count_of_service": countOfService,
-        "total_rate": totalRate,
-        "average_rate": averageRate,
-        "media": media,
-        "country": country,
-        "city": city,
-        "additional_information": additionalInformation,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
-        "is_favorite": isFavorite,
-        "is_applied": isApplied,
-        "user": user,
-      };
+    "id": id,
+    "user_id": userId,
+    "service_name": serviceName,
+    "description": description,
+    "pricing": pricing,
+    "start_time": startTime,
+    "end_time": endTime,
+    "location": location,
+    "lat": lat,
+    "long": long,
+    "count_of_service": countOfService,
+    "total_rate": totalRate,
+    "average_rate": averageRate,
+    "media": media,
+    "country": country,
+    "city": city,
+    "additional_information": additionalInformation,
+    "created_at": createdAt.toIso8601String(),
+    "updated_at": updatedAt.toIso8601String(),
+    "is_favorite": isFavorite,
+    "is_applied": isApplied,
+    "user": user?.toJson(),
+    "service_provider_requests": serviceProviderRequests != null
+        ? List<dynamic>.from(
+        serviceProviderRequests!.map((x) => x.toJson()))
+        : null,
+  };
+}
+
+class ServiceProviderRequest {
+  int id;
+  int userId;
+  int serviceproviderId;
+  int serviceId;
+  String address;
+  String lat;
+  String long;
+  int propertyType;
+  String price;
+  String date;
+  String time;
+  String description;
+  String? additionalInfo;
+  int approved;
+  int decline;
+  DateTime createdAt;
+  DateTime updatedAt;
+  String? postalCode;
+  int? isApplied;
+
+  ServiceProviderRequest({
+    required this.id,
+    required this.userId,
+    required this.serviceproviderId,
+    required this.serviceId,
+    required this.address,
+    required this.lat,
+    required this.long,
+    required this.propertyType,
+    required this.price,
+    required this.date,
+    required this.time,
+    required this.description,
+    this.additionalInfo,
+    required this.approved,
+    required this.decline,
+    required this.createdAt,
+    required this.updatedAt,
+    this.postalCode,
+    this.isApplied,
+  });
+
+  factory ServiceProviderRequest.fromJson(Map<String, dynamic> json) {
+    return ServiceProviderRequest(
+      id: json['id'],
+      userId: json['user_id'],
+      serviceproviderId: json['serviceprovider_id'],
+      serviceId: json['service_id'],
+      address: json['address'],
+      lat: json['lat'],
+      long: json['long'],
+      propertyType: json['property_type'],
+      price: json['price'],
+      date: json['date'],
+      time: json['time'],
+      description: json['description'],
+      additionalInfo: json['additional_info'],
+      approved: json['approved'],
+      decline: json['decline'],
+      createdAt: DateTime.parse(json['created_at']),
+      updatedAt: DateTime.parse(json['updated_at']),
+      postalCode: json['postal_code'],
+      isApplied: json['is_applied'],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'user_id': userId,
+    'serviceprovider_id': serviceproviderId,
+    'service_id': serviceId,
+    'address': address,
+    'lat': lat,
+    'long': long,
+    'property_type': propertyType,
+    'price': price,
+    'date': date,
+    'time': time,
+    'description': description,
+    'additional_info': additionalInfo,
+    'approved': approved,
+    'decline': decline,
+    'created_at': createdAt.toIso8601String(),
+    'updated_at': updatedAt.toIso8601String(),
+    'postal_code': postalCode,
+    'is_applied': isApplied,
+  };
 }
 
 enum Location {

@@ -33,14 +33,20 @@ class ServiceRequestController extends GetxController {
     try {
       isLoading.value = true;
       var result =
-          await servicesService.getServiceProviderRequest(page: pageKey);
+      await servicesService.getServiceProviderRequest(page: pageKey);
       isLoading.value = false;
       print("My JOB REQUEST Data $result");
       if (result['status'] == true) {
         final List<ServiceRequestProvider> newItems =
-            (result['data']['data'] as List)
-                .map((json) => ServiceRequestProvider.fromJson(json))
-                .toList();
+        (result['data']['data'] as List)
+            .map((json) => ServiceRequestProvider.fromJson(json))
+            .toList();
+
+        // Add this code to print all service requests
+        print('Fetched Service Requests:');
+        for (var request in newItems) {
+          print(request.toJson());
+        }
 
         final isLastPage =
             result['data']['current_page'] == result['data']['last_page'];

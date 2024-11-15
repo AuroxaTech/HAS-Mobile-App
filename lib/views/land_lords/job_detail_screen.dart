@@ -413,7 +413,7 @@ class MyDraggable extends GetView<JobDetailController> {
                                 //     },
                                 //   ),
                                 // ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 10,
                                 ),
                                 Padding(

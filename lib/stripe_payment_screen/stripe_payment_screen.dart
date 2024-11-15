@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:property_app/app_constants/color_constants.dart';
 import 'package:property_app/constant_widget/constant_widgets.dart';
 import 'package:property_app/custom_widgets/custom_button.dart';
-
 import '../controllers/jobs_controller/job_detail_screen.dart';
 import '../controllers/stripe_payment_controller/stripe_payment_controller.dart';
 
@@ -35,7 +34,7 @@ class StripePaymentScreen extends StatelessWidget {
         'Payment : ${stripePaymentController.price} Service Id : ${stripePaymentController.serviceId} Service Provider Id : ${stripePaymentController.serviceProviderId}');
     return Scaffold(
       appBar: AppBar(
-        title: customText(text: 'Add Payment Details'),
+        title: customText(text: 'Payout',fontSize: 25,fontWeight: FontWeight.bold,),
         centerTitle: true,
       ),
       body: Padding(
@@ -66,7 +65,10 @@ class StripePaymentScreen extends StatelessWidget {
                                 text: "Service Provider Details",
                                 color: blackColor,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 24),
+                                fontSize: 24,
+                                textAlign: TextAlign.center
+
+                            ),
                             const SizedBox(
                               height: 40,
                             ),
@@ -146,21 +148,18 @@ class StripePaymentScreen extends StatelessWidget {
                               btnTextColor: whiteColor,
                               onTap: () async {
                                 String amount =
-                                    (stripePaymentController.price.value * 100)
-                                        .toInt()
-                                        .toString(); // Convert price to cents
+                                (stripePaymentController.price.value * 100).toInt().toString(); // Convert price to cents
                                 String currency = 'usd';
-                                // Withdraw payment with Stripe PaymentSheet
-                                await stripePaymentController.withdrawPayment(
-                                    amount, currency);
-                                //Get.back();
-                                jobDetailController
-                                    .acceptServiceRequest(
-                                        jobId: jobId, status: 1)
-                                    .then((value) {
-                                  jobDetailController.getJobRequest(id: id);
-                                });
-                                //Get.off(() => JobsScreen(isBack: true));
+                                bool paymentSuccess = await stripePaymentController.withdrawPayment(amount, currency);
+                                if (paymentSuccess) {
+                                  jobDetailController
+                                      .acceptServiceRequest(jobId: jobId, status: 1)
+                                      .then((value) {
+                                    jobDetailController.getJobRequest(id: id);
+                                  });
+                                } else {
+                                  Get.back();
+                                }
                               },
                             ),
                           ],

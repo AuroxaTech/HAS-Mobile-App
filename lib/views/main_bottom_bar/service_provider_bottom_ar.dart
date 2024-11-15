@@ -5,7 +5,6 @@ import 'package:property_app/app_constants/app_icon.dart';
 import 'package:property_app/utils/utils.dart';
 import 'package:property_app/views/service_provider/calender_screen.dart';
 import 'package:property_app/views/service_provider/services_provider_screen.dart';
-
 import '../../app_constants/color_constants.dart';
 import '../../services/notification_services/notification_services.dart';
 import '../chat_screens/HomeScreen.dart';

@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:property_app/constant_widget/constant_widgets.dart';
 import 'package:property_app/custom_widgets/custom_text_field.dart';
 import 'package:property_app/utils/api_urls.dart';
-
 import '../../app_constants/app_icon.dart';
 import '../../app_constants/app_sizes.dart';
 import '../../app_constants/color_constants.dart';

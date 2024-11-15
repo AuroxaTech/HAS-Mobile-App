@@ -3,8 +3,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:property_app/app_constants/app_icon.dart';
 import 'package:property_app/app_constants/color_constants.dart';
-import 'package:property_app/views/stripe_payment_screen/stripe_payment_screen.dart';
-
 import '../../app_constants/app_sizes.dart';
 import '../../constant_widget/constant_widgets.dart';
 import '../../controllers/dasboard_controller/home_screen_controller.dart';

@@ -6,13 +6,12 @@ import 'package:property_app/utils/api_urls.dart';
 class StripeService {
   static const String _stripeApiBase = 'https://api.stripe.com/v1';
 
-  // Create a payment intent on the Stripe server
   Future<Map<String, dynamic>?> createPaymentIntent(
       String amount, String currency) async {
     try {
       Map<String, dynamic> body = {
         'amount':
-            amount, // amount in smallest currency unit (e.g., 5000 = $50.00)
+            amount, 
         'currency': currency,
         'payment_method_types[]': 'card',
       };

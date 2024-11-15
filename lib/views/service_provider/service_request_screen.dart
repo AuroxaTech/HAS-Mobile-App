@@ -15,6 +15,7 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: whiteColor,
       appBar: homeAppBar(context, text: "Service Requests"),
@@ -42,6 +43,7 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
                             .retryLastFailedRequest(),
                       ),
                   itemBuilder: (context, item, index) {
+                    print('Service Request ID: ${item.id}');
                     String imagesString = item.service == null
                         ? ""
                         : item.service!.media.toString();

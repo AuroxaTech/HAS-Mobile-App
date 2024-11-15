@@ -8,7 +8,6 @@ import '../../app_constants/app_sizes.dart';
 import '../../app_constants/color_constants.dart';
 import '../../constant_widget/constant_widgets.dart';
 import '../../route_management/constant_routes.dart';
-import '../stripe_payment_screen/stripe_payment_screen.dart';
 
 class PropertyTabsScreen extends GetView<AllPropertyController> {
   const PropertyTabsScreen({Key? key}) : super(key: key);
@@ -17,24 +16,6 @@ class PropertyTabsScreen extends GetView<AllPropertyController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: whiteColor,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(right: 10.0, bottom: 30.0),
-        child: SizedBox(
-          width: 50,
-          height: 50,
-          child: FloatingActionButton(
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>  StripePaymentView()));
-            },
-            backgroundColor: Colors.white,
-            elevation: 8.0,
-            child: const Icon(Icons.add),
-          ),
-        ),
-      ),
       appBar: titleAppBar("Properties", action: [
         IconButton(
             onPressed: () {

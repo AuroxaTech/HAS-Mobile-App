@@ -4,6 +4,8 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:property_app/models/service_provider_model/all_services.dart';
 import 'package:property_app/services/property_services/add_services.dart';
 
+import '../../utils/shared_preferences/preferences.dart';
+
 class ServiceListingScreenController extends GetxController {
   final sheet = GlobalKey();
   final controller = DraggableScrollableController();
@@ -14,6 +16,7 @@ class ServiceListingScreenController extends GetxController {
     "300 sq ft",
     "400 sq ft"
   ];
+  late int currentUserId;
   RxInt selectedArea = 0.obs;
   RxInt selectedBedroom = 1.obs;
   RxInt selectedBathrooms = 1.obs;
@@ -24,6 +27,11 @@ class ServiceListingScreenController extends GetxController {
   var cityController = TextEditingController();
   var countryController = TextEditingController();
   var maxPriceController = TextEditingController();
+
+
+  Future<void> _loadCurrentUserId() async {
+    currentUserId = int.parse(await Preferences.getUserID());
+  }
 
   ServiceProviderServices servicesService = ServiceProviderServices();
   Rx<bool> isLoading = false.obs;
@@ -37,8 +45,7 @@ class ServiceListingScreenController extends GetxController {
   Future<void> getServices(int pageKey, [Map<String, dynamic>? filters]) async {
     try {
       isLoading.value = true;
-      var result =
-          await servicesService.getAllServices(pageKey, filters: filters);
+      var result = await servicesService.getAllServices(pageKey, filters: filters);
       isLoading.value = false;
 
       if (result['status'] == true) {
@@ -46,12 +53,22 @@ class ServiceListingScreenController extends GetxController {
             .map((json) => AllService.fromJson(json))
             .toList();
 
-        // Print the entire list of services in the console
-        print('Fetched Services:');
-        newItems.forEach((service) => print(service.toJson()));
+        // Fetch current user ID
+        int currentUserId = await Preferences.getUserID();
+        // Update isApplied status for each service
+        for (var item in newItems) {
+          item.isApplied = 0; // Default to 0
+          if (item.serviceProviderRequests != null) {
+            for (var request in item.serviceProviderRequests!) {
+              if (request.userId == currentUserId) {
+                item.isApplied = request.isApplied ?? 0;
+                break; // No need to check further
+              }
+            }
+          }
+        }
 
-        final isLastPage =
-            result['data']['current_page'] == result['data']['last_page'];
+        final isLastPage = result['data']['current_page'] == result['data']['last_page'];
 
         if (isLastPage) {
           pagingController.appendLastPage(newItems);
@@ -74,6 +91,7 @@ class ServiceListingScreenController extends GetxController {
 
   @override
   void onInit() {
+    _loadCurrentUserId();
     var data = Get.arguments;
     print("IDDDDDD $data");
     print("Hello");
