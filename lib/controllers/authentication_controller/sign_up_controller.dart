@@ -403,23 +403,18 @@ class SignUpController extends GetxController {
 
         isLoading.value = false;
       } else {
-        // Handle error scenario
         isLoading.value = false;
         if (data['messages'] != null) {
           if (data['messages']['username'] != null) {
-            // Show the username error message
             AppUtils.errorSnackBar("Error", data['messages']['username'][0]);
           } else if (data['messages']['email'] != null) {
-            // Show the email error message
             AppUtils.errorSnackBar("Error", data['messages']['email'][0]);
           } else {
-            // Show a general error message if neither username nor email has a specific error
             AppUtils.errorSnackBar("Error", "An unknown error occurred.");
           }
         }
       }
     } catch (e) {
-      // Handle general errors
       print(e);
       isLoading.value = false;
       AppUtils.errorSnackBar("Error", e.toString());

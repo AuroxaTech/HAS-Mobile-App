@@ -106,6 +106,7 @@ class NewServiceRequestScreenController extends GetxController {
   var userData = User(
     id: 0,
     fullname: '',
+    userName: '',
     email: '',
     phoneNumber: '',
     roleId: 0,

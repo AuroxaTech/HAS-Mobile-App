@@ -106,58 +106,60 @@ class TenantDashboard extends GetView<TenantDashboardController> {
                                   ),
                                   child: Padding(
                                     padding: const EdgeInsets.only(
-                                        left: 40, right: 40, top: 30),
-                                    child: Column(
-                                      children: [
-                                        rowMainAxis(children: [
-                                          dashboardContainer(
-                                            onTap: () => Get.toNamed(
-                                                kTenantContractScreen),
-                                            title: "Contracts",
-                                            icon: FontAwesomeIcons.fileContract,
-                                          ),
-                                          dashboardContainer(
-                                            onTap: () => Get.toNamed(
-                                                kCurrentRentedScreen),
-                                            title: "Current Rented",
-                                            icon: FontAwesomeIcons.buildingUser,
-                                          ),
-                                        ]),
-                                        h20,
-                                        rowMainAxis(children: [
-                                          dashboardContainer(
-                                            title: "Messages",
-                                            icon:
-                                                FontAwesomeIcons.solidComments,
-                                            onTap: () => Get.to(
-                                                () => const ChatListing(),
-                                                transition: routeTransition),
-                                          ),
-                                          dashboardContainer(
-                                            onTap: () => Get.toNamed(
-                                                kMyServiceRequestScreen),
-                                            title: "Request Service",
-                                            icon: FontAwesomeIcons
-                                                .screwdriverWrench,
-                                          ),
-                                        ]),
-                                        h20,
-                                        rowMainAxis(children: [
-                                          dashboardContainer(
-                                            onTap: () =>
-                                                Get.toNamed(kJobScreen),
-                                            title: "Jobs",
-                                            icon: FontAwesomeIcons.briefcase,
-                                          ),
-                                          dashboardContainer(
-                                            onTap: () =>
-                                                Get.toNamed(kMyFavouriteScreen),
-                                            title: "My Favourite",
-                                            icon: FontAwesomeIcons.solidHeart,
-                                          ),
-                                        ]),
-                                        h20,
-                                      ],
+                                        left: 20, right: 20, top: 30),
+                                    child: SingleChildScrollView(
+                                      child: Column(
+                                        children: [
+                                          rowMainAxis(children: [
+                                            dashboardContainer(
+                                              onTap: () => Get.toNamed(
+                                                  kTenantContractScreen),
+                                              title: "Contracts",
+                                              icon: FontAwesomeIcons.fileContract,
+                                            ),
+                                            dashboardContainer(
+                                              onTap: () => Get.toNamed(
+                                                  kCurrentRentedScreen),
+                                              title: "Current Rented",
+                                              icon: FontAwesomeIcons.buildingUser,
+                                            ),
+                                          ]),
+                                          h20,
+                                          rowMainAxis(children: [
+                                            dashboardContainer(
+                                              title: "Messages",
+                                              icon:
+                                                  FontAwesomeIcons.solidComments,
+                                              onTap: () => Get.to(
+                                                  () => const ChatListing(),
+                                                  transition: routeTransition),
+                                            ),
+                                            dashboardContainer(
+                                              onTap: () => Get.toNamed(
+                                                  kMyServiceRequestScreen),
+                                              title: "Request Service",
+                                              icon: FontAwesomeIcons
+                                                  .screwdriverWrench,
+                                            ),
+                                          ]),
+                                          h20,
+                                          rowMainAxis(children: [
+                                            dashboardContainer(
+                                              onTap: () =>
+                                                  Get.toNamed(kJobScreen),
+                                              title: "Jobs",
+                                              icon: FontAwesomeIcons.briefcase,
+                                            ),
+                                            dashboardContainer(
+                                              onTap: () =>
+                                                  Get.toNamed(kMyFavouriteScreen),
+                                              title: "My Favourite",
+                                              icon: FontAwesomeIcons.solidHeart,
+                                            ),
+                                          ]),
+                                          h20,
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),

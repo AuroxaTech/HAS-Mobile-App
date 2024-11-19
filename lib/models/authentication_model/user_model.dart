@@ -35,6 +35,7 @@ class UserModel {
 class User {
   int id;
   String fullname;
+  String userName;
   String email;
   String phoneNumber;
   int roleId;
@@ -47,6 +48,7 @@ class User {
   User({
     required this.id,
     required this.fullname,
+    required this.userName,
     required this.email,
     required this.phoneNumber,
     required this.roleId,
@@ -60,6 +62,7 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) => User(
     id: json["id"],
     fullname: json["fullname"],
+    userName: json["username"],
     email: json["email"],
     phoneNumber: json["phone_number"],
     roleId: json["role_id"],

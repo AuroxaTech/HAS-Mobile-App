@@ -111,7 +111,7 @@ class LoginScreen extends GetView<LoginScreenController> {
                       children: [
                         Container(
                           height: 1.5,
-                          width: 150,
+                          width: 100,
                           color: primaryColor,
                         ),
                         customText(
@@ -121,7 +121,7 @@ class LoginScreen extends GetView<LoginScreenController> {
                             fontSize: 25),
                         Container(
                           height: 1.5,
-                          width: 150,
+                          width: 100,
                           color: primaryColor,
                         ),
                       ],

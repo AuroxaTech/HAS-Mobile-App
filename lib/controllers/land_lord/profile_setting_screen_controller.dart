@@ -11,7 +11,8 @@ import '../../models/authentication_model/user_model.dart';
 import '../../utils/api_urls.dart';
 import '../../utils/shared_preferences/preferences.dart';
 import 'package:http/http.dart' as http;
-class ProfileSettingsScreenController extends GetxController{
+
+class ProfileSettingsScreenController extends GetxController {
   Rx<XFile?> profileImage = Rx<XFile?>(null);
 
   void pickProfileImage() async {
@@ -23,21 +24,20 @@ class ProfileSettingsScreenController extends GetxController{
       print("New image picked: ${profileImage.value!.path}"); // Verify path in console
       update();
     }
-
   }
+
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   var nameController = TextEditingController();
+  var usernameController = TextEditingController(); // Username controller for display
   var email = TextEditingController();
   var phoneNumber = TextEditingController();
-  var currentPassword = TextEditingController();
-  var newPassword = TextEditingController();
-  var confirmPassword = TextEditingController();
 
   String image = "";
 
   var userData = User(
     id: 0,
     fullname: '',
+    userName: '',
     email: '',
     phoneNumber: '',
     roleId: 0,
@@ -49,6 +49,7 @@ class ProfileSettingsScreenController extends GetxController{
 
   var isLoadingGet = true.obs;
   var propertyId = 0.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -60,7 +61,7 @@ class ProfileSettingsScreenController extends GetxController{
       isLoadingGet(true);
       var id = await Preferences.getUserID();
       var token = await Preferences.getToken();
-      final response = await http.get(Uri.parse("${AppUrls.getUser}/$id",),
+      final response = await http.get(Uri.parse("${AppUrls.getUser}/$id"),
           headers: getHeader(userToken: token)
       );
 
@@ -70,6 +71,7 @@ class ProfileSettingsScreenController extends GetxController{
         userData(data);
 
         nameController.text = userData.value.fullname;
+        usernameController.text = userData.value.userName; // Load the username
         email.text = userData.value.email;
         phoneNumber.text = userData.value.phoneNumber;
         image = userData.value.profileimage;
@@ -89,10 +91,11 @@ class ProfileSettingsScreenController extends GetxController{
   Future<void> updateDataAndImage({
     required String name,
     required String phoneNumber,
+    required String username,
     XFile? filePath,
   }) async {
     isLoading.value = true;
-    var uri = Uri.parse(AppUrls.updateProfile); // Replace with your API endpoint
+    var uri = Uri.parse(AppUrls.updateProfile);
     var token = await Preferences.getToken();
     var headers = {
       'Authorization': 'Bearer $token',
@@ -104,16 +107,15 @@ class ProfileSettingsScreenController extends GetxController{
       // Adding text fields
       request.fields['fullname'] = name;
       request.fields['phone_number'] = phoneNumber;
+      request.fields['username'] = username; // Pass username to the API request
 
-     if(filePath != null){
-       request.files.add(await http.MultipartFile.fromPath(
-         'profileimage',
-         File(filePath.path).path,
-         filename: 'profile_images.jpg',
-       ));
-     }
-
-
+      if (filePath != null) {
+        request.files.add(await http.MultipartFile.fromPath(
+          'profileimage',
+          File(filePath.path).path,
+          filename: 'profile_images.jpg',
+        ));
+      }
 
       request.headers.addAll(headers);
       var response = await request.send();
