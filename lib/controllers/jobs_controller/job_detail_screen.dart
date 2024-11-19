@@ -16,6 +16,7 @@ class JobDetailController extends GetxController {
   Rx<CalendarData?> getServiceRequestOne = Rx<CalendarData?>(null);
 
   List<String> images = [];
+
   RxInt id = 0.obs;
   @override
   void onInit() {

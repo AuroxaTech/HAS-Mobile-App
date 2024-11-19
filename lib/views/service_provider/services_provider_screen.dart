@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:property_app/constant_widget/delete_widgets.dart';
 import 'package:property_app/constant_widget/drawer.dart';
@@ -8,7 +9,6 @@ import 'package:property_app/utils/api_urls.dart';
 import 'package:property_app/views/service_provider/rating_screen.dart';
 
 import '../../app_constants/animations.dart';
-import '../../app_constants/app_icon.dart';
 import '../../app_constants/app_sizes.dart';
 import '../../app_constants/color_constants.dart';
 import '../../constant_widget/constant_widgets.dart';
@@ -62,7 +62,22 @@ class ServiceProviderScreen extends GetView<ServiceProviderController> {
                               controller.getServiceOne.value!.serviceprovider
                                   .user.profileimage,
                           errorWidget: (context, e, b) {
-                            return Image.asset(AppIcons.personIcon);
+                            return Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: primaryColor,
+                                  width: 2,
+                                ),
+                              ),
+                              child: const Center(
+                                child: FaIcon(
+                                  FontAwesomeIcons.user,
+                                  size: 35,
+                                  color: primaryColor,
+                                ),
+                              ),
+                            );
                           },
                         ),
                       ),
@@ -122,13 +137,13 @@ class ServiceProviderScreen extends GetView<ServiceProviderController> {
                                           Get.toNamed(kServiceRequestScreen);
                                         },
                                         title: "Service Requests",
-                                        image: AppIcons.tenant),
+                                        icon: FontAwesomeIcons.clipboardList),
                                     dashboardContainer(
                                         onTap: () {
                                           Get.toNamed(kCalendarScreen);
                                         },
                                         title: "Job calendar",
-                                        image: AppIcons.calendar)
+                                        icon: FontAwesomeIcons.calendar)
                                   ]),
                                   h20,
                                   rowMainAxis(children: [
@@ -137,14 +152,14 @@ class ServiceProviderScreen extends GetView<ServiceProviderController> {
                                           Get.toNamed(kRatingScreen);
                                         },
                                         title: "Rating & reviews",
-                                        image: AppIcons.rating),
+                                        icon: FontAwesomeIcons.star),
                                     dashboardContainer(
                                       onTap: () {
                                         Get.to(() => const ChatListing(),
                                             transition: routeTransition);
                                       },
                                       title: "Messages",
-                                      image: AppIcons.messages,
+                                      icon: FontAwesomeIcons.solidComments,
                                     ),
                                   ]),
                                   h20,
@@ -154,13 +169,13 @@ class ServiceProviderScreen extends GetView<ServiceProviderController> {
                                           Get.toNamed(kMyServicesScreen);
                                         },
                                         title: "My services",
-                                        image: AppIcons.myServices),
+                                        icon: FontAwesomeIcons.briefcase),
                                     dashboardContainer(
                                         onTap: () {
                                           Get.toNamed(kAddServiceScreen);
                                         },
                                         title: "Add service",
-                                        image: AppIcons.addServices),
+                                        icon: FontAwesomeIcons.plus),
                                   ]),
                                   h20,
                                   rowMainAxis(children: [
@@ -169,7 +184,7 @@ class ServiceProviderScreen extends GetView<ServiceProviderController> {
                                           Get.toNamed(kMyFavouriteScreen);
                                         },
                                         title: "My Favourites",
-                                        image: AppIcons.favourite),
+                                        icon: FontAwesomeIcons.heart),
                                   ]),
                                 ],
                               ),

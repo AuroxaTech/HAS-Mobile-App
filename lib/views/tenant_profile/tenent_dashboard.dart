@@ -1,12 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:property_app/constant_widget/delete_widgets.dart';
 import 'package:property_app/constant_widget/drawer.dart';
 import 'package:property_app/controllers/tenant_controllers/tenant_dashboard_controller.dart';
 import 'package:property_app/models/stat_models/tenant_stat.dart';
+
 import '../../app_constants/animations.dart';
-import '../../app_constants/app_icon.dart';
 import '../../app_constants/app_sizes.dart';
 import '../../app_constants/color_constants.dart';
 import '../../constant_widget/constant_widgets.dart';
@@ -45,21 +46,33 @@ class TenantDashboard extends GetView<TenantDashboardController> {
                       children: [
                         ListTile(
                           leading: CircleAvatar(
-                            radius:
-                                30, // This sets the size of the CircleAvatar
-                            backgroundColor:
-                                Colors.transparent, // Optional background color
+                            radius: 30,
+                            backgroundColor: Colors.transparent,
                             child: ClipOval(
                               child: CachedNetworkImage(
                                 fit: BoxFit.cover,
-                                width:
-                                    60, // Ensure these dimensions are sufficient to fill the CircleAvatar without stretching
+                                width: 60,
                                 height: 60,
                                 imageUrl: AppUrls.profileImageBaseUrl +
                                     controller.getTenant.value!.tenant.user
                                         .profileimage,
                                 errorWidget: (context, e, b) {
-                                  return Image.asset(AppIcons.personIcon);
+                                  return Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: primaryColor,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    child: const Center(
+                                      child: FaIcon(
+                                        FontAwesomeIcons.user,
+                                        size: 35,
+                                        color: primaryColor,
+                                      ),
+                                    ),
+                                  );
                                 },
                               ),
                             ),
@@ -98,53 +111,50 @@ class TenantDashboard extends GetView<TenantDashboardController> {
                                       children: [
                                         rowMainAxis(children: [
                                           dashboardContainer(
-                                              onTap: () {
-                                                Get.toNamed(
-                                                    kTenantContractScreen);
-                                              },
-                                              title: "Contracts",
-                                              image: AppIcons.tenant),
+                                            onTap: () => Get.toNamed(
+                                                kTenantContractScreen),
+                                            title: "Contracts",
+                                            icon: FontAwesomeIcons.fileContract,
+                                          ),
                                           dashboardContainer(
-                                              onTap: () {
-                                                Get.toNamed(
-                                                    kCurrentRentedScreen);
-                                              },
-                                              title: "Current rented ",
-                                              image: AppIcons.rentHouse),
+                                            onTap: () => Get.toNamed(
+                                                kCurrentRentedScreen),
+                                            title: "Current Rented",
+                                            icon: FontAwesomeIcons.buildingUser,
+                                          ),
                                         ]),
                                         h20,
                                         rowMainAxis(children: [
                                           dashboardContainer(
-                                              title: "Messages",
-                                              image: AppIcons.messages,
-                                              onTap: () {
-                                                Get.to(
-                                                    () => const ChatListing(),
-                                                    transition:
-                                                        routeTransition);
-                                              }),
+                                            title: "Messages",
+                                            icon:
+                                                FontAwesomeIcons.solidComments,
+                                            onTap: () => Get.to(
+                                                () => const ChatListing(),
+                                                transition: routeTransition),
+                                          ),
                                           dashboardContainer(
-                                              onTap: () {
-                                                Get.toNamed(
-                                                    kMyServiceRequestScreen);
-                                              },
-                                              title: "Request service",
-                                              image: AppIcons.service),
+                                            onTap: () => Get.toNamed(
+                                                kMyServiceRequestScreen),
+                                            title: "Request Service",
+                                            icon: FontAwesomeIcons
+                                                .screwdriverWrench,
+                                          ),
                                         ]),
                                         h20,
                                         rowMainAxis(children: [
                                           dashboardContainer(
-                                              onTap: () {
-                                                Get.toNamed(kJobScreen);
-                                              },
-                                              title: "Jobs",
-                                              image: AppIcons.job),
+                                            onTap: () =>
+                                                Get.toNamed(kJobScreen),
+                                            title: "Jobs",
+                                            icon: FontAwesomeIcons.briefcase,
+                                          ),
                                           dashboardContainer(
-                                              onTap: () {
-                                                Get.toNamed(kMyFavouriteScreen);
-                                              },
-                                              title: "MY Favourite",
-                                              image: AppIcons.favourite),
+                                            onTap: () =>
+                                                Get.toNamed(kMyFavouriteScreen),
+                                            title: "My Favourite",
+                                            icon: FontAwesomeIcons.solidHeart,
+                                          ),
                                         ]),
                                         h20,
                                       ],

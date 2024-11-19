@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:property_app/constant_widget/constant_widgets.dart';
 import 'package:property_app/custom_widgets/custom_text_field.dart';
 import 'package:property_app/utils/api_urls.dart';
-import '../../app_constants/app_icon.dart';
+
 import '../../app_constants/app_sizes.dart';
 import '../../app_constants/color_constants.dart';
 import '../../controllers/services_provider_controller/ew_service_request_controller.dart';
@@ -31,7 +32,8 @@ class NewServiceRequestScreen
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   circleAvatar(
-                      text: "Service Requests", image: AppIcons.tenant),
+                      text: "Service Requests",
+                      icon: FontAwesomeIcons.clipboardList),
                   h15,
                   ListTile(
                     leading: CircleAvatar(

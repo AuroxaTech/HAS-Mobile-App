@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:property_app/app_constants/animations.dart';
 import 'package:property_app/app_constants/color_constants.dart';
 import 'package:property_app/constant_widget/constant_widgets.dart';
 
-import '../../app_constants/app_icon.dart';
 import '../../app_constants/app_sizes.dart';
 import '../../controllers/services_provider_controller/create_offer_controller.dart';
 import '../../custom_widgets/custom_button.dart';
 import '../../custom_widgets/custom_text_field.dart';
+
 class CreateOfferScreen extends GetView<CreateOfferController> {
   const CreateOfferScreen({Key? key}) : super(key: key);
 
@@ -26,28 +27,28 @@ class CreateOfferScreen extends GetView<CreateOfferController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 circleAvatar(
-                    text: "Create offer",
-                  image: AppIcons.createOffer,
+                  text: "Create offer",
+                  icon: FontAwesomeIcons.clipboardList,
                 ),
                 h10,
                 labelText("Choose Services : "),
                 h5,
                 CustomDropDown(
                   value: controller.cleanService.value,
-                  onChange: (value){
-                    controller.cleanService.value  = value;
-                  },items: ['House clean service',  ]
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    onTap: (){},
-                    value: value,
-                    child: customText(
-                      text: value,
-                        fontSize: 16,
-                        color: hintColor
-                    ),
-                  );
-                }).toList(),),
+                  onChange: (value) {
+                    controller.cleanService.value = value;
+                  },
+                  items: [
+                    'House clean service',
+                  ].map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      onTap: () {},
+                      value: value,
+                      child: customText(
+                          text: value, fontSize: 16, color: hintColor),
+                    );
+                  }).toList(),
+                ),
                 h10,
                 labelText("Description :"),
                 h5,
@@ -69,56 +70,59 @@ class CreateOfferScreen extends GetView<CreateOfferController> {
                   children: [
                     Expanded(
                       child: Column(
-                        crossAxisAlignment : CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           labelText("Currency:"),
                           h5,
                           CustomDropDown(
                             value: controller.currency.value,
-                            onChange: (value){
-                              controller.currency.value  = value;
-                            },items: ['\$',  ]
-                              .map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              onTap: (){},
-                              value: value,
-                              child: customText(
-                                text: value,
-                                  fontSize: 16,
-                                  color: hintColor
-                              ),
-                            );
-                          }).toList(),),
+                            onChange: (value) {
+                              controller.currency.value = value;
+                            },
+                            items: [
+                              '\$',
+                            ].map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                onTap: () {},
+                                value: value,
+                                child: customText(
+                                    text: value,
+                                    fontSize: 16,
+                                    color: hintColor),
+                              );
+                            }).toList(),
+                          ),
                         ],
                       ),
                     ),
                     w15,
                     Expanded(
                       child: Column(
-                        crossAxisAlignment : CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           labelText("Pricing"),
                           h5,
                           CustomDropDown(
                             value: controller.pricing.value,
-                            onChange: (value){
-                              controller.pricing.value  = value;
-                            },items: ['2500',  ]
-                              .map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              onTap: (){},
-                              value: value,
-                              child: customText(
-                                text: value,
-                                  fontSize: 16,
-                                  color: hintColor
-                              ),
-                            );
-                          }).toList(),),
+                            onChange: (value) {
+                              controller.pricing.value = value;
+                            },
+                            items: [
+                              '2500',
+                            ].map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                onTap: () {},
+                                value: value,
+                                child: customText(
+                                    text: value,
+                                    fontSize: 16,
+                                    color: hintColor),
+                              );
+                            }).toList(),
+                          ),
                         ],
                       ),
                     ),
-
                   ],
                 ),
                 h10,
@@ -126,77 +130,77 @@ class CreateOfferScreen extends GetView<CreateOfferController> {
                 h5,
                 CustomDropDown(
                   value: controller.offerPricing.value,
-                  onChange: (value){
-                    controller.offerPricing.value  = value;
-                  },items: ['\$2000',  ]
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    onTap: (){},
-                    value: value,
-                    child: customText(
-                      text: value,
-                        fontSize: 16,
-                        color: hintColor
-                    ),
-                  );
-                }).toList(),),
+                  onChange: (value) {
+                    controller.offerPricing.value = value;
+                  },
+                  items: [
+                    '\$2000',
+                  ].map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      onTap: () {},
+                      value: value,
+                      child: customText(
+                          text: value, fontSize: 16, color: hintColor),
+                    );
+                  }).toList(),
+                ),
                 h10,
                 labelText("Service Duration :"),
                 h5,
                 CustomDropDown(
                   value: controller.serviceDuration.value,
-                  onChange: (value){
-                    controller.serviceDuration.value  = value;
-                  },items: ['hours',  ]
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    onTap: (){},
-                    value: value,
-                    child: customText(
-                      text: value,
-                        fontSize: 16,
-                        color: hintColor
-                    ),
-                  );
-                }).toList(),),
+                  onChange: (value) {
+                    controller.serviceDuration.value = value;
+                  },
+                  items: [
+                    'hours',
+                  ].map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      onTap: () {},
+                      value: value,
+                      child: customText(
+                          text: value, fontSize: 16, color: hintColor),
+                    );
+                  }).toList(),
+                ),
                 h10,
                 labelText("Offer Validity :"),
                 h5,
                 CustomDropDown(
                   value: controller.offerValid.value,
-                  onChange: (value){
-                    controller.offerValid.value  = value;
-                  },items: ['Days',  ]
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    onTap: (){},
-                    value: value,
-                    child: customText(
-                      text: value,
-                        fontSize: 16,
-                        color: hintColor
-                    ),
-                  );
-                }).toList(),),
+                  onChange: (value) {
+                    controller.offerValid.value = value;
+                  },
+                  items: [
+                    'Days',
+                  ].map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      onTap: () {},
+                      value: value,
+                      child: customText(
+                          text: value, fontSize: 16, color: hintColor),
+                    );
+                  }).toList(),
+                ),
                 h10,
                 labelText("Select buyer"),
                 h5,
                 CustomDropDown(
                   value: controller.selectBuyer.value,
-                  onChange: (value){
-                    controller.selectBuyer.value  = value;
-                  },items: ['James',  ]
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    onTap: (){},
-                    value: value,
-                    child: customText(
-                      text: value,
-                        fontSize: 16,
-                        color: hintColor
-                    ),
-                  );
-                }).toList(),),
+                  onChange: (value) {
+                    controller.selectBuyer.value = value;
+                  },
+                  items: [
+                    'James',
+                  ].map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      onTap: () {},
+                      value: value,
+                      child: customText(
+                          text: value, fontSize: 16, color: hintColor),
+                    );
+                  }).toList(),
+                ),
                 h30,
                 Row(
                   children: [
@@ -224,12 +228,12 @@ class CreateOfferScreen extends GetView<CreateOfferController> {
       ),
     );
   }
-  Widget labelText(String text){
-   return customText(
+
+  Widget labelText(String text) {
+    return customText(
       text: text,
       fontSize: 16,
       color: greyColor,
     );
-
   }
 }

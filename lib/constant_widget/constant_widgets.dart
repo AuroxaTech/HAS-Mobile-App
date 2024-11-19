@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
@@ -584,37 +585,45 @@ Widget labelText(text) {
       text: text, fontSize: 16, fontWeight: FontWeight.w500, color: blackColor);
 }
 
-Widget dashboardContainer(
-    {String? title, String? image, VoidCallback? onTap, EdgeInsets? padding}) {
-  return InkWell(
+Widget dashboardContainer({
+  required String title,
+  required IconData icon,
+  required VoidCallback onTap,
+}) {
+  return GestureDetector(
     onTap: onTap,
-    hoverColor: Colors.transparent,
-    focusColor: Colors.transparent,
-    highlightColor: Colors.transparent,
     child: Container(
-      height: 120,
-      width: 120,
+      height: 140,
+      width: 140,
       decoration: BoxDecoration(
-          color: whiteColor,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: borderColor)),
-      padding: padding ??
-          const EdgeInsets.only(left: 18, right: 18, top: 10, bottom: 5),
-      child: Column(
-        children: [
-          Container(
-            width: 68,
-            height: 64,
-            decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage(image!), fit: BoxFit.fill)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 10,
+            offset: const Offset(0, 1),
           ),
-          h5,
-          customText(
-              textAlign: TextAlign.center,
-              text: title,
-              fontSize: 9,
-              color: blackColor),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          FaIcon(
+            icon,
+            size: 32, // Slightly smaller size for FA icons
+            color: primaryColor,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ],
       ),
     ),
@@ -1757,7 +1766,43 @@ Widget jobWidget(context,
   );
 }
 
-Widget circleAvatar({String? text, String? image}) {
+class addServiceWidget extends StatelessWidget {
+  const addServiceWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 120,
+      height: 120,
+      decoration: BoxDecoration(
+          shape: BoxShape.circle, border: Border.all(color: greyColor)),
+      child: const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: EdgeInsets.all(5),
+              child: FaIcon(
+                FontAwesomeIcons.toolbox,
+                color: Colors.black54,
+                size: 38,
+              ),
+            ),
+            Text(
+              'Add Service',
+              style:
+                  TextStyle(color: Colors.black54, fontWeight: FontWeight.w600),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+Widget circleAvatar({String? text, IconData? icon}) {
   return Center(
     child: Container(
       decoration: BoxDecoration(
@@ -1767,7 +1812,10 @@ Widget circleAvatar({String? text, String? image}) {
       padding: const EdgeInsets.all(30),
       child: Column(
         children: [
-          Image.asset(image!),
+          Icon(
+            icon!,
+            size: 50,
+          ),
           h10,
           customText(text: text, fontSize: 12),
         ],

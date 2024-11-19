@@ -8,7 +8,6 @@ import 'package:property_app/controllers/services_provider_controller/my_service
 import 'package:property_app/utils/api_urls.dart';
 
 import '../../app_constants/animations.dart';
-import '../../app_constants/app_icon.dart';
 import '../../app_constants/app_sizes.dart';
 import '../../app_constants/color_constants.dart';
 import '../../constant_widget/constant_widgets.dart';
@@ -79,8 +78,9 @@ class MyServiceEditScreen extends GetView<MyServicesDetailScreenController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    circleAvatar(
-                        text: "Add Service", image: AppIcons.addServices),
+                    const Center(
+                      child: addServiceWidget(),
+                    ),
                     h15,
                     customText(
                       text: "Services Name : ",

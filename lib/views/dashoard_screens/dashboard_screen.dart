@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:property_app/app_constants/animations.dart';
-import 'package:property_app/app_constants/app_icon.dart';
 import 'package:property_app/app_constants/app_sizes.dart';
 import 'package:property_app/app_constants/color_constants.dart';
 import 'package:property_app/constant_widget/constant_widgets.dart';
@@ -55,7 +55,22 @@ class DashBoardScreen extends GetView<DashboardController> {
                                     controller.getLandlord.value!.landlord.user!
                                         .profileimage,
                                 errorWidget: (context, e, b) {
-                                  return Image.asset(AppIcons.personIcon);
+                                  return Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: primaryColor,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    child: const Center(
+                                      child: FaIcon(
+                                        FontAwesomeIcons.user,
+                                        size: 35,
+                                        color: primaryColor,
+                                      ),
+                                    ),
+                                  );
                                 },
                               ),
                             ),
@@ -88,68 +103,75 @@ class DashBoardScreen extends GetView<DashboardController> {
                                   child: Padding(
                                     padding: const EdgeInsets.only(
                                         left: 40, right: 40, top: 30),
-                                    child: Column(
-                                      children: [
-                                        rowMainAxis(children: [
-                                          dashboardContainer(
-                                              onTap: () {
-                                                Get.toNamed(kMyProperties);
-                                              },
-                                              title: "My properties",
-                                              image: AppIcons.myProperty),
-                                          dashboardContainer(
-                                              onTap: () {
-                                                Get.toNamed(kAddProperties);
-                                              },
-                                              title: "Add property",
-                                              image: AppIcons.addProperty)
-                                        ]),
-                                        h20,
-                                        rowMainAxis(children: [
-                                          dashboardContainer(
-                                              title: "Messages",
-                                              image: AppIcons.messages,
-                                              onTap: () {
-                                                Get.to(
-                                                    () => const ChatListing(),
-                                                    transition:
-                                                        routeTransition);
-                                              }),
-                                          dashboardContainer(
-                                              title: "Tenant",
-                                              image: AppIcons.tenant,
-                                              onTap: () {
-                                                Get.toNamed(
-                                                    kContractStatusScreen);
-                                              })
-                                        ]),
-                                        h20,
-                                        rowMainAxis(children: [
-                                          dashboardContainer(
-                                              onTap: () {
-                                                Get.toNamed(
-                                                    kMyServiceRequestScreen);
-                                              },
-                                              title: "Request service",
-                                              image: AppIcons.service),
-                                          dashboardContainer(
-                                              onTap: () {
-                                                Get.toNamed(kJobScreen);
-                                              },
-                                              title: "Jobs",
-                                              image: AppIcons.job),
-                                        ]),
-                                        h20,
-                                        rowMainAxis(children: [
-                                          dashboardContainer(
-                                              onTap: () {
-                                                Get.toNamed(kMyFavouriteScreen);
-                                              },
-                                              title: "MY Favourite",
-                                              image: AppIcons.favourite),
-                                          w80,
-                                        ]),
-                                      ],
+                                    child: SingleChildScrollView(
+                                      child: Column(
+                                        children: [
+                                          rowMainAxis(children: [
+                                            dashboardContainer(
+                                                onTap: () {
+                                                  Get.toNamed(kMyProperties);
+                                                },
+                                                title: "My properties",
+                                                icon:
+                                                    FontAwesomeIcons.building),
+                                            dashboardContainer(
+                                                onTap: () {
+                                                  Get.toNamed(kAddProperties);
+                                                },
+                                                title: "Add property",
+                                                icon:
+                                                    FontAwesomeIcons.plusSquare)
+                                          ]),
+                                          h20,
+                                          rowMainAxis(children: [
+                                            dashboardContainer(
+                                                title: "Messages",
+                                                icon: FontAwesomeIcons
+                                                    .solidComments,
+                                                onTap: () {
+                                                  Get.to(
+                                                      () => const ChatListing(),
+                                                      transition:
+                                                          routeTransition);
+                                                }),
+                                            dashboardContainer(
+                                                title: "Tenant",
+                                                icon: FontAwesomeIcons.users,
+                                                onTap: () {
+                                                  Get.toNamed(
+                                                      kContractStatusScreen);
+                                                })
+                                          ]),
+                                          h20,
+                                          rowMainAxis(children: [
+                                            dashboardContainer(
+                                                onTap: () {
+                                                  Get.toNamed(
+                                                      kMyServiceRequestScreen);
+                                                },
+                                                title: "Request service",
+                                                icon: FontAwesomeIcons.wrench),
+                                            dashboardContainer(
+                                                onTap: () {
+                                                  Get.toNamed(kJobScreen);
+                                                },
+                                                title: "Jobs",
+                                                icon:
+                                                    FontAwesomeIcons.briefcase),
+                                          ]),
+                                          h20,
+                                          rowMainAxis(children: [
+                                            dashboardContainer(
+                                                onTap: () {
+                                                  Get.toNamed(
+                                                      kMyFavouriteScreen);
+                                                },
+                                                title: "MY Favourite",
+                                                icon: FontAwesomeIcons.heart),
+                                            w80,
+                                          ]),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),

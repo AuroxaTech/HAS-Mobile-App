@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:property_app/app_constants/app_icon.dart';
 import 'package:property_app/app_constants/app_sizes.dart';
 import 'package:property_app/app_constants/color_constants.dart';
 import 'package:property_app/constant_widget/constant_widgets.dart';
@@ -74,8 +74,9 @@ class AddServiceScreen extends GetView<AddServiceController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    circleAvatar(
-                        text: "Add Service", image: AppIcons.addServices),
+                    const Center(
+                      child: addServiceWidget(),
+                    ),
                     h15,
                     customText(
                       text: "Services Name : ",
@@ -259,27 +260,20 @@ class AddServiceScreen extends GetView<AddServiceController> {
                                 controller.pickImages();
                               },
                               child: Container(
-                                  width: 90,
-                                  height: 90,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.rectangle,
-                                    border: Border.all(color: blackColor),
-                                    borderRadius: BorderRadius.circular(15),
+                                width: 80,
+                                height: 80,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  gradient: gradient(),
+                                ),
+                                child: const Center(
+                                  child: FaIcon(
+                                    FontAwesomeIcons.toolbox,
+                                    color: Colors.white,
+                                    size: 30,
                                   ),
-                                  child: Center(
-                                      child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Icon(
-                                        Icons.add,
-                                        size: 25,
-                                      ),
-                                      customText(
-                                          text: "Add",
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 22),
-                                    ],
-                                  ))),
+                                ),
+                              ),
                             ),
                           ],
                         ),
