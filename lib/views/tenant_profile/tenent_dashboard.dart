@@ -106,7 +106,7 @@ class TenantDashboard extends GetView<TenantDashboardController> {
                                   ),
                                   child: Padding(
                                     padding: const EdgeInsets.only(
-                                        left: 20, right: 20, top: 30),
+                                        left: 30, right: 30, top: 30),
                                     child: SingleChildScrollView(
                                       child: Column(
                                         children: [
@@ -115,21 +115,23 @@ class TenantDashboard extends GetView<TenantDashboardController> {
                                               onTap: () => Get.toNamed(
                                                   kTenantContractScreen),
                                               title: "Contracts",
-                                              icon: FontAwesomeIcons.fileContract,
+                                              icon:
+                                                  FontAwesomeIcons.fileContract,
                                             ),
                                             dashboardContainer(
                                               onTap: () => Get.toNamed(
                                                   kCurrentRentedScreen),
                                               title: "Current Rented",
-                                              icon: FontAwesomeIcons.buildingUser,
+                                              icon:
+                                                  FontAwesomeIcons.buildingUser,
                                             ),
                                           ]),
                                           h20,
                                           rowMainAxis(children: [
                                             dashboardContainer(
                                               title: "Messages",
-                                              icon:
-                                                  FontAwesomeIcons.solidComments,
+                                              icon: FontAwesomeIcons
+                                                  .solidComments,
                                               onTap: () => Get.to(
                                                   () => const ChatListing(),
                                                   transition: routeTransition),
@@ -151,8 +153,8 @@ class TenantDashboard extends GetView<TenantDashboardController> {
                                               icon: FontAwesomeIcons.briefcase,
                                             ),
                                             dashboardContainer(
-                                              onTap: () =>
-                                                  Get.toNamed(kMyFavouriteScreen),
+                                              onTap: () => Get.toNamed(
+                                                  kMyFavouriteScreen),
                                               title: "My Favourite",
                                               icon: FontAwesomeIcons.solidHeart,
                                             ),
