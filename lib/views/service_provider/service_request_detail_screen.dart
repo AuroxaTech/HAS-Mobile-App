@@ -392,7 +392,7 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                 //     },
                                 //   ),
                                 // ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 10,
                                 ),
                                 Padding(
@@ -403,7 +403,9 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                         child: CustomButton(
                                           onTap: controller.getServiceRequestOne
                                                       .value!.approved ==
-                                                  "1"
+                                                  1 || controller.getServiceRequestOne
+                                              .value!.decline ==
+                                              1
                                               ? null
                                               : () {
                                                   controller
@@ -415,8 +417,7 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                                           userId: controller
                                                               .getServiceRequestOne
                                                               .value!
-                                                              .user
-                                                              .id
+                                                              .userId
                                                               .toString(),
                                                           providerId: controller
                                                               .getServiceRequestOne
@@ -439,7 +440,7 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                                           .getServiceRequestOne
                                                           .value!
                                                           .approved ==
-                                                      "1"
+                                                      1
                                                   ? Color(0xff14C034)
                                                       .withOpacity(0.3)
                                                   : Color(0xff14C034)),
@@ -448,31 +449,39 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                       w10,
                                       Expanded(
                                         child: CustomButton(
-                                          onTap: () {
-                                            animatedDialog(context,
-                                                title: "Decline Request",
-                                                subTitle:
-                                                    "Are you sure to decline this request",
-                                                yesButtonText: "Decline",
-                                                yesTap: () {
-                                              controller
-                                                  .declineServiceRequest(
-                                                      requestId: controller
-                                                          .getServiceRequestOne
-                                                          .value!
-                                                          .id)
-                                                  .then((value) {
-                                                controller.getServiceRequest(
-                                                    id: controller.id.value);
-                                              });
-                                            });
-                                          },
+                                          onTap: controller.getServiceRequestOne
+                                                      .value!.decline ==
+                                                  1 || controller.getServiceRequestOne
+                                              .value!.approved ==
+                                              1
+                                              ? null
+                                              : () {
+                                                  animatedDialog(context,
+                                                      title: "Decline Request",
+                                                      subTitle:
+                                                          "Are you sure to decline this request",
+                                                      yesButtonText: "Decline",
+                                                      yesTap: () {
+                                                    controller
+                                                        .declineServiceRequest(
+                                                            requestId: controller
+                                                                .getServiceRequestOne
+                                                                .value!
+                                                                .id)
+                                                        .then((value) {
+                                                      controller
+                                                          .getServiceRequest(
+                                                              id: controller
+                                                                  .id.value);
+                                                    });
+                                                  });
+                                                },
                                           gradientColor: redGradient(
                                               color: controller
                                                           .getServiceRequestOne
                                                           .value!
                                                           .decline ==
-                                                      "1"
+                                                      1
                                                   ? redColor.withOpacity(0.3)
                                                   : redColor),
                                           height: screenHeight(context) * 0.04,
@@ -484,15 +493,38 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                       Expanded(
                                         child: CustomButton(
                                           onTap: () {
-                                            createConversation(
-                                                controller.getServiceRequestOne
-                                                    .value!.user.fullname,
-                                                controller.getServiceRequestOne
-                                                    .value!.user.profileimage,
-                                                controller.getServiceRequestOne
-                                                    .value!.user.id
-                                                    .toString(),
-                                                context);
+                                            if (controller.getServiceRequestOne
+                                                    .value!.decline ==
+                                                1) {
+                                              Get.snackbar(
+                                                'This request has been declined. No chats available',
+                                                '',
+                                                backgroundColor:
+                                                    redColor.withOpacity(0.8),
+                                                colorText: Colors.white,
+                                                snackPosition:
+                                                    SnackPosition.BOTTOM,
+                                              );
+                                            } else {
+                                              createConversation(
+                                                  controller
+                                                      .getServiceRequestOne
+                                                      .value!
+                                                      .user
+                                                      .fullname,
+                                                  controller
+                                                      .getServiceRequestOne
+                                                      .value!
+                                                      .user
+                                                      .profileimage,
+                                                  controller
+                                                      .getServiceRequestOne
+                                                      .value!
+                                                      .user
+                                                      .id
+                                                      .toString(),
+                                                  context);
+                                            }
                                           },
                                           height: screenHeight(context) * 0.04,
                                           text: "Contact",

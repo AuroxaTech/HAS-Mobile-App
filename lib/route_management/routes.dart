@@ -139,8 +139,9 @@ class Routes {
           transition: routeTransition),
       GetPage(
           name: kCalendarScreen,
-          page: () => const CalendarScreen(
-                isBack: true,
+          page: () =>  CalendarScreen(
+                isBack: false,
+            back: true,
               ),
           binding: ScreenBindings(),
           transition: routeTransition),

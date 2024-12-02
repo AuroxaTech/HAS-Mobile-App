@@ -45,7 +45,7 @@ class MyServicesDetailScreen extends GetView<MyServicesDetailScreenController> {
                             width: double.infinity,
                             height: screenHeight(context) * 0.5,
                             imageUrl: AppUrls.mediaImages + image,
-                            fit: BoxFit.cover,
+                            fit: BoxFit.fill,
                             errorWidget: (context, e, b) {
                               return Image.asset(AppIcons.appLogo);
                             },

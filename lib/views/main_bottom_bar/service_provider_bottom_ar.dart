@@ -56,8 +56,9 @@ class _ServiceProviderBottomBarState extends State<ServiceProviderBottomBar> {
             //  AllPropertyScreen(),
             const PropertyTabsScreen(),
             const ChatListing(),
-            const CalendarScreen(
+             CalendarScreen(
               isBack: false,
+               back: false,
             ),
             ServiceProviderScreen(),
             //  Center(child: Text("People Settings")),

@@ -135,7 +135,6 @@ class NewServiceRequestScreen
                   CustomTextField(
                     hintText: "Postal Code",
                     controller: controller.postalCodeController,
-                    keyboaredtype: TextInputType.number,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return "Postal Code is required";
@@ -279,8 +278,11 @@ class NewServiceRequestScreen
                                     lng: 77.3843,
                                     propertyType:
                                         controller.propertyTypeIndex.value,
-                                    date:
-                                        controller.selectedWeekdayRange.value +
+                                    date: controller.selectedWeekdayRange.value ==
+                                        'Request Now'
+                                        ?controller.selectedWeekdayRange.value
+                                        :
+                                    controller.selectedWeekdayRange.value +
                                             controller.startTime.value
                                                 .format(context),
                                     time: controller.endTime.value

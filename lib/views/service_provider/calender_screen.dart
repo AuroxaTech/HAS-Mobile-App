@@ -19,7 +19,8 @@ const int kLastYear = 2030;
 
 class CalendarScreen extends GetView<CalendarScreenController> {
   final bool isBack;
-  const CalendarScreen({Key? key, required this.isBack}) : super(key: key);
+   bool? back;
+   CalendarScreen({Key? key, required this.isBack, this.back = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -29,12 +30,12 @@ class CalendarScreen extends GetView<CalendarScreenController> {
       appBar: homeAppBar(
         context,
         text: "Calendar",
-        isBack: true,
+        isBack: isBack,
         menuOnTap: () => controller.key.currentState!.openDrawer(),
         backTap: () {
           Get.offAll(const ServiceProviderBottomBar());
         },
-        back: false,
+        back: back,
       ),
       drawer: providerDrawer(
         context,

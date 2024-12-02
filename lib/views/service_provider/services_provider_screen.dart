@@ -128,7 +128,7 @@ class ServiceProviderScreen extends GetView<ServiceProviderController> {
                             ),
                             child: Padding(
                               padding: const EdgeInsets.only(
-                                  left: 40, right: 40, top: 30),
+                                  left: 35, right: 35, top: 30),
                               child: Column(
                                 children: [
                                   rowMainAxis(children: [

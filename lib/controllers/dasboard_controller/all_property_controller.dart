@@ -1,16 +1,11 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_rx/get_rx.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 import '../../models/propert_model/ladlord_property_model.dart';
 import '../../services/property_services/get_property_services.dart';
-import '../../utils/shared_preferences/preferences.dart';
 
-
-class AllPropertyController extends GetxController with GetTickerProviderStateMixin {
-
+class AllPropertyController extends GetxController {
   final sheet = GlobalKey();
   final controller = DraggableScrollableController();
   List<String> areaRange = [
@@ -36,9 +31,9 @@ class AllPropertyController extends GetxController with GetTickerProviderStateMi
     "6  1/2",
     "7",
     "7  1/2"
-  ] ;
+  ];
 
-  late TabController tabController;
+  // Removed TabController and vsync mixin
   RxInt selectedIndex = 0.obs;
 
   RxString selectedRange = "1 sq ft".obs;
@@ -60,16 +55,15 @@ class AllPropertyController extends GetxController with GetTickerProviderStateMi
     currentRange.value = values;
   }
 
-
   var selectedHome = <String, bool>{
     'House': false,
     'Flat': false,
     'Apartments': false,
-   // 'Lower Portion': false,
     'Farm House': false,
     'Room': false,
     'Penthouse': false,
   }.obs;
+
   var selectedPlots = <String, bool>{
     'Residential plot': false,
     'Commercial plot': false,
@@ -77,6 +71,7 @@ class AllPropertyController extends GetxController with GetTickerProviderStateMi
     'Industrial land': false,
     'Plot file': false,
   }.obs;
+
   var selectedCommercial = <String, bool>{
     'Office': false,
     'Shop': false,
@@ -128,21 +123,17 @@ class AllPropertyController extends GetxController with GetTickerProviderStateMi
   Rx<bool> isLoading = false.obs;
   RxList<Property> getLandLordPropertiesList = <Property>[].obs;
 
-
   @override
   void onInit() {
-    tabController = TabController(length: 2, vsync: this);
-    tabController.addListener(() {
-      selectedIndex.value = tabController.index;
-    });
+    super.onInit();
+    // Removed TabController initialization
     pagingController.addPageRequestListener((pageKey) {
       getProperties(pageKey);
     });
-   // getLandLordProperties();
-    super.onInit();
+    // getLandLordProperties();
   }
-  final PagingController<int, Property> pagingController = PagingController(firstPageKey: 1);
 
+  final PagingController<int, Property> pagingController = PagingController(firstPageKey: 1);
 
   Future<void> getProperties(int pageKey, [Map<String, dynamic>? filters]) async {
     try {
@@ -151,14 +142,13 @@ class AllPropertyController extends GetxController with GetTickerProviderStateMi
       // Include the filters in the API request
       var result = await propertyServices.getAllProperties(pageKey, filters: filters);
       isLoading.value = false;
-      if(filters != null){
+      if (filters != null) {
         print(filters);
       }
       if (result['status'] == true) {
         final List<Property> newItems = (result['data']['data'] as List)
             .map((json) => Property.fromJson(json))
             .toList();
-       // print(filters);
         final isLastPage = result['data']['current_page'] == result['data']['last_page'];
         if (isLastPage) {
           pagingController.appendLastPage(newItems);
@@ -183,58 +173,6 @@ class AllPropertyController extends GetxController with GetTickerProviderStateMi
       getProperties(pageKey, filters);
     });
   }
-
-  // Future<void> getProperties(int pageKey) async {
-  //   try {
-  //     isLoading.value = true;
-  //     var result = await propertyServices.getAllProperties(pageKey);
-  //     isLoading.value = false;
-  //
-  //     if (result['status'] == true) {
-  //       final List<Property> newItems = (result['data']['data'] as List)
-  //           .map((json) => Property.fromJson(json))
-  //           .toList();
-  //
-  //       final isLastPage = result['data']['current_page'] == result['data']['last_page'];
-  //
-  //       if (isLastPage) {
-  //         pagingController.appendLastPage(newItems);
-  //       } else {
-  //         final nextPageKey = pageKey + 1;
-  //         pagingController.appendPage(newItems, nextPageKey);
-  //       }
-  //     } else {
-  //       pagingController.error = Exception('Failed to fetch services');
-  //     }
-  //   } catch (error) {
-  //     isLoading.value = false;
-  //     print(error);
-  //
-  //     final errorMessage = error.toString();
-  //     pagingController.error = errorMessage;
-  //     rethrow;
-  //   }
-  // }
-// Future<void> getLandLordProperties() async {
-//   List<Property>  list  = <Property>[];
-//   print("we are in land lord property:");
-//   isLoading.value = true;
-//   //var uId = await Preferences.getUserID();
-//   var result = await propertyServices.getAllProperties(1);
-//   print(result);
-//   if(result["status"] == true){
-//  //   print("property result :${result["properties"]}");
-//     isLoading.value = false;
-//     for (var data in result['data']["data"]) {
-//       print("property List :: $data");
-//       list.add(Property.fromJson(data));
-//     }
-//     getLandLordPropertiesList.value = list;
-//   }else{
-//     isLoading.value = false;
-//   }
-// }
-
 
   void toggleFavorite1(int index, int propertyId) async {
     if (pagingController.itemList == null) return;
@@ -261,5 +199,4 @@ class AllPropertyController extends GetxController with GetTickerProviderStateMi
     // Force the UI to refresh and reflect the change
     pagingController.notifyListeners();
   }
-
 }

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -9,6 +10,8 @@ import 'package:property_app/route_management/constant_routes.dart';
 import '../../controllers/services_provider_controller/service_request_cotroller.dart';
 import '../../models/service_provider_model/service_request_model.dart';
 import '../../utils/api_urls.dart';
+import '../../utils/shared_preferences/preferences.dart';
+import '../chat_screens/chat_conversion_screen.dart';
 
 class ServiceRequestScreen extends GetView<ServiceRequestController> {
   const ServiceRequestScreen({Key? key}) : super(key: key);
@@ -18,7 +21,22 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
 
     return Scaffold(
       backgroundColor: whiteColor,
-      appBar: homeAppBar(context, text: "Service Requests"),
+      appBar: AppBar(
+        leading: Builder(builder: (context) {
+          return IconButton(
+              tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+              icon: const Icon(
+                Icons.arrow_back_ios_new_rounded,
+                size: 18,
+                color: backIconColor,
+              ),
+              onPressed: () {
+                 Navigator.pop(context);
+                //Scaffold.of(context).openDrawer(),
+              });
+        }),
+        title: headingText(text: "Service Requests", fontSize: 20),
+      ),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () async {
@@ -69,7 +87,25 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
                             status: item.description,
                             time: item.time,
                             date: item.date,
-                            acceptTap: item.approved == 1
+                            contactTap: () {
+                              if (item.decline == 1) {
+                                Get.snackbar(
+                                  'This request has been declined. No chats available',
+                                  '',
+                                  backgroundColor: redColor.withOpacity(0.8),
+                                  colorText: Colors.white,
+                                  snackPosition: SnackPosition.BOTTOM,
+                                );
+                              } else {
+                                createConversation(
+                                  item.user.fullname,
+                                  item.user.profileimage,
+                                  item.user.id.toString(),
+                                  context,
+                                );
+                              }
+                            },
+                            acceptTap: item.approved == 1 || item.decline == 1
                                 ? null
                                 : () {
                                     animatedDialog(context,
@@ -90,17 +126,18 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
                                   },
                             acceptColor: item.approved == 1
                                 ? const Color(0xff14C034).withOpacity(0.3)
-                                : Color(0xff14C034),
+                                : const Color(0xff14C034),
                             declineColor: item.decline == 1
                                 ? redColor.withOpacity(0.3)
                                 : redColor, onTap: () {
                           Get.toNamed(kServiceRequestDetailScreen,
                               arguments: item.id);
-                        }, detailTap: () {
+                        },
+                            detailTap: () {
                           Get.toNamed(kServiceRequestDetailScreen,
                               arguments: item.id);
                         },
-                            declineTap: item.decline == 1
+                            declineTap: item.decline == 1 || item.approved == 1
                                 ? null
                                 : () {
                                     animatedDialog(context,
@@ -127,5 +164,104 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
         ),
       ),
     );
+  }
+  createConversation(
+      String name, String profilePicture, String id, context) async {
+    try {
+      var userId = await Preferences.getUserID();
+      var userName = await Preferences.getUserName();
+
+      // Query Firestore to check if a conversation already exists
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('conversationListing')
+          .where('user1', isEqualTo: userId.toString())
+          .where('user2', isEqualTo: id)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        print("EXIST");
+        // Conversation already exists, navigate to chat screen
+        DocumentSnapshot conversationSnapshot = querySnapshot.docs.first;
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ChatScreen1(
+                  group: false,
+                  image: profilePicture,
+                  name: name,
+                  data: conversationSnapshot,
+                  id: id.toString(),
+                  userId: userId.toString(),
+                )));
+        // Navigator.pushAndRemoveUntil(
+        //   context,
+        //   MaterialPageRoute(
+        //       builder: (context) => ChatScreen1(
+        //           group: false,
+        //           image: profilePicture,
+        //           name: name,
+        //           data: conversationSnapshot)),
+        //       (Route<dynamic> route) => false,
+        // );
+      } else {
+        print("Not EXIST");
+        // Conversation doesn't exist, create new conversation
+        Map<String, dynamic> conversationData = {
+          'group': false,
+          'profilePictureUrl': profilePicture,
+          "members": [
+            {
+              'userId': userId.toString(),
+              'userName': userName,
+              'profilePictureUrl': id == userId.toString()
+                  ? profilePicture
+                  : await Preferences.getToken(),
+            },
+            {
+              'userId': id,
+              'userName': name,
+              'profilePictureUrl': profilePicture
+            },
+          ],
+          "created": DateTime.now(),
+          "user1": userId.toString(),
+          "user2": id,
+          "user": [userId.toString(), id],
+          "lastMessage": {
+            "message": "",
+            "time": null,
+            "seen": false,
+          },
+        };
+        DocumentReference conversationRef = await FirebaseFirestore.instance
+            .collection('conversationListing')
+            .add(conversationData);
+        DocumentSnapshot conversationSnapshot = await conversationRef.get();
+        // Navigator.pushAndRemoveUntil(
+        //   context,
+        //   MaterialPageRoute(
+        //       builder: (context) => ChatScreen1(
+        //           group: false,
+        //           image: profilePicture,
+        //           name: name,
+        //           data: conversationSnapshot)),
+        //       (Route<dynamic> route) => false,
+        // );
+
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ChatScreen1(
+                  group: false,
+                  image: profilePicture,
+                  name: name,
+                  data: conversationSnapshot,
+                  id: id.toString(),
+                  userId: userId.toString(),
+                )));
+      }
+    } catch (e) {
+      print('Error creating or navigating to conversation: $e');
+    }
   }
 }

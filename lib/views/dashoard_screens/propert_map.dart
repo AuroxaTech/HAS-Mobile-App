@@ -253,7 +253,7 @@ class _PropertyMapState extends State<PropertyMap> {
     return Scaffold(
       body: Obx(() => GoogleMap(
         myLocationEnabled: true,
-        mapType: MapType.normal,
+        mapType: MapType.hybrid,
         initialCameraPosition: CameraPosition(
           target: currentLatitude != null && currentLongitude != null
               ? LatLng(currentLatitude!, currentLongitude!)

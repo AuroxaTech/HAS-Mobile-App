@@ -149,7 +149,7 @@ import '../../utils/shared_preferences/preferences.dart';
 import 'ToBeReplyMessageWidget.dart';
 
 class ChatScreen1 extends StatefulWidget {
-  final String name;
+  final String? name;
   final String id;
   final String userId;
   final String image;
@@ -368,8 +368,11 @@ class _ChatScreen1State extends State<ChatScreen1> {
                               imageUrl: widget.image,
                               errorWidget: (w, e, r) {
                                 return CircleAvatar(
-                                  child: Text(widget.name[0]
-                                      .toUpperCase()), // Display the first letter of the name
+                                  child: Text(
+                                    (widget.name != null && widget.name!.isNotEmpty)
+                                        ? widget.name![0].toUpperCase()
+                                        : "",
+                                  ),
                                 );
                               },
                             ),
@@ -416,32 +419,34 @@ class _ChatScreen1State extends State<ChatScreen1> {
                                     height: 4,
                                   ),
                                   StreamBuilder(
-                                      stream: FirebaseFirestore.instance
-                                          .collection("users")
-                                          .doc(id.toString())
-                                          .snapshots(),
-                                      builder:
-                                          (context, AsyncSnapshot snapshot) {
-                                        if (!snapshot.hasData) {
-                                          return const Text("Loading...");
-                                        }
-                                        Timestamp lastSeenTimestamp =
-                                            snapshot.data['lastSeen'];
-                                        DateTime lastSeen =
-                                            lastSeenTimestamp.toDate();
-                                        return Text(
-                                          formatDate(lastSeen,
-                                              snapshot.data["online"]),
-                                          style: GoogleFonts.poppins(
-                                            textStyle: const TextStyle(
-                                              fontSize: 10,
-                                              color: whiteColor,
-                                            ),
+                                    stream: FirebaseFirestore.instance
+                                        .collection("users")
+                                        .doc(id.toString())
+                                        .snapshots(),
+                                    builder: (context, AsyncSnapshot snapshot) {
+                                      if (!snapshot.hasData) {
+                                        return const Text("Loading...");
+                                      }
+                                      var doc = snapshot.data;
+                                      if (!doc.exists) {
+                                        return const Text("No data available");
+                                      }
+                                      Timestamp? lastSeenTimestamp = doc['lastSeen'] ?? "";
+                                      DateTime lastSeen = lastSeenTimestamp!.toDate();
+                                      return Text(
+                                        formatDate(lastSeen, doc["online"]),
+                                        style: GoogleFonts.poppins(
+                                          textStyle: const TextStyle(
+                                            fontSize: 10,
+                                            color: whiteColor,
                                           ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        );
-                                      }),
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      );
+                                    },
+                                  ),
+
                                 ],
                               ),
                             ),
@@ -808,7 +813,7 @@ class _ChatScreen1State extends State<ChatScreen1> {
                             () => buildReply(
                               messageDetails: chatController.replyMessage.value,
                               onCancelReply: chatController.cancelReply,
-                              userName: widget.name,
+                              userName: widget.name!,
                             ),
                           ),
                         Obx(
@@ -1306,7 +1311,7 @@ class _ChatScreen1State extends State<ChatScreen1> {
                 userId: userId.toString(),
                 message: messageDetails,
                 onCancelReply: onCancelReply,
-                userName: widget.name,
+                userName: widget.name!,
               ),
             ),
           ),

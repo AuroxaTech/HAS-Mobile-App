@@ -9,8 +9,33 @@ import '../../app_constants/color_constants.dart';
 import '../../constant_widget/constant_widgets.dart';
 import '../../route_management/constant_routes.dart';
 
-class PropertyTabsScreen extends GetView<AllPropertyController> {
+class PropertyTabsScreen extends StatefulWidget {
   const PropertyTabsScreen({Key? key}) : super(key: key);
+
+  @override
+  _PropertyTabsScreenState createState() => _PropertyTabsScreenState();
+}
+
+class _PropertyTabsScreenState extends State<PropertyTabsScreen> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  final AllPropertyController controller = Get.put(AllPropertyController());
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      controller.selectedIndex.value = _tabController.index;
+    });
+    // If necessary, assign the TabController to the controller
+    // controller.tabController = _tabController;
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,26 +61,25 @@ class PropertyTabsScreen extends GetView<AllPropertyController> {
               child: Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
-                    color: Colors.grey[100], // Background color of the tab bar
+                    color: Colors.grey[100],
                     borderRadius: BorderRadius.circular(50.0),
                     border: Border.all(color: borderColor)),
                 child: Row(
                   children: [
                     for (int i = 0; i < 2; i++)
                       Obx(
-                        () => Expanded(
+                            () => Expanded(
                           child: InkWell(
                             highlightColor: Colors.transparent,
                             hoverColor: Colors.transparent,
                             focusColor: Colors.transparent,
                             splashColor: Colors.transparent,
                             onTap: () {
-                              controller.tabController.animateTo(i);
+                              _tabController.animateTo(i);
                               controller.selectedIndex.value = i;
                             },
                             child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 10), // Padding for the tab
+                              padding: const EdgeInsets.symmetric(vertical: 10),
                               alignment: Alignment.center,
                               child: Column(
                                 children: [
@@ -64,20 +88,18 @@ class PropertyTabsScreen extends GetView<AllPropertyController> {
                                     height: 10,
                                     decoration: BoxDecoration(
                                         shape: BoxShape.circle,
-                                        color:
-                                            controller.selectedIndex.value == i
-                                                ? Colors.blue
-                                                : Colors.transparent),
+                                        color: controller.selectedIndex.value == i
+                                            ? Colors.blue
+                                            : Colors.transparent),
                                   ),
                                   h5,
                                   customText(
                                     text: i == 0 ? 'Properties' : 'Map',
                                     color: Colors.black,
                                     fontSize: 15,
-                                    fontWeight:
-                                        controller.selectedIndex.value == i
-                                            ? FontWeight.w600
-                                            : FontWeight.w400,
+                                    fontWeight: controller.selectedIndex.value == i
+                                        ? FontWeight.w600
+                                        : FontWeight.w400,
                                   ),
                                 ],
                               ),
@@ -93,8 +115,8 @@ class PropertyTabsScreen extends GetView<AllPropertyController> {
             Expanded(
               child: TabBarView(
                 physics: const NeverScrollableScrollPhysics(),
-                controller: controller.tabController,
-                children: [AllPropertyScreen(), const PropertyMap()],
+                controller: _tabController,
+                children: [AllPropertyScreen(), PropertyMap()],
               ),
             ),
           ],
