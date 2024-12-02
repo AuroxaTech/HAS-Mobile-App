@@ -3,17 +3,17 @@ import 'package:get/get.dart';
 
 import '../../models/service_provider_model/service_request_model.dart';
 import '../../services/property_services/add_services.dart';
-import '../../services/property_services/get_property_services.dart';
 import '../../utils/utils.dart';
 
-class ServiceRequestDetailScreenController extends GetxController{
+class ServiceRequestDetailScreenController extends GetxController {
   final sheet = GlobalKey();
   final controller = DraggableScrollableController();
 
   final PageController pageController = PageController();
   ServiceProviderServices serviceRequestService = ServiceProviderServices();
   Rx<bool> isLoading = false.obs;
-  Rx<ServiceRequestProvider?> getServiceRequestOne = Rx<ServiceRequestProvider?>(null);
+  Rx<ServiceRequestProvider?> getServiceRequestOne =
+      Rx<ServiceRequestProvider?>(null);
 
   List<String> images = [];
   RxInt id = 0.obs;
@@ -27,7 +27,6 @@ class ServiceRequestDetailScreenController extends GetxController{
     super.onInit();
   }
 
-
   Future<void> getServiceRequest({required int id}) async {
     print("we are in get service");
     isLoading.value = true;
@@ -39,21 +38,18 @@ class ServiceRequestDetailScreenController extends GetxController{
     if (result['data'] != null && result['data'] is Map) {
       var data = result['data'] as Map<String, dynamic>;
       print("Data :: $data");
+      print("User Data :: ${data['user']}");
 
-      if (getServiceRequestOne != null) {
-
-        getServiceRequestOne.value = ServiceRequestProvider.fromJson(data);
-        String imagesString = getServiceRequestOne.value!.service == null ? "" : getServiceRequestOne.value!.service!.media.toString();
-        List<String> imageList = imagesString.split(',');
-        images = imageList;
-        isLoading.value = false;
-        // selectedBathrooms.value = int.parse(getPropertyOne.value!.bathroom);
-        // selectedBedroom.value = int.parse(getPropertyOne.value!.bedroom);
-        // selectedArea.value = int.parse(getPropertyOne.value!.areaRange);
-      } else {
-        isLoading.value = false;
-        print("get service null is null");
-      }
+      getServiceRequestOne.value = ServiceRequestProvider.fromJson(data);
+      String imagesString = getServiceRequestOne.value!.service == null
+          ? ""
+          : getServiceRequestOne.value!.service!.media.toString();
+      List<String> imageList = imagesString.split(',');
+      images = imageList;
+      isLoading.value = false;
+      // selectedBathrooms.value = int.parse(getPropertyOne.value!.bathroom);
+      // selectedBedroom.value = int.parse(getPropertyOne.value!.bedroom);
+      // selectedArea.value = int.parse(getPropertyOne.value!.areaRange);
     } else {
       isLoading.value = false;
       print("Invalid or null data format");
@@ -83,8 +79,11 @@ class ServiceRequestDetailScreenController extends GetxController{
     }
   }
 
-  Future<void> acceptServiceRequest({ required String userId, required String providerId,
-    required int requestId, }) async {
+  Future<void> acceptServiceRequest({
+    required String userId,
+    required String providerId,
+    required int requestId,
+  }) async {
     isLoading.value = true;
 
     try {
@@ -92,7 +91,6 @@ class ServiceRequestDetailScreenController extends GetxController{
         userid: userId,
         providerId: providerId,
         requestId: requestId,
-
       );
       print(result);
       if (result['status'] == true) {
@@ -111,7 +109,4 @@ class ServiceRequestDetailScreenController extends GetxController{
       isLoading.value = false;
     }
   }
-
-
-
 }

@@ -20,7 +20,9 @@ import '../chat_screens/chat_conversion_screen.dart';
 
 class ServiceRequestDetailScreen
     extends GetView<ServiceRequestDetailScreenController> {
-  const ServiceRequestDetailScreen({Key? key}) : super(key: key);
+  String? reciverId;
+  ServiceRequestDetailScreen({Key? key, required this.reciverId})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -402,10 +404,13 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                       Expanded(
                                         child: CustomButton(
                                           onTap: controller.getServiceRequestOne
-                                                      .value!.approved ==
-                                                  1 || controller.getServiceRequestOne
-                                              .value!.decline ==
-                                              1
+                                                          .value!.approved ==
+                                                      1 ||
+                                                  controller
+                                                          .getServiceRequestOne
+                                                          .value!
+                                                          .decline ==
+                                                      1
                                               ? null
                                               : () {
                                                   controller
@@ -450,10 +455,13 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                       Expanded(
                                         child: CustomButton(
                                           onTap: controller.getServiceRequestOne
-                                                      .value!.decline ==
-                                                  1 || controller.getServiceRequestOne
-                                              .value!.approved ==
-                                              1
+                                                          .value!.decline ==
+                                                      1 ||
+                                                  controller
+                                                          .getServiceRequestOne
+                                                          .value!
+                                                          .approved ==
+                                                      1
                                               ? null
                                               : () {
                                                   animatedDialog(context,
@@ -506,6 +514,12 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                                     SnackPosition.BOTTOM,
                                               );
                                             } else {
+                                              print(
+                                                  "Reciver Id ==> ${controller.getServiceRequestOne.value!.user.id.toString()}");
+                                              print(
+                                                  "Reciver name ==> ${controller.getServiceRequestOne.value!.user.fullname.toString()}");
+                                              print(
+                                                  "Reciver Image ==> ${controller.getServiceRequestOne.value!.user.profileimage.toString()}");
                                               createConversation(
                                                   controller
                                                       .getServiceRequestOne
@@ -520,8 +534,7 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                                   controller
                                                       .getServiceRequestOne
                                                       .value!
-                                                      .user
-                                                      .id
+                                                      .userId
                                                       .toString(),
                                                   context);
                                             }
@@ -552,6 +565,7 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
 
   createConversation(
       String name, String profilePicture, String id, context) async {
+    print("user.Id =>${id.toString()}");
     try {
       var userId = await Preferences.getUserID();
       var userName = await Preferences.getUserName();

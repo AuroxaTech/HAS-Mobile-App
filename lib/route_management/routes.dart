@@ -139,9 +139,9 @@ class Routes {
           transition: routeTransition),
       GetPage(
           name: kCalendarScreen,
-          page: () =>  CalendarScreen(
+          page: () => CalendarScreen(
                 isBack: false,
-            back: true,
+                back: true,
               ),
           binding: ScreenBindings(),
           transition: routeTransition),
@@ -152,7 +152,9 @@ class Routes {
           transition: routeTransition),
       GetPage(
           name: kServiceRequestDetailScreen,
-          page: () => const ServiceRequestDetailScreen(),
+          page: () => ServiceRequestDetailScreen(
+                reciverId: '',
+              ),
           binding: ScreenBindings(),
           transition: routeTransition),
       GetPage(
