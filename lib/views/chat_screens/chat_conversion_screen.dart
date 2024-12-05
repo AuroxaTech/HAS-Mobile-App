@@ -1,130 +1,3 @@
-// import 'package:flutter/material.dart';
-// import 'package:flutter_svg/flutter_svg.dart';
-// import 'package:get/get.dart';
-// import 'package:property_app/app_constants/app_icon.dart';
-// import 'package:property_app/app_constants/app_sizes.dart';
-// import 'package:property_app/app_constants/color_constants.dart';
-// import 'package:property_app/constant_widget/constant_widgets.dart';
-// import 'package:property_app/custom_widgets/custom_text_field.dart';
-//
-// import '../../controllers/chat_screens_controller/chat_convertion_screen_controller.dart';
-//
-// class ChatConversionScreen extends GetView<ChatConversionScreenController> {
-//   const ChatConversionScreen({Key? key}) : super(key: key);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: whiteColor,
-//       appBar: homeAppBar(context , text: "David"),
-//       body: SafeArea(
-//         child: Padding(
-//           padding: const EdgeInsets.all(15.0),
-//           child: Column(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               Center(
-//                 child: customText(
-//                   text: "Today",
-//                   fontSize: 18,
-//                   color: greyColor
-//                 ),
-//               ),
-//               h10,
-//               Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   Container(
-//                     width: 200,
-//                     decoration: BoxDecoration(
-//                       color: greyColor.withOpacity(0.2),
-//                       borderRadius: BorderRadius.circular(10)
-//                     ),
-//                     padding: const EdgeInsets.all(10),
-//                     child: customText(
-//                       text: "Hey there! How's your day going?"
-//                     ),
-//                   ),
-//                   customText(
-//                     text: "6:10 AM ",
-//                     color: greyColor,
-//                     fontSize: 12
-//                   )
-//                 ],
-//               ),
-//               h5,
-//               Align(
-//                 alignment: Alignment.bottomRight,
-//                 child: Column(
-//                   crossAxisAlignment: CrossAxisAlignment.end,
-//                   children: [
-//                     Container(
-//                       width: 200,
-//                       decoration: BoxDecoration(
-//                           color: greyColor.withOpacity(0.2),
-//                           borderRadius: BorderRadius.circular(10)
-//                       ),
-//                       padding: const EdgeInsets.all(10),
-//                       child: customText(
-//                           text: "Hey there! How's your day going?"
-//                       ),
-//                     ),
-//                     customText(
-//                         text: "6:10 AM ",
-//                         color: greyColor,
-//                         fontSize: 12
-//                     )
-//                   ],
-//                 ),
-//               ),
-//
-//               Expanded(
-//                 flex: 9,
-//                 child: Align(
-//                   alignment: Alignment.bottomCenter,
-//                   child: Container(
-//                     width: double.infinity,
-//                     decoration: const BoxDecoration(
-//
-//                     ),
-//                     child: Row(
-//                       children: [
-//                         Expanded(
-//                             child: CustomBorderTextField(
-//                               inputBorder:  OutlineInputBorder(
-//                                borderRadius: BorderRadius.circular(8),
-//                                borderSide:  const BorderSide(color: greyColor)),
-//                               hintText:" Text message...",
-//                               suffixIcon: SizedBox(
-//                                 width: 80,
-//                                 child: Row(
-//                                   mainAxisAlignment: MainAxisAlignment.center,
-//                                   children: [
-//                                     SvgPicture.asset(AppIcons.gallery),
-//                                     w5,
-//                                     // SvgPicture.asset(AppIcons.voice),
-//                                   ],
-//                                 ),
-//                               ),
-//                             )),
-//                         w5,
-//                         CircleAvatar(
-//                           radius: 25,
-//                           child: Center(child: SvgPicture.asset(AppIcons.send),
-//                           )),
-//                       ],
-//                     ),
-//                   ),
-//                 ),
-//               )
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
@@ -145,6 +18,7 @@ import 'package:whatsapp_reactions/whatsapp_reactions.dart';
 import '../../controllers/chat_screens_controller/chat_controller.dart';
 import '../../custom_widgets/custom_button.dart';
 import '../../services/notification_services/notification_services.dart';
+import '../../utils/api_urls.dart';
 import '../../utils/shared_preferences/preferences.dart';
 import 'ToBeReplyMessageWidget.dart';
 
@@ -311,6 +185,7 @@ class _ChatScreen1State extends State<ChatScreen1> {
   var themeController = Get.put(ThemeController());
   @override
   Widget build(BuildContext context) {
+    print("Profile Image: ${widget.image}");
     if (widget.data == null || widget.data.id.isEmpty) {
       return const Scaffold(
         body: Center(child: Text('Invalid conversation data.')),
@@ -330,7 +205,7 @@ class _ChatScreen1State extends State<ChatScreen1> {
         child: Scaffold(
           resizeToAvoidBottomInset: true,
           appBar: PreferredSize(
-            preferredSize: Size.fromHeight(60),
+            preferredSize: const Size.fromHeight(60),
             child: ChatScreen1.showSelectedMessages
                 ? showSelectionPanel(
                     themeController, chatController.index.value)
@@ -358,31 +233,38 @@ class _ChatScreen1State extends State<ChatScreen1> {
                                 //         builder: (context) =>
                                 //         const HomeScreen()));
                               }),
-                          SizedBox(
+                          const SizedBox(
                             width: 8,
                           ),
                           CircleAvatar(
                             radius: 24,
                             backgroundColor: whiteColor,
-                            child: CachedNetworkImage(
-                              imageUrl: widget.image,
-                              errorWidget: (w, e, r) {
-                                return CircleAvatar(
-                                  child: Text(
-                                    (widget.name != null && widget.name!.isNotEmpty)
-                                        ? widget.name![0].toUpperCase()
-                                        : "",
-                                  ),
-                                );
-                              },
+                            child: ClipOval(
+                              child: CachedNetworkImage(
+                                imageUrl:
+                                    "${AppUrls.profileImageBaseUrl}${widget.image}",
+                                width: 48,
+                                height: 48,
+                                fit: BoxFit.cover,
+                                errorWidget: (w, e, r) {
+                                  print("Image Error: $e");
+                                  return CircleAvatar(
+                                    child: Text(
+                                      (widget.name != null &&
+                                              widget.name!.isNotEmpty)
+                                          ? widget.name![0].toUpperCase()
+                                          : "",
+                                      style:
+                                          const TextStyle(color: Colors.black),
+                                    ),
+                                  );
+                                },
+                                placeholder: (context, url) =>
+                                    const CircularProgressIndicator(),
+                              ),
                             ),
-                            // backgroundImage: CachedNetworkImageProvider(
-                            //   widget.group
-                            //       ? widget.data['groupPictureUrl']
-                            //       : widget.image,
-                            // ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 12,
                           ),
                           Expanded(
@@ -408,14 +290,14 @@ class _ChatScreen1State extends State<ChatScreen1> {
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: GoogleFonts.poppins(
-                                      textStyle: TextStyle(
+                                      textStyle: const TextStyle(
                                         fontSize: 14,
                                         color: whiteColor,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 4,
                                   ),
                                   StreamBuilder(
@@ -431,8 +313,10 @@ class _ChatScreen1State extends State<ChatScreen1> {
                                       if (!doc.exists) {
                                         return const Text("No data available");
                                       }
-                                      Timestamp? lastSeenTimestamp = doc['lastSeen'] ?? "";
-                                      DateTime lastSeen = lastSeenTimestamp!.toDate();
+                                      Timestamp? lastSeenTimestamp =
+                                          doc['lastSeen'] ?? "";
+                                      DateTime lastSeen =
+                                          lastSeenTimestamp!.toDate();
                                       return Text(
                                         formatDate(lastSeen, doc["online"]),
                                         style: GoogleFonts.poppins(
@@ -446,7 +330,6 @@ class _ChatScreen1State extends State<ChatScreen1> {
                                       );
                                     },
                                   ),
-
                                 ],
                               ),
                             ),
@@ -570,14 +453,14 @@ class _ChatScreen1State extends State<ChatScreen1> {
                                   AsyncSnapshot<QuerySnapshot> snapshot) {
                                 if (snapshot.connectionState ==
                                     ConnectionState.waiting) {
-                                  return Center(
+                                  return const Center(
                                       child: CircularProgressIndicator());
                                 } else if (snapshot.hasError) {
                                   return Center(
                                       child: Text('Error: ${snapshot.error}'));
                                 } else if (!snapshot.hasData ||
                                     snapshot.data!.docs.isEmpty) {
-                                  return Center(
+                                  return const Center(
                                       child: Text('No messages available.'));
                                 } else {
                                   List<DocumentSnapshot> documents =
@@ -627,7 +510,7 @@ class _ChatScreen1State extends State<ChatScreen1> {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.stretch,
                                             children: <Widget>[
-                                              SizedBox(
+                                              const SizedBox(
                                                 height: 5,
                                               ),
                                               senderId != userId.toString()
@@ -818,7 +701,7 @@ class _ChatScreen1State extends State<ChatScreen1> {
                           ),
                         Obx(
                           () => Padding(
-                            padding: EdgeInsets.only(
+                            padding: const EdgeInsets.only(
                               left: 5,
                               right: 5,
                               bottom: 5,
@@ -840,14 +723,14 @@ class _ChatScreen1State extends State<ChatScreen1> {
                                                   .replyMessage.value ==
                                               null
                                           ? BorderRadius.circular(50)
-                                          : BorderRadius.only(
+                                          : const BorderRadius.only(
                                               bottomLeft: Radius.circular(10),
                                               bottomRight: Radius.circular(10),
                                             ),
                                     ),
                                     child: Padding(
-                                      padding:
-                                          EdgeInsets.only(left: 17, right: 15),
+                                      padding: const EdgeInsets.only(
+                                          left: 17, right: 15),
                                       child: Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceAround,
@@ -865,7 +748,7 @@ class _ChatScreen1State extends State<ChatScreen1> {
                                                       .emojiShowing.value;
                                             },
                                           ),
-                                          SizedBox(
+                                          const SizedBox(
                                             width: 9,
                                           ),
                                           Expanded(
@@ -877,7 +760,7 @@ class _ChatScreen1State extends State<ChatScreen1> {
                                                 hintText:
                                                     'Type your message ...',
                                                 hintStyle: GoogleFonts.poppins(
-                                                  textStyle: TextStyle(
+                                                  textStyle: const TextStyle(
                                                     color: greyColor,
                                                     fontSize: 12,
                                                   ),
@@ -896,10 +779,10 @@ class _ChatScreen1State extends State<ChatScreen1> {
                                           ),
                                           Row(
                                             children: <Widget>[
-                                              SizedBox(
+                                              const SizedBox(
                                                 width: 8,
                                               ),
-                                              SizedBox(
+                                              const SizedBox(
                                                 width: 8,
                                               ),
                                               InkWell(
@@ -918,7 +801,8 @@ class _ChatScreen1State extends State<ChatScreen1> {
                                                       builder: (context) {
                                                         return Padding(
                                                           padding:
-                                                              EdgeInsets.only(
+                                                              const EdgeInsets
+                                                                  .only(
                                                                   left: 10,
                                                                   right: 10,
                                                                   bottom: 55),
@@ -1254,7 +1138,7 @@ class _ChatScreen1State extends State<ChatScreen1> {
                           ),
                         ),
 
-                        SizedBox(
+                        const SizedBox(
                           height: 5,
                         ),
                       ],
@@ -1347,7 +1231,7 @@ class _ChatScreen1State extends State<ChatScreen1> {
         color: primaryColor,
       ),
       child: Padding(
-        padding: EdgeInsets.only(top: 35, bottom: 15),
+        padding: const EdgeInsets.only(top: 35, bottom: 15),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

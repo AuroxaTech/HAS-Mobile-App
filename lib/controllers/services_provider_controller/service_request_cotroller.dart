@@ -33,14 +33,14 @@ class ServiceRequestController extends GetxController {
     try {
       isLoading.value = true;
       var result =
-      await servicesService.getServiceProviderRequest(page: pageKey);
+          await servicesService.getServiceProviderRequest(page: pageKey);
       isLoading.value = false;
       print("My JOB REQUEST Data $result");
       if (result['status'] == true) {
         final List<ServiceRequestProvider> newItems =
-        (result['data']['data'] as List)
-            .map((json) => ServiceRequestProvider.fromJson(json))
-            .toList();
+            (result['data']['data'] as List)
+                .map((json) => ServiceRequestProvider.fromJson(json))
+                .toList();
 
         // Add this code to print all service requests
         print('Fetched Service Requests:');
@@ -127,6 +127,9 @@ class ServiceRequestController extends GetxController {
       );
       print(result);
       if (result['status'] == true) {
+        pagingController.addPageRequestListener((pageKey) {
+          Future.microtask(() => getServicesRequests(pageKey));
+        });
         Get.back();
         AppUtils.getSnackBar("Success", result['message']);
       } else {

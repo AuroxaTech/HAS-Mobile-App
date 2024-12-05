@@ -193,6 +193,7 @@ class _ChatViewState extends State<ChatView> {
                             }
                             if (otherParticipantName.isEmpty) {
                               otherParticipantName = 'YOU';
+
                               profilePictureUrl =
                                   participants[0]['profilePictureUrl'];
                             }
@@ -200,6 +201,7 @@ class _ChatViewState extends State<ChatView> {
                             var lastMessage = documents[index]['lastMessage'];
                             var createdTime = documents[index]['created'];
                             String id = documents[index].id;
+                            print("Profile Image = >${profilePictureUrl}");
 
                             return lastMessage['time'] == null &&
                                     lastMessage['message'] == ""

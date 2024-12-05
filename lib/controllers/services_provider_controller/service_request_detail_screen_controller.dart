@@ -66,6 +66,8 @@ class ServiceRequestDetailScreenController extends GetxController {
       print(result);
       if (result['status'] == true) {
         Get.back();
+        Get.back();
+        Get.back();
         AppUtils.getSnackBar("Success", result['message']);
       } else {
         AppUtils.errorSnackBar("Error", result['message']);
@@ -94,6 +96,7 @@ class ServiceRequestDetailScreenController extends GetxController {
       );
       print(result);
       if (result['status'] == true) {
+        Get.back();
         Get.back();
         AppUtils.getSnackBar("Success", result['message']);
       } else {

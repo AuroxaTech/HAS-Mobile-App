@@ -403,40 +403,49 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                     children: [
                                       Expanded(
                                         child: CustomButton(
-                                          onTap: controller.getServiceRequestOne
-                                                          .value!.approved ==
-                                                      1 ||
-                                                  controller
+                                          onTap: () {
+                                            if (controller.getServiceRequestOne
+                                                    .value!.approved ==
+                                                1) {
+                                              null;
+                                            } else if (controller
+                                                    .getServiceRequestOne
+                                                    .value!
+                                                    .decline ==
+                                                1) {
+                                              Get.snackbar(
+                                                'This request has been declined. Cannot accept now.',
+                                                '',
+                                                backgroundColor:
+                                                    redColor.withOpacity(0.8),
+                                                colorText: Colors.white,
+                                                snackPosition:
+                                                    SnackPosition.BOTTOM,
+                                              );
+                                            } else {
+                                              controller
+                                                  .acceptServiceRequest(
+                                                      requestId: controller
                                                           .getServiceRequestOne
                                                           .value!
-                                                          .decline ==
-                                                      1
-                                              ? null
-                                              : () {
-                                                  controller
-                                                      .acceptServiceRequest(
-                                                          requestId: controller
-                                                              .getServiceRequestOne
-                                                              .value!
-                                                              .id,
-                                                          userId: controller
-                                                              .getServiceRequestOne
-                                                              .value!
-                                                              .userId
-                                                              .toString(),
-                                                          providerId: controller
-                                                              .getServiceRequestOne
-                                                              .value!
-                                                              .provider!
-                                                              .id
-                                                              .toString())
-                                                      .then((value) {
-                                                    controller
-                                                        .getServiceRequest(
-                                                            id: controller
-                                                                .id.value);
-                                                  });
-                                                },
+                                                          .id,
+                                                      userId: controller
+                                                          .getServiceRequestOne
+                                                          .value!
+                                                          .userId
+                                                          .toString(),
+                                                      providerId: controller
+                                                          .getServiceRequestOne
+                                                          .value!
+                                                          .provider!
+                                                          .id
+                                                          .toString())
+                                                  .then((value) {
+                                                controller.getServiceRequest(
+                                                    id: controller.id.value);
+                                              });
+                                            }
+                                          },
                                           height: screenHeight(context) * 0.04,
                                           text: "Accept",
                                           fontSize: 12,
@@ -454,36 +463,45 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                       w10,
                                       Expanded(
                                         child: CustomButton(
-                                          onTap: controller.getServiceRequestOne
-                                                          .value!.decline ==
-                                                      1 ||
-                                                  controller
-                                                          .getServiceRequestOne
-                                                          .value!
-                                                          .approved ==
-                                                      1
-                                              ? null
-                                              : () {
-                                                  animatedDialog(context,
-                                                      title: "Decline Request",
-                                                      subTitle:
-                                                          "Are you sure to decline this request",
-                                                      yesButtonText: "Decline",
-                                                      yesTap: () {
-                                                    controller
-                                                        .declineServiceRequest(
-                                                            requestId: controller
-                                                                .getServiceRequestOne
-                                                                .value!
-                                                                .id)
-                                                        .then((value) {
-                                                      controller
-                                                          .getServiceRequest(
-                                                              id: controller
-                                                                  .id.value);
-                                                    });
-                                                  });
-                                                },
+                                          onTap: () {
+                                            if (controller.getServiceRequestOne
+                                                    .value!.decline ==
+                                                1) {
+                                              null;
+                                            } else if (controller
+                                                    .getServiceRequestOne
+                                                    .value!
+                                                    .approved ==
+                                                1) {
+                                              Get.snackbar(
+                                                'This request has been accepted. Cannot decline now.',
+                                                '',
+                                                backgroundColor:
+                                                    redColor.withOpacity(0.8),
+                                                colorText: Colors.white,
+                                                snackPosition:
+                                                    SnackPosition.BOTTOM,
+                                              );
+                                            } else {
+                                              animatedDialog(context,
+                                                  title: "Decline Request",
+                                                  subTitle:
+                                                      "Are you sure to decline this request",
+                                                  yesButtonText: "Decline",
+                                                  yesTap: () {
+                                                controller
+                                                    .declineServiceRequest(
+                                                        requestId: controller
+                                                            .getServiceRequestOne
+                                                            .value!
+                                                            .id)
+                                                    .then((value) {
+                                                  controller.getServiceRequest(
+                                                      id: controller.id.value);
+                                                });
+                                              });
+                                            }
+                                          },
                                           gradientColor: redGradient(
                                               color: controller
                                                           .getServiceRequestOne
@@ -505,7 +523,7 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                                     .value!.decline ==
                                                 1) {
                                               Get.snackbar(
-                                                'This request has been declined. No chats available',
+                                                'This request has been declined. No chats available.',
                                                 '',
                                                 backgroundColor:
                                                     redColor.withOpacity(0.8),

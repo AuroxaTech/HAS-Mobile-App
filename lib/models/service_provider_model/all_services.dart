@@ -120,6 +120,8 @@ class AllService {
   DateTime updatedAt;
   bool isFavorite;
   int isApplied;
+  int decline;
+  int approved;
   User? user;
   List<ServiceProviderRequest>? serviceProviderRequests;
 
@@ -145,11 +147,36 @@ class AllService {
     required this.updatedAt,
     required this.isFavorite,
     required this.isApplied,
+    required this.decline,
+    required this.approved,
     required this.user,
     this.serviceProviderRequests,
   });
 
   factory AllService.fromJson(Map<String, dynamic> json) {
+    print("All Services List => ${json.toString()}");
+
+    // Parse service provider requests first
+    final serviceProviderRequests = json["service_provider_requests"] != null
+        ? List<ServiceProviderRequest>.from(json["service_provider_requests"]
+            .map((x) => ServiceProviderRequest.fromJson(x)))
+        : null;
+
+    // Find the latest request (highest ID) if requests exist
+    ServiceProviderRequest? latestRequest;
+    if (serviceProviderRequests != null && serviceProviderRequests.isNotEmpty) {
+      latestRequest = serviceProviderRequests
+          .reduce((curr, next) => curr.id > next.id ? curr : next);
+    }
+
+    // Extract values from latestRequest or fallback to json values
+    final isApplied = latestRequest?.isApplied ?? json["is_applied"] ?? 0;
+    final decline = latestRequest?.decline ?? json["decline"] ?? 0;
+    final approved = latestRequest?.approved ?? json["approved"] ?? 0;
+    print("AllService - isApplied: ${isApplied}");
+    print("AllService - decline: ${decline}");
+    print("AllService - approved: ${approved}");
+
     return AllService(
       id: json["id"],
       userId: json["user_id"],
@@ -171,43 +198,44 @@ class AllService {
       createdAt: DateTime.parse(json["created_at"]),
       updatedAt: DateTime.parse(json["updated_at"]),
       isFavorite: json["is_favorite"] ?? false,
-      isApplied: json["is_applied"] ?? 0,
+      isApplied: isApplied,
+      decline: decline,
+      approved: approved,
       user: json["user"] != null ? User.fromJson(json["user"]) : null,
-      serviceProviderRequests: json["service_provider_requests"] != null
-          ? List<ServiceProviderRequest>.from(json["service_provider_requests"]
-          .map((x) => ServiceProviderRequest.fromJson(x)))
-          : null,
+      serviceProviderRequests: serviceProviderRequests,
     );
   }
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "user_id": userId,
-    "service_name": serviceName,
-    "description": description,
-    "pricing": pricing,
-    "start_time": startTime,
-    "end_time": endTime,
-    "location": location,
-    "lat": lat,
-    "long": long,
-    "count_of_service": countOfService,
-    "total_rate": totalRate,
-    "average_rate": averageRate,
-    "media": media,
-    "country": country,
-    "city": city,
-    "additional_information": additionalInformation,
-    "created_at": createdAt.toIso8601String(),
-    "updated_at": updatedAt.toIso8601String(),
-    "is_favorite": isFavorite,
-    "is_applied": isApplied,
-    "user": user?.toJson(),
-    "service_provider_requests": serviceProviderRequests != null
-        ? List<dynamic>.from(
-        serviceProviderRequests!.map((x) => x.toJson()))
-        : null,
-  };
+        "id": id,
+        "user_id": userId,
+        "service_name": serviceName,
+        "description": description,
+        "pricing": pricing,
+        "start_time": startTime,
+        "end_time": endTime,
+        "location": location,
+        "lat": lat,
+        "long": long,
+        "count_of_service": countOfService,
+        "total_rate": totalRate,
+        "average_rate": averageRate,
+        "media": media,
+        "country": country,
+        "city": city,
+        "additional_information": additionalInformation,
+        "created_at": createdAt.toIso8601String(),
+        "updated_at": updatedAt.toIso8601String(),
+        "is_favorite": isFavorite,
+        "is_applied": isApplied,
+        "decline": decline,
+        "approved": approved,
+        "user": user?.toJson(),
+        "service_provider_requests": serviceProviderRequests != null
+            ? List<dynamic>.from(
+                serviceProviderRequests!.map((x) => x.toJson()))
+            : null,
+      };
 }
 
 class ServiceProviderRequest {
@@ -225,7 +253,7 @@ class ServiceProviderRequest {
   String description;
   String? additionalInfo;
   int approved;
-  int decline;
+  int? decline;
   DateTime createdAt;
   DateTime updatedAt;
   String? postalCode;
@@ -254,6 +282,8 @@ class ServiceProviderRequest {
   });
 
   factory ServiceProviderRequest.fromJson(Map<String, dynamic> json) {
+    print("All Service Provider List => ${json.toString()}");
+
     return ServiceProviderRequest(
       id: json['id'],
       userId: json['user_id'],
@@ -278,26 +308,26 @@ class ServiceProviderRequest {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'user_id': userId,
-    'serviceprovider_id': serviceproviderId,
-    'service_id': serviceId,
-    'address': address,
-    'lat': lat,
-    'long': long,
-    'property_type': propertyType,
-    'price': price,
-    'date': date,
-    'time': time,
-    'description': description,
-    'additional_info': additionalInfo,
-    'approved': approved,
-    'decline': decline,
-    'created_at': createdAt.toIso8601String(),
-    'updated_at': updatedAt.toIso8601String(),
-    'postal_code': postalCode,
-    'is_applied': isApplied,
-  };
+        'id': id,
+        'user_id': userId,
+        'serviceprovider_id': serviceproviderId,
+        'service_id': serviceId,
+        'address': address,
+        'lat': lat,
+        'long': long,
+        'property_type': propertyType,
+        'price': price,
+        'date': date,
+        'time': time,
+        'description': description,
+        'additional_info': additionalInfo,
+        'approved': approved,
+        'decline': decline,
+        'created_at': createdAt.toIso8601String(),
+        'updated_at': updatedAt.toIso8601String(),
+        'postal_code': postalCode,
+        'is_applied': isApplied,
+      };
 }
 
 enum Location {

@@ -16,74 +16,94 @@ class ChatScreenList extends GetView<ChatScreenListController> {
       length: 3,
       child: Scaffold(
         backgroundColor: whiteColor,
-        appBar: titleAppBar("Chats", action: [
-          IconButton(onPressed: (){},
-              icon: const Icon(Icons.search))
-        ],
-       ),
-        body:  SafeArea(
-          child: Obx(() => Column(
+        appBar: titleAppBar(
+          "Chats",
+          action: [
+            IconButton(onPressed: () {}, icon: const Icon(Icons.search))
+          ],
+        ),
+        body: SafeArea(
+          child: Obx(
+            () => Column(
               children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 15, right: 15),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: topContainer(
-                        onTap: (){
-                          controller.messages.value = true;
-                          controller.landlord.value = false;
-                          controller.service.value = false;
-                        },
-                        text: "All Messages",
-                        textColor: controller.messages.value ? primaryColor : greyColor,
-                        borderColor: controller.messages.value ? primaryColor : greyColor,
+                Padding(
+                  padding: const EdgeInsets.only(left: 15, right: 15),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: topContainer(
+                          onTap: () {
+                            controller.messages.value = true;
+                            controller.landlord.value = false;
+                            controller.service.value = false;
+                          },
+                          text: "All Messages",
+                          textColor: controller.messages.value
+                              ? primaryColor
+                              : greyColor,
+                          borderColor: controller.messages.value
+                              ? primaryColor
+                              : greyColor,
+                        ),
                       ),
-                    ),
-                    w10,
-                    Expanded(
-                      child: topContainer(
-                          onTap: (){
+                      w10,
+                      Expanded(
+                        child: topContainer(
+                          onTap: () {
                             controller.messages.value = false;
                             controller.landlord.value = true;
                             controller.service.value = false;
                           },
                           text: "Landlord(3)",
-                          textColor: controller.landlord.value ? primaryColor : greyColor,
-                          borderColor: controller.landlord.value ? primaryColor : greyColor,
+                          textColor: controller.landlord.value
+                              ? primaryColor
+                              : greyColor,
+                          borderColor: controller.landlord.value
+                              ? primaryColor
+                              : greyColor,
+                        ),
                       ),
-                    ),
-                    w10,
-                    Expanded(
-                      child: topContainer(
-                          onTap: (){
+                      w10,
+                      Expanded(
+                        child: topContainer(
+                          onTap: () {
                             controller.messages.value = false;
                             controller.landlord.value = false;
                             controller.service.value = true;
                           },
                           text: "Service Pro(4)",
-                          textColor: controller.service.value ? primaryColor : greyColor,
-                          borderColor:  controller.service.value ? primaryColor : greyColor,
+                          textColor: controller.service.value
+                              ? primaryColor
+                              : greyColor,
+                          borderColor: controller.service.value
+                              ? primaryColor
+                              : greyColor,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              ChatItem(name: "David", message: "Hello ! Tenant Here-Wanna", time: "11:00", unread: true,
-                      onTap: (){
-                        Get.toNamed(kChatConversionScreen);
-                      },
-              ),
                 ChatItem(
-                    onTap: (  ) {
-
-                    },
-                    name: "Mack", message: "Hello ! Tenant Here-Wanna", time: "11:00", unread: true),
-                 ChatItem(
-                     onTap: (){
-
-                     },
-                     name: "Stafeny", message: "Hello ! Tenant Here-Wanna", time: "11:00",unread:false),
+                  name: "David",
+                  message: "Hello ! Tenant Here-Wanna",
+                  time: "11:00",
+                  unread: true,
+                  onTap: () {
+                    Get.toNamed(kChatConversionScreen);
+                  },
+                ),
+                ChatItem(
+                    onTap: () {},
+                    name: "Mack",
+                    message: "Hello ! Tenant Here-Wanna",
+                    time: "11:00",
+                    unread: true),
+                ChatItem(
+                    onTap: () {},
+                    name: "Stafeny",
+                    message: "Hello ! Tenant Here-Wanna",
+                    time: "11:00",
+                    unread: false),
               ],
             ),
           ),
@@ -92,7 +112,11 @@ class ChatScreenList extends GetView<ChatScreenListController> {
     );
   }
 
-  Widget topContainer({String? text, Color? textColor, Color? borderColor, VoidCallback? onTap}){
+  Widget topContainer(
+      {String? text,
+      Color? textColor,
+      Color? borderColor,
+      VoidCallback? onTap}) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(30),
@@ -105,11 +129,7 @@ class ChatScreenList extends GetView<ChatScreenListController> {
         child: Center(
           child: FittedBox(
             fit: BoxFit.scaleDown,
-            child: customText(
-                text: text,
-                color: textColor,
-                fontSize: 11
-            ),
+            child: customText(text: text, color: textColor, fontSize: 11),
           ),
         ),
       ),
@@ -137,7 +157,7 @@ class ChatItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
         leading: CircleAvatar(
-          child: Text(name[0]), // Display the first letter of the name
+          child: Text(name[0]),
         ),
         title: customText(text: name),
         subtitle: customText(text: message),
@@ -148,14 +168,10 @@ class ChatItem extends StatelessWidget {
             if (unread)
               CircleAvatar(
                 radius: 10,
-                child: customText(
-                  text: "2",
-                  fontSize: 12
-                ),
+                child: customText(text: "2", fontSize: 12),
               )
           ],
         ),
-        onTap: onTap!
-        );
-    }
+        onTap: onTap!);
+  }
 }

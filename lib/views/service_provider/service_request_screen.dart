@@ -114,23 +114,21 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
                                   snackPosition: SnackPosition.BOTTOM,
                                 );
                               } else {
-                                () {
-                                  animatedDialog(context,
-                                      title: "Accept Request",
-                                      subTitle:
-                                          "Are you sure to accept this request",
-                                      yesButtonText: "Accept", yesTap: () {
-                                    controller
-                                        .acceptServiceRequest(
-                                            requestId: item.id,
-                                            userId: item.userId.toString(),
-                                            providerId: item.serviceproviderId
-                                                .toString())
-                                        .then((value) {
-                                      controller.getServicesRequests(1);
-                                    });
+                                animatedDialog(context,
+                                    title: "Accept Request",
+                                    subTitle:
+                                        "Are you sure to accept this request",
+                                    yesButtonText: "Accept", yesTap: () {
+                                  controller
+                                      .acceptServiceRequest(
+                                          requestId: item.id,
+                                          userId: item.userId.toString(),
+                                          providerId:
+                                              item.serviceproviderId.toString())
+                                      .then((value) {
+                                    controller.getServicesRequests(1);
                                   });
-                                };
+                                });
                               }
                             },
                             acceptColor: item.approved == 1
@@ -149,22 +147,31 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
                               Get.toNamed(kServiceRequestDetailScreen,
                                   arguments: item.id);
                             },
-                            declineTap: item.decline == 1 || item.approved == 1
-                                ? null
-                                : () {
-                                    animatedDialog(context,
-                                        title: "Decline Request",
-                                        subTitle:
-                                            "Are you sure to decline this request",
-                                        yesButtonText: "Decline", yesTap: () {
-                                      controller
-                                          .declineServiceRequest(
-                                              requestId: item.id)
-                                          .then((value) {
-                                        controller.getServicesRequests(1);
-                                      });
-                                    });
-                                  }),
+                            declineTap: () {
+                              if (item.decline == 1) {
+                                null;
+                              } else if (item.approved == 1) {
+                                Get.snackbar(
+                                  'This request has been accepted. Cannot decline now.',
+                                  '',
+                                  backgroundColor: redColor.withOpacity(0.8),
+                                  colorText: Colors.white,
+                                  snackPosition: SnackPosition.BOTTOM,
+                                );
+                              } else {
+                                animatedDialog(context,
+                                    title: "Decline Request",
+                                    subTitle:
+                                        "Are you sure to decline this request",
+                                    yesButtonText: "Decline", yesTap: () {
+                                  controller
+                                      .declineServiceRequest(requestId: item.id)
+                                      .then((value) {
+                                    controller.getServicesRequests(1);
+                                  });
+                                });
+                              }
+                            }),
                         const SizedBox(
                           height: 20,
                         ),

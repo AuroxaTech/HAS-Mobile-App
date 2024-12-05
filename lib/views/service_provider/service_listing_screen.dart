@@ -73,12 +73,43 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                             onPressed: () => controller.getServices(1),
                           ),
                       itemBuilder: (context, item, index) {
+                        print(
+                            "Screen - Building item for service ID: ${item.id}");
+                        print("Screen - isApplied: ${item.isApplied.toInt()}");
+                        print("Screen - decline: ${item.decline}");
+                        print("Screen - approved: ${item.approved}");
+
+                        int? isApplied;
+                        int? decline;
+                        int? approved;
+
+                        // If serviceProviderRequests exists, print the latest request details
+                        if (item.serviceProviderRequests != null &&
+                            item.serviceProviderRequests!.isNotEmpty) {
+                          var latestRequest = item.serviceProviderRequests!
+                              .reduce((curr, next) =>
+                                  curr.id > next.id ? curr : next);
+                          print(
+                              "Screen - Latest request ID: ${latestRequest.id}");
+                          print(
+                              "Screen - Latest request isApplied: ${latestRequest.isApplied}");
+                          print(
+                              "Screen - Latest request decline: ${latestRequest.decline}");
+                          print(
+                              "Screen - Latest request approved: ${latestRequest.approved}");
+
+                          isApplied = latestRequest.isApplied;
+                          decline = latestRequest.decline;
+                          approved = latestRequest.approved;
+                        }
+
                         String imagesString = item.media.toString();
                         List<String> imageList = imagesString.split(',');
                         print(
                             "Image list contents: $imageList, accessing index: 0");
                         print(item.isFavorite);
-                        print(item.isApplied);
+                        print("is Applied => ${item.isApplied}");
+                        print("is decline => ${item.decline}");
                         return Padding(
                           padding: const EdgeInsets.only(top: 15),
                           child: InkWell(
@@ -265,7 +296,13 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                                           ),
                                           w15,
                                           Expanded(
-                                            child: item.isApplied == 0
+                                            child: isApplied == 0 &&
+                                                        decline == 0 ||
+                                                    isApplied == 0 &&
+                                                        decline == 1 ||
+                                                    isApplied == 0 &&
+                                                        decline == 0 &&
+                                                        approved == 1
                                                 ? CustomButton(
                                                     height:
                                                         screenHeight(context) *
