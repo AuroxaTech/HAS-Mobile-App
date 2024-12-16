@@ -173,8 +173,8 @@ class PropertyType {
 class Service {
   int id;
   int userId;
-  String serviceName;
-  String description;
+  String? serviceName;
+  String? description;
   String pricing;
   String startTime;
   String endTime;
@@ -240,8 +240,8 @@ class Service {
 
 class User {
   int id;
-  String fullname;
-  String email;
+  String? fullname;
+  String? email;
   String phoneNumber;
   int roleId;
   String profileimage;
@@ -294,14 +294,14 @@ class ServiceRequestUser {
   int id;
   int userId;
   int serviceproviderId;
-  String address;
+  String? address;
   String lat;
   String long;
   String price;
   PropertyType? propertyType;
-  String date;
-  String time;
-  String description;
+  String? date;
+  String? time;
+  String? description;
   String additionalInfo;
   int approved;
   int decline;

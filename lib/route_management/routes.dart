@@ -18,7 +18,7 @@ import 'package:property_app/views/land_lords/job_detail_screen.dart';
 import 'package:property_app/views/land_lords/job_screeen.dart';
 import 'package:property_app/views/land_lords/my_property_screen.dart';
 import 'package:property_app/views/land_lords/my_request_service_screen.dart';
-import 'package:property_app/views/land_lords/my_service_request_detail_controller.dart';
+import 'package:property_app/views/land_lords/my_service_request_detail_screen.dart';
 import 'package:property_app/views/land_lords/propert_detail_screen.dart';
 import 'package:property_app/views/land_lords/property_filter_screen.dart';
 import 'package:property_app/views/notification_screens/notification_screen.dart';

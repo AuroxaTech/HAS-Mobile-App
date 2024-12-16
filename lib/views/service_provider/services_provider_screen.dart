@@ -58,7 +58,7 @@ class ServiceProviderScreen extends GetView<ServiceProviderController> {
                           fit: BoxFit.cover,
                           width: 60,
                           height: 60,
-                          imageUrl: AppUrls.servicesImages +
+                          imageUrl: AppUrls.profileImageBaseUrl +
                               controller.getServiceOne.value!.serviceprovider
                                   .user.profileimage,
                           errorWidget: (context, e, b) {

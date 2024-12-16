@@ -1,14 +1,15 @@
 import 'dart:async';
 import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:http/http.dart' as http;
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:property_app/app_constants/app_icon.dart';
 import 'package:property_app/custom_widgets/custom_button.dart';
 import 'package:property_app/route_management/constant_routes.dart';
+
 import '../../app_constants/app_sizes.dart';
 import '../../constant_widget/constant_widgets.dart';
 import '../../models/propert_model/ladlord_property_model.dart';
@@ -25,11 +26,14 @@ class _PropertyMapState extends State<PropertyMap> {
   final Completer<GoogleMapController> _mapController = Completer();
   final _markers = <Marker>{}.obs;
   RxBool isLoading = false.obs;
-  final PagingController<int, Property> pagingController = PagingController(firstPageKey: 1);
+  final PagingController<int, Property> pagingController =
+      PagingController(firstPageKey: 1);
   final PropertyServices propertyServices = PropertyServices();
 
   double? currentLatitude;
   double? currentLongitude;
+
+  final RxBool _isHybrid = true.obs;
 
   @override
   void initState() {
@@ -63,7 +67,8 @@ class _PropertyMapState extends State<PropertyMap> {
 
     if (permission == LocationPermission.deniedForever) {
       // Permissions are denied forever, handle accordingly.
-      Get.snackbar("Location", "Location permissions are permanently denied, we cannot request permissions.");
+      Get.snackbar("Location",
+          "Location permissions are permanently denied, we cannot request permissions.");
       return;
     }
     try {
@@ -80,7 +85,6 @@ class _PropertyMapState extends State<PropertyMap> {
       });
 
       _moveCameraToCurrentLocation();
-
     } catch (e) {
       print('Error getting location: $e');
     }
@@ -98,10 +102,12 @@ class _PropertyMapState extends State<PropertyMap> {
     }
   }
 
-  Future<void> getProperties(int pageKey, [Map<String, dynamic>? filters]) async {
+  Future<void> getProperties(int pageKey,
+      [Map<String, dynamic>? filters]) async {
     isLoading.value = true;
     try {
-      var result = await propertyServices.getAllProperties(pageKey, filters: filters);
+      var result =
+          await propertyServices.getAllProperties(pageKey, filters: filters);
       isLoading.value = false;
       print("Result: $result");
       if (result['status'] == true) {
@@ -109,7 +115,8 @@ class _PropertyMapState extends State<PropertyMap> {
             .map((json) => Property.fromJson(json))
             .toList();
 
-        final isLastPage = result['data']['current_page'] == result['data']['last_page'];
+        final isLastPage =
+            result['data']['current_page'] == result['data']['last_page'];
         if (isLastPage) {
           pagingController.appendLastPage(newItems);
         } else {
@@ -132,8 +139,7 @@ class _PropertyMapState extends State<PropertyMap> {
   Future<void> loadCustomMarkerIcon() async {
     customIcon = await BitmapDescriptor.fromAssetImage(
         const ImageConfiguration(size: Size(48, 48)), // Size is optional
-        'assets/png/house_bitmap.png'
-    );
+        'assets/png/house_bitmap.png');
   }
 
   void updateMarkers(List<Property> properties) {
@@ -146,17 +152,20 @@ class _PropertyMapState extends State<PropertyMap> {
 
       // Check and correct invalid latitude or longitude ranges
       if (lat != null && (lat < -90 || lat > 90)) {
-        print("Latitude out of range, correcting for property ID: ${property.id}");
+        print(
+            "Latitude out of range, correcting for property ID: ${property.id}");
         lat = null; // Set to null to avoid using an invalid latitude
       }
       if (lng != null && (lng < -180 || lng > 180)) {
-        print("Longitude out of range, correcting for property ID: ${property.id}");
+        print(
+            "Longitude out of range, correcting for property ID: ${property.id}");
         lng = null; // Set to null to avoid using an invalid longitude
       }
 
       // Assume zero longitude might be incorrect, needs validation
       if (lng == 0.0) {
-        print("Longitude is zero, checking if misplaced for property ID: ${property.id}");
+        print(
+            "Longitude is zero, checking if misplaced for property ID: ${property.id}");
         // Implement logic to handle zero longitude or assume data error
         lng = null;
       }
@@ -172,7 +181,7 @@ class _PropertyMapState extends State<PropertyMap> {
           markerId: MarkerId(property.id.toString()),
           icon: customIcon ?? BitmapDescriptor.defaultMarker,
           position: LatLng(lat, lng),
-          onTap: (){
+          onTap: () {
             _onMarkerTapped(property, LatLng(lat!, lng!));
           },
         );
@@ -187,8 +196,8 @@ class _PropertyMapState extends State<PropertyMap> {
   LatLng? _markerLocation;
 
   void _onMarkerTapped(Property property, LatLng position) {
+    _removeOverlay();
     _markerLocation = position;
-    _overlayEntry?.remove();
     _overlayEntry = _createOverlayEntry(property);
     Overlay.of(context).insert(_overlayEntry!);
   }
@@ -209,7 +218,9 @@ class _PropertyMapState extends State<PropertyMap> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(6),
-              boxShadow: const [BoxShadow(color: Colors.black45, blurRadius: 10)],
+              boxShadow: const [
+                BoxShadow(color: Colors.black45, blurRadius: 10)
+              ],
             ),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -217,22 +228,21 @@ class _PropertyMapState extends State<PropertyMap> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Image.asset(AppIcons.appLogo, height: 50,), // Assuming imageURL is available in the property
+                  Image.asset(
+                    AppIcons.appLogo,
+                    height: 50,
+                  ), // Assuming imageURL is available in the property
                   h10,
                   customText(
-                      text: property.address,
-                      fontWeight: FontWeight.bold
-                  ),
+                      text: property.address, fontWeight: FontWeight.bold),
                   h10,
-                  customText(
-                      text: "Price: \$${property.amount}"
-                  ),
+                  customText(text: "Price: \$${property.amount}"),
                   h10,
                   CustomButton(
-                    onTap: (){
-                      _overlayEntry?.remove();
-                      _overlayEntry = null;
-                      Get.toNamed(kAllPropertyDetailScreen, arguments: property.id);
+                    onTap: () {
+                      _removeOverlay();
+                      Get.toNamed(kAllPropertyDetailScreen,
+                          arguments: property.id);
                     },
                     height: 30,
                     text: "Go",
@@ -248,27 +258,80 @@ class _PropertyMapState extends State<PropertyMap> {
   }
 
   @override
+  void dispose() {
+    _removeOverlay();
+    super.dispose();
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+  }
+
+  @override
   Widget build(BuildContext context) {
     print("Latitude==> ${currentLatitude} Longitude===> ${currentLongitude}");
     return Scaffold(
       body: Obx(() => GoogleMap(
-        myLocationEnabled: true,
-        mapType: MapType.hybrid,
-        initialCameraPosition: CameraPosition(
-          target: currentLatitude != null && currentLongitude != null
-              ? LatLng(currentLatitude!, currentLongitude!)
-              : const LatLng(33.6995, 73.0363), // Fallback to a default position if location is not available
-          zoom: 10,
+            myLocationEnabled: true,
+            mapType: _isHybrid.value ? MapType.hybrid : MapType.normal,
+            initialCameraPosition: CameraPosition(
+              target: currentLatitude != null && currentLongitude != null
+                  ? LatLng(currentLatitude!, currentLongitude!)
+                  : const LatLng(33.6995, 73.0363),
+              zoom: 10,
+            ),
+            markers: Set<Marker>.of(_markers),
+            onMapCreated: (GoogleMapController controller) {
+              _mapController.complete(controller);
+            },
+            onTap: (LatLng location) {
+              _removeOverlay();
+            },
+          )),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 10, left: 200),
+        child: FloatingActionButton(
+          backgroundColor: Colors.white,
+          child: const Icon(
+            Icons.layers,
+            color: Colors.black54,
+          ),
+          onPressed: () {
+            Get.bottomSheet(
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.map),
+                      title: const Text('Normal Map'),
+                      onTap: () {
+                        _isHybrid.value = false;
+                        Get.back();
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.satellite),
+                      title: const Text('Satellite View'),
+                      onTap: () {
+                        _isHybrid.value = true;
+                        Get.back();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
         ),
-        markers: Set<Marker>.of(_markers),
-        onMapCreated: (GoogleMapController controller) {
-          _mapController.complete(controller);
-        },
-        onTap: (LatLng location) {
-          _overlayEntry?.remove();
-          _overlayEntry = null;
-        },
-      )),
+      ),
     );
   }
 }

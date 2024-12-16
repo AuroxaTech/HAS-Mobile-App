@@ -29,7 +29,7 @@ Widget customText(
     TextDirection? textDirection,
     int? maxLines}) {
   return Text(
-    text!,
+    text ?? "",
     textAlign: textAlign,
     textDirection: textDirection,
     maxLines: maxLines,

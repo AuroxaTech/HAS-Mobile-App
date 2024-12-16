@@ -59,7 +59,10 @@ class CalendarData {
     required this.provider,
   });
 
-  factory CalendarData.fromJson(Map<String, dynamic> json) => CalendarData(
+  factory CalendarData.fromJson(Map<String, dynamic> json) {
+    print("Parsing CalendarData from JSON: $json");
+    try {
+      return CalendarData(
         id: json["id"],
         userId: json["user_id"],
         requestId: json["request_id"] ?? 0, // Default value if null
@@ -74,6 +77,11 @@ class CalendarData {
         request: Request.fromJson(json["request"]),
         provider: Provider.fromJson(json["provider"]),
       );
+    } catch (e) {
+      print("Error parsing CalendarData: $e");
+      rethrow;
+    }
+  }
 
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -221,7 +229,7 @@ class Request {
 class Service {
   int id;
   int userId;
-  String serviceName;
+  String? serviceName;
   String description;
   dynamic categoryId;
   String pricing;

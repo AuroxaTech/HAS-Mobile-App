@@ -97,7 +97,7 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
                                 );
                               } else {
                                 createConversation(
-                                  item.user.fullname,
+                                  item.user.fullname ?? "",
                                   item.user.profileimage,
                                   item.user.id.toString(),
                                   context,

@@ -540,10 +540,11 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                                   "Reciver Image ==> ${controller.getServiceRequestOne.value!.user.profileimage.toString()}");
                                               createConversation(
                                                   controller
-                                                      .getServiceRequestOne
-                                                      .value!
-                                                      .user
-                                                      .fullname,
+                                                          .getServiceRequestOne
+                                                          .value!
+                                                          .user
+                                                          .fullname ??
+                                                      "",
                                                   controller
                                                       .getServiceRequestOne
                                                       .value!

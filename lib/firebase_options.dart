@@ -64,7 +64,6 @@ class DefaultFirebaseOptions {
     projectId: 'has---real-estate',
   );
 
-
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyCqhkpyTegWcgAkVkR31Ir4SXuQlCW1Ask',
     appId: '1:826477053206:ios:967b73226e8206ace23c37',

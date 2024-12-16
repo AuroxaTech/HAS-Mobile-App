@@ -16,25 +16,24 @@ class PropertyTabsScreen extends StatefulWidget {
   _PropertyTabsScreenState createState() => _PropertyTabsScreenState();
 }
 
-class _PropertyTabsScreenState extends State<PropertyTabsScreen> with SingleTickerProviderStateMixin {
+class _PropertyTabsScreenState extends State<PropertyTabsScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final AllPropertyController controller = Get.put(AllPropertyController());
 
-  @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-    _tabController.addListener(() {
-      controller.selectedIndex.value = _tabController.index;
-    });
-    // If necessary, assign the TabController to the controller
-    // controller.tabController = _tabController;
-  }
+    _tabController = TabController(
+      length: 2,
+      vsync: this,
+      initialIndex: controller.selectedIndex.value,
+    );
 
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
+    _tabController.addListener(() {
+      if (_tabController.indexIsChanging) {
+        controller.selectedIndex.value = _tabController.index;
+      }
+    });
   }
 
   @override
@@ -68,15 +67,16 @@ class _PropertyTabsScreenState extends State<PropertyTabsScreen> with SingleTick
                   children: [
                     for (int i = 0; i < 2; i++)
                       Obx(
-                            () => Expanded(
+                        () => Expanded(
                           child: InkWell(
                             highlightColor: Colors.transparent,
                             hoverColor: Colors.transparent,
                             focusColor: Colors.transparent,
                             splashColor: Colors.transparent,
                             onTap: () {
-                              _tabController.animateTo(i);
-                              controller.selectedIndex.value = i;
+                              _tabController.animateTo(i); // Change tab
+                              controller.selectedIndex.value =
+                                  i; // Update index
                             },
                             child: Container(
                               padding: const EdgeInsets.symmetric(vertical: 10),
@@ -88,18 +88,20 @@ class _PropertyTabsScreenState extends State<PropertyTabsScreen> with SingleTick
                                     height: 10,
                                     decoration: BoxDecoration(
                                         shape: BoxShape.circle,
-                                        color: controller.selectedIndex.value == i
-                                            ? Colors.blue
-                                            : Colors.transparent),
+                                        color:
+                                            controller.selectedIndex.value == i
+                                                ? Colors.blue
+                                                : Colors.transparent),
                                   ),
                                   h5,
                                   customText(
                                     text: i == 0 ? 'Properties' : 'Map',
                                     color: Colors.black,
                                     fontSize: 15,
-                                    fontWeight: controller.selectedIndex.value == i
-                                        ? FontWeight.w600
-                                        : FontWeight.w400,
+                                    fontWeight:
+                                        controller.selectedIndex.value == i
+                                            ? FontWeight.w600
+                                            : FontWeight.w400,
                                   ),
                                 ],
                               ),

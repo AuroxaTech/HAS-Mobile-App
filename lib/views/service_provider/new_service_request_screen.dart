@@ -20,7 +20,7 @@ class NewServiceRequestScreen
       backgroundColor: whiteColor,
       appBar: homeAppBar(
         context,
-        text: "New Service Requests",
+        text: "New Service Request",
       ),
       body: SafeArea(
         child: Padding(
@@ -216,12 +216,9 @@ class NewServiceRequestScreen
                       onTap: () {
                         controller.selectDateTime(context);
                       },
-                      hintText: controller.selectedWeekdayRange.value.isEmpty
-                          ? 'Select range'
-                          : controller.selectedWeekdayRange.value ==
-                                  'Request Now'
-                              ? controller.selectedWeekdayRange.value
-                              : '${controller.selectedWeekdayRange.value}, ${controller.startTime.value.format(context)} - ${controller.endTime.value.format(context)}',
+                      hintText: controller.selectedOption.value.isEmpty
+                          ? 'Select days and time'
+                          : controller.getSelectedTimeRangeText,
                       suffixIcon: IconButton(
                         onPressed: () {
                           controller.selectDateTime(context);
@@ -278,15 +275,8 @@ class NewServiceRequestScreen
                                     lng: 77.3843,
                                     propertyType:
                                         controller.propertyTypeIndex.value,
-                                    date: controller.selectedWeekdayRange.value ==
-                                        'Request Now'
-                                        ?controller.selectedWeekdayRange.value
-                                        :
-                                    controller.selectedWeekdayRange.value +
-                                            controller.startTime.value
-                                                .format(context),
-                                    time: controller.endTime.value
-                                        .format(context),
+                                    date: controller.selectedDays.join(', '),
+                                    time: "${controller.startTime.value.format(context)} - ${controller.endTime.value.format(context)}",
                                     price: 0,
                                     postalCode: int.tryParse(
                                         controller.postalCodeController.text)!,

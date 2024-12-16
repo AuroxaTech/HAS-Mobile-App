@@ -252,7 +252,7 @@ class ServiceProviderRequest {
   String time;
   String description;
   String? additionalInfo;
-  int approved;
+  int? approved;
   int? decline;
   DateTime createdAt;
   DateTime updatedAt;

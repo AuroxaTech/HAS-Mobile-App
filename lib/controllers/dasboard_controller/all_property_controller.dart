@@ -103,19 +103,22 @@ class AllPropertyController extends GetxController {
 
   int getSelectedHomeSubTypeIndex() {
     List<MapEntry<String, bool>> entries = selectedHome.entries.toList();
-    int index = entries.indexWhere((MapEntry<String, bool> entry) => entry.value);
+    int index =
+        entries.indexWhere((MapEntry<String, bool> entry) => entry.value);
     return index != -1 ? index + 1 : 0;
   }
 
   int getSelectedPlotsSubTypeIndex() {
     List<MapEntry<String, bool>> entries = selectedPlots.entries.toList();
-    int index = entries.indexWhere((MapEntry<String, bool> entry) => entry.value);
+    int index =
+        entries.indexWhere((MapEntry<String, bool> entry) => entry.value);
     return index != -1 ? index + 1 : 0;
   }
 
   int getSelectedCommercialSubTypeIndex() {
     List<MapEntry<String, bool>> entries = selectedCommercial.entries.toList();
-    int index = entries.indexWhere((MapEntry<String, bool> entry) => entry.value);
+    int index =
+        entries.indexWhere((MapEntry<String, bool> entry) => entry.value);
     return index != -1 ? index + 1 : 0;
   }
 
@@ -133,14 +136,17 @@ class AllPropertyController extends GetxController {
     // getLandLordProperties();
   }
 
-  final PagingController<int, Property> pagingController = PagingController(firstPageKey: 1);
+  final PagingController<int, Property> pagingController =
+      PagingController(firstPageKey: 1);
 
-  Future<void> getProperties(int pageKey, [Map<String, dynamic>? filters]) async {
+  Future<void> getProperties(int pageKey,
+      [Map<String, dynamic>? filters]) async {
     try {
       isLoading.value = true;
 
       // Include the filters in the API request
-      var result = await propertyServices.getAllProperties(pageKey, filters: filters);
+      var result =
+          await propertyServices.getAllProperties(pageKey, filters: filters);
       isLoading.value = false;
       if (filters != null) {
         print(filters);
@@ -149,7 +155,8 @@ class AllPropertyController extends GetxController {
         final List<Property> newItems = (result['data']['data'] as List)
             .map((json) => Property.fromJson(json))
             .toList();
-        final isLastPage = result['data']['current_page'] == result['data']['last_page'];
+        final isLastPage =
+            result['data']['current_page'] == result['data']['last_page'];
         if (isLastPage) {
           pagingController.appendLastPage(newItems);
         } else {
@@ -185,7 +192,8 @@ class AllPropertyController extends GetxController {
     // Attempt to update the backend with the new favorite status
     try {
       // Make the API call
-      bool result = await propertyServices.addFavoriteProperty(propertyId, newFavoriteStatus ? 1 : 2);
+      bool result = await propertyServices.addFavoriteProperty(
+          propertyId, newFavoriteStatus ? 1 : 2);
       if (!result) {
         throw Exception('API call to add favorite failed.');
       }
@@ -198,5 +206,49 @@ class AllPropertyController extends GetxController {
 
     // Force the UI to refresh and reflect the change
     pagingController.notifyListeners();
+  }
+
+  void resetFilters() {
+    // Reset all filter values to their defaults
+    isSale.value = false;
+    selectedRange.value = "1 sq ft";
+    selectedBedroom.value = 1;
+    selectedBathrooms.value = 1;
+    selectedBothList.value = "1";
+    currentRange.value = const RangeValues(1, 1000);
+
+    // Just clear the text controllers instead of disposing them
+    minPriceController.text = '';
+    maxPriceController.text = '';
+
+    // Reset property type selection
+    home.value = true;
+    plots.value = false;
+    commercial.value = false;
+
+    // Reset all sub-type selections
+    var updatedHomeMap = Map<String, bool>.from(selectedHome);
+    updatedHomeMap.updateAll((k, v) => false);
+    selectedHome.value = updatedHomeMap;
+
+    var updatedPlotsMap = Map<String, bool>.from(selectedPlots);
+    updatedPlotsMap.updateAll((k, v) => false);
+    selectedPlots.value = updatedPlotsMap;
+
+    var updatedCommercialMap = Map<String, bool>.from(selectedCommercial);
+    updatedCommercialMap.updateAll((k, v) => false);
+    selectedCommercial.value = updatedCommercialMap;
+
+    // Clear existing items and refresh the list
+    pagingController.itemList?.clear();
+
+    // Refresh the form
+    formKey.currentState?.reset();
+
+    // Force UI update
+    update();
+
+    // Refresh with no filters
+    getProperties(1);
   }
 }

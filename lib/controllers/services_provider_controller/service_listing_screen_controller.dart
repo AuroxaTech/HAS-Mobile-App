@@ -28,9 +28,8 @@ class ServiceListingScreenController extends GetxController {
   var countryController = TextEditingController();
   var maxPriceController = TextEditingController();
 
-
   Future<void> _loadCurrentUserId() async {
-    currentUserId = int.parse(await Preferences.getUserID());
+    currentUserId = await Preferences.getUserID();
   }
 
   ServiceProviderServices servicesService = ServiceProviderServices();
@@ -45,7 +44,8 @@ class ServiceListingScreenController extends GetxController {
   Future<void> getServices(int pageKey, [Map<String, dynamic>? filters]) async {
     try {
       isLoading.value = true;
-      var result = await servicesService.getAllServices(pageKey, filters: filters);
+      var result =
+          await servicesService.getAllServices(pageKey, filters: filters);
       isLoading.value = false;
 
       if (result['status'] == true) {
@@ -68,7 +68,8 @@ class ServiceListingScreenController extends GetxController {
           }
         }
 
-        final isLastPage = result['data']['current_page'] == result['data']['last_page'];
+        final isLastPage =
+            result['data']['current_page'] == result['data']['last_page'];
 
         if (isLastPage) {
           pagingController.appendLastPage(newItems);

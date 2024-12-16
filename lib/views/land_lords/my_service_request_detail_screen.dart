@@ -26,49 +26,70 @@ class MyServiceRequestDetailScreen
         child: Obx(
           () => controller.isLoading.value
               ? const Center(child: CircularProgressIndicator())
-              : controller.getServiceOne.value == null
+              : controller.getServiceRequestOne.value == null
                   ? Center(
-                      child: customText(
-                        text: "No Data found",
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            AppIcons.appLogo,
+                            height: 100,
+                            width: 100,
+                          ),
+                          h20,
+                          customText(
+                            text: "No Data found",
+                          ),
+                          h20,
+                          CustomButton(
+                            text: "Go Back",
+                            onTap: () => Get.back(),
+                            width: 120,
+                          ),
+                        ],
                       ),
                     )
                   : Stack(
                       children: [
-                        PageView.builder(
-                          itemCount: controller.images.length,
-                          scrollDirection: Axis.horizontal,
-                          controller: controller.pageController,
-                          itemBuilder: (context, index) {
-                            String imagesString =
-                                controller.getServiceOne.value == null
-                                    ? ""
-                                    : controller.getServiceOne.value!.request
-                                        .service!.media
-                                  ..toString();
-                            List<String> imageList = imagesString.split(',');
-                            controller.images = imageList;
-                            return InkWell(
-                              onTap: () {
-                                Get.to(
-                                    () => ViewImage(
+                        controller.images.isEmpty
+                            ? Center(
+                                child: Image.asset(
+                                  AppIcons.appLogo,
+                                  height: screenHeight(context) * 0.5,
+                                  fit: BoxFit.contain,
+                                ),
+                              )
+                            : PageView.builder(
+                                itemCount: controller.images.length,
+                                scrollDirection: Axis.horizontal,
+                                controller: controller.pageController,
+                                itemBuilder: (context, index) {
+                                  return InkWell(
+                                    onTap: () {
+                                      Get.to(
+                                        () => ViewImage(
                                           photo: AppUrls.mediaImages +
-                                              imageList[index],
+                                              controller.images[index],
                                         ),
-                                    transition: routeTransition);
-                              },
-                              child: CachedNetworkImage(
-                                width: double.infinity,
-                                height: screenHeight(context) * 0.5,
-                                imageUrl:
-                                    AppUrls.mediaImages + imageList[index],
-                                fit: BoxFit.cover,
-                                errorWidget: (context, e, b) {
-                                  return Image.asset(AppIcons.appLogo);
+                                        transition: routeTransition,
+                                      );
+                                    },
+                                    child: CachedNetworkImage(
+                                      width: double.infinity,
+                                      height: screenHeight(context) * 0.5,
+                                      imageUrl: AppUrls.mediaImages +
+                                          controller.images[index],
+                                      fit: BoxFit.cover,
+                                      errorWidget: (context, e, b) {
+                                        return Image.asset(
+                                          AppIcons.appLogo,
+                                          fit: BoxFit.contain,
+                                        );
+                                      },
+                                    ),
+                                  );
                                 },
                               ),
-                            );
-                          },
-                        ),
                         Positioned(
                           child: Padding(
                             padding: const EdgeInsets.all(12.0),
@@ -134,7 +155,8 @@ class MyDraggable extends GetView<MyServiceRequestDetailController> {
         // ],
         controller: controller.controller,
         builder: (BuildContext context, ScrollController scrollController) {
-          DateTime? createdAt = controller.getServiceOne.value!.createdAt;
+          DateTime? createdAt =
+              controller.getServiceRequestOne.value!.createdAt;
           String requestDate = createdAt != null
               ? DateFormat('dd-M-yy').format(createdAt!)
               : 'N/A'; // Adjust the pattern as needed
@@ -174,12 +196,16 @@ class MyDraggable extends GetView<MyServiceRequestDetailController> {
                                   children: [
                                     Center(
                                       child: headingText(
-                                        text: controller.getServiceOne.value!
-                                                    .request ==
+                                        text: controller.getServiceRequestOne
+                                                    .value!.request ==
                                                 null
                                             ? ""
-                                            : controller.getServiceOne.value!
-                                                .request.service!.serviceName,
+                                            : controller
+                                                .getServiceRequestOne
+                                                .value!
+                                                .request
+                                                .service!
+                                                .serviceName,
                                         fontSize: 24,
                                       ),
                                     ),
@@ -207,7 +233,7 @@ class MyDraggable extends GetView<MyServiceRequestDetailController> {
                                                       fontSize: 15),
                                                   customText(
                                                       text: controller
-                                                          .getServiceOne
+                                                          .getServiceRequestOne
                                                           .value!
                                                           .provider!
                                                           .fullname,
@@ -230,7 +256,7 @@ class MyDraggable extends GetView<MyServiceRequestDetailController> {
                                                         fontSize: 15),
                                                     customText(
                                                         text: controller
-                                                            .getServiceOne
+                                                            .getServiceRequestOne
                                                             .value!
                                                             .provider!
                                                             .email,
@@ -248,8 +274,11 @@ class MyDraggable extends GetView<MyServiceRequestDetailController> {
                                               fontSize: 15),
                                           h5,
                                           customText(
-                                              text: controller.getServiceOne
-                                                  .value!.request.description,
+                                              text: controller
+                                                  .getServiceRequestOne
+                                                  .value!
+                                                  .request
+                                                  .description,
                                               color: blackColor,
                                               fontSize: 14),
                                           h5,
@@ -270,7 +299,7 @@ class MyDraggable extends GetView<MyServiceRequestDetailController> {
                                                   h5,
                                                   customText(
                                                       text: controller
-                                                          .getServiceOne
+                                                          .getServiceRequestOne
                                                           .value!
                                                           .request
                                                           .address,
@@ -314,7 +343,11 @@ class MyDraggable extends GetView<MyServiceRequestDetailController> {
                                                   fontSize: 12),
                                               w10,
                                               customText(
-                                                  text: requestDate,
+                                                  text: controller
+                                                      .getServiceRequestOne
+                                                      .value!
+                                                      .request
+                                                      .date,
                                                   color: blackColor,
                                                   fontSize: 12),
                                             ],
@@ -333,7 +366,11 @@ class MyDraggable extends GetView<MyServiceRequestDetailController> {
                                                   fontSize: 12),
                                               w10,
                                               customText(
-                                                  text: requestTime,
+                                                  text: controller
+                                                      .getServiceRequestOne
+                                                      .value!
+                                                      .request
+                                                      .time,
                                                   color: blackColor,
                                                   fontSize: 12),
                                             ],
@@ -357,8 +394,12 @@ class MyDraggable extends GetView<MyServiceRequestDetailController> {
                                                   fontSize: 12),
                                               w10,
                                               customText(
-                                                  text: controller.getServiceOne
-                                                      .value!.request.date,
+                                                  text: controller
+                                                      .getServiceRequestOne
+                                                      .value!
+                                                      .request
+                                                      .service
+                                                      ?.startTime,
                                                   color: blackColor,
                                                   fontSize: 12),
                                             ],
@@ -376,8 +417,12 @@ class MyDraggable extends GetView<MyServiceRequestDetailController> {
                                                   fontSize: 12),
                                               w10,
                                               customText(
-                                                  text: controller.getServiceOne
-                                                      .value!.request.time,
+                                                  text: controller
+                                                      .getServiceRequestOne
+                                                      .value!
+                                                      .request
+                                                      .service
+                                                      ?.endTime,
                                                   color: blackColor,
                                                   fontSize: 12),
                                             ],

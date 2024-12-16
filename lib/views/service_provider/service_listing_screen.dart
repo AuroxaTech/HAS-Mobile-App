@@ -80,8 +80,8 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                         print("Screen - approved: ${item.approved}");
 
                         int? isApplied;
-                        int? decline;
-                        int? approved;
+                        int? isDeclined;
+                        int? isApproved;
 
                         // If serviceProviderRequests exists, print the latest request details
                         if (item.serviceProviderRequests != null &&
@@ -89,24 +89,14 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                           var latestRequest = item.serviceProviderRequests!
                               .reduce((curr, next) =>
                                   curr.id > next.id ? curr : next);
-                          print(
-                              "Screen - Latest request ID: ${latestRequest.id}");
-                          print(
-                              "Screen - Latest request isApplied: ${latestRequest.isApplied}");
-                          print(
-                              "Screen - Latest request decline: ${latestRequest.decline}");
-                          print(
-                              "Screen - Latest request approved: ${latestRequest.approved}");
-
-                          isApplied = latestRequest.isApplied;
-                          decline = latestRequest.decline;
-                          approved = latestRequest.approved;
+                          isApplied = latestRequest.isApplied ?? 0;
+                          isDeclined = latestRequest.decline ?? 0;
+                          isApproved = latestRequest.approved ?? 0;
                         }
 
                         String imagesString = item.media.toString();
                         List<String> imageList = imagesString.split(',');
-                        print(
-                            "Image list contents: $imageList, accessing index: 0");
+
                         print(item.isFavorite);
                         print("is Applied => ${item.isApplied}");
                         print("is decline => ${item.decline}");
@@ -260,7 +250,7 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                                           color: blackColor),
                                       h10,
                                       customText(
-                                          text: "${item.location}",
+                                          text: item.location,
                                           fontSize: 16,
                                           color: blackColor),
                                       h10,
@@ -296,13 +286,10 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                                           ),
                                           w15,
                                           Expanded(
-                                            child: isApplied == 0 &&
-                                                        decline == 0 ||
-                                                    isApplied == 0 &&
-                                                        decline == 1 ||
-                                                    isApplied == 0 &&
-                                                        decline == 0 &&
-                                                        approved == 1
+                                            child: _shouldShowBookService(
+                                                    isApplied,
+                                                    isDeclined,
+                                                    isApproved)
                                                 ? CustomButton(
                                                     height:
                                                         screenHeight(context) *
@@ -336,7 +323,7 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                                                     fontSize: 18,
                                                     onTap: () {},
                                                   ),
-                                          ),
+                                          )
                                         ],
                                       )
                                     ],
@@ -359,6 +346,14 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
         ),
       ),
     );
+  }
+
+  bool _shouldShowBookService(
+      int? isApplied, int? isDeclined, int? isApproved) {
+    if (isApplied == null || isDeclined == null || isApproved == null) {
+      return true;
+    }
+    return (isApplied == 0 && isDeclined == 0) || (isDeclined == 1);
   }
 
   createConversation(

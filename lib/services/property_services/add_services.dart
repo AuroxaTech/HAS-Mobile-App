@@ -625,6 +625,7 @@ class ServiceProviderServices {
   }
 
   getServiceJob({required int? id}) async {
+    print("Calling service job API for ID: $id");
     Uri url = Uri.parse(
       "${AppUrls.getServiceJobDetail}/$id",
     );

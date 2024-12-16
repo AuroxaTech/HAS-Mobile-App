@@ -126,9 +126,7 @@ class LoginScreen extends GetView<LoginScreenController> {
                         ),
                       ],
                     )),
-
                     h85,
-
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -148,81 +146,7 @@ class LoginScreen extends GetView<LoginScreenController> {
                         ),
                       ],
                     ),
-
-                    // TextButton(onPressed: (){
-                    //
-                    //   NotificationServices().getDeviceToken().then((value)async{
-                    //
-                    //     var data = {
-                    //       'to' : value.toString(),
-                    //       'notification' : {
-                    //         'title' : 'new notification' ,
-                    //         'body' : 'Hello' ,
-                    //         //"sound": "jetsons_doorbell.mp3"
-                    //       },
-                    //       'android': {
-                    //         'notification': {
-                    //           'notification_count': 23,
-                    //         },
-                    //       },
-                    //       'data' : {
-                    //         'type' : 'msj' ,
-                    //         'id' : 'Aayaz'
-                    //       }
-                    //     };
-                    //
-                    //     var response = await http.post(Uri.parse('https://fcm.googleapis.com/fcm/send'),
-                    //         body: jsonEncode(data) ,
-                    //
-                    //         headers: {
-                    //           'Content-Type': 'application/json; charset=UTF-8',
-                    //           'Authorization' : 'key=AAAAwG3fBRY:APA91bGswE_GtChlZU3fq5A6iLypoG90MsPnx7TRTzAhM3HuPgKiL9RbHhAFNw0QmZFUSbj6vMXEZ1YtNNweKYvmt3BNm5VK-hmbBCYxU6llDzU-5Mh_Vyp2_uhCHHtvE3TgsswxdJTL'
-                    //         }
-                    //
-                    //
-                    //     ).then((value){
-                    //
-                    //       if (kDebugMode) {
-                    //         print(value.body.toString());
-                    //       }
-                    //
-                    //     }).onError((error, stackTrace){
-                    //       if (kDebugMode) {
-                    //         print(error);
-                    //       }
-                    //     });
-                    //     print(response);
-                    //     NotificationServices().firebaseInit(context);
-                    //   });
-                    // }, child: Text("Hell")),
-
-                    // Center(
-                    //   child: GestureDetector(
-                    //     onTap: (){
-                    //       Get.to(() => const ServiceProviderBottomBar());
-                    //     },
-                    //     child: headingText(
-                    //         text: "Sign up",
-                    //         color: primaryColor,
-                    //         fontSize: 14
-                    //     ),
-                    //   ),
-                    // ),
-                    h20,
-
-                    // Center(
-                    //   child: GestureDetector(
-                    //     onTap: (){
-                    //     Navigator.push(context, MaterialPageRoute(builder: (context) => LocationScreen()));
-                    //     },
-                    //     child: customText(
-                    //         text: "Location",
-                    //         color: primaryColor,
-                    //         fontSize: 14
-                    //     ),
-                    //   ),
-                    // ),
-                    SizedBox(
+                    const SizedBox(
                       height: 50,
                     ),
                     h20,
@@ -236,3 +160,77 @@ class LoginScreen extends GetView<LoginScreenController> {
     );
   }
 }
+
+// TextButton(onPressed: (){
+//
+//   NotificationServices().getDeviceToken().then((value)async{
+//
+//     var data = {
+//       'to' : value.toString(),
+//       'notification' : {
+//         'title' : 'new notification' ,
+//         'body' : 'Hello' ,
+//         //"sound": "jetsons_doorbell.mp3"
+//       },
+//       'android': {
+//         'notification': {
+//           'notification_count': 23,
+//         },
+//       },
+//       'data' : {
+//         'type' : 'msj' ,
+//         'id' : 'Aayaz'
+//       }
+//     };
+//
+//     var response = await http.post(Uri.parse('https://fcm.googleapis.com/fcm/send'),
+//         body: jsonEncode(data) ,
+//
+//         headers: {
+//           'Content-Type': 'application/json; charset=UTF-8',
+//           'Authorization' : 'key=AAAAwG3fBRY:APA91bGswE_GtChlZU3fq5A6iLypoG90MsPnx7TRTzAhM3HuPgKiL9RbHhAFNw0QmZFUSbj6vMXEZ1YtNNweKYvmt3BNm5VK-hmbBCYxU6llDzU-5Mh_Vyp2_uhCHHtvE3TgsswxdJTL'
+//         }
+//
+//
+//     ).then((value){
+//
+//       if (kDebugMode) {
+//         print(value.body.toString());
+//       }
+//
+//     }).onError((error, stackTrace){
+//       if (kDebugMode) {
+//         print(error);
+//       }
+//     });
+//     print(response);
+//     NotificationServices().firebaseInit(context);
+//   });
+// }, child: Text("Hell")),
+
+// Center(
+//   child: GestureDetector(
+//     onTap: (){
+//       Get.to(() => const ServiceProviderBottomBar());
+//     },
+//     child: headingText(
+//         text: "Sign up",
+//         color: primaryColor,
+//         fontSize: 14
+//     ),
+//   ),
+// ),
+//h20,
+
+// Center(
+//   child: GestureDetector(
+//     onTap: (){
+//     Navigator.push(context, MaterialPageRoute(builder: (context) => LocationScreen()));
+//     },
+//     child: customText(
+//         text: "Location",
+//         color: primaryColor,
+//         fontSize: 14
+//     ),
+//   ),
+// ),

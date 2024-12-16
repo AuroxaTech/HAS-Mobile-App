@@ -451,15 +451,36 @@ class AuthServices {
             'Content-Type': 'application/json',
           },
         );
-        print(res.body);
-        return json.decode(res.body);
+
+        // Debug logging
+        print('Response status code: ${res.statusCode}');
+        print('Response headers: ${res.headers}');
+        print('Response body: ${res.body}');
+
+        // Check if response is HTML instead of JSON
+        if (res.body.trim().startsWith('<!DOCTYPE html>')) {
+          throw Exception(
+              'Server returned HTML instead of JSON. Please contact support.');
+        }
+
+        // Check status code
+        if (res.statusCode != 200) {
+          throw Exception('Server returned status code ${res.statusCode}');
+        }
+
+        try {
+          return json.decode(res.body);
+        } on FormatException catch (e) {
+          throw Exception('Invalid JSON response from server: ${e.message}');
+        }
       } catch (e) {
-        // Handle general errors
+        if (e is Exception) {
+          rethrow;
+        }
         throw Exception('Failed to Login: $e');
       }
     } else {
       AppUtils.getSnackBarNoInternet();
-      // You might want to throw an exception here or return a specific value
       throw Exception('No internet connectivity');
     }
   }
