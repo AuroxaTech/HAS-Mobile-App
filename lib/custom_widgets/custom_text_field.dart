@@ -34,7 +34,8 @@ class CustomTextField extends StatefulWidget {
     this.textAlignVertical,
     this.onTap,
     this.border,
-    this.height
+    this.height,
+    this.textCapitalization = TextCapitalization.none,
   });
 
   final double? width;
@@ -63,6 +64,7 @@ class CustomTextField extends StatefulWidget {
   final VoidCallback? onTap;
   final InputBorder? border;
   final TextAlignVertical? textAlignVertical;
+  final TextCapitalization textCapitalization;
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
@@ -100,6 +102,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         onChanged: widget.onChanged,
         textAlign: widget.textAlign??TextAlign.start,
         textAlignVertical: widget.textAlignVertical??TextAlignVertical.center,
+        textCapitalization: widget.textCapitalization,
       ),
     );
   }
@@ -655,6 +658,56 @@ class PhoneNumberInput extends StatelessWidget {
       fillColor: Colors.white,
       filled: true,
       isDense: true,
+    );
+  }
+}
+
+class FullNameTextField extends StatelessWidget {
+  final TextEditingController controller;
+  final String? Function(String?)? validator;
+
+  const FullNameTextField({
+    Key? key,
+    required this.controller,
+    this.validator,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomTextField(
+      controller: controller,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Full name is required';
+        }
+        if (value.length < 2) {
+          return 'Name must be at least 2 characters';
+        }
+        return null;
+      },
+      prefix: const Icon(Icons.person_outline, color: greyColor),
+      hintText: "Full Name (e.g., John Smith)",
+      keyboaredtype: TextInputType.name,
+      onChanged: (value) {
+        if (value.isNotEmpty) {
+          // Capitalize first letter of each word
+          final words = value.split(' ');
+          final capitalizedWords = words.map((word) {
+            if (word.isEmpty) return '';
+            return word[0].toUpperCase() + (word.length > 1 ? word.substring(1) : '');
+          }).join(' ');
+          
+          if (capitalizedWords != value) {
+            controller.value = TextEditingValue(
+              text: capitalizedWords,
+              selection: TextSelection.collapsed(offset: capitalizedWords.length),
+            );
+          }
+        }
+      },
+      inputFormatter: [
+        FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z ]')),
+      ],
     );
   }
 }

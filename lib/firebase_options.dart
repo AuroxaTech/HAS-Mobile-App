@@ -48,6 +48,7 @@ class DefaultFirebaseOptions {
     appId: '1:309475321224:web:1446dcb1ff871ee8fe863d',
     messagingSenderId: '826477053206',
     projectId: 'has---real-estate',
+    storageBucket: "has---real-estate.appspot.com",
   );
 
   static const FirebaseOptions android = FirebaseOptions(
@@ -55,6 +56,7 @@ class DefaultFirebaseOptions {
     appId: '1:826477053206:android:bb8828fb791441f1e23c37',
     messagingSenderId: '826477053206',
     projectId: 'has---real-estate',
+    storageBucket: "has---real-estate.appspot.com",
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -62,6 +64,7 @@ class DefaultFirebaseOptions {
     appId: '1:826477053206:ios:967b73226e8206ace23c37',
     messagingSenderId: '826477053206',
     projectId: 'has---real-estate',
+    storageBucket: "has---real-estate.appspot.com",
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -69,6 +72,7 @@ class DefaultFirebaseOptions {
     appId: '1:826477053206:ios:967b73226e8206ace23c37',
     messagingSenderId: '826477053206',
     projectId: 'has---real-estate',
+    storageBucket: "has---real-estate.appspot.com",
   );
 }
 //import 'dart:io';

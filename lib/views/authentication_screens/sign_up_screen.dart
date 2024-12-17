@@ -112,17 +112,8 @@ class SignUpScreen extends GetView<SignUpController> {
                       h40,
 
                       // Enhanced Form Fields
-                      CustomTextField(
+                      FullNameTextField(
                         controller: controller.nameController,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Full name is required';
-                          }
-                          return null;
-                        },
-                        prefix:
-                            const Icon(Icons.person_outline, color: greyColor),
-                        hintText: "Full Name",
                       ),
                       h15,
 
