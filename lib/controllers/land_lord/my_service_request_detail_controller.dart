@@ -33,7 +33,7 @@ class MyServiceRequestDetailController extends GetxController {
 
     try {
       var result = await serviceRequestService.getServiceJob(id: id);
-      print("Raw API Response: $result"); // Log full response
+      print("Raw API Response: $result");
 
       // Handle case where result or result['data'] is null or empty
       if (result == null ||
