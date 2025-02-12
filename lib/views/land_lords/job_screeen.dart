@@ -19,7 +19,12 @@ class JobsScreen extends GetView<JobScreenController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: whiteColor,
-      appBar: homeAppBar(context, text: "Jobs", isBack: false, back: isBack),
+      appBar: homeAppBar(
+        context,
+        text: "Jobs",
+        isBack: false,
+        back: isBack,
+      ),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () async {

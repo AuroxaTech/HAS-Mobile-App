@@ -217,6 +217,7 @@ PreferredSizeWidget homeAppBar(context,
     bool? showNotification = false,
     VoidCallback? menuOnTap,
     bool? isBack = false,
+    bool? isMenu = false,
     VoidCallback? backTap,
     bool? back = true}) {
   return AppBar(
@@ -269,15 +270,18 @@ PreferredSizeWidget homeAppBar(context,
       // const SizedBox(
       //   width: 5,
       // ),
-      InkWell(
-        onTap: menuOnTap,
-        child: Container(
-          decoration: BoxDecoration(
-              shape: BoxShape.circle, border: Border.all(color: borderColor)),
-          padding: const EdgeInsets.all(12),
-          child: SvgPicture.asset(AppIcons.menu),
-        ),
-      ),
+      isMenu == true
+          ? InkWell(
+              onTap: menuOnTap,
+              child: Container(
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: borderColor)),
+                padding: const EdgeInsets.all(12),
+                child: SvgPicture.asset(AppIcons.menu),
+              ),
+            )
+          : const SizedBox.shrink(),
       const SizedBox(
         width: 8,
       ),

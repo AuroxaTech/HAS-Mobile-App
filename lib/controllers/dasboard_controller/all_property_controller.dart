@@ -186,7 +186,7 @@ class AllPropertyController extends GetxController {
     // Retrieve the current service directly from pagingController's itemList
     var service = pagingController.itemList![index];
     // Toggle the isFavorite status
-    bool newFavoriteStatus = !(service.isFavorite ?? false);
+    bool newFavoriteStatus = !(service.isFavorite);
     service.isFavorite = newFavoriteStatus;
 
     // Attempt to update the backend with the new favorite status

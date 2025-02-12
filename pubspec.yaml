@@ -3,7 +3,7 @@ description: A new Flutter project.
 
 publish_to: 'none'
 
-version: 1.0.8+10
+version: 1.0.9+11
 
 environment:
   sdk: '>=3.4.4 <4.0.0'
@@ -40,7 +40,7 @@ dependencies:
   cloud_firestore: ^4.16.1
   firebase_storage: ^11.7.1
   image_cropper: ^7.0.4
-  file_picker: ^8.0.4
+  file_picker: ^8.1.7
   emoji_picker_flutter: ^2.2.0
   syncfusion_flutter_pdfviewer:
   translator:
