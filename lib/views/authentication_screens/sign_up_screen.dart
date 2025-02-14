@@ -12,6 +12,7 @@ import '../../app_constants/color_constants.dart';
 import '../../constant_widget/constant_widgets.dart';
 import '../../custom_widgets/custom_button.dart';
 import '../../custom_widgets/custom_text_field.dart';
+import '../../utils/utils.dart';
 
 class SignUpScreen extends GetView<SignUpController> {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -513,15 +514,129 @@ class SignUpScreen extends GetView<SignUpController> {
         CustomButton(
           width: double.infinity,
           text: "Register",
-          btnColor: primaryColor,
           isLoading: controller.isLoading.value,
           onTap: controller.isLoading.value
               ? null
               : () async {
                   if (controller.formKey.currentState!.validate()) {
-                    // Registration logic remains the same
-                    // ... existing registration code ...
+                    String occupant = controller.noOfOccupant.value;
+                    if (controller.profileImage.value == null) {
+                      if (controller.onRentValue.value ==
+                              "Select last status" ||
+                          controller.onRentValue.value == "own house") {
+                        print("own house");
+                        await controller.registerTenant(
+                          fullName: controller.nameController.text,
+                          userName: controller.userNameController.text,
+                          address: controller.addressController.text.isEmpty
+                              ? "Test"
+                              : controller.addressController.text,
+                          postalCode: controller.postalCode.text.isEmpty
+                              ? "00000"
+                              : controller.postalCode.text,
+                          email: controller.emailController.text,
+                          phoneNumber: controller.phoneController.text,
+                          password: controller.passwordController.text,
+                          cPassword: controller.confirmPasswordController.text,
+                          roleId: 2,
+                          lastStatus: 1, // or 2 based on your scenario
+                          occupation: controller.occupationController
+                              .text, // provide value based on your scenario
+                          leasedDuration: controller.leasedDuration
+                              .value, // provide value based on your scenario
+                          noOfOccupants:
+                              occupant, // provide value based on your scenario
+                        );
+                      } else {
+                        print("own rent");
+                        await controller.registerTenant(
+                          fullName: controller.nameController.text,
+                          userName: controller.userNameController.text,
+                          address: controller.addressController.text.isEmpty
+                              ? "Test"
+                              : controller.addressController.text,
+                          postalCode: controller.postalCode.text.isEmpty
+                              ? "00000"
+                              : controller.postalCode.text,
+                          phoneNumber: controller.phoneController.text,
+                          email: controller.emailController.text,
+                          password: controller.passwordController.text,
+                          cPassword: controller.confirmPasswordController.text,
+                          roleId: 2,
+                          lastStatus: 2,
+                          // lastLandlordName: controller.lastLandLordController.text, // provide value based on your scenario
+                          // lastTenancy: controller.lastTenancyController.text, // provide value based on your scenario
+                          // lastLandlordContact: controller.lastLandLordContactController.text, // provide value based on your scenario
+                          occupation: controller.occupationController
+                              .text, // provide value based on your scenario
+                          leasedDuration: controller.leasedDuration
+                              .value, // provide value based on your scenario
+                          noOfOccupants:
+                              occupant, // provide value based on your scenario
+                        );
+                      }
+                    } else {
+                      print("tenenat profile image");
+                      if (controller.onRentValue.value ==
+                              "Select last status" ||
+                          controller.onRentValue.value == "own house") {
+                        print("own house");
+                        await controller.registerTenant(
+                          address: controller.addressController.text.isEmpty
+                              ? "Test"
+                              : controller.addressController.text,
+                          postalCode: controller.postalCode.text.isEmpty
+                              ? "00000"
+                              : controller.postalCode.text,
+                          fullName: controller.nameController.text,
+                          userName: controller.userNameController.text,
+                          email: controller.emailController.text,
+                          phoneNumber: controller.phoneController.text,
+                          password: controller.passwordController.text,
+                          cPassword: controller.confirmPasswordController.text,
+                          roleId: 2,
+                          profileImage: controller.profileImage.value!,
+                          lastStatus: 2, // or 2 based on your scenario
+                          occupation: controller.occupationController
+                              .text, // provide value based on your scenario
+                          leasedDuration: controller.leasedDuration
+                              .value, // provide value based on your scenario
+                          noOfOccupants:
+                              occupant, // provide value based on your scenario
+                        );
+                      } else {
+                        print("own rent");
+                        await controller.registerTenant(
+                          address: controller.addressController.text.isEmpty
+                              ? "Test"
+                              : controller.addressController.text,
+                          postalCode: controller.postalCode.text.isEmpty
+                              ? "00000"
+                              : controller.postalCode.text,
+                          fullName: controller.nameController.text,
+                          userName: controller.userNameController.text,
+                          phoneNumber: controller.phoneController.text,
+                          email: controller.emailController.text,
+                          password: controller.passwordController.text,
+                          cPassword: controller.confirmPasswordController.text,
+                          roleId: 2,
+                          profileImage: controller.profileImage.value!,
+                          lastStatus: 1,
+                          // lastLandlordName: controller.lastLandLordController.text, // provide value based on your scenario
+                          // lastTenancy: controller.lastTenancyController.text, // provide value based on your scenario
+                          // lastLandlordContact: controller.lastLandLordContactController.text, // provide value based on your scenario
+                          occupation: controller.occupationController
+                              .text, // provide value based on your scenario
+                          leasedDuration: controller.leasedDuration
+                              .value, // provide value based on your scenario
+                          noOfOccupants:
+                              occupant, // provide value based on your scenario
+                        );
+                      }
+                    }
                   }
+
+                  //Get.toNamed(kTenantDashboard);
                 },
         ),
         h30,
@@ -529,7 +644,7 @@ class SignUpScreen extends GetView<SignUpController> {
     );
   }
 
-  Widget servicesProvider(BuildContext context) {
+  Widget servicesProvider(context) {
     return Column(
       children: [
         CustomDropDown(
@@ -551,44 +666,527 @@ class SignUpScreen extends GetView<SignUpController> {
             "Cleaner"
           ].map<DropdownMenuItem<String>>((String value) {
             return DropdownMenuItem<String>(
+              onTap: () {},
               value: value,
               child: customText(text: value, fontSize: 16, color: hintColor),
             );
           }).toList(),
         ),
-        if (controller.electricalValue.value != "Choose service") ...[
-          h15,
-          CustomTextField(
-            controller: controller.experienceController,
-            keyboaredtype: TextInputType.number,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter experience';
-              }
-              return null;
-            },
-            prefix: const Icon(Icons.work_history_outlined, color: greyColor),
-            errorText:
-                controller.experienceField.value ? null : "Experience Required",
-            hintText: "Years of Experience",
-          ),
-          h15,
-          CustomTextField(
-            readOnly: true,
-            onTap: () {
-              controller.selectDateTime(context);
-            },
-            hintText:
-                'Weekdays, ${controller.startTime.value.format(context)} - ${controller.endTime.value.format(context)}',
-            suffixIcon: IconButton(
-                onPressed: () {
+        controller.electricalValue.value == "Choose service"
+            ? const SizedBox()
+            : h15,
+        controller.electricalValue.value == "Choose service"
+            ? const SizedBox()
+            : CustomTextField(
+                controller: controller.experienceController,
+                keyboaredtype: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter experience';
+                  }
+                  return null;
+                },
+                errorText: controller.experienceField.value
+                    ? null
+                    : "Experience Required",
+                hintText: "Years of Experience",
+              ),
+        controller.electricalValue.value == "Choose service"
+            ? const SizedBox()
+            : h15,
+        controller.electricalValue.value == "Choose service"
+            ? const SizedBox()
+            : CustomTextField(
+                readOnly: true,
+                onTap: () {
                   controller.selectDateTime(context);
                 },
-                icon: const Icon(Icons.calendar_month)),
+                hintText:
+                    'Weekdays, ${controller.startTime.value.format(context)} - ${controller.endTime.value.format(context)}',
+                suffixIcon: IconButton(
+                    onPressed: () {
+                      controller.selectDateTime(context);
+                    },
+                    icon: const Icon(Icons.calendar_month)),
+              ),
+        h15,
+        CustomDropDown(
+          value: controller.yesValue.value,
+          onChange: (value) {
+            controller.yesValue.value = value;
+          },
+          items: ['Any Certificate ?', 'Yes', 'No']
+              .map<DropdownMenuItem<String>>((String value) {
+            return DropdownMenuItem<String>(
+              onTap: () {},
+              value: value,
+              child: customText(text: value, fontSize: 16, color: hintColor),
+            );
+          }).toList(),
+        ),
+        h15,
+        controller.yesValue.value == "Any Certificate ?" ||
+                controller.yesValue.value == "No"
+            ? const SizedBox()
+            : Align(
+                alignment: Alignment.bottomLeft,
+                child: customText(
+                  text: "Any Certificate ? (optional)",
+                  fontSize: 12,
+                  color: blackColor,
+                ),
+              ),
+        controller.yesValue.value == "Any Certificate ?" ||
+                controller.yesValue.value == "No"
+            ? const SizedBox()
+            : h15,
+        controller.yesValue.value == "Any Certificate ?" ||
+                controller.yesValue.value == "No"
+            ? const SizedBox()
+            : controller.certificateImage.value == null
+                ? uploadImageContainer(
+                    onTap: () {
+                      controller.pickCertificate();
+                    },
+                    text: "Upload File")
+                : Container(
+                    width: double.infinity,
+                    height: 130,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        image: DecorationImage(
+                            image: FileImage(
+                              File(controller.certificateImage.value!.path),
+                            ),
+                            fit: BoxFit.fill)),
+                    child: Align(
+                      alignment: Alignment.topRight,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                controller.certificateImage.value = null;
+                              },
+                              child: Container(
+                                width: 35,
+                                height: 35,
+                                decoration: BoxDecoration(
+                                    color: whiteColor,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: const Icon(Icons.delete),
+                              ),
+                            ),
+                            w5,
+                            InkWell(
+                              onTap: () {
+                                controller.pickCertificate();
+                              },
+                              child: Container(
+                                width: 35,
+                                height: 35,
+                                decoration: BoxDecoration(
+                                    color: whiteColor,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: const Icon(Icons.edit),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+        h15,
+        Align(
+          alignment: Alignment.bottomLeft,
+          child: customText(
+            text: "Select CNIC Front Image",
+            fontSize: 12,
+            color: blackColor,
           ),
-        ],
-        // Rest of the service provider form...
-        // Add the remaining widgets for service provider registration
+        ),
+        h15,
+        controller.frontCNICImage.value == null
+            ? uploadImageContainer(
+                onTap: () {
+                  controller.frontCNIC();
+                },
+                text: "CNIC Front")
+            : Container(
+                width: double.infinity,
+                height: 130,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    image: DecorationImage(
+                        image: FileImage(
+                          File(controller.frontCNICImage.value!.path),
+                        ),
+                        fit: BoxFit.fill)),
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            controller.frontCNICImage.value = null;
+                          },
+                          child: Container(
+                            width: 35,
+                            height: 35,
+                            decoration: BoxDecoration(
+                                color: whiteColor,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: const Icon(Icons.delete),
+                          ),
+                        ),
+                        w5,
+                        InkWell(
+                          onTap: () {
+                            controller.pickCertificate();
+                          },
+                          child: Container(
+                            width: 35,
+                            height: 35,
+                            decoration: BoxDecoration(
+                                color: whiteColor,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: const Icon(Icons.edit),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+        h15,
+        Align(
+          alignment: Alignment.bottomLeft,
+          child: customText(
+            text: "Select CNIC Back Image",
+            fontSize: 12,
+            color: blackColor,
+          ),
+        ),
+        h15,
+        controller.backCNICImage.value == null
+            ? uploadImageContainer(
+                onTap: () {
+                  controller.backCNIC();
+                },
+                text: "CNIC Back")
+            : Container(
+                width: double.infinity,
+                height: 130,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    image: DecorationImage(
+                        image: FileImage(
+                          File(controller.backCNICImage.value!.path),
+                        ),
+                        fit: BoxFit.fill)),
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            controller.backCNICImage.value = null;
+                          },
+                          child: Container(
+                            width: 35,
+                            height: 35,
+                            decoration: BoxDecoration(
+                                color: whiteColor,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: const Icon(Icons.delete),
+                          ),
+                        ),
+                        w5,
+                        InkWell(
+                          onTap: () {
+                            controller.pickCertificate();
+                          },
+                          child: Container(
+                            width: 35,
+                            height: 35,
+                            decoration: BoxDecoration(
+                                color: whiteColor,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: const Icon(Icons.edit),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+        h15,
+        Align(
+          alignment: Alignment.bottomLeft,
+          child: customText(
+            text: "Upload a Resume",
+            fontSize: 12,
+            color: blackColor,
+          ),
+        ),
+        h15,
+        controller.pickFile.value == null
+            ? uploadImageContainer(
+                onTap: () {
+                  controller.pickFiles();
+                },
+                text: "Upload Resume")
+            : Container(
+                width: double.infinity,
+                height: 130,
+                decoration: BoxDecoration(
+                  color: whiteColor,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 1.0,
+                    ),
+                  ],
+                ),
+                child: Stack(
+                  children: [
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                controller.pickFile.value = null;
+                              },
+                              child: Container(
+                                width: 35,
+                                height: 35,
+                                decoration: BoxDecoration(
+                                    color: whiteColor,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: const Icon(Icons.delete),
+                              ),
+                            ),
+                            w5,
+                            InkWell(
+                              onTap: () {
+                                controller.pickFiles();
+                              },
+                              child: Container(
+                                width: 35,
+                                height: 35,
+                                decoration: BoxDecoration(
+                                    color: whiteColor,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: const Icon(Icons.edit),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Positioned.fill(
+                        child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Center(
+                            child: controller
+                                .getFileIcon(controller.pickFile.value!.name)),
+                        h10,
+                        Center(
+                          child: customText(
+                              text: controller.pickFile.value!.name,
+                              fontSize: 18),
+                        ),
+                      ],
+                    ))
+                  ],
+                ),
+              ),
+        h50,
+        CustomButton(
+          width: double.infinity,
+          text: "Register",
+          isLoading: controller.isLoading.value,
+          onTap: controller.isLoading.value
+              ? null
+              : () async {
+                  if (controller.formKey.currentState!.validate()) {
+                    if (controller.frontCNICImage.value == null) {
+                      AppUtils.errorSnackBar(
+                          "Please Select", "Please Select CNIC Front Image");
+                    } else if (controller.backCNICImage.value == null) {
+                      AppUtils.errorSnackBar(
+                          "Please Select", "Please Select CNIC Back Image");
+                    } else {
+                      int experience =
+                          int.parse(controller.experienceController.text);
+                      if (controller.profileImage.value == null) {
+                        if (controller.yesValue.value == "Any Certificate ?" ||
+                            controller.yesValue.value == "No") {
+                          // User has provided certification
+                          try {
+                            await controller.registerServiceProvider(
+                              fullName: controller.nameController.text,
+                              userName: controller.userNameController.text,
+                              email: controller.emailController.text,
+                              address: controller.addressController.text.isEmpty
+                                  ? "Test"
+                                  : controller.addressController.text,
+                              postalCode: controller.postalCode.text.isEmpty
+                                  ? "00000"
+                                  : controller.postalCode.text,
+                              phoneNumber: controller.phoneController.text,
+                              password: controller.passwordController.text,
+                              cPassword:
+                                  controller.confirmPasswordController.text,
+                              services: controller.electricalValue.value,
+                              yearExperience:
+                                  controller.experienceController.text,
+                              availabilityStartTime: controller
+                                      .selectedWeekdayRange.value +
+                                  controller.startTime.value.format(context),
+                              availabilityEndTime:
+                                  controller.endTime.value.format(context),
+                              cnicFront: controller.frontCNICImage.value!,
+                              cnicBack: controller.backCNICImage.value!,
+                            );
+                            // Registration successful, navigate or perform other actions
+                          } catch (e) {
+                            // Handle registration failure, show error message or take appropriate action
+                            print('Registration failed: $e');
+                          }
+                        } else {
+                          // User has not provided certification
+                          try {
+                            await controller.registerServiceProvider(
+                              fullName: controller.nameController.text,
+                              userName: controller.userNameController.text,
+                              email: controller.emailController.text,
+                              address: controller.addressController.text.isEmpty
+                                  ? "Test"
+                                  : controller.addressController.text,
+                              postalCode: controller.postalCode.text.isEmpty
+                                  ? "00000"
+                                  : controller.postalCode.text,
+                              phoneNumber: controller.phoneController.text,
+                              password: controller.passwordController.text,
+                              cPassword:
+                                  controller.confirmPasswordController.text,
+                              services: controller.electricalValue.value,
+                              yearExperience:
+                                  controller.experienceController.text,
+                              availabilityStartTime: controller
+                                      .selectedWeekdayRange.value +
+                                  controller.startTime.value.format(context),
+                              availabilityEndTime:
+                                  controller.endTime.value.format(context),
+                              cnicFront: controller.frontCNICImage.value!,
+                              cnicBack: controller.backCNICImage.value!,
+                              certification: controller.yesValue.value,
+                              certificationFile:
+                                  controller.certificateImage.value!,
+                              // No certification information provided
+                            );
+
+                            // Registration successful, navigate or perform other actions
+                          } catch (e) {
+                            // Handle registration failure, show error message or take appropriate action
+                            print('Registration failed: $e');
+                          }
+                        }
+                      } else {
+                        if (controller.yesValue.value == "Any Certificate ?" ||
+                            controller.yesValue.value == "No") {
+                          // User has provided certification
+                          try {
+                            await controller.registerServiceProvider(
+                              address: controller.addressController.text.isEmpty
+                                  ? "Test"
+                                  : controller.addressController.text,
+                              postalCode: controller.postalCode.text.isEmpty
+                                  ? "00000"
+                                  : controller.postalCode.text,
+                              fullName: controller.nameController.text,
+                              userName: controller.userNameController.text,
+                              email: controller.emailController.text,
+                              phoneNumber: controller.phoneController.text,
+                              password: controller.passwordController.text,
+                              cPassword:
+                                  controller.confirmPasswordController.text,
+                              profileImage: controller.profileImage.value!,
+                              services: controller.electricalValue.value,
+                              yearExperience: experience.toString(),
+                              availabilityStartTime:
+                                  controller.startTime.value.format(context),
+                              availabilityEndTime:
+                                  controller.endTime.value.format(context),
+                              cnicFront: controller.frontCNICImage.value!,
+                              cnicBack: controller.backCNICImage.value!,
+                            );
+
+                            // Registration successful, navigate or perform other actions
+                          } catch (e) {
+                            // Handle registration failure, show error message or take appropriate action
+                            print('Registration failed: $e');
+                          }
+                        } else {
+                          // User has not provided certification
+                          try {
+                            await controller.registerServiceProvider(
+                              address: controller.addressController.text.isEmpty
+                                  ? "Test"
+                                  : controller.addressController.text,
+                              postalCode: controller.postalCode.text.isEmpty
+                                  ? "00000"
+                                  : controller.postalCode.text,
+                              fullName: controller.nameController.text,
+                              userName: controller.userNameController.text,
+                              email: controller.emailController.text,
+                              phoneNumber: controller.phoneController.text,
+                              password: controller.passwordController.text,
+                              cPassword:
+                                  controller.confirmPasswordController.text,
+                              profileImage: controller.profileImage.value!,
+                              services: controller.electricalValue.value,
+                              yearExperience:
+                                  controller.experienceController.text,
+                              availabilityStartTime:
+                                  controller.startTime.value.format(context),
+                              availabilityEndTime:
+                                  controller.endTime.value.format(context),
+                              cnicFront: controller.frontCNICImage.value!,
+                              cnicBack: controller.backCNICImage.value!,
+                              certification: controller.yesValue.value,
+                              certificationFile:
+                                  controller.certificateImage.value!,
+                              // No certification information provided
+                            );
+
+                            // Registration successful, navigate or perform other actions
+                          } catch (e) {
+                            // Handle registration failure, show error message or take appropriate action
+                            print('Registration failed: $e');
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+        ),
+        h50,
       ],
     );
   }
