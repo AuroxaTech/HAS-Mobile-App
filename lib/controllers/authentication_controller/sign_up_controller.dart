@@ -8,6 +8,8 @@ import 'package:property_app/services/auth_services/auth_services.dart';
 import 'package:property_app/utils/utils.dart';
 
 import '../../services/notification_services/notification_services.dart';
+import '../../utils/api_urls.dart';
+import '../../utils/base_api_service.dart';
 
 class SignUpController extends GetxController {
   RxString userRoleValue = 'Select Role'.obs;
@@ -295,11 +297,12 @@ class SignUpController extends GetxController {
         password: password,
         conPassword: conPassword,
         profileImage: profileImage,
-        deviceToken: "deviceId",
+        deviceToken: "werty134",
         platform: Platform.isAndroid ? "android" : "ios",
       );
 
-      if (registrationData['status'] == true) {
+      if (registrationData['success'] == true) {
+        Get.back();
         // Registration successful
         isLoading.value = false;
         AppUtils.getSnackBar(
@@ -326,7 +329,7 @@ class SignUpController extends GetxController {
     required String phoneNumber,
     required String password,
     required String cPassword,
-    required int roleId,
+    required String role,
     XFile? profileImage,
     required int type,
     required String city,
@@ -347,63 +350,69 @@ class SignUpController extends GetxController {
     required String description,
     String? postalCode,
   }) async {
-    isLoading.value = true;
-
     try {
-      var deviceId;
-      if (Platform.isAndroid) {
-        deviceId = await notificationServices.getDeviceToken();
-      } else {
-        deviceId = await notificationServices.getIOSDeviceToken();
+      isLoading.value = true;
+      print("Calling registerProperty API..."); // Debug log
+
+      String deviceToken;
+      try {
+        deviceToken = await notificationServices.getDeviceToken();
+        print("Device token: $deviceToken"); // Debug log
+      } catch (e) {
+        print("Error getting device token: $e");
+        // Use a default or empty token if Firebase fails
+        deviceToken = "default_token";
       }
-      print("deviceToken : $deviceId");
+
+      // Log the request about to be made
+      BaseApiService.logRequest(AppUrls.registerUrl, 'POST', {
+        'Accept': 'application/json',
+        'Content-Type': 'multipart/form-data'
+      }, {
+        'full_name': fullName,
+        'user_name': userName,
+        'email': email,
+        // ... other fields to be sent
+      });
+
       var data = await authServices.registerProperty(
-          fullName: fullName,
-          userName: userName,
-          email: email,
-          password: password,
-          phoneNumber: phoneNumber,
-          deviceToken: deviceId,
-          platform: Platform.isAndroid ? "android" : "ios",
-          cPassword: cPassword,
-          roleId: roleId,
-          profileImage: profileImage,
-          type: type,
-          city: city,
-          amount: amount,
-          address: address,
-          lat: lat,
-          long: long,
-          areaRange: areaRange,
-          bedroom: bedroom,
-          bathroom: bathroom,
-          electricityBill: electricityBill,
-          propertyImages: propertyImages,
-          noOfProperty: noOfProperty,
-          propertyType: propertyType,
-          availabilityStartTime: availabilityStartTime,
-          availabilityEndTime: availabilityEndTime,
-          description: description,
-          subtype: subType,
-          postalCode: postalCode);
+        fullName: fullName,
+        userName: userName,
+        email: email,
+        phoneNumber: phoneNumber,
+        password: password,
+        deviceToken: deviceToken,
+        platform: Platform.isAndroid ? "android" : "ios",
+        cPassword: cPassword,
+        role: role,
+        profileImage: profileImage,
+        type: type,
+        city: city,
+        amount: amount,
+        address: address,
+        lat: lat,
+        long: long,
+        areaRange: areaRange,
+        bedroom: bedroom,
+        bathroom: bathroom,
+        electricityBill: electricityBill,
+        propertyImages: propertyImages,
+        noOfProperty: noOfProperty,
+        propertyType: propertyType,
+        availabilityStartTime: availabilityStartTime,
+        availabilityEndTime: availabilityEndTime,
+        description: description,
+        subtype: subType,
+        postalCode: postalCode,
+      );
 
-      print("Data : $data");
+      print("API Response: $data"); // Debug log
 
-      if (data['status'] == true) {
-        // Handle success scenario
-        // int userId = data['user']['id']; // Adjust according to your actual response
-        //
-        // // Call method to create connected account
-        // await authServices.createConnectedAccount(userId: userId, email: email);
-
-        debugPrint("Print if ${data["messages"]}");
+      if (data['success'] == true) {
         Get.back();
         Get.back();
         AppUtils.getSnackBar("Success", data["messages"]);
-
-        isLoading.value = false;
       } else {
-        isLoading.value = false;
         if (data['messages'] != null) {
           if (data['messages']['username'] != null) {
             AppUtils.errorSnackBar("Error", data['messages']['username'][0]);
@@ -415,10 +424,17 @@ class SignUpController extends GetxController {
         }
       }
     } catch (e) {
-      print(e);
-      isLoading.value = false;
+      print("Error in registerProperty: $e"); // Debug log
+
+      // Log the error using BaseApiService
+      BaseApiService.logError(AppUrls.registerUrl, e.toString());
+
+      if (e is ApiException) {
+        BaseApiService.handleApiException(e);
+      }
       AppUtils.errorSnackBar("Error", e.toString());
-      rethrow;
+    } finally {
+      isLoading.value = false;
     }
   }
 
@@ -446,8 +462,8 @@ class SignUpController extends GetxController {
     isLoading.value = true;
 
     //  try {
-    var deviceId = await notificationServices.getDeviceToken();
-    print("deviceToken : $deviceId");
+    //var deviceId = await notificationServices.getDeviceToken();
+    //print("deviceToken : $deviceId");
 
     var data = await authServices.registerServiceProvider(
       fullName: fullName,
@@ -456,7 +472,7 @@ class SignUpController extends GetxController {
       phoneNumber: phoneNumber,
       password: password,
       cPassword: cPassword,
-      deviceToken: deviceId,
+      deviceToken: "",
       address: address,
       postalCode: postalCode,
       platform: Platform.isAndroid ? "android" : "ios",
@@ -511,7 +527,7 @@ class SignUpController extends GetxController {
     required String phoneNumber,
     required String password,
     required String cPassword,
-    required int roleId,
+    required String role,
     String? address,
     String? postalCode,
     XFile? profileImage,
@@ -525,7 +541,7 @@ class SignUpController extends GetxController {
   }) async {
     isLoading.value = true;
     try {
-      var deviceId = await notificationServices.getDeviceToken();
+      // var deviceId = await notificationServices.getDeviceToken();
       var data = await authServices.registerTenant(
         fullName: fullName,
         userName: userName,
@@ -535,7 +551,7 @@ class SignUpController extends GetxController {
         postalCode: postalCode,
         password: password,
         cPassword: cPassword,
-        roleId: roleId,
+        role: role,
         profileImage: profileImage,
         lastStatus: lastStatus,
         lastLandlordName: lastLandlordName,
@@ -544,13 +560,13 @@ class SignUpController extends GetxController {
         occupation: occupation,
         leasedDuration: leasedDuration,
         noOfOccupants: noOfOccupants,
-        deviceToken: deviceId,
+        deviceToken: "",
         platform: Platform.isAndroid ? "android" : "ios",
       );
 
       print("Data : $data");
 
-      if (data['status'] == true) {
+      if (data['Success'] == true) {
         isLoading.value = false;
         Get.back();
         AppUtils.getSnackBar("Success", data['messages']);

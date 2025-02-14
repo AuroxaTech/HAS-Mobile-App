@@ -37,11 +37,11 @@ class LoginScreenController extends GetxController {
       var data = await authServices.login(
         email: email,
         password: password,
-        deviceToken: "deviceId",
+        deviceToken: "werty134",
         platform: Platform.isAndroid ? "android" : "ios",
       );
 
-      if (data['status'] == true) {
+      if (data['success'] == true) {
         // Success path remains the same
         print("Response: ${data["data"]}");
         await handleSuccessfulLogin(data);
@@ -78,17 +78,33 @@ class LoginScreenController extends GetxController {
 
   Future<void> handleSuccessfulLogin(Map<String, dynamic> data) async {
     try {
-      await Preferences.setToken(data["token"]);
-      await Preferences.setUserName(data["data"]["fullname"]);
-      await Preferences.setUserEmail(data["data"]["email"]);
-      await Preferences.setRoleID(data["data"]["role_id"]);
-      await Preferences.setUserID(data["data"]["id"]);
+      final payload = data["payload"]["original"];
+      final user = payload["user"];
 
-      await updateFirestoreUser(data["data"]);
+      await Preferences.setToken(payload["token"]);
+      await Preferences.setUserName(user["full_name"]);
+      await Preferences.setUserEmail(user["email"]);
+      await Preferences.setRoleID(user["role"]);
+      await Preferences.setUserID(user["id"]);
 
       isLoading.value = false;
-      AppUtils.getSnackBar("Success", data["messages"]);
-      navigateBasedOnRole(data["data"]["role_id"]);
+      AppUtils.getSnackBar("Success", data["message"]);
+
+      // Fix role mapping
+      int roleId = mapRoleToId(user["role"]);
+      print("Mapped role ID: $roleId for role ${user["role"]}");
+
+      navigateBasedOnRole(roleId);
+
+      // await Preferences.setToken(data["token"]);
+      // await Preferences.setUserName(data["data"]["fullname"]);
+      // await Preferences.setUserEmail(data["data"]["email"]);
+      // await Preferences.setRoleID(data["data"]["role_id"]);
+      // await Preferences.setUserID(data["data"]["id"]);
+      //
+      // await updateFirestoreUser(data["data"]);
+      //
+      // navigateBasedOnRole(data["data"]["role_id"]);
     } catch (e) {
       isLoading.value = false;
       throw Exception('Error processing login response: $e');
@@ -164,20 +180,61 @@ class LoginScreenController extends GetxController {
     }
   }
 
+  int mapRoleToId(String role) {
+    switch (role.toLowerCase()) {
+      case "admin":
+        return 1;
+      case "tenant":
+        return 2;
+      case "service_provider":
+        return 3;
+      case "visitor":
+        return 4;
+      default:
+        return 0;
+    }
+  }
+
   void navigateBasedOnRole(int roleId) {
+    print("Navigating based on role ID: $roleId");
+
     switch (roleId) {
       case 1:
+        print("Navigating to Admin");
         Get.offAll(() => const MainBottomBar());
         break;
       case 2:
+        print("Navigating to Tenant");
         Get.offAll(() => const TenantBottomBar());
         break;
       case 3:
+        print("Navigating to Service Provider");
         Get.offAll(() => const ServiceProviderBottomBar());
         break;
       case 4:
+        print("Navigating to Visitor");
         Get.offAll(() => const VisitorBottomBar());
         break;
+      default:
+        print("Invalid role, no navigation");
+        AppUtils.errorSnackBar("Error", "Invalid role assigned");
     }
   }
+
+  // void navigateBasedOnRole(int roleId) {
+  //   switch (roleId) {
+  //     case 1:
+  //       Get.offAll(() => const MainBottomBar());
+  //       break;
+  //     case 2:
+  //       Get.offAll(() => const TenantBottomBar());
+  //       break;
+  //     case 3:
+  //       Get.offAll(() => const ServiceProviderBottomBar());
+  //       break;
+  //     case 4:
+  //       Get.offAll(() => const VisitorBottomBar());
+  //       break;
+  //   }
+  // }
 }

@@ -6,7 +6,13 @@ class AppUrls {
       "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";
 
   // static const baseUrl = "https://pktours.pk";
-  static const baseUrl = "https://haservices.ca:8080";
+
+  ///Old Banckend
+  //static const baseUrl = "https://haservices.ca:8080";
+
+  ///New Banckend
+  static const baseUrl = "https://haservices.ca:8080/api";
+
   static const profileImageBaseUrl = "$baseUrl/assets/profile_images/";
   static const electricityBillBaseUrl = "$baseUrl/assets/electricity_bill/";
   static const certificateImagesBaseUrl =

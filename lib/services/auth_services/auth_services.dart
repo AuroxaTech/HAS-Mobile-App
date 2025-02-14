@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
@@ -9,9 +8,10 @@ import 'package:property_app/utils/api_urls.dart';
 import 'package:property_app/utils/shared_preferences/preferences.dart';
 import 'package:property_app/utils/utils.dart';
 
+import '../../utils/base_api_service.dart';
 import '../../utils/connectivity.dart';
 
-class AuthServices {
+class AuthServices extends BaseApiService {
   Future<Map<String, dynamic>> registerVisitor({
     required String fullName,
     required String userName,
@@ -25,39 +25,71 @@ class AuthServices {
     required String conPassword,
     XFile? profileImage,
   }) async {
-    if (await ConnectivityUtility.checkInternetConnectivity() == true) {
-      try {
-        var request =
-            http.MultipartRequest('POST', Uri.parse(AppUrls.registerUrl));
-        request.fields.addAll({
-          'email': email,
-          'fullname': fullName,
-          'username': userName,
-          'phone_number': phoneNumber,
-          'address': address!,
-          'postal_code': postalCode!,
-          'password': password,
-          'device_token': deviceToken,
-          'platform': platform,
-          'password_confirmation': conPassword,
-          'role_id': '4',
-        });
-        // Add profileImage to the request if it's not null
-        if (profileImage != null) {
-          request.files.add(await http.MultipartFile.fromPath(
-              'profileimage', profileImage.path));
-        }
-        var response = await request.send();
-        var responseBody = await response.stream.bytesToString();
-        return json.decode(responseBody);
-      } catch (e) {
-        // Handle general errors
-        throw Exception('Failed to register: $e');
-      }
-    } else {
+    final hasInternet = await ConnectivityUtility.checkInternetConnectivity();
+    if (!hasInternet) {
       AppUtils.getSnackBarNoInternet();
-      // You might want to throw an exception here or return a specific value
-      throw Exception('No internet connectivity');
+      throw ApiException('No internet connectivity');
+    }
+
+    try {
+      apiUrl = AppUrls.registerUrl;
+
+      // Prepare form data
+      final fields = {
+        'email': email,
+        'full_name': fullName,
+        'user_name': userName,
+        'phone_number': phoneNumber,
+        'address': address ?? '',
+        'postal_code': postalCode ?? '',
+        'password': password,
+        'device_token': deviceToken,
+        'platform': 'android',
+        'password_confirmation': conPassword,
+        'role': 'visitor'
+        //'role_id': '4',
+      };
+
+      // Log request details
+      BaseApiService.logRequest(
+          apiUrl,
+          'POST',
+          {'Accept': 'application/json', 'Content-Type': 'multipart/form-data'},
+          fields);
+
+      // Create multipart request
+      var request = http.MultipartRequest('POST', Uri.parse(apiUrl))
+        ..headers.addAll({
+          'Accept': 'application/json',
+        })
+        ..fields.addAll(fields);
+
+      // Add profile image if provided
+      if (profileImage != null) {
+        request.files.add(await http.MultipartFile.fromPath(
+            'profile_image', profileImage.path));
+      }
+
+      var response = await request.send();
+      var responseBody = await response.stream.bytesToString();
+
+      // Log response
+      BaseApiService.logResponse(apiUrl, response.statusCode, responseBody);
+
+      // Parse and validate response
+      final decodedResponse = json.decode(responseBody);
+      validateResponse(response.statusCode, decodedResponse);
+
+      return decodedResponse;
+    } catch (e) {
+      // Log error
+      BaseApiService.logError(apiUrl, e.toString());
+
+      if (e is ApiException) {
+        BaseApiService.handleApiException(e as ApiException);
+        rethrow;
+      }
+      throw ApiException('Failed to register: $e');
     }
   }
 
@@ -70,8 +102,8 @@ class AuthServices {
     required String cPassword,
     required String deviceToken,
     required String platform,
-    required int roleId,
-    XFile? profileImage, // Make profile image non-required
+    required String role,
+    XFile? profileImage,
     required int type,
     required String city,
     required double amount,
@@ -91,29 +123,38 @@ class AuthServices {
     required String description,
     String? postalCode,
   }) async {
-    if (await ConnectivityUtility.checkInternetConnectivity() == true) {
-      var url = Uri.parse(AppUrls.registerUrl);
-      var data = {
-        'fullname': fullName,
-        'username': userName,
+    final hasInternet = await ConnectivityUtility.checkInternetConnectivity();
+    if (!hasInternet) {
+      AppUtils.getSnackBarNoInternet();
+      throw ApiException('No internet connectivity');
+    }
+
+    try {
+      apiUrl = AppUrls.registerUrl;
+      final url = Uri.parse(apiUrl);
+
+      // Prepare form data
+      final fields = {
+        'full_name': fullName,
+        'user_name': userName,
         'email': email,
         'phone_number': phoneNumber,
         'password': password,
-        'device_token': deviceToken,
+        'device_token': 'werty134',
         'platform': platform,
         'password_confirmation': cPassword,
-        'role_id': roleId.toString(),
+        'role': role,
         'type': type.toString(),
         'city': city,
         'amount': amount.toString(),
-        'address': address,
+        'address': address ?? '',
         'lat': lat.toString(),
         'long': long.toString(),
         'area_range': areaRange,
         'bedroom': bedroom.toString(),
-        'bathroom': bathroom.toString(),
-        'description': description.toString(),
-        'postal_code': postalCode.toString(),
+        'bathroom': bathroom,
+        'description': description,
+        'postal_code': postalCode ?? '',
         'no_of_property': noOfProperty.toString(),
         'property_type': propertyType,
         'property_sub_type': subtype,
@@ -121,41 +162,25 @@ class AuthServices {
         'availability_end_time': availabilityEndTime,
       };
 
-      print(data);
+      // Log request details
+      BaseApiService.logRequest(
+          url.toString(),
+          'POST',
+          {'Accept': 'application/json', 'Content-Type': 'multipart/form-data'},
+          fields);
+
+      // Create multipart request
       var request = http.MultipartRequest('POST', url)
         ..headers.addAll({
-          'Content-Type': 'multipart/form-data',
+          'Accept': 'application/json',
         })
-        ..fields.addAll({
-          'fullname': fullName,
-          'username': userName,
-          'email': email,
-          'phone_number': phoneNumber,
-          'password': password,
-          'device_token': deviceToken,
-          'platform': platform,
-          'password_confirmation': cPassword,
-          'role_id': roleId.toString(),
-          'type': type.toString(),
-          'city': city,
-          'amount': amount.toString(),
-          'address': address!,
-          'lat': lat.toString(),
-          'long': long.toString(),
-          'area_range': areaRange,
-          'bedroom': bedroom.toString(),
-          'bathroom': bathroom.toString(),
-          'description': description.toString(),
-          'postal_code': postalCode.toString(),
-          'property_images[]': propertyImages.toString(),
-          'electricity_bill': electricityBill.name,
-        });
+        ..fields.addAll(fields);
 
       // Add profile image if provided
       if (profileImage != null) {
         request.files.add(await http.MultipartFile.fromPath(
-          'profileimage',
-          File(profileImage.path).path,
+          'profile_image',
+          profileImage.path,
           filename: 'profile_image.jpg',
         ));
       }
@@ -163,37 +188,38 @@ class AuthServices {
       // Add electricity bill image
       request.files.add(await http.MultipartFile.fromPath(
         'electricity_bill',
-        File(electricityBill.path).path,
+        electricityBill.path,
         filename: 'electricity_bill.jpg',
       ));
 
       // Add property images
       for (var i = 0; i < propertyImages.length; i++) {
-        File propertyImageFile = File(propertyImages[i].path);
         request.files.add(await http.MultipartFile.fromPath(
           'property_images[$i]',
-          propertyImageFile.path,
+          propertyImages[i].path,
           filename: 'property_image_$i.jpg',
         ));
       }
 
-      // Add remaining fields
-      request.fields.addAll({
-        'no_of_property': noOfProperty.toString(),
-        'property_type': propertyType,
-        'property_sub_type': subtype,
-        'availability_start_time': availabilityStartTime,
-        'availability_end_time': availabilityEndTime,
-      });
       var response = await request.send();
-
       var responseBody = await response.stream.bytesToString();
-      print("Response body : $responseBody");
-      print("Response body : ${response.statusCode}");
-      return jsonDecode(responseBody);
-    } else {
-      AppUtils.getSnackBarNoInternet();
-      throw Exception('No internet connectivity');
+
+      // Log response
+      BaseApiService.logResponse(
+          url.toString(), response.statusCode, responseBody);
+
+      // Parse and validate response
+      final decodedResponse = json.decode(responseBody);
+      validateResponse(response.statusCode, decodedResponse);
+
+      return decodedResponse;
+    } catch (e) {
+      BaseApiService.logError(apiUrl, e.toString());
+      if (e is ApiException) {
+        BaseApiService.handleApiException(e);
+        rethrow;
+      }
+      throw ApiException('Failed to register property: $e');
     }
   }
 
@@ -220,78 +246,119 @@ class AuthServices {
     String? certification,
     XFile? certificationFile,
   }) async {
-    var url =
-        Uri.parse(AppUrls.registerUrl); // Replace with your actual API endpoint
-    var data = {
-      'fullname': fullName,
-      'username': userName,
-      'email': email,
-      'phone_number': phoneNumber,
-      'password': password,
-      'device_token': deviceToken,
-      'platform': platform,
-      'password_confirmation': cPassword,
-      'role_id': "3",
-      'services': "2",
-      'year_experience': yearExperience.toString(),
-      'availability_start_time': availabilityStartTime,
-      'availability_end_time': availabilityEndTime,
-      if (certification != null) 'certification': certification,
-    };
+    final hasInternet = await ConnectivityUtility.checkInternetConnectivity();
+    if (!hasInternet) {
+      AppUtils.getSnackBarNoInternet();
+      throw ApiException('No internet connectivity');
+    }
 
-    print(data.toString());
-    var request = http.MultipartRequest('POST', url)
-      ..headers['Content-Type'] = 'multipart/form-data'
-      ..fields.addAll({
-        'fullname': fullName,
-        'username': userName,
+    try {
+      apiUrl = AppUrls.registerUrl;
+      final url = Uri.parse(apiUrl);
+
+      // Convert services to array format
+      final servicesList = [services]; // Create array with single service
+
+      // Prepare form data
+      final fields = {
+        'full_name': fullName,
+        'user_name': userName,
         'email': email,
         'phone_number': phoneNumber,
         'password': password,
-        'device_token': deviceToken,
+        'device_token': "werty134",
         'platform': platform,
         'password_confirmation': cPassword,
-        'role_id': "3",
-        'services': "2",
-        'address': address!,
-        'postal_code': postalCode!,
-        'year_experience': yearExperience.toString(),
-        'availability_start_time': "9 : am",
-        'availability_end_time': "5 : PM",
-        'certification': "No",
-      })
-      ..files.add(await http.MultipartFile.fromPath(
+        'role': "service_provider",
+        'services[]': servicesList,  // Send as array
+        'address': address ?? '',
+        'postal_code': postalCode ?? '',
+        'year_experience': yearExperience,
+        'availability_start_time': availabilityStartTime,
+        'availability_end_time': availabilityEndTime,
+        'certification': certification ?? 'No',
+      };
+
+      // Log request
+      BaseApiService.logRequest(
+        url.toString(),
+        'POST',
+        {'Accept': 'application/json', 'Content-Type': 'multipart/form-data'},
+        fields
+      );
+
+      // Create multipart request
+      var request = http.MultipartRequest('POST', url)
+        ..headers.addAll({
+          'Accept': 'application/json',
+        });
+
+      // Add all fields except services
+      fields.forEach((key, value) {
+        if (key != 'services[]') {
+          request.fields[key] = value.toString();
+        }
+      });
+
+      // Add services as array
+      for (var service in servicesList) {
+        request.fields['services[]'] = service;
+      }
+
+      // Add profile image if provided
+      if (profileImage != null) {
+        request.files.add(await http.MultipartFile.fromPath(
+          'profile_image',
+          profileImage.path,
+          filename: 'profile_image.jpg',
+        ));
+      }
+
+      // Add CNIC images
+      request.files.add(await http.MultipartFile.fromPath(
         'cnic_front',
-        File(cnicFront.path).path,
+        cnicFront.path,
         filename: 'cnic_front.jpg',
-      ))
-      ..files.add(await http.MultipartFile.fromPath(
+      ));
+
+      request.files.add(await http.MultipartFile.fromPath(
         'cnic_back',
-        File(cnicBack.path).path,
+        cnicBack.path,
         filename: 'cnic_back.jpg',
       ));
-    if (profileImage != null) {
-      request.files.add(await http.MultipartFile.fromPath(
-        'profileimage',
-        File(profileImage.path).path,
-        filename: 'profile_image.jpg',
-      ));
-    }
-    if (certificationFile != null) {
-      request.files.add(await http.MultipartFile.fromPath(
-        'certification_file_name',
-        File(certificationFile.path).path,
-        filename: 'certification_file.jpg',
-      ));
-    }
-    var response = await request.send();
 
-    var responseBody = await response.stream.bytesToString();
-    print("Response : $responseBody");
-    return json.decode(responseBody);
-    try {} catch (e) {
-      rethrow;
-      throw Exception('Failed to register service provider: $e');
+      // Add certification file if provided
+      if (certificationFile != null) {
+        request.files.add(await http.MultipartFile.fromPath(
+          'certification_file',
+          certificationFile.path,
+          filename: 'certification_file.jpg',
+        ));
+      }
+
+      var response = await request.send();
+      var responseBody = await response.stream.bytesToString();
+
+      // Log response
+      BaseApiService.logResponse(
+        url.toString(), 
+        response.statusCode, 
+        responseBody
+      );
+
+      // Parse and validate response
+      final decodedResponse = json.decode(responseBody);
+      validateResponse(response.statusCode, decodedResponse);
+
+      return decodedResponse;
+
+    } catch (e) {
+      BaseApiService.logError(apiUrl, e.toString());
+      if (e is ApiException) {
+        BaseApiService.handleApiException(e);
+        rethrow;
+      }
+      throw ApiException('Failed to register service provider: $e');
     }
   }
 
@@ -306,7 +373,7 @@ class AuthServices {
     String? postalCode,
     required String deviceToken,
     required String platform,
-    required int roleId,
+    required String role,
     XFile? profileImage,
     required int lastStatus,
     String? lastLandlordName,
@@ -316,63 +383,80 @@ class AuthServices {
     String? leasedDuration,
     String? noOfOccupants,
   }) async {
-    if (await ConnectivityUtility.checkInternetConnectivity() == true) {
-      var url = Uri.parse(AppUrls.registerUrl);
+    final hasInternet = await ConnectivityUtility.checkInternetConnectivity();
+    if (!hasInternet) {
+      AppUtils.getSnackBarNoInternet();
+      throw ApiException('No internet connectivity');
+    }
 
+    try {
+      apiUrl = AppUrls.registerUrl;
+      final url = Uri.parse(apiUrl);
+
+      // Prepare form data
+      final fields = {
+        'full_name': fullName,
+        'user_name': userName,
+        'email': email,
+        'phone_number': phoneNumber,
+        'password': password,
+        'device_token': "werty134",
+        'platform': platform,
+        'address': address ?? '',
+        'postal_code': postalCode ?? '',
+        'password_confirmation': cPassword,
+        'role': "tenant",
+        'last_status': lastStatus.toString(),
+        'last_landlord_name': lastLandlordName ?? '',
+        'last_tenancy': lastTenancy ?? '',
+        'last_landlord_contact': lastLandlordContact ?? '',
+        'occupation': occupation ?? '',
+        'leased_duration': leasedDuration ?? '',
+        'no_of_occupants': noOfOccupants ?? '',
+      };
+
+      // Log request
+      BaseApiService.logRequest(
+          url.toString(),
+          'POST',
+          {'Accept': 'application/json', 'Content-Type': 'multipart/form-data'},
+          fields);
+
+      // Create multipart request
       var request = http.MultipartRequest('POST', url)
         ..headers.addAll({
-          'Content-Type':
-              'multipart/form-data', // Add your desired content type
-          //'Authorization': 'Bearer YOUR_ACCESS_TOKEN', // Add your authorization token if needed
-          // Add other headers as needed
+          'Accept': 'application/json',
         })
-        ..fields.addAll({
-          'fullname': fullName,
-          'username': userName,
-          'email': email,
-          'phone_number': phoneNumber,
-          'password': password,
-          'device_token': deviceToken,
-          'platform': platform,
-          'address': address!,
-          'postal_code': postalCode!,
-          'password_confirmation': cPassword,
-          'role_id': roleId.toString(),
-          'last_status': lastStatus.toString(),
-          if (lastLandlordName != null)
-            'last_landlord_name': lastLandlordName ?? '',
-          if (lastTenancy != null) 'last_tenancy': lastTenancy ?? '',
-          if (lastLandlordContact != null)
-            'last_landlord_contact': lastLandlordContact ?? '',
-        });
+        ..fields.addAll(fields);
 
-      // Add these fields outside the conditional statements
-      request.fields.addAll({
-        'occupation': occupation!,
-        'leased_duration': leasedDuration!,
-        'no_of_occupants': noOfOccupants!.toString(),
-      });
-
+      // Add profile image if provided
       if (profileImage != null) {
         request.files.add(await http.MultipartFile.fromPath(
-          'profileimage',
-          File(profileImage.path).path,
+          'profile_image',
+          profileImage.path,
           filename: 'profile_image.jpg',
         ));
       }
 
-      try {
-        var response = await request.send();
-        var responseBody = await response.stream.bytesToString();
-        print(responseBody);
-        return json.decode(responseBody);
-      } catch (e) {
-        // Handle general errors
-        throw Exception('Failed to register tenant: $e');
+      var response = await request.send();
+      var responseBody = await response.stream.bytesToString();
+
+      // Log response
+      BaseApiService.logResponse(
+          url.toString(), response.statusCode, responseBody);
+
+      // Parse and validate response
+      final decodedResponse = json.decode(responseBody);
+      validateResponse(response.statusCode, decodedResponse);
+
+      return decodedResponse;
+    } catch (e) {
+      BaseApiService.logError(apiUrl, e.toString());
+      if (e is ApiException) {
+        BaseApiService.handleApiException(e);
+        rethrow;
       }
-    } else {
-      AppUtils.getSnackBarNoInternet();
-      throw Exception('No internet connectivity');
+      throw ApiException('Failed to register tenant: $e');
     }
   }
 
@@ -440,48 +524,69 @@ class AuthServices {
     required String deviceToken,
     required String platform,
   }) async {
-    if (await ConnectivityUtility.checkInternetConnectivity() == true) {
-      Uri url = Uri.parse(
-        '${AppUrls.loginUrl}?email=$email&password=$password&device_token=$deviceToken&platform=$platform',
-      );
-      try {
-        var res = await http.post(
-          url,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        );
-
-        // Debug logging
-        print('Response status code: ${res.statusCode}');
-        print('Response headers: ${res.headers}');
-        print('Response body: ${res.body}');
-
-        // Check if response is HTML instead of JSON
-        if (res.body.trim().startsWith('<!DOCTYPE html>')) {
-          throw Exception(
-              'Server returned HTML instead of JSON. Please contact support.');
-        }
-
-        // Check status code
-        if (res.statusCode != 200) {
-          throw Exception('Server returned status code ${res.statusCode}');
-        }
-
-        try {
-          return json.decode(res.body);
-        } on FormatException catch (e) {
-          throw Exception('Invalid JSON response from server: ${e.message}');
-        }
-      } catch (e) {
-        if (e is Exception) {
-          rethrow;
-        }
-        throw Exception('Failed to Login: $e');
-      }
-    } else {
+    final hasInternet = await ConnectivityUtility.checkInternetConnectivity();
+    if (!hasInternet) {
       AppUtils.getSnackBarNoInternet();
-      throw Exception('No internet connectivity');
+      throw ApiException('No internet connectivity');
+    }
+
+    try {
+      apiUrl = AppUrls.loginUrl;
+
+      // Prepare query parameters
+      final queryParams = {
+        'email': email,
+        'password': password,
+        'device_token': deviceToken,
+        'platform': platform,
+      };
+
+      final url = Uri.parse(apiUrl).replace(queryParameters: queryParams);
+
+      // Log request
+      BaseApiService.logRequest(
+          url.toString(), 'POST', {'Accept': 'application/json'}, queryParams);
+
+      final response = await http.post(
+        url,
+        headers: {
+          'Accept': 'application/json',
+        },
+      );
+
+      // Log response
+      BaseApiService.logResponse(
+          url.toString(), response.statusCode, response.body);
+
+      // Check if response is HTML
+      if (response.body.trim().startsWith('<!DOCTYPE html>')) {
+        throw ApiException(
+            'Server returned HTML instead of JSON. Please contact support.');
+      }
+
+      // Parse and validate response
+      final decodedResponse = json.decode(response.body);
+      validateResponse(response.statusCode, decodedResponse);
+
+      return decodedResponse;
+    } catch (e) {
+      // Log error with full URL
+      BaseApiService.logError(
+          Uri.parse(apiUrl).replace(queryParameters: {
+            'email': email,
+            'platform': platform,
+            // Omit password and device token from error logs
+          }).toString(),
+          e.toString());
+
+      if (e is ApiException) {
+        BaseApiService.handleApiException(e);
+        rethrow;
+      }
+      if (e is FormatException) {
+        throw ApiException('Invalid JSON response from server: ${e.message}');
+      }
+      throw ApiException(e.toString());
     }
   }
 
