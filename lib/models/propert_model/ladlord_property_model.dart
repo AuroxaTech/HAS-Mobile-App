@@ -75,7 +75,7 @@ class PropertyData {
 class Property {
   int id;
   int userId;
-  int type;
+  String type;
   String images;
   String city;
   String amount;
@@ -92,33 +92,32 @@ class Property {
   bool isFavorite;
   User? user;
 
-  Property({
-    required this.id,
-    required this.userId,
-    required this.type,
-    required this.images,
-    required this.city,
-    required this.amount,
-    required this.address,
-    required this.lat,
-    required this.long,
-    required this.areaRange,
-    required this.bedroom,
-    required this.bathroom,
-    required this.description,
-    required this.electricityBill,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.isFavorite,
-    required this.user
-  });
+  Property(
+      {required this.id,
+      required this.userId,
+      required this.type,
+      required this.images,
+      required this.city,
+      required this.amount,
+      required this.address,
+      required this.lat,
+      required this.long,
+      required this.areaRange,
+      required this.bedroom,
+      required this.bathroom,
+      required this.description,
+      required this.electricityBill,
+      required this.createdAt,
+      required this.updatedAt,
+      required this.isFavorite,
+      required this.user});
 
   factory Property.fromJson(Map<String, dynamic> json) {
     return Property(
       id: json['id'],
       userId: json['user_id'],
       type: json['type'],
-      images: json['images']??"",
+      images: json['images'] ?? "",
       city: json['city'] ?? "",
       amount: json['amount'],
       address: json['address'],
@@ -127,7 +126,7 @@ class Property {
       areaRange: json['area_range'],
       bedroom: json['bedroom'],
       bathroom: json['bathroom'],
-      description: json['description']?? "",
+      description: json['description'] ?? "",
       electricityBill: json['electricity_bill'] ?? "",
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
@@ -157,7 +156,6 @@ class PageLink {
   }
 }
 
-
 class User {
   int id;
   String fullname;
@@ -180,24 +178,24 @@ class User {
   });
 
   factory User.fromJson(Map<String, dynamic> json) => User(
-    id: json["id"],
-    fullname: json["fullname"],
-    email: json["email"],
-    phoneNumber: json["phone_number"],
-    roleId: json["role_id"],
-    profileimage: json["profileimage"],
-    createdAt: DateTime.parse(json["created_at"]),
-    updatedAt: DateTime.parse(json["updated_at"]),
-  );
+        id: json["id"],
+        fullname: json["fullname"],
+        email: json["email"],
+        phoneNumber: json["phone_number"],
+        roleId: json["role_id"],
+        profileimage: json["profileimage"],
+        createdAt: DateTime.parse(json["created_at"]),
+        updatedAt: DateTime.parse(json["updated_at"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "fullname": fullname,
-    "email": email,
-    "phone_number": phoneNumber,
-    "role_id": roleId,
-    "profileimage": profileimage,
-    "created_at": createdAt.toIso8601String(),
-    "updated_at": updatedAt.toIso8601String(),
-  };
+        "id": id,
+        "fullname": fullname,
+        "email": email,
+        "phone_number": phoneNumber,
+        "role_id": roleId,
+        "profileimage": profileimage,
+        "created_at": createdAt.toIso8601String(),
+        "updated_at": updatedAt.toIso8601String(),
+      };
 }

@@ -8,7 +8,6 @@ import 'package:property_app/services/auth_services/auth_services.dart';
 import 'package:property_app/utils/utils.dart';
 
 import '../../services/notification_services/notification_services.dart';
-import '../../utils/api_urls.dart';
 import '../../utils/base_api_service.dart';
 
 class SignUpController extends GetxController {
@@ -352,36 +351,14 @@ class SignUpController extends GetxController {
   }) async {
     try {
       isLoading.value = true;
-      print("Calling registerProperty API..."); // Debug log
 
-      String deviceToken;
-      try {
-        deviceToken = await notificationServices.getDeviceToken();
-        print("Device token: $deviceToken"); // Debug log
-      } catch (e) {
-        print("Error getting device token: $e");
-        // Use a default or empty token if Firebase fails
-        deviceToken = "default_token";
-      }
-
-      // Log the request about to be made
-      BaseApiService.logRequest(AppUrls.registerUrl, 'POST', {
-        'Accept': 'application/json',
-        'Content-Type': 'multipart/form-data'
-      }, {
-        'full_name': fullName,
-        'user_name': userName,
-        'email': email,
-        // ... other fields to be sent
-      });
-
-      var data = await authServices.registerProperty(
+      final data = await authServices.registerProperty(
         fullName: fullName,
         userName: userName,
         email: email,
         phoneNumber: phoneNumber,
         password: password,
-        deviceToken: deviceToken,
+        deviceToken: "werty134",
         platform: Platform.isAndroid ? "android" : "ios",
         cPassword: cPassword,
         role: role,
@@ -406,33 +383,41 @@ class SignUpController extends GetxController {
         postalCode: postalCode,
       );
 
-      print("API Response: $data"); // Debug log
-
-      if (data['success'] == true) {
+      if (data['success'] == true && data['payload'] != null) {
+        // Only proceed if both user and property were created successfully
+        clearFormData();
         Get.back();
         Get.back();
-        AppUtils.getSnackBar("Success", data["messages"]);
+        AppUtils.getSnackBar(
+            "Success", data["message"] ?? "Registration successful");
       } else {
-        if (data['messages'] != null) {
-          if (data['messages']['username'] != null) {
-            AppUtils.errorSnackBar("Error", data['messages']['username'][0]);
-          } else if (data['messages']['email'] != null) {
-            AppUtils.errorSnackBar("Error", data['messages']['email'][0]);
-          } else {
-            AppUtils.errorSnackBar("Error", "An unknown error occurred.");
-          }
+        // Handle any error messages
+        String errorMessage = data['message'] ?? "Registration failed";
+
+        if (data['errors'] != null) {
+          final errors = data['errors'] as Map<String, dynamic>;
+          errorMessage = '';
+
+          errors.forEach((key, value) {
+            if (value is List) {
+              errorMessage += '${value.first}\n';
+            } else {
+              errorMessage += '$value\n';
+            }
+          });
         }
+
+        AppUtils.errorSnackBar("Error", errorMessage.trim());
       }
     } catch (e) {
-      print("Error in registerProperty: $e"); // Debug log
-
-      // Log the error using BaseApiService
-      BaseApiService.logError(AppUrls.registerUrl, e.toString());
-
+      String errorMessage = e.toString();
       if (e is ApiException) {
-        BaseApiService.handleApiException(e);
+        if (e.statusCode == 422 && e.message.contains("kilobytes")) {
+          errorMessage =
+              "Image size too large. Please use smaller images (max 2MB)";
+        }
       }
-      AppUtils.errorSnackBar("Error", e.toString());
+      AppUtils.errorSnackBar("Error", errorMessage);
     } finally {
       isLoading.value = false;
     }
@@ -451,6 +436,7 @@ class SignUpController extends GetxController {
     String? postalCode,
     XFile? profileImage,
     required String services,
+    required String description,
     required String yearExperience,
     required String availabilityStartTime,
     required String availabilityEndTime,
@@ -459,65 +445,78 @@ class SignUpController extends GetxController {
     String? certification,
     XFile? certificationFile,
   }) async {
-    isLoading.value = true;
+    try {
+      isLoading.value = true;
 
-    //  try {
-    //var deviceId = await notificationServices.getDeviceToken();
-    //print("deviceToken : $deviceId");
+      // Add missing required fields
+      final data = await authServices.registerServiceProvider(
+        fullName: fullName,
+        userName: userName,
+        email: email,
+        phoneNumber: phoneNumber,
+        password: password,
+        cPassword: cPassword,
+        deviceToken: "werty134",
+        address: address,
+        postalCode: postalCode,
+        platform: Platform.isAndroid ? "android" : "ios",
+        profileImage: profileImage,
+        services: services,
+        yearExperience: yearExperience,
+        availabilityStartTime: availabilityStartTime,
+        availabilityEndTime: availabilityEndTime,
+        cnicFront: cnicFront,
+        cnicBack: cnicBack,
+        certification: certification,
+        description: description,
+        certificationFile: certificationFile,
+        // Add missing required fields
+        pricing: "100", // Add appropriate pricing
+        duration: "1", // Add appropriate duration
+        country: "Canada", // Add appropriate country
+        location: address ?? "Default Location", // Add appropriate location
+      );
 
-    var data = await authServices.registerServiceProvider(
-      fullName: fullName,
-      userName: userName,
-      email: email,
-      phoneNumber: phoneNumber,
-      password: password,
-      cPassword: cPassword,
-      deviceToken: "",
-      address: address,
-      postalCode: postalCode,
-      platform: Platform.isAndroid ? "android" : "ios",
-      profileImage: profileImage,
-      services: services,
-      yearExperience: yearExperience,
-      availabilityStartTime: availabilityStartTime,
-      availabilityEndTime: availabilityEndTime,
-      cnicFront: cnicFront,
-      cnicBack: cnicBack,
-      certification: certification,
-      certificationFile: certificationFile,
-    );
+      if (data['success'] == true && data['payload'] != null) {
+        clearFormData();
+        Get.back();
+        AppUtils.getSnackBar(
+          "Success", 
+          data["message"] ?? "Registration successful"
+        );
+      } else {
+        // Handle error messages
+        if (data['errors'] != null) {
+          final errors = data['errors'] as Map<String, dynamic>;
+          String errorMessage = '';
 
-    if (data['status'] == true) {
-      // int userId = data['user']['id']; // Adjust according to your actual response
-      //
-      // // Call method to create connected account
-      // await authServices.createConnectedAccount(userId: userId, email: email);
-      isLoading.value = false;
-      print("Data : $data");
-      Get.back();
-      AppUtils.getSnackBar("Success", data["messages"]);
-    } else {
-      // Handle error scenario
-      isLoading.value = false;
-      if (data['messages'] != null) {
-        if (data['messages']['username'] != null) {
-          // Show the username error message
-          AppUtils.errorSnackBar("Error", data['messages']['username'][0]);
-        } else if (data['messages']['email'] != null) {
-          // Show the email error message
-          AppUtils.errorSnackBar("Error", data['messages']['email'][0]);
+          // Concatenate all error messages
+          errors.forEach((key, value) {
+            if (value is List) {
+              errorMessage += '${value.first}\n';
+            } else {
+              errorMessage += '$value\n';
+            }
+          });
+
+          AppUtils.errorSnackBar("Validation Error", errorMessage.trim());
+        } else if (data['message'] != null) {
+          AppUtils.errorSnackBar("Error", data['message']);
         } else {
-          // Show a general error message if neither username nor email has a specific error
-          AppUtils.errorSnackBar("Error", "An unknown error occurred.");
+          AppUtils.errorSnackBar("Error", "An unknown error occurred");
         }
       }
+    } catch (e) {
+      String errorMessage = e.toString();
+      if (e is ApiException) {
+        if (e.statusCode == 422 && e.message.contains("kilobytes")) {
+          errorMessage = "Image size too large. Please use smaller images (max 2MB)";
+        }
+      }
+      AppUtils.errorSnackBar("Error", errorMessage);
+    } finally {
+      isLoading.value = false;
     }
-    // } catch (e) {
-    //   print(e);
-    //   isLoading.value = false;
-    //   AppUtils.getSnackBar("Error", "Failed to register service provider");
-    //   rethrow;
-    // }
   }
 
   Future<void> registerTenant({
@@ -539,10 +538,10 @@ class SignUpController extends GetxController {
     String? leasedDuration,
     String? noOfOccupants,
   }) async {
-    isLoading.value = true;
     try {
-      // var deviceId = await notificationServices.getDeviceToken();
-      var data = await authServices.registerTenant(
+      isLoading.value = true;
+
+      final data = await authServices.registerTenant(
         fullName: fullName,
         userName: userName,
         email: email,
@@ -560,35 +559,73 @@ class SignUpController extends GetxController {
         occupation: occupation,
         leasedDuration: leasedDuration,
         noOfOccupants: noOfOccupants,
-        deviceToken: "",
+        deviceToken: "werty134",
         platform: Platform.isAndroid ? "android" : "ios",
       );
 
-      print("Data : $data");
+      if (data['success'] == true) {
+        // Clear form data
+        clearFormData();
 
-      if (data['Success'] == true) {
-        isLoading.value = false;
-        Get.back();
-        AppUtils.getSnackBar("Success", data['messages']);
+        // Navigate back to login screen
+        Get.back(); // Close registration screen
+        AppUtils.getSnackBar(
+            "Success", "Registration successful. Please login to continue.");
       } else {
-        // Handle error scenario
-        isLoading.value = false;
-        if (data['messages'] != null) {
-          if (data['messages']['username'] != null) {
-            // Show the username error message
-            AppUtils.errorSnackBar("Error", data['messages']['username'][0]);
-          } else if (data['messages']['email'] != null) {
-            // Show the email error message
-            AppUtils.errorSnackBar("Error", data['messages']['email'][0]);
-          } else {
-            // Show a general error message if neither username nor email has a specific error
-            AppUtils.errorSnackBar("Error", "An unknown error occurred.");
-          }
+        // Handle error messages
+        if (data['errors'] != null) {
+          final errors = data['errors'] as Map<String, dynamic>;
+          String errorMessage = '';
+
+          errors.forEach((key, value) {
+            if (value is List) {
+              errorMessage += '${value.first}\n';
+            } else {
+              errorMessage += '$value\n';
+            }
+          });
+
+          AppUtils.errorSnackBar("Validation Error", errorMessage.trim());
+        } else if (data['message'] != null) {
+          AppUtils.errorSnackBar("Error", data['message']);
+        } else {
+          AppUtils.errorSnackBar("Error", "An unknown error occurred");
         }
       }
     } catch (e) {
+      String errorMessage = e.toString();
+      if (e is ApiException) {
+        if (e.statusCode == 422 && e.message.contains("kilobytes")) {
+          errorMessage =
+              "Image size too large. Please use smaller images (max 2MB)";
+        }
+      }
+      AppUtils.errorSnackBar("Error", errorMessage);
+    } finally {
       isLoading.value = false;
-      AppUtils.errorSnackBar("Error", "Failed to register tenant");
     }
+  }
+
+  // Add method to clear form data
+  void clearFormData() {
+    nameController.clear();
+    userNameController.clear();
+    emailController.clear();
+    phoneController.clear();
+    addressController.clear();
+    postalCode.clear();
+    passwordController.clear();
+    confirmPasswordController.clear();
+    description.clear();
+    newYorkController.clear();
+    amountController.clear();
+    images.clear();
+    profileImage.value = null;
+    isSale.value = false;
+    selectedRange.value = "1 sq ft";
+    selectedBedroom.value = 1;
+    selectedBothList.value = "1";
+    propertyTypeIndex.value = 0;
+    noOfPropertiesValue.value = 'No of Properties';
   }
 }

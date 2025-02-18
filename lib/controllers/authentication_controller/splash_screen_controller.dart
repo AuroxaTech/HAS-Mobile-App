@@ -46,7 +46,7 @@ class SplashScreenController extends GetxController {
             Get.offAll(const MainBottomBar());
           } else if (role == "tenant") {
             Get.offAll(const TenantBottomBar());
-          } else if (role == "serviceprovider") {
+          } else if (role == "service_provider") {
             Get.offAll(const ServiceProviderBottomBar());
           } else if (role == "visitor") {
             Get.offAll(const VisitorBottomBar());

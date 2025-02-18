@@ -711,6 +711,21 @@ class SignUpScreen extends GetView<SignUpController> {
                     icon: const Icon(Icons.calendar_month)),
               ),
         h15,
+        labelText("Description"),
+        h10,
+        CustomTextField(
+          maxLines: 5,
+          minLines: 3,
+          validator: (value) {
+            if (value == null || value.isEmpty || value.length < 3) {
+              return 'Description Required';
+            }
+            return null;
+          },
+          controller: controller.description,
+          hintText: "Describe your service....",
+        ),
+        h15,
         CustomDropDown(
           value: controller.yesValue.value,
           onChange: (value) {
@@ -1063,6 +1078,7 @@ class SignUpScreen extends GetView<SignUpController> {
                                   controller.endTime.value.format(context),
                               cnicFront: controller.frontCNICImage.value!,
                               cnicBack: controller.backCNICImage.value!,
+                              description: controller.description.text,
                             );
                             // Registration successful, navigate or perform other actions
                           } catch (e) {
@@ -1099,6 +1115,8 @@ class SignUpScreen extends GetView<SignUpController> {
                               certification: controller.yesValue.value,
                               certificationFile:
                                   controller.certificateImage.value!,
+                              description: controller.description.text,
+
                               // No certification information provided
                             );
 
@@ -1136,6 +1154,7 @@ class SignUpScreen extends GetView<SignUpController> {
                                   controller.endTime.value.format(context),
                               cnicFront: controller.frontCNICImage.value!,
                               cnicBack: controller.backCNICImage.value!,
+                              description: controller.description.text,
                             );
 
                             // Registration successful, navigate or perform other actions
@@ -1173,6 +1192,8 @@ class SignUpScreen extends GetView<SignUpController> {
                               certification: controller.yesValue.value,
                               certificationFile:
                                   controller.certificateImage.value!,
+                              description: controller.description.text,
+
                               // No certification information provided
                             );
 

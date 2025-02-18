@@ -31,9 +31,9 @@ class LoginScreenController extends GetxController {
 
   Future<void> login(
       BuildContext context, String email, String password) async {
-    isLoading.value = true;
-
     try {
+      isLoading.value = true;
+
       var data = await authServices.login(
         email: email,
         password: password,
@@ -42,13 +42,11 @@ class LoginScreenController extends GetxController {
       );
 
       if (data['success'] == true) {
-        // Success path remains the same
-        print("Response: ${data["data"]}");
+        print("Login successful, processing response...");
         await handleSuccessfulLogin(data);
       } else {
         isLoading.value = false;
-        final errorMessage =
-            data['error'] ?? data['messages'] ?? 'Unknown error occurred';
+        final errorMessage = data['message'] ?? 'Unknown error occurred';
         handleErrorResponse(errorMessage);
       }
     } catch (e) {
@@ -56,8 +54,10 @@ class LoginScreenController extends GetxController {
       print("Login error: $e");
 
       if (e.toString().contains('Server returned HTML')) {
-        AppUtils.errorSnackBar("Server Error",
-            "There was a problem with this account. Please contact support.");
+        AppUtils.errorSnackBar(
+          "Server Error",
+          "There was a problem with this account. Please contact support."
+        );
       } else {
         handleErrorResponse(e.toString());
       }
@@ -72,16 +72,20 @@ class LoginScreenController extends GetxController {
       AppUtils.errorSnackBar(
           "Not Found", "The requested resource was not found.");
     } else {
+      print("Error Message: $errorMessage");
       AppUtils.errorSnackBar("Error", errorMessage);
     }
   }
 
   Future<void> handleSuccessfulLogin(Map<String, dynamic> data) async {
     try {
-      final payload = data["payload"]["original"];
+      // The response structure is different from what we're expecting
+      final payload = data["payload"];
       final user = payload["user"];
+      final token = payload["token"];
 
-      await Preferences.setToken(payload["token"]);
+      // Save user data to preferences
+      await Preferences.setToken(token);
       await Preferences.setUserName(user["full_name"]);
       await Preferences.setUserEmail(user["email"]);
       await Preferences.setRoleID(user["role"]);
@@ -90,7 +94,7 @@ class LoginScreenController extends GetxController {
       isLoading.value = false;
       AppUtils.getSnackBar("Success", data["message"]);
 
-      // Fix role mapping
+      // Map role and navigate
       int roleId = mapRoleToId(user["role"]);
       print("Mapped role ID: $roleId for role ${user["role"]}");
 
@@ -107,6 +111,7 @@ class LoginScreenController extends GetxController {
       // navigateBasedOnRole(data["data"]["role_id"]);
     } catch (e) {
       isLoading.value = false;
+      print("Error in handleSuccessfulLogin: $e");
       throw Exception('Error processing login response: $e');
     }
   }
@@ -184,6 +189,8 @@ class LoginScreenController extends GetxController {
     switch (role.toLowerCase()) {
       case "admin":
         return 1;
+      case "landlord":
+        return 1;
       case "tenant":
         return 2;
       case "service_provider":
@@ -191,6 +198,7 @@ class LoginScreenController extends GetxController {
       case "visitor":
         return 4;
       default:
+        print("Unknown role: $role");
         return 0;
     }
   }
@@ -200,24 +208,27 @@ class LoginScreenController extends GetxController {
 
     switch (roleId) {
       case 1:
-        print("Navigating to Admin");
+        print("Navigating to Admin/Landlord Dashboard");
         Get.offAll(() => const MainBottomBar());
         break;
       case 2:
-        print("Navigating to Tenant");
+        print("Navigating to Tenant Dashboard");
         Get.offAll(() => const TenantBottomBar());
         break;
       case 3:
-        print("Navigating to Service Provider");
+        print("Navigating to Service Provider Dashboard");
         Get.offAll(() => const ServiceProviderBottomBar());
         break;
       case 4:
-        print("Navigating to Visitor");
+        print("Navigating to Visitor Dashboard");
         Get.offAll(() => const VisitorBottomBar());
         break;
       default:
-        print("Invalid role, no navigation");
-        AppUtils.errorSnackBar("Error", "Invalid role assigned");
+        print("Invalid role ID: $roleId");
+        AppUtils.errorSnackBar(
+          "Error", 
+          "Invalid role assigned. Please contact support."
+        );
     }
   }
 

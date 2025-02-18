@@ -245,6 +245,11 @@ class AuthServices extends BaseApiService {
     required XFile cnicBack,
     String? certification,
     XFile? certificationFile,
+    required String pricing,
+    required String duration,
+    required String country,
+    required String location,
+    required String description,
   }) async {
     final hasInternet = await ConnectivityUtility.checkInternetConnectivity();
     if (!hasInternet) {
@@ -270,22 +275,26 @@ class AuthServices extends BaseApiService {
         'platform': platform,
         'password_confirmation': cPassword,
         'role': "service_provider",
-        'services[]': servicesList,  // Send as array
+        'services[]': servicesList, // Send as array
         'address': address ?? '',
         'postal_code': postalCode ?? '',
         'year_experience': yearExperience,
         'availability_start_time': availabilityStartTime,
         'availability_end_time': availabilityEndTime,
         'certification': certification ?? 'No',
+        'pricing': pricing,
+        'duration': duration,
+        'country': country,
+        'location': location,
+        'description': description,
       };
 
       // Log request
       BaseApiService.logRequest(
-        url.toString(),
-        'POST',
-        {'Accept': 'application/json', 'Content-Type': 'multipart/form-data'},
-        fields
-      );
+          url.toString(),
+          'POST',
+          {'Accept': 'application/json', 'Content-Type': 'multipart/form-data'},
+          fields);
 
       // Create multipart request
       var request = http.MultipartRequest('POST', url)
@@ -341,17 +350,13 @@ class AuthServices extends BaseApiService {
 
       // Log response
       BaseApiService.logResponse(
-        url.toString(), 
-        response.statusCode, 
-        responseBody
-      );
+          url.toString(), response.statusCode, responseBody);
 
       // Parse and validate response
       final decodedResponse = json.decode(responseBody);
       validateResponse(response.statusCode, decodedResponse);
 
       return decodedResponse;
-
     } catch (e) {
       BaseApiService.logError(apiUrl, e.toString());
       if (e is ApiException) {
