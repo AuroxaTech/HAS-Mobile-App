@@ -11,7 +11,9 @@ class AppUrls {
   //static const baseUrl = "https://haservices.ca:8080";
 
   ///New Banckend
-  static const baseUrl = "https://haservices.ca:8080/api";
+  //static const baseUrl = "https://haservices.ca:8080/api";
+
+  static const baseUrl = "https://has-backend.wazirafghan.online/api";
 
   static const profileImageBaseUrl = "$baseUrl/assets/profile_images/";
   static const electricityBillBaseUrl = "$baseUrl/assets/electricity_bill/";
@@ -25,10 +27,10 @@ class AppUrls {
   //Registration
   static const registerUrl = "$baseUrl/register";
   static const loginUrl = "$baseUrl/login";
-  static const userState = "$baseUrl/service-provider-stat";
-  static const landlordStat = "$baseUrl/landlord-stat";
-  static const tenantStat = "$baseUrl/tenant-stat";
-  static const visitorStat = "$baseUrl/visitor-stat";
+  static const userState = "$baseUrl/service-provider-state";
+  static const landlordStat = "$baseUrl/landlord-state";
+  static const tenantStat = "$baseUrl/tenant-state";
+  static const visitorStat = "$baseUrl/visitor-state";
   static const getUser = "$baseUrl/get-user-by-id";
 
   //property
@@ -62,7 +64,7 @@ class AppUrls {
   static const getServiceJobDetail = "$baseUrl/get-job-detail";
   static const getServiceFeedback = "$baseUrl/get-provider-rating";
 
-  // favourite providerx`
+  // favourite provider`
   static const addFavouriteProvider = "$baseUrl/add-fav-provider";
   static const addFavouriteService = "$baseUrl/add-fav-service";
   static const getFavourite = "$baseUrl/get-favourite";

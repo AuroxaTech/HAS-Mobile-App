@@ -286,6 +286,7 @@ class AuthServices extends BaseApiService {
         'duration': duration,
         'country': country,
         'location': location,
+        'city': "none",
         'description': description,
       };
 
@@ -595,26 +596,58 @@ class AuthServices extends BaseApiService {
     }
   }
 
-  getUserState() async {
-    var data = await Preferences.getUserID();
-    var token = await Preferences.getToken();
-    Uri url = Uri.parse(
-      "${AppUrls.userState}?serviceprovider_id=$data",
-    );
+  Future<Map<String, dynamic>> getUserState() async {
     try {
-      var res = await http.post(url, headers: getHeader(userToken: token));
-      return json.decode(res.body);
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
+      var data = await Preferences.getUserID();
+      var token = await Preferences.getToken();
+      Uri url = Uri.parse("${AppUrls.userState}?serviceprovider_id=$data");
+
+      // Log request
+      BaseApiService.logRequest(
+        url.toString(),
+        'GET',
+        getHeader(userToken: token),
+        null
+      );
+
+      var response = await http.get(
+        url,
+        headers: getHeader(userToken: token)
+      );
+
+      // Log response
+      BaseApiService.logResponse(
+        url.toString(),
+        response.statusCode,
+        response.body
+      );
+
+      if (response.statusCode == 200) {
+        final decodedResponse = json.decode(response.body);
+        return decodedResponse;
+      } else {
+        throw ApiException(
+          'Failed to fetch service provider state',
+          statusCode: response.statusCode
+        );
       }
-      return e;
+    } catch (e) {
+      // Log error
+      BaseApiService.logError(AppUrls.userState, e.toString());
+
+      if (e is FormatException) {
+        throw ApiException('Invalid response format from server');
+      }
+
+      throw ApiException(e.toString());
     }
   }
 
   getLandLordState() async {
     var data = await Preferences.getUserID();
     var token = await Preferences.getToken();
+    print("Data ==> $data");
+
     Uri url = Uri.parse(
       "${AppUrls.landlordStat}?landlord_id=$data",
     );
@@ -629,37 +662,90 @@ class AuthServices extends BaseApiService {
     }
   }
 
-  getTenantState() async {
-    var data = await Preferences.getUserID();
-    var token = await Preferences.getToken();
-    Uri url = Uri.parse(
-      "${AppUrls.tenantStat}?tenant_id=$data",
-    );
+  Future<Map<String, dynamic>> getTenantState() async {
     try {
-      var res = await http.post(url, headers: getHeader(userToken: token));
-      return json.decode(res.body);
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
+      var data = await Preferences.getUserID();
+      var token = await Preferences.getToken();
+      Uri url = Uri.parse("${AppUrls.tenantStat}?tenant_id=$data");
+
+      // Log request
+      BaseApiService.logRequest(
+          url.toString(), 'POST', getHeader(userToken: token), null);
+
+      var response = await http.get(url, headers: getHeader(userToken: token));
+
+      // Log response
+      BaseApiService.logResponse(
+          url.toString(), response.statusCode, response.body);
+
+      if (response.statusCode == 200) {
+        final decodedResponse = json.decode(response.body);
+        return decodedResponse;
+      } else {
+        throw ApiException('Failed to fetch tenant state',
+            statusCode: response.statusCode);
       }
-      return e;
+    } catch (e) {
+      // Log error
+      BaseApiService.logError(AppUrls.tenantStat, e.toString());
+
+      if (e is FormatException) {
+        throw ApiException('Invalid response format from server');
+      }
+
+      throw ApiException(e.toString());
     }
   }
 
-  getVisitorState() async {
-    var data = await Preferences.getUserID();
-    var token = await Preferences.getToken();
-    Uri url = Uri.parse(
-      "${AppUrls.visitorStat}?visitor_id=$data",
-    );
+  Future<Map<String, dynamic>> getVisitorState() async {
     try {
-      var res = await http.post(url, headers: getHeader(userToken: token));
-      return json.decode(res.body);
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
+      var data = await Preferences.getUserID();
+      var token = await Preferences.getToken();
+      Uri url = Uri.parse("${AppUrls.visitorStat}?visitor_id=$data");
+
+      // Log request
+      BaseApiService.logRequest(
+        url.toString(),
+        'GET',
+        getHeader(userToken: token),
+        null
+      );
+
+      var response = await http.get(
+        url,
+        headers: getHeader(userToken: token)
+      );
+
+      // Log response
+      BaseApiService.logResponse(
+        url.toString(),
+        response.statusCode,
+        response.body
+      );
+
+      // Check if response is HTML
+      if (response.body.trim().startsWith('<!DOCTYPE html>')) {
+        throw ApiException('Server returned HTML instead of JSON. Please try again.');
       }
-      return e;
+
+      if (response.statusCode == 200) {
+        final decodedResponse = json.decode(response.body);
+        return decodedResponse;
+      } else {
+        throw ApiException(
+          'Failed to fetch visitor state',
+          statusCode: response.statusCode
+        );
+      }
+    } catch (e) {
+      // Log error
+      BaseApiService.logError(AppUrls.visitorStat, e.toString());
+
+      if (e is FormatException) {
+        throw ApiException('Invalid response format from server');
+      }
+
+      throw ApiException(e.toString());
     }
   }
 

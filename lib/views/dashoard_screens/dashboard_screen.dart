@@ -48,8 +48,7 @@ class DashBoardScreen extends GetView<DashboardController> {
                             child: ClipOval(
                               child: CachedNetworkImage(
                                 fit: BoxFit.cover,
-                                width:
-                                    60, // Ensure these dimensions are sufficient to fill the CircleAvatar without stretching
+                                width: 60,
                                 height: 60,
                                 imageUrl: AppUrls.profileImageBaseUrl +
                                     controller.getLandlord.value!.landlord.user!
@@ -170,6 +169,8 @@ class DashBoardScreen extends GetView<DashboardController> {
                                                 icon: FontAwesomeIcons.heart),
                                             w80,
                                           ]),
+                                          h80,
+                                          h80,
                                         ],
                                       ),
                                     ),

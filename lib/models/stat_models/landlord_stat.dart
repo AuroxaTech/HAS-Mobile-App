@@ -33,117 +33,87 @@ class LandordStat {
 }
 
 class LandLordData {
-  Landlord landlord;
-  int pendingContract;
-  int totalProperties;
-  String totalSpend;
+  final Landlord landlord;
+  final int totalProperties;
+  final int pendingContract;
+  final int totalSpend;
 
   LandLordData({
     required this.landlord,
-    required this.pendingContract,
     required this.totalProperties,
+    this.pendingContract = 0, // Default value
     required this.totalSpend,
   });
 
-  factory LandLordData.fromJson(Map<String, dynamic> json) => LandLordData(
-    landlord: Landlord.fromJson(json["landlord"]),
-    pendingContract: json["pending_contract"],
-    totalProperties: json["total_properties"],
-    totalSpend: json["total_spend"],
-  );
+  factory LandLordData.fromJson(Map<String, dynamic> json) {
+    return LandLordData(
+      landlord: Landlord.fromJson(json['landlord']),
+      totalProperties: json['total_properties'] ?? 0,
+      pendingContract: json['pending_contract'] ?? 0,
+      totalSpend: json['total_spend'] ?? 0,
+    );
+  }
 
   Map<String, dynamic> toJson() => {
     "landlord": landlord.toJson(),
-    "pending_contract": pendingContract,
     "total_properties": totalProperties,
+    "pending_contract": pendingContract,
     "total_spend": totalSpend,
   };
 }
 
 class Landlord {
-  int id;
-  int userId;
-  String noOfProperty;
-  String availabilityStartTime;
-  String availabilityEndTime;
-  String createdAt;
-  String updatedAt;
-  User? user;
+  final int id;
+  final String fullName;
+  final String email;
+  final String phoneNumber;
+  final String profileImage;
+  final User? user;
 
   Landlord({
     required this.id,
-    required this.userId,
-    required this.noOfProperty,
-    required this.availabilityStartTime,
-    required this.availabilityEndTime,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.user,
+    required this.fullName,
+    required this.email,
+    required this.phoneNumber,
+    required this.profileImage,
+    this.user,
   });
 
-  factory Landlord.fromJson(Map<String, dynamic> json) => Landlord(
-    id: json["id"] ?? 0,
-    userId: json["user_id"] ?? 0,
-    noOfProperty: json["no_of_property"] ?? "",
-    availabilityStartTime: json["availability_start_time"] ?? "",
-    availabilityEndTime: json["availability_end_time"] ?? "",
-    createdAt: json["created_at"] ?? "",
-    updatedAt: json["updated_at"] ?? "",
-    user: json["user"] == null ? null  : User.fromJson(json["user"]),
-  );
+  factory Landlord.fromJson(Map<String, dynamic> json) {
+    return Landlord(
+      id: json['id'],
+      fullName: json['full_name'],
+      email: json['email'],
+      phoneNumber: json['phone_number'],
+      profileImage: json['profile_image'],
+      user: User(
+        fullname: json['full_name'],
+        profileimage: json['profile_image'],
+      ),
+    );
+  }
 
   Map<String, dynamic> toJson() => {
     "id": id,
-    "user_id": userId,
-    "no_of_property": noOfProperty,
-    "availability_start_time": availabilityStartTime,
-    "availability_end_time": availabilityEndTime,
-    "created_at": createdAt,
-    "updated_at": updatedAt,
+    "full_name": fullName,
+    "email": email,
+    "phone_number": phoneNumber,
+    "profile_image": profileImage,
     "user": user,
   };
 }
 
 class User {
-  int id;
-  String fullname;
-  String email;
-  String phoneNumber;
-  int roleId;
-  String profileimage;
-  String createdAt;
-  String updatedAt;
+  final String fullname;
+  final String profileimage;
 
   User({
-    required this.id,
     required this.fullname,
-    required this.email,
-    required this.phoneNumber,
-    required this.roleId,
     required this.profileimage,
-    required this.createdAt,
-    required this.updatedAt,
   });
 
-  factory User.fromJson(Map<String, dynamic> json) => User(
-    id: json["id"] ?? 0,
-    fullname: json["fullname"] ?? "",
-    email: json["email"]??"",
-    phoneNumber: json["phone_number"] ?? "",
-    roleId: json["role_id"] ?? 0,
-    profileimage: json["profileimage"] ?? "",
-    createdAt: json["created_at"] ?? "",
-    updatedAt: json["updated_at"] ?? "",
-  );
-
   Map<String, dynamic> toJson() => {
-    "id": id,
     "fullname": fullname,
-    "email": email,
-    "phone_number": phoneNumber,
-    "role_id": roleId,
     "profileimage": profileimage,
-    "created_at": createdAt,
-    "updated_at": updatedAt,
   };
 }

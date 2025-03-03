@@ -48,38 +48,20 @@ class VisitorDashBoard extends GetView<VisitorDashboardController> {
                           leading: CircleAvatar(
                             radius: 30,
                             child: ClipOval(
-                              child: CachedNetworkImage(
-                                fit: BoxFit.cover,
-                                width:
-                                    60, // Ensure these dimensions are sufficient to fill the CircleAvatar without stretching
-                                height: 60,
-                                imageUrl: AppUrls.servicesImages +
-                                    controller.getVisitor.value!.visitor.user
-                                        .profileimage,
-                                errorWidget: (context, e, b) {
-                                  return Container(
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: primaryColor,
-                                        width: 2,
-                                      ),
-                                    ),
-                                    child: const Center(
-                                      child: FaIcon(
-                                        FontAwesomeIcons.user,
-                                        size: 35,
-                                        color: primaryColor,
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
+                              child: controller.getVisitor.value?.visitor.profileimage.isNotEmpty == true
+                                  ? CachedNetworkImage(
+                                      fit: BoxFit.cover,
+                                      width: 60,
+                                      height: 60,
+                                      imageUrl: AppUrls.profileImageBaseUrl +
+                                          controller.getVisitor.value!.visitor.profileimage,
+                                      errorWidget: (context, e, b) => _buildDefaultAvatar(),
+                                    )
+                                  : _buildDefaultAvatar(),
                             ),
                           ),
                           title: headingText(
-                              text: controller
-                                  .getVisitor.value!.visitor.user.fullname,
+                              text: controller.getVisitor.value?.visitor.fullname ?? "Loading...",
                               fontSize: 24),
                           subtitle: customText(
                             text: "Visitor",
@@ -189,7 +171,7 @@ class VisitorDashBoard extends GetView<VisitorDashboardController> {
                 w25,
                 dashboardSmallContainer(
                   context,
-                  title: visitorData.totalSpend.toString(),
+                  title: visitorData.totalSpend,
                   subTitle: "Total",
                   thirdTitle: "Spent",
                 ),
@@ -204,6 +186,25 @@ class VisitorDashBoard extends GetView<VisitorDashboardController> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildDefaultAvatar() {
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: primaryColor,
+          width: 2,
+        ),
+      ),
+      child: const Center(
+        child: FaIcon(
+          FontAwesomeIcons.user,
+          size: 35,
+          color: primaryColor,
+        ),
       ),
     );
   }

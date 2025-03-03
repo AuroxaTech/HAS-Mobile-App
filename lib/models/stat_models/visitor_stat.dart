@@ -33,23 +33,23 @@ class VisitorStat {
 }
 
 class VisitorData {
-  Visitor visitor;
-  int pendingJob;
-  String totalSpend;
-  int totalFavorite;
+  final User visitor;
+  final int pendingJob;
+  final String totalSpend;
+  final int totalFavorite;
 
   VisitorData({
     required this.visitor,
-    required this.pendingJob,
-    required this.totalSpend,
-    required this.totalFavorite,
+    this.pendingJob = 0,
+    this.totalSpend = "0",
+    this.totalFavorite = 0,
   });
 
   factory VisitorData.fromJson(Map<String, dynamic> json) => VisitorData(
-    visitor: Visitor.fromJson(json["visitor"]),
-    pendingJob: json["pending_job"],
-    totalSpend: json["total_spend"],
-    totalFavorite: json["total_favorite"],
+    visitor: User.fromJson(json["visitor"]),
+    pendingJob: json["pending_job"] ?? 0,
+    totalSpend: json["total_spend"]?.toString() ?? "0",
+    totalFavorite: json["total_favorite"] ?? 0,
   );
 
   Map<String, dynamic> toJson() => {
@@ -93,35 +93,26 @@ class Visitor {
 }
 
 class User {
-  int id;
-  String fullname;
-  String email;
-  String phoneNumber;
-  int roleId;
-  String profileimage;
-  DateTime createdAt;
-  DateTime updatedAt;
+  final int id;
+  final String fullname;
+  final String email;
+  final String phoneNumber;
+  final String profileimage;
 
   User({
     required this.id,
     required this.fullname,
     required this.email,
     required this.phoneNumber,
-    required this.roleId,
     required this.profileimage,
-    required this.createdAt,
-    required this.updatedAt,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => User(
     id: json["id"],
-    fullname: json["fullname"],
-    email: json["email"],
-    phoneNumber: json["phone_number"],
-    roleId: json["role_id"],
-    profileimage: json["profileimage"],
-    createdAt: DateTime.parse(json["created_at"]),
-    updatedAt: DateTime.parse(json["updated_at"]),
+    fullname: json["full_name"] ?? json["fullname"] ?? "",
+    email: json["email"] ?? "",
+    phoneNumber: json["phone_number"] ?? "",
+    profileimage: json["profile_image"] ?? json["profileimage"] ?? "",
   );
 
   Map<String, dynamic> toJson() => {
@@ -129,9 +120,6 @@ class User {
     "fullname": fullname,
     "email": email,
     "phone_number": phoneNumber,
-    "role_id": roleId,
     "profileimage": profileimage,
-    "created_at": createdAt.toIso8601String(),
-    "updated_at": updatedAt.toIso8601String(),
   };
 }

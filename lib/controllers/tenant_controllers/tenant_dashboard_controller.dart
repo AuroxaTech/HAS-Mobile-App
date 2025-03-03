@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:property_app/models/stat_models/tenant_stat.dart';
 import 'package:http/http.dart' as http;
+import 'package:property_app/models/stat_models/tenant_stat.dart';
+
 import '../../constant_widget/constant_widgets.dart';
 import '../../services/auth_services/auth_services.dart';
 import '../../utils/api_urls.dart';
+import '../../utils/base_api_service.dart';
 import '../../utils/shared_preferences/preferences.dart';
 import '../../utils/utils.dart';
 import '../../views/authentication_screens/login_screen.dart';
 
 class TenantDashboardController extends GetxController {
-
   final GlobalKey<ScaffoldState> key = GlobalKey();
   @override
   void onInit() {
@@ -18,42 +19,46 @@ class TenantDashboardController extends GetxController {
     getTenantState();
   }
 
-
   RxBool isLoading = false.obs;
   AuthServices authServices = AuthServices();
   Rx<TenantData?> getTenant = Rx<TenantData?>(null);
 
-
   Future<void> getTenantState() async {
-    print("we are in get land stat");
-    print("we are in get${await Preferences.getUserID()}");
-    isLoading.value = true;
-    print(await Preferences.getUserID());
-    var result = await authServices.getTenantState();
-    print("Service Result : $result");
+    try {
+      isLoading.value = true;
+      var result = await authServices.getTenantState();
 
-    isLoading.value = false;
+      if (result['success'] == true && result['payload'] != null) {
+        final payload = result['payload'];
+        final data = {
+          'tenant': payload['tenant'],
+          'pending_contract': payload['pending_contract'] ?? 0,
+          'total_rented': payload['total_rented'] ?? 0,
+          'total_spend': payload['total_spend'] ?? "0",
+          'properties': payload['properties'] ?? []
+        };
 
-    if (result['data'] != null && result['data'] is Map) {
-      var data = result['data'] as Map<String, dynamic>;
-      print("Data :: $data");
-
-      if (getTenant != null) {
         getTenant.value = TenantData.fromJson(data);
-
-        print("Tenant value ${getTenant.value!.tenant.user}");
+        print("Tenant data loaded successfully");
       } else {
-        isLoading.value = false;
-        print("getServiceOne is null");
+        print("Invalid response format: ${result['message']}");
+        AppUtils.errorSnackBar("Error", "Failed to load dashboard data");
       }
-    } else {
+    } catch (e) {
+      print("Error loading tenant state: $e");
+      String errorMessage = "Failed to load dashboard data";
+
+      if (e is ApiException) {
+        errorMessage = e.message;
+      }
+
+      AppUtils.errorSnackBar("Error", errorMessage);
+    } finally {
       isLoading.value = false;
-      print("Invalid or null data format");
     }
   }
 
   Future<void> deleteUser() async {
-
     try {
       isLoading(true);
       var userId = await Preferences.getUserID();
@@ -61,7 +66,6 @@ class TenantDashboardController extends GetxController {
       // Making the HTTP POST request
       final response = await http.delete(
         Uri.parse(AppUrls.deleteUser),
-
         headers: getHeader(userToken: userToken),
       );
       print(response.body);

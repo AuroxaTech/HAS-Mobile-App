@@ -57,7 +57,7 @@ class _VisitorBottomBarState extends State<VisitorBottomBar> {
     const PropertyTabsScreen(),
     const ChatListing(),
     ServicesListingScreen(),
-    JobsScreen(
+    const JobsScreen(
       isBack: false,
     ),
     const VisitorDashBoard(),
