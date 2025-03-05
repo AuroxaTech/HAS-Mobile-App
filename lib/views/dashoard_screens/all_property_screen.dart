@@ -1,19 +1,15 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:property_app/models/propert_model/ladlord_property_model.dart';
 
-import '../../app_constants/animations.dart';
-import '../../app_constants/app_sizes.dart';
 import '../../app_constants/color_constants.dart';
 import '../../constant_widget/constant_widgets.dart';
 import '../../controllers/dasboard_controller/all_property_controller.dart';
 import '../../route_management/constant_routes.dart';
-import '../../utils/api_urls.dart';
 
 class AllPropertyScreen extends GetView<AllPropertyController> {
-   AllPropertyScreen({super.key});
+  AllPropertyScreen({super.key});
   @override
   final controller = Get.put(AllPropertyController());
 
@@ -50,31 +46,37 @@ class AllPropertyScreen extends GetView<AllPropertyController> {
                   shrinkWrap: true,
                   pagingController: controller.pagingController,
                   builderDelegate: PagedChildBuilderDelegate<Property>(
-                      firstPageErrorIndicatorBuilder: (context) => MaterialButton(
-                        child: const Text("No Data Found, Tap to try again."),
-                        onPressed: () => controller.pagingController.refresh(),
-                      ),
+                      firstPageErrorIndicatorBuilder: (context) =>
+                          MaterialButton(
+                            child:
+                                const Text("No Data Found, Tap to try again."),
+                            onPressed: () =>
+                                controller.pagingController.refresh(),
+                          ),
                       newPageErrorIndicatorBuilder: (context) => MaterialButton(
-                        child: const Text("Failed to load more items. Tap to try again."),
-                        onPressed: () => controller.pagingController.retryLastFailedRequest(),
-                      ),
+                            child: const Text(
+                                "Failed to load more items. Tap to try again."),
+                            onPressed: () => controller.pagingController
+                                .retryLastFailedRequest(),
+                          ),
                       noItemsFoundIndicatorBuilder: (context) => MaterialButton(
-                        child: const Text("No Data found. Tap to reset"),
-                        onPressed: () => controller.getProperties(1),
-                      ),
+                            child: const Text("No Data found. Tap to reset"),
+                            onPressed: () => controller.getProperties(1),
+                          ),
                       itemBuilder: (context, item, index) {
                         String imagesString = item.images.toString();
                         List<String> imageList = imagesString.split(',');
-                        print(AppUrls.propertyImages + imageList[0],);
+                        print(
+                          imageList[0],
+                        );
                         return Column(
                           children: [
-
-                            myPropertyWidget(context,
-                                onTap: (){
-                                  Get.toNamed(kAllPropertyDetailScreen, arguments: item.id);
-                                },
+                            myPropertyWidget(context, onTap: () {
+                              Get.toNamed(kAllPropertyDetailScreen,
+                                  arguments: item.id);
+                            },
                                 title: item.city.toString(),
-                                image:  AppUrls.propertyImages + imageList[0],
+                                image: imageList[0],
                                 price: "\$${item.amount.toString()}",
                                 description: item.description.toString(),
                                 bedroom: item.bedroom.toString(),
@@ -86,27 +88,30 @@ class AllPropertyScreen extends GetView<AllPropertyController> {
                                   child: Align(
                                       alignment: Alignment.topRight,
                                       child: CircleAvatar(
-                                          backgroundColor: Colors.white,
-                                          child: IconButton(
-                                            icon: Icon(
-                                              item.isFavorite == true ? Icons.favorite : Icons.favorite_border,
-                                              color:  item.isFavorite == true ? Colors.red : greyText,
-                                            ),
-                                            onPressed: () {
-                                              controller.toggleFavorite1(index, item.id);
-                                            },
-                                          ),)
-                                  ),
+                                        backgroundColor: Colors.white,
+                                        child: IconButton(
+                                          icon: Icon(
+                                            item.isFavorite == true
+                                                ? Icons.favorite
+                                                : Icons.favorite_border,
+                                            color: item.isFavorite == true
+                                                ? Colors.red
+                                                : greyText,
+                                          ),
+                                          onPressed: () {
+                                            controller.toggleFavorite1(
+                                                index, item.id);
+                                          },
+                                        ),
+                                      )),
                                 ),
                                 rent: item.type == 1 ? "Rent" : "Sale"),
-
-                            SizedBox(
+                            const SizedBox(
                               height: 20,
                             )
                           ],
                         );
-                      }
-                  ),
+                      }),
                 ),
               ),
             ),
@@ -119,8 +124,7 @@ class AllPropertyScreen extends GetView<AllPropertyController> {
             // ),
           ],
         ),
-        ),
-
+      ),
     );
   }
 }

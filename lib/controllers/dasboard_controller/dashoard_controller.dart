@@ -7,6 +7,7 @@ import 'package:property_app/views/authentication_screens/login_screen.dart';
 
 import '../../models/stat_models/landlord_stat.dart';
 import '../../services/auth_services/auth_services.dart';
+import '../../utils/base_api_service.dart';
 import '../../utils/shared_preferences/preferences.dart';
 
 class DashboardController extends GetxController
@@ -30,25 +31,29 @@ class DashboardController extends GetxController
       var result = await authServices.getLandLordState();
 
       if (result['success'] == true && result['payload'] != null) {
-        // Create LandLordData from the new response format
         final payload = result['payload'];
         final data = {
           'landlord': payload['landlord'],
-          'total_properties': payload['total_properties'],
+          'total_properties': payload['total_properties'] ?? 0,
           'pending_contract': payload['pending_contract'] ?? 0,
           'total_spend': payload['total_rent_income'] ?? 0,
         };
 
         getLandlord.value = LandLordData.fromJson(data);
         print("Landlord data loaded successfully");
-        print("Data :: $data");
       } else {
         print("Invalid response format: ${result['message']}");
         AppUtils.errorSnackBar("Error", "Failed to load dashboard data");
       }
     } catch (e) {
       print("Error loading landlord state: $e");
-      AppUtils.errorSnackBar("Error", "Failed to load dashboard data: $e");
+      String errorMessage = "Failed to load dashboard data";
+
+      if (e is ApiException) {
+        errorMessage = e.message;
+      }
+
+      AppUtils.errorSnackBar("Error", errorMessage);
     } finally {
       isLoading.value = false;
     }

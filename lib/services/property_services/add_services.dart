@@ -7,6 +7,7 @@ import 'package:property_app/constant_widget/constant_widgets.dart';
 import 'package:property_app/utils/shared_preferences/preferences.dart';
 
 import '../../utils/api_urls.dart';
+import '../../utils/base_api_service.dart';
 import '../../utils/connectivity.dart';
 import '../../utils/utils.dart';
 
@@ -82,19 +83,53 @@ class ServiceProviderServices {
     }
   }
 
-  getServices({required int userId}) async {
-    Uri url = Uri.parse(
-      "${AppUrls.getServices}?user_id=$userId",
-    );
-    var token = await Preferences.getToken();
+  Future<Map<String, dynamic>> getServices({required int userId}) async {
     try {
-      var res = await http.post(url, headers: getHeader(userToken: token));
-      return json.decode(res.body);
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
+      var token = await Preferences.getToken();
+      Uri url = Uri.parse("${AppUrls.getServices}?user_id=$userId");
+
+      // Log request
+      BaseApiService.logRequest(
+          url.toString(), 'GET', getHeader(userToken: token), null);
+
+      var response = await http.get(url, headers: getHeader(userToken: token));
+
+      // Log response
+      BaseApiService.logResponse(
+          url.toString(), response.statusCode, response.body);
+
+      // Check if response is HTML
+      if (response.body.trim().startsWith('<!DOCTYPE html>')) {
+        throw ApiException(
+            'Server returned HTML instead of JSON. Please try again.');
       }
-      return e;
+
+      if (response.statusCode == 200) {
+        final decodedResponse = json.decode(response.body);
+
+        if (decodedResponse['success'] == true) {
+          return {
+            'status': true,
+            'data': decodedResponse['payload'],
+            'message': decodedResponse['message']
+          };
+        } else {
+          throw ApiException(
+              decodedResponse['message'] ?? 'Failed to fetch services');
+        }
+      } else {
+        throw ApiException('Failed to fetch services',
+            statusCode: response.statusCode);
+      }
+    } catch (e) {
+      // Log error
+      BaseApiService.logError(AppUrls.getServices, e.toString());
+
+      if (e is FormatException) {
+        throw ApiException('Invalid response format from server');
+      }
+
+      throw ApiException(e.toString());
     }
   }
 
@@ -122,19 +157,63 @@ class ServiceProviderServices {
     }
   }
 
-  getService({required int id}) async {
-    Uri url = Uri.parse(
-      "${AppUrls.getService}/$id",
-    );
+  Future<Map<String, dynamic>> getService({required int id}) async {
     try {
       var token = await Preferences.getToken();
-      var res = await http.get(url, headers: getHeader(userToken: token));
-      return json.decode(res.body);
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
+      Uri url = Uri.parse("${AppUrls.getService}/$id");
+
+      // Log request
+      BaseApiService.logRequest(
+        url.toString(),
+        'GET',
+        getHeader(userToken: token),
+        null
+      );
+
+      var response = await http.get(
+        url,
+        headers: getHeader(userToken: token)
+      );
+
+      // Log response
+      BaseApiService.logResponse(
+        url.toString(),
+        response.statusCode,
+        response.body
+      );
+
+      // Check if response is HTML
+      if (response.body.trim().startsWith('<!DOCTYPE html>')) {
+        throw ApiException('Server returned HTML instead of JSON. Please try again.');
       }
-      return e;
+
+      if (response.statusCode == 200) {
+        final decodedResponse = json.decode(response.body);
+        
+        if (decodedResponse['success'] == true) {
+          return {
+            'status': true,
+            'data': decodedResponse['payload'],
+            'message': decodedResponse['message']
+          };
+        } else {
+          throw ApiException(decodedResponse['message'] ?? 'Failed to fetch service details');
+        }
+      } else {
+        throw ApiException(
+          'Failed to fetch service details',
+          statusCode: response.statusCode
+        );
+      }
+    } catch (e) {
+      // Log error
+      BaseApiService.logError("${AppUrls.getService}/$id", e.toString());
+
+      if (e is FormatException) {
+        throw ApiException('Invalid response format from server');
+      }
+
+      throw ApiException(e.toString());
     }
   }
 
@@ -145,66 +224,86 @@ class ServiceProviderServices {
     required double lat,
     required double lng,
     required int propertyType,
-    required int price,
     required String date,
     required String time,
     required String description,
     required String additionalInfo,
+    required int price,
     required int postalCode,
     required int isApplied,
   }) async {
-    if (await ConnectivityUtility.checkInternetConnectivity() == true) {
-      var url = Uri.parse(AppUrls.addServiceRequest);
+    try {
       var token = await Preferences.getToken();
-      var id = await Preferences.getUserID();
-      print("isApplied ===> $isApplied");
-      // Create the body map
-      final bodyData = {
-        "user_id": id,
-        "serviceprovider_id": serviceProviderId,
-        "service_id": serviceId,
-        "address": address,
-        "lat": lat,
-        "long": lng,
-        "property_type": propertyType,
-        "date": date,
-        "time": time,
-        "description": description,
-        "additional_info": additionalInfo,
-        "price": price,
-        "postal_code": postalCode,
-        "is_applied": isApplied
-      };
+      var userId = await Preferences.getUserID();
+      Uri url = Uri.parse(AppUrls.addServiceRequest);
 
-      // Print the entire data before sending it in the API request
-      print("Data being sent in the API request: $bodyData");
+      // Create multipart request
+      var request = http.MultipartRequest('POST', url)
+        ..headers.addAll(getHeader(userToken: token))
+        ..fields.addAll({
+          'user_id': userId.toString(),
+          'service_name': serviceId,
+          'location': address,
+          'lat': lat.toString(),
+          'long': lng.toString(),
+          'description': description,
+          'pricing': price.toString(),
+          'duration': '1', // Default duration
+          'start_time': time.split(' - ')[0],
+          'end_time': time.split(' - ')[1],
+          'additional_information': additionalInfo,
+          'country': 'Canada', // Default country
+          'city': address.split(',').last.trim(),
+          'year_experience': '0', // Not required for request
+          'provider_id': serviceProviderId,
+        });
 
-      var response = await http.post(
-        url,
-        headers: getHeader(userToken: token),
-        body: json.encode(bodyData),
+      // Log request
+      BaseApiService.logRequest(
+        url.toString(),
+        'POST',
+        request.headers,
+        request.fields
       );
 
-      print("New Service Request ==> ${response.toString()}");
+      // Send request
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
+
+      // Log response
+      BaseApiService.logResponse(
+        url.toString(),
+        response.statusCode,
+        response.body
+      );
 
       if (response.statusCode == 200) {
-        try {
-          var data = json.decode(response.body);
-          return data;
-        } catch (e) {
-          print("Error decoding JSON: $e");
-          // Handle non-JSON response
-          return {"error": "Invalid JSON format"};
+        final decodedResponse = json.decode(response.body);
+        
+        if (decodedResponse['success'] == true) {
+          return {
+            'status': true,
+            'message': decodedResponse['message'],
+            'data': decodedResponse['payload']
+          };
+        } else {
+          throw ApiException(decodedResponse['message'] ?? 'Failed to create service request');
         }
       } else {
-        print("Server returned an error: ${response.statusCode}");
-        // Handle server error
-        return {"error": "Server returned an error"};
+        throw ApiException(
+          'Failed to create service request',
+          statusCode: response.statusCode
+        );
       }
-    } else {
-      // Handle no internet connectivity
-      AppUtils.getSnackBarNoInternet();
-      throw Exception('No internet connectivity');
+    } catch (e) {
+      // Log error
+      BaseApiService.logError(AppUrls.addServiceRequest, e.toString());
+
+      if (e is FormatException) {
+        throw ApiException('Invalid response format from server');
+      }
+
+      throw ApiException(e.toString());
     }
   }
 

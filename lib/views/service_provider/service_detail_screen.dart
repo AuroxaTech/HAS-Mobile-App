@@ -48,7 +48,7 @@ class ServiceListingDetailScreen
                           padding: const EdgeInsets.all(18.0),
                           child: Column(
                             children: [
-                              SizedBox(
+                              const SizedBox(
                                 height: 50,
                               ),
                               Row(
