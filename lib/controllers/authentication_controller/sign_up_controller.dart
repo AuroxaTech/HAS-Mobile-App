@@ -330,7 +330,7 @@ class SignUpController extends GetxController {
     required String cPassword,
     required String role,
     XFile? profileImage,
-    required int type,
+    required String type,
     required String city,
     required double amount,
     String? address,

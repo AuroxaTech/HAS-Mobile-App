@@ -74,9 +74,9 @@ class AllPropertyScreen extends GetView<AllPropertyController> {
                             myPropertyWidget(context, onTap: () {
                               Get.toNamed(kAllPropertyDetailScreen,
                                   arguments: item.id);
-                            },
+                              },
                                 title: item.city.toString(),
-                                image: imageList[0],
+                                image: item.propertyImages.isNotEmpty ? item.propertyImages.first : imageList[0],
                                 price: "\$${item.amount.toString()}",
                                 description: item.description.toString(),
                                 bedroom: item.bedroom.toString(),
@@ -105,7 +105,7 @@ class AllPropertyScreen extends GetView<AllPropertyController> {
                                         ),
                                       )),
                                 ),
-                                rent: item.type == 1 ? "Rent" : "Sale"),
+                                rent: item.type),
                             const SizedBox(
                               height: 20,
                             )

@@ -104,7 +104,7 @@ class AuthServices extends BaseApiService {
     required String platform,
     required String role,
     XFile? profileImage,
-    required int type,
+    required String type,
     required String city,
     required double amount,
     String? address,

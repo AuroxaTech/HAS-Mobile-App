@@ -31,160 +31,162 @@ class DashBoardScreen extends GetView<DashboardController> {
         deleteFunction(context, controller);
       }),
       body: SafeArea(
-        child: RefreshIndicator(
-            onRefresh: () async {
-              controller.getLandLordState();
-            },
-            child:
-            // controller.getLandlord.value == null ||
-            //         controller.isLoading.value
-            //     ? const Center(child: CircularProgressIndicator())
-            //     :
-            SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        // ListTile(
-                        //   leading: CircleAvatar(
-                        //     radius: 30,
-                        //     child: ClipOval(
-                        //       child: CachedNetworkImage(
-                        //         fit: BoxFit.cover,
-                        //         width: 60,
-                        //         height: 60,
-                        //         imageUrl: AppUrls.profileImageBaseUrl +
-                        //             controller.getLandlord.value!.landlord.user!
-                        //                 .profileimage,
-                        //         errorWidget: (context, e, b) {
-                        //           return Container(
-                        //             decoration: BoxDecoration(
-                        //               shape: BoxShape.circle,
-                        //               border: Border.all(
-                        //                 color: primaryColor,
-                        //                 width: 2,
-                        //               ),
-                        //             ),
-                        //             child: const Center(
-                        //               child: FaIcon(
-                        //                 FontAwesomeIcons.user,
-                        //                 size: 35,
-                        //                 color: primaryColor,
-                        //               ),
-                        //             ),
-                        //           );
-                        //         },
-                        //       ),
-                        //     ),
-                        //   ),
-                        //   title: headingText(
-                        //       text: controller.getLandlord.value!.landlord.user
-                        //               ?.fullname ??
-                        //           "",
-                        //       fontSize: 24),
-                        //   subtitle: customText(text: "Landlord", fontSize: 14),
-                        // ),
-                        h10,
-                        Container(
-                          height: screenHeight(context) * 0.8,
-                          decoration: const BoxDecoration(color: Colors.white),
-                          child: Stack(
-                            children: [
-                              // midStackContainer(
-                              //     context, controller.getLandlord.value!),
-                              Positioned.fill(
-                                top: screenHeight(context) * 0.13,
-                                child: Container(
-                                  decoration: const BoxDecoration(
-                                    color: whiteColor,
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(45),
-                                      topRight: Radius.circular(45),
+        child: Obx(
+            ()=> RefreshIndicator(
+              onRefresh: () async {
+                controller.getLandLordState();
+              },
+              child:
+              controller.getLandlord.value == null ||
+                      controller.isLoading.value
+                  ? const Center(child: CircularProgressIndicator())
+                  :
+              SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          ListTile(
+                            leading: CircleAvatar(
+                              radius: 30,
+                              child: ClipOval(
+                                child: CachedNetworkImage(
+                                  fit: BoxFit.cover,
+                                  width: 60,
+                                  height: 60,
+                                  imageUrl: AppUrls.profileImageBaseUrl +
+                                      controller.getLandlord.value!.landlord.user!
+                                          .profileimage,
+                                  errorWidget: (context, e, b) {
+                                    return Container(
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: primaryColor,
+                                          width: 2,
+                                        ),
+                                      ),
+                                      child: const Center(
+                                        child: FaIcon(
+                                          FontAwesomeIcons.user,
+                                          size: 35,
+                                          color: primaryColor,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                            title: headingText(
+                                text: controller.getLandlord.value!.landlord.user
+                                        ?.fullname ??
+                                    "",
+                                fontSize: 24),
+                            subtitle: customText(text: "Landlord", fontSize: 14),
+                          ),
+                          h10,
+                          Container(
+                            height: screenHeight(context) * 0.8,
+                            decoration: const BoxDecoration(color: Colors.white),
+                            child: Stack(
+                              children: [
+                                midStackContainer(
+                                    context, controller.getLandlord.value!),
+                                Positioned.fill(
+                                  top: screenHeight(context) * 0.13,
+                                  child: Container(
+                                    decoration: const BoxDecoration(
+                                      color: whiteColor,
+                                      borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(45),
+                                        topRight: Radius.circular(45),
+                                      ),
                                     ),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 40, right: 40, top: 30),
-                                    child: SingleChildScrollView(
-                                      child: Column(
-                                        children: [
-                                          rowMainAxis(children: [
-                                            dashboardContainer(
-                                                onTap: () {
-                                                  Get.toNamed(kMyProperties);
-                                                },
-                                                title: "My properties",
-                                                icon:
-                                                    FontAwesomeIcons.building),
-                                            dashboardContainer(
-                                                onTap: () {
-                                                  Get.toNamed(kAddProperties);
-                                                },
-                                                title: "Add property",
-                                                icon:
-                                                    FontAwesomeIcons.plusSquare)
-                                          ]),
-                                          h20,
-                                          rowMainAxis(children: [
-                                            dashboardContainer(
-                                                title: "Messages",
-                                                icon: FontAwesomeIcons
-                                                    .solidComments,
-                                                onTap: () {
-                                                  Get.to(
-                                                      () => const ChatListing(),
-                                                      transition:
-                                                          routeTransition);
-                                                }),
-                                            dashboardContainer(
-                                                title: "Tenant",
-                                                icon: FontAwesomeIcons.users,
-                                                onTap: () {
-                                                  Get.toNamed(
-                                                      kContractStatusScreen);
-                                                })
-                                          ]),
-                                          h20,
-                                          rowMainAxis(children: [
-                                            dashboardContainer(
-                                                onTap: () {
-                                                  Get.toNamed(
-                                                      kMyServiceRequestScreen);
-                                                },
-                                                title: "Request service",
-                                                icon: FontAwesomeIcons.wrench),
-                                            dashboardContainer(
-                                                onTap: () {
-                                                  Get.toNamed(kJobScreen);
-                                                },
-                                                title: "Jobs",
-                                                icon:
-                                                    FontAwesomeIcons.briefcase),
-                                          ]),
-                                          h20,
-                                          rowMainAxis(children: [
-                                            dashboardContainer(
-                                                onTap: () {
-                                                  Get.toNamed(
-                                                      kMyFavouriteScreen);
-                                                },
-                                                title: "MY Favourite",
-                                                icon: FontAwesomeIcons.heart),
-                                            w80,
-                                          ]),
-                                          h80,
-                                          h80,
-                                        ],
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 40, right: 40, top: 30),
+                                      child: SingleChildScrollView(
+                                        child: Column(
+                                          children: [
+                                            rowMainAxis(children: [
+                                              dashboardContainer(
+                                                  onTap: () {
+                                                    Get.toNamed(kMyProperties);
+                                                  },
+                                                  title: "My properties",
+                                                  icon:
+                                                      FontAwesomeIcons.building),
+                                              dashboardContainer(
+                                                  onTap: () {
+                                                    Get.toNamed(kAddProperties);
+                                                  },
+                                                  title: "Add property",
+                                                  icon:
+                                                      FontAwesomeIcons.plusSquare)
+                                            ]),
+                                            h20,
+                                            rowMainAxis(children: [
+                                              dashboardContainer(
+                                                  title: "Messages",
+                                                  icon: FontAwesomeIcons
+                                                      .solidComments,
+                                                  onTap: () {
+                                                    Get.to(
+                                                        () => const ChatListing(),
+                                                        transition:
+                                                            routeTransition);
+                                                  }),
+                                              dashboardContainer(
+                                                  title: "Tenant",
+                                                  icon: FontAwesomeIcons.users,
+                                                  onTap: () {
+                                                    Get.toNamed(
+                                                        kContractStatusScreen);
+                                                  })
+                                            ]),
+                                            h20,
+                                            rowMainAxis(children: [
+                                              dashboardContainer(
+                                                  onTap: () {
+                                                    Get.toNamed(
+                                                        kMyServiceRequestScreen);
+                                                  },
+                                                  title: "Request service",
+                                                  icon: FontAwesomeIcons.wrench),
+                                              dashboardContainer(
+                                                  onTap: () {
+                                                    Get.toNamed(kJobScreen);
+                                                  },
+                                                  title: "Jobs",
+                                                  icon:
+                                                      FontAwesomeIcons.briefcase),
+                                            ]),
+                                            h20,
+                                            rowMainAxis(children: [
+                                              dashboardContainer(
+                                                  onTap: () {
+                                                    Get.toNamed(
+                                                        kMyFavouriteScreen);
+                                                  },
+                                                  title: "MY Favourite",
+                                                  icon: FontAwesomeIcons.heart),
+                                              w80,
+                                            ]),
+                                            h80,
+                                            h80,
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-          ),
+            ),
+        ),
 
       ),
     );

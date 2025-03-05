@@ -49,7 +49,7 @@ class MyPropertyScreen extends GetView<MyPropertyController> {
                             Get.toNamed(kPropertyDetailScreen, arguments: controller.getLandLordPropertiesList[index].id);
                           },
                           title: controller.getLandLordPropertiesList[index].city.toString(),
-                          image: AppUrls.propertyImages + imageList[0],
+                          image: controller.getLandLordPropertiesList[index].propertyImages.isNotEmpty ? controller.getLandLordPropertiesList[index].propertyImages.first : AppUrls.propertyImages + imageList[0],
                           price: "\$${controller.getLandLordPropertiesList[index].amount.toString()}",
                           description: controller.getLandLordPropertiesList[index].description.toString(),
                           bedroom: controller.getLandLordPropertiesList[index].bedroom.toString(),
