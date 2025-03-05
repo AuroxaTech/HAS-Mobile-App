@@ -1,2 +1,0 @@
-/Users/user/Desktop/HAS-Mobile-App/android/app/.cxx/RelWithDebInfo/4722r1jz/x86_64/CMakeFiles/rebuild_cache.dir
-/Users/user/Desktop/HAS-Mobile-App/android/app/.cxx/RelWithDebInfo/4722r1jz/x86_64/CMakeFiles/edit_cache.dir

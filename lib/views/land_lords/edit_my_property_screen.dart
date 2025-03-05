@@ -467,7 +467,7 @@ class EditMyPropertyScreen extends GetView<MyPropertyDetailController> {
                          }
                          double? amount = double.tryParse(controller.amountController.text);
                          controller.updateProperty(
-                           type: 1,
+                           type: "ccc residential",
                            city: controller.newYorkController.text,
                            amount: amount!,
                            address: controller.streetController.text,
@@ -481,7 +481,6 @@ class EditMyPropertyScreen extends GetView<MyPropertyDetailController> {
                            description: controller.description.text,
                            propertyType: propertyType,
                            propertySubType: selectedSubType,
-
                          );
                        }
 

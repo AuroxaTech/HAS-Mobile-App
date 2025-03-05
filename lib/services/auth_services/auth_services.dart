@@ -649,10 +649,12 @@ class AuthServices extends BaseApiService {
     print("Data ==> $data");
 
     Uri url = Uri.parse(
-      "${AppUrls.landlordStat}?landlord_id=$data",
+      AppUrls.landlordStat,
     );
     try {
-      var res = await http.post(url, headers: getHeader(userToken: token));
+      var res = await http.post(url, headers: getHeader(userToken: token), body: jsonEncode({
+        "landlord_id" : data
+      }));
       return json.decode(res.body);
     } catch (e) {
       if (kDebugMode) {

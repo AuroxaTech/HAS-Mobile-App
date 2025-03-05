@@ -37,11 +37,12 @@ class AppUrls {
   static const getProperties = "$baseUrl/all-properties";
   static const getLandLordProperty = "$baseUrl/get-properties";
   static const getAllProperty = "$baseUrl/properties";
+  static const propertyDetail = "$baseUrl/property/details";
   static const getProperty = "$baseUrl/get-property";
-  static const updateProperty = "$baseUrl/update-property";
-  static const deleteProperty = "$baseUrl/delete-property";
-  static const addProperty = "$baseUrl/add-property";
-  static const addFavoriteProperty = "$baseUrl/add-fav-property";
+  static const updateProperty = "$baseUrl/property/update";
+  static const deleteProperty = "$baseUrl/property/delete";
+  static const addProperty = "$baseUrl/property/store";
+  static const addFavoriteProperty = "$baseUrl/property-favourites";
   static const getApprovedContractProperty =
       "$baseUrl/approved-contract-property";
 

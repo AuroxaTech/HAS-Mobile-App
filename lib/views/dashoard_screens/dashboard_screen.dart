@@ -31,64 +31,65 @@ class DashBoardScreen extends GetView<DashboardController> {
         deleteFunction(context, controller);
       }),
       body: SafeArea(
-        child: Obx(
-          () => RefreshIndicator(
+        child: RefreshIndicator(
             onRefresh: () async {
               controller.getLandLordState();
             },
-            child: controller.getLandlord.value == null ||
-                    controller.isLoading.value
-                ? const Center(child: CircularProgressIndicator())
-                : SingleChildScrollView(
+            child:
+            // controller.getLandlord.value == null ||
+            //         controller.isLoading.value
+            //     ? const Center(child: CircularProgressIndicator())
+            //     :
+            SingleChildScrollView(
                     child: Column(
                       children: [
-                        ListTile(
-                          leading: CircleAvatar(
-                            radius: 30,
-                            child: ClipOval(
-                              child: CachedNetworkImage(
-                                fit: BoxFit.cover,
-                                width: 60,
-                                height: 60,
-                                imageUrl: AppUrls.profileImageBaseUrl +
-                                    controller.getLandlord.value!.landlord.user!
-                                        .profileimage,
-                                errorWidget: (context, e, b) {
-                                  return Container(
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: primaryColor,
-                                        width: 2,
-                                      ),
-                                    ),
-                                    child: const Center(
-                                      child: FaIcon(
-                                        FontAwesomeIcons.user,
-                                        size: 35,
-                                        color: primaryColor,
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                          title: headingText(
-                              text: controller.getLandlord.value!.landlord.user
-                                      ?.fullname ??
-                                  "",
-                              fontSize: 24),
-                          subtitle: customText(text: "Landlord", fontSize: 14),
-                        ),
+                        // ListTile(
+                        //   leading: CircleAvatar(
+                        //     radius: 30,
+                        //     child: ClipOval(
+                        //       child: CachedNetworkImage(
+                        //         fit: BoxFit.cover,
+                        //         width: 60,
+                        //         height: 60,
+                        //         imageUrl: AppUrls.profileImageBaseUrl +
+                        //             controller.getLandlord.value!.landlord.user!
+                        //                 .profileimage,
+                        //         errorWidget: (context, e, b) {
+                        //           return Container(
+                        //             decoration: BoxDecoration(
+                        //               shape: BoxShape.circle,
+                        //               border: Border.all(
+                        //                 color: primaryColor,
+                        //                 width: 2,
+                        //               ),
+                        //             ),
+                        //             child: const Center(
+                        //               child: FaIcon(
+                        //                 FontAwesomeIcons.user,
+                        //                 size: 35,
+                        //                 color: primaryColor,
+                        //               ),
+                        //             ),
+                        //           );
+                        //         },
+                        //       ),
+                        //     ),
+                        //   ),
+                        //   title: headingText(
+                        //       text: controller.getLandlord.value!.landlord.user
+                        //               ?.fullname ??
+                        //           "",
+                        //       fontSize: 24),
+                        //   subtitle: customText(text: "Landlord", fontSize: 14),
+                        // ),
                         h10,
                         Container(
                           height: screenHeight(context) * 0.8,
                           decoration: const BoxDecoration(color: Colors.white),
                           child: Stack(
                             children: [
-                              midStackContainer(
-                                  context, controller.getLandlord.value!),
+                              // midStackContainer(
+                              //     context, controller.getLandlord.value!),
                               Positioned.fill(
                                 top: screenHeight(context) * 0.13,
                                 child: Container(
@@ -184,7 +185,7 @@ class DashBoardScreen extends GetView<DashboardController> {
                     ),
                   ),
           ),
-        ),
+
       ),
     );
   }
