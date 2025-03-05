@@ -147,6 +147,8 @@ class MyPropertyDetailController extends GetxController {
     print("IDDDDDD $data");
     print("Hello");
     id.value = data;
+    print("iddd ${ id.value }");
+
     getService(id: data);
     super.onInit();
   }
@@ -160,8 +162,8 @@ class MyPropertyDetailController extends GetxController {
 
     isLoading.value = false;
 
-    if (result['data'] != null && result['data'] is Map) {
-      var data = result['data'] as Map<String, dynamic>;
+    if (result['payload'] != null && result['payload'] is Map) {
+      var data = result['payload'] as Map<String, dynamic>;
       print("Data :: $data");
 
       if (getPropertyOne != null) {
@@ -188,7 +190,7 @@ class MyPropertyDetailController extends GetxController {
   }
 
   Future<void> updateProperty({
-    required int type,
+    required String type,
     required String city,
     required double amount,
     required String address,
@@ -234,26 +236,26 @@ class MyPropertyDetailController extends GetxController {
 
       print("Data : $data");
 
-      if (data['status'] == true) {
+      if (data['success'] == true) {
         // Handle success scenario
         debugPrint("Print if ${data["messages"]}");
         Get.back();
         Get.back();
         Get.back();
-        AppUtils.getSnackBar("Success",data["messages"]);
+        AppUtils.getSnackBar("Success",data["message"]);
 
         isLoading.value = false;
       } else {
         // Handle error scenario
         isLoading.value = false;
-        AppUtils.errorSnackBar("Error", data['messages']);
+        AppUtils.errorSnackBar("Error", data['message']);
       }
     } catch (e) {
       // Handle general errors
       print(e);
       isLoading.value = false;
       AppUtils.errorSnackBar("Error", e.toString());
-      throw e;
+      rethrow;
     }
   }
 
@@ -266,15 +268,15 @@ class MyPropertyDetailController extends GetxController {
 
     isLoading.value = false;
 
-    if (result['status'] == true) {
+    if (result['success'] == true) {
         isLoading.value = false;
         Get.back();
         Get.back();
-       AppUtils.getSnackBar("Delete", result['messages']);
+       AppUtils.getSnackBar("Delete", result['message']);
     } else {
         isLoading.value = false;
         print("getPropertyOne is null");
-        AppUtils.errorSnackBar("Error", result['messages']);
+        AppUtils.errorSnackBar("Error", result['message']);
       }
      isLoading.value = false;
     }

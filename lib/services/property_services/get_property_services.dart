@@ -31,7 +31,7 @@ class PropertyServices extends BaseApiService {
 
   getLandLordProperties({required int userId}) async {
     Uri url = Uri.parse(
-      "${AppUrls.getLandLordProperty}?user_id=$userId",
+      "${AppUrls.getAllProperty}?user_id=$userId",
     );
     try {
       var token = await Preferences.getToken();
@@ -134,7 +134,7 @@ class PropertyServices extends BaseApiService {
 
   getProperty({required int id}) async {
     Uri url = Uri.parse(
-      "${AppUrls.getProperty}/$id",
+      "${AppUrls.propertyDetail}/$id",
     );
     try {
       var token = await Preferences.getToken();
@@ -149,7 +149,7 @@ class PropertyServices extends BaseApiService {
   }
 
   Future<Map<String, dynamic>> updateProperty({
-    required int type,
+    required String type,
     required int id,
     required String city,
     required double amount,
@@ -163,27 +163,18 @@ class PropertyServices extends BaseApiService {
     required List<XFile> propertyImages,
     required String propertyType,
     required String propertySubType,
-    // required int noOfProperty,
-    // required String propertyType,
-    // required String availabilityStartTime,
-    // required String availabilityEndTime,
     required String description,
   }) async {
     if (await ConnectivityUtility.checkInternetConnectivity() == true) {
       var url = Uri.parse("${AppUrls.updateProperty}/$id");
-      var myId = await Preferences.getUserID();
       var token = await Preferences.getToken();
       var request = http.MultipartRequest('POST', url)
         ..headers.addAll({
-          'Content-Type':
-              'multipart/form-data', // Add your desired content type
-          'Authorization':
-              'Bearer $token', // Add your authorization token if needed
-          // Add other headers as needed
+          'Content-Type': 'multipart/form-data',
+          'Authorization': 'Bearer $token',
         })
         ..fields.addAll({
-          "user_id": myId,
-          'type': type.toString(),
+          'type': type,
           'city': city,
           'amount': amount.toString(),
           'address': address,
@@ -193,47 +184,49 @@ class PropertyServices extends BaseApiService {
           'bedroom': bedroom.toString(),
           'bathroom': bathroom.toString(),
           "property_type": propertyType,
-          "property_sub_type": propertyType,
-          'description': bathroom.toString(),
+          "property_sub_type": propertySubType,
+          'description': description,
         });
 
+      // Add electricity bill file
       request.files.add(await http.MultipartFile.fromPath(
-        'electricity_bill',
-        File(electricityBill.path).path,
+        'electricity_bill_image',
+        electricityBill.path,
         filename: 'electricity_bill.jpg',
       ));
 
       // Add property images
       for (var i = 0; i < propertyImages.length; i++) {
-        File propertyImageFile = File(propertyImages[i].path);
         request.files.add(await http.MultipartFile.fromPath(
           'property_images[$i]',
-          propertyImageFile.path,
+          propertyImages[i].path,
           filename: 'property_image_$i.jpg',
         ));
       }
 
-      // Add remaining fields
-      // request.fields.addAll({
-      //   'no_of_property': noOfProperty.toString(),
-      //   'property_type': propertyType,
-      //   'availability_start_time': availabilityStartTime,
-      //   'availability_end_time': availabilityEndTime,
-      // });
+      var response = await request.send();
+      var responseBody = await response.stream.bytesToString();
+
+      print("Raw Response: $responseBody"); // Debugging step
 
       try {
         var response = await request.send();
         var responseBody = await response.stream.bytesToString();
-        return json.decode(responseBody);
+
+        print("Raw Response: $responseBody"); // Debugging step
+
+        var data = json.decode(responseBody);
+        return data;
       } catch (e) {
-        // Handle general errors
-        throw Exception('Failed to register property: $e');
+        print("Error updating property: $e");
+        throw Exception('Failed to update property: $e');
       }
     } else {
       AppUtils.getSnackBarNoInternet();
       throw Exception('No internet connectivity');
     }
   }
+
 
   Future<Map<String, dynamic>> addProperty({
     required int type,
@@ -256,6 +249,7 @@ class PropertyServices extends BaseApiService {
       var myId = await Preferences.getUserID();
       var token = await Preferences.getToken();
       print(myId);
+      print(token);
       var request = http.MultipartRequest('POST', url)
         ..headers.addAll({
           'Content-Type':
@@ -265,7 +259,6 @@ class PropertyServices extends BaseApiService {
           // Add other headers as needed
         })
         ..fields.addAll({
-          "user_id": myId.toString(),
           'type': "$type",
           'city': city,
           'amount': amount.toString(),
@@ -281,7 +274,7 @@ class PropertyServices extends BaseApiService {
         });
 
       request.files.add(await http.MultipartFile.fromPath(
-        'electricity_bill',
+        'electricity_bill_image',
         File(electricityBill.path).path,
         filename: 'electricity_bill.jpg',
       ));
@@ -304,6 +297,8 @@ class PropertyServices extends BaseApiService {
       //   'availability_end_time': availabilityEndTime,
       // });
 
+
+
       try {
         var response = await request.send();
         print(response.statusCode);
@@ -311,6 +306,10 @@ class PropertyServices extends BaseApiService {
         return json.decode(responseBody);
       } catch (e) {
         // Handle general errors
+        var response = await request.send();
+        var responseBody = await response.stream.bytesToString();
+        print("response $responseBody");
+        rethrow;
         throw Exception('Failed to register property: $e');
       }
     } else {
@@ -323,10 +322,11 @@ class PropertyServices extends BaseApiService {
     Uri url = Uri.parse(
       "${AppUrls.deleteProperty}/$id",
     );
+    var token = await Preferences.getToken();
     try {
       var res = await http.get(url,
           headers: getHeader(
-              userToken: "2|klnaa5CRhLR8G8ik3kPQfTKurymTgSnbZdawrw5rdfff43e8"));
+              userToken: token));
       return json.decode(res.body);
     } catch (e) {
       if (kDebugMode) {
@@ -359,6 +359,8 @@ class PropertyServices extends BaseApiService {
           'fav_flag': favFlag.toString(),
         }),
       );
+      print( "body" +response.body);
+
       if (response.statusCode == 200) {
         print(response.body);
         print(response);

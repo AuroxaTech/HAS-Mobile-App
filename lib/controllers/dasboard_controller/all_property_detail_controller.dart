@@ -163,39 +163,41 @@ class AllPropertyDetailController extends GetxController {
   Future<void> getService({required String iddd}) async {
     print("we are in get service");
     isLoading.value = true;
+
     int? id = int.tryParse(iddd);
-    var result = await propertyService.getProperty(id: id!);
+    if (id == null) {
+      print("Invalid ID format");
+      isLoading.value = false;
+      return;
+    }
+
+    var result = await propertyService.getProperty(id: id);
     print("Service Result : $result");
 
     isLoading.value = false;
-    if(result["status"] == true) {
-      if (result['data'] != null && result['data'] is Map) {
-        var data = result['data'] as Map<String, dynamic>;
+
+    if (result["success"] == true) {
+      if (result['payload'] != null && result['payload'] is Map<String, dynamic>) {
+        var data = result['payload'] as Map<String, dynamic>;
         print("Data :: $data");
 
         if (getPropertyOne != null) {
-
           getPropertyOne.value = Property.fromJson(data);
-          String imagesString = getPropertyOne.value!.images.toString();
-          List<String> imageList = imagesString.split(',');
-          images = imageList;
+          images = getPropertyOne.value!.propertyImages; // Now it's already a list
           newYorkController.text = getPropertyOne.value!.city;
           amountController.text = getPropertyOne.value!.amount;
           streetController.text = getPropertyOne.value!.address;
         } else {
-          isLoading.value = false;
           print("getPropertyOne is null");
         }
       } else {
-        isLoading.value = false;
         print("Invalid or null data format");
-        // Handle other cases if necessary
       }
-    }else{
-
+    } else {
+      print("Request failed");
     }
-
   }
+
 
 
   Future<void> deleteService({required int id}) async {

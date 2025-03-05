@@ -105,11 +105,12 @@ class MyPropertyController extends GetxController{
     print("we are in land lord property:");
     isLoading.value = true;
     var uId = await Preferences.getUserID();
+    print(uId);
     var result = await propertyServices.getLandLordProperties(userId: uId);
-    if(result["status"] == true){
+    if(result["success"] == true){
       print("property result :${result["properties"]}");
       isLoading.value = false;
-      for (var data in result['data']["data"]) {
+      for (var data in result['payload']) {
         print("property List :: $data");
         list.add(Property.fromJson(data));
       }
