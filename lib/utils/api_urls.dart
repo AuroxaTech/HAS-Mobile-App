@@ -49,8 +49,7 @@ class AppUrls {
   //service
   static const addServices = "$baseUrl/add-service";
   static const getServices = "$baseUrl/get-services";
-  static const getAllServices = "$baseUrl/all-services";
-  static const getService = "$baseUrl/get-service";
+  static const getService = "$baseUrl/service";
   static const deleteService = "$baseUrl/destroy-service";
   static const updateService = "$baseUrl/update-service";
   static const addServiceRequest = "$baseUrl/add-service-request";
@@ -65,7 +64,7 @@ class AppUrls {
   static const getServiceJobDetail = "$baseUrl/get-job-detail";
   static const getServiceFeedback = "$baseUrl/get-provider-rating";
 
-  // favourite provider`
+  // favourite provider
   static const addFavouriteProvider = "$baseUrl/add-fav-provider";
   static const addFavouriteService = "$baseUrl/add-fav-service";
   static const getFavourite = "$baseUrl/get-favourite";

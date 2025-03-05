@@ -375,33 +375,63 @@ class PropertyServices extends BaseApiService {
     }
   }
 
-  Future<Map<String, dynamic>> getRentedProperties(
-    int pageKey,
-  ) async {
-    Uri url = Uri.parse("${AppUrls.getApprovedContractProperty}?page=$pageKey");
+  Future<Map<String, dynamic>> getRentedProperties(int pageKey) async {
     try {
       var token = await Preferences.getToken();
-      Map<String, String> headers = getHeader(userToken: token);
+      Uri url = Uri.parse("${AppUrls.getApprovedContractProperty}?page=$pageKey");
 
-      // Prepare the body of the POST request
-      var response = await http.get(
-        url,
-        headers: headers,
+      // Log request
+      BaseApiService.logRequest(
+        url.toString(),
+        'GET',
+        getHeader(userToken: token),
+        null
       );
 
+      var response = await http.get(
+        url,
+        headers: getHeader(userToken: token)
+      );
+
+      // Log response
+      BaseApiService.logResponse(
+        url.toString(),
+        response.statusCode,
+        response.body
+      );
+
+      // Check if response is HTML
+      if (response.body.trim().startsWith('<!DOCTYPE html>')) {
+        throw ApiException('Server returned HTML instead of JSON. Please try again.');
+      }
+
       if (response.statusCode == 200) {
-        return json.decode(response.body);
+        final decodedResponse = json.decode(response.body);
+        
+        if (decodedResponse['status'] == true) {
+          return {
+            'status': true,
+            'data': decodedResponse['data'],
+            'message': decodedResponse['message']
+          };
+        } else {
+          throw ApiException(decodedResponse['message'] ?? 'Failed to fetch rented properties');
+        }
       } else {
-        // Handling errors or unsuccessful responses
-        print(
-            'Error fetching properties: ${response.statusCode} ${response.body}');
-        return {'status': false, 'message': 'Error fetching properties'};
+        throw ApiException(
+          'Failed to fetch rented properties',
+          statusCode: response.statusCode
+        );
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('Exception caught: $e');
+      // Log error
+      BaseApiService.logError(AppUrls.getApprovedContractProperty, e.toString());
+
+      if (e is FormatException) {
+        throw ApiException('Invalid response format from server');
       }
-      return {'status': false, 'message': e.toString()};
+
+      throw ApiException(e.toString());
     }
   }
 }

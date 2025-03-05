@@ -657,10 +657,14 @@ class AuthServices extends BaseApiService {
       }));
       return json.decode(res.body);
     } catch (e) {
-      if (kDebugMode) {
-        print(e);
+      // Log error
+      BaseApiService.logError(AppUrls.landlordStat, e.toString());
+
+      if (e is FormatException) {
+        throw ApiException('Invalid response format from server');
       }
-      return e;
+
+      throw ApiException(e.toString());
     }
   }
 
