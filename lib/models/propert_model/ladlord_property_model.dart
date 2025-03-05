@@ -78,6 +78,8 @@ class Property {
   String type;
   String images;
   String city;
+  List<String> propertyImages; // Updated to list of image URLs
+
   String amount;
   String address;
   String lat;
@@ -97,6 +99,7 @@ class Property {
       required this.userId,
       required this.type,
       required this.images,
+      required this.propertyImages,
       required this.city,
       required this.amount,
       required this.address,
@@ -117,6 +120,9 @@ class Property {
       id: json['id'],
       userId: json['user_id'],
       type: json['type'],
+      propertyImages: (json['property_images'] as List<dynamic>)
+          .map((image) => image['image_path'].toString())
+          .toList(),
       images: json['images'] ?? "",
       city: json['city'] ?? "",
       amount: json['amount'],

@@ -560,7 +560,7 @@ class EditMyPropertyScreen extends GetView<MyPropertyDetailController> {
                         ],
                       ),
                     ),
-                  ),
+
           ),
         ),
       ),

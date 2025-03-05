@@ -643,46 +643,19 @@ class AuthServices extends BaseApiService {
     }
   }
 
-  Future<Map<String, dynamic>> getLandLordState() async {
+  getLandLordState() async {
+    var data = await Preferences.getUserID();
+    var token = await Preferences.getToken();
+    print("Data ==> $data");
+
+    Uri url = Uri.parse(
+      AppUrls.landlordStat,
+    );
     try {
-      var data = await Preferences.getUserID();
-      var token = await Preferences.getToken();
-      Uri url = Uri.parse("${AppUrls.landlordStat}?landlord_id=$data");
-
-      // Log request
-      BaseApiService.logRequest(
-        url.toString(),
-        'GET',
-        getHeader(userToken: token),
-        null
-      );
-
-      var response = await http.get(
-        url,
-        headers: getHeader(userToken: token)
-      );
-
-      // Log response
-      BaseApiService.logResponse(
-        url.toString(),
-        response.statusCode,
-        response.body
-      );
-
-      // Check if response is HTML
-      if (response.body.trim().startsWith('<!DOCTYPE html>')) {
-        throw ApiException('Server returned HTML instead of JSON. Please try again.');
-      }
-
-      if (response.statusCode == 200) {
-        final decodedResponse = json.decode(response.body);
-        return decodedResponse;
-      } else {
-        throw ApiException(
-          'Failed to fetch landlord state',
-          statusCode: response.statusCode
-        );
-      }
+      var res = await http.post(url, headers: getHeader(userToken: token), body: jsonEncode({
+        "landlord_id" : data
+      }));
+      return json.decode(res.body);
     } catch (e) {
       // Log error
       BaseApiService.logError(AppUrls.landlordStat, e.toString());
