@@ -229,7 +229,7 @@ class PropertyServices extends BaseApiService {
 
 
   Future<Map<String, dynamic>> addProperty({
-    required int type,
+    required String type,
     required String city,
     required double amount,
     required String address,

@@ -28,7 +28,7 @@ class PropertyDetailScreen extends GetView<MyPropertyDetailController> {
            const Center(child: CircularProgressIndicator()) :  Stack(
             children: [
               PageView.builder(
-                itemCount: controller.images.length,
+                itemCount: controller.getPropertyOne.value!.propertyImages.length,
                 scrollDirection: Axis.horizontal,
                 controller: controller.pageController,
                 itemBuilder: (context, index){
@@ -37,12 +37,12 @@ class PropertyDetailScreen extends GetView<MyPropertyDetailController> {
                   controller.images = imageList;
                   return InkWell(
                     onTap: (){
-                      Get.to(() => ViewImage(photo: AppUrls.propertyImages + imageList[index],), transition: routeTransition);
+                      Get.to(() => ViewImage(photo: controller.getPropertyOne.value!.propertyImages[index] ), transition: routeTransition);
                     },
                     child:  CachedNetworkImage(
                       width: double.infinity,
                       height: screenHeight(context) * 0.5,
-                      imageUrl: AppUrls.propertyImages + imageList[index] ,
+                      imageUrl: controller.getPropertyOne.value!.propertyImages.isNotEmpty ? controller.getPropertyOne.value!.propertyImages[index] : AppUrls.propertyImages + imageList[index] ,
                       fit: BoxFit.cover,
                       errorWidget: (context, e , b){
                         return Image.asset(AppIcons.appLogo);
@@ -86,7 +86,7 @@ class PropertyDetailScreen extends GetView<MyPropertyDetailController> {
                   alignment: Alignment.topCenter,
                   child: SmoothPageIndicator(
                     controller: controller.pageController, // Connect the indicator to the controller
-                    count: controller.images.length,
+                    count: controller.getPropertyOne.value!.propertyImages.length,
                     effect: WormEffect(
                       dotColor: whiteColor,
                       dotHeight: 10,
@@ -159,7 +159,6 @@ class MyDraggable extends GetView<MyPropertyDetailController> {
                                               child: headingText(
                                                   text: controller.getPropertyOne.value!.city,
                                                   fontSize: 28,
-
                                               ),
                                             ),
                                             Row(
@@ -172,7 +171,7 @@ class MyDraggable extends GetView<MyPropertyDetailController> {
                                                   padding: const EdgeInsets.only(left: 10, right: 10, top: 5, bottom: 5),
                                                   child: Center(
                                                     child: customText(
-                                                        text:  controller.getPropertyOne.value!.type == "1" ? "Rent" : "Sale",
+                                                        text:  controller.getPropertyOne.value!.type,
                                                         fontSize: 18,
                                                       color: whiteColor
                                                     ),

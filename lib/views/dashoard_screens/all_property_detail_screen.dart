@@ -45,7 +45,7 @@ class AllPropertyDetailScreen extends GetView<AllPropertyDetailController> {
                           controller: controller.pageController,
                           itemBuilder: (context, index) {
                             String imagesString = controller
-                                .getPropertyOne.value!.images
+                                .getPropertyOne.value!.propertyImages
                                 .toString();
                             List<String> imageList = imagesString.split(',');
                             controller.images = imageList;
@@ -54,16 +54,16 @@ class AllPropertyDetailScreen extends GetView<AllPropertyDetailController> {
                               onTap: () {
                                 Get.to(
                                     () => ViewImage(
-                                          photo: AppUrls.propertyImages +
-                                              imageList[index],
+                                          photo: controller
+                                              .getPropertyOne.value!.propertyImages[index],
                                         ),
                                     transition: routeTransition);
                               },
                               child: CachedNetworkImage(
                                 width: double.infinity,
                                 height: screenHeight(context) * 0.5,
-                                imageUrl:
-                                    AppUrls.propertyImages + imageList[index],
+                                imageUrl: controller
+                                    .getPropertyOne.value!.propertyImages[index],
                                 fit: BoxFit.cover,
                                 errorWidget: (context, e, b) {
                                   return Image.asset(

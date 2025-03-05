@@ -457,7 +457,7 @@ class AddPropertyDetailScreen extends GetView<SignUpController> {
                                 cPassword: controller.confirmPasswordController.text,
                                 role: "landlord",
                                 profileImage: controller.profileImage.value,
-                                type: controller.isSale.value ? 1 : 2,
+                                type: controller.isSale.value ? "Sale" : "Rent",
                                 city: controller.newYorkController.text,
                                 amount: amount,
                                 address: controller.addressController.text.isEmpty

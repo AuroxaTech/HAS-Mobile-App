@@ -547,7 +547,7 @@ class AddPropertyScreen extends GetView<AddPropertyController> {
                                 if(controller.images.length > 4){
                                   double amount = double.parse(controller.amountController.text);
                                   controller.addProperty(
-                                    type: controller.isSale.value ? 1 : 2,
+                                    type: controller.isSale.value ? "Sale" : "Rent",
                                     city: controller.newYorkController.text,
                                     amount: amount,
                                     address: controller.streetController.text,

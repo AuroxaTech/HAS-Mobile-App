@@ -171,7 +171,7 @@ class AddPropertyController extends GetxController{
   PropertyServices propertyServices = PropertyServices();
 
   Future<void> addProperty({
-    required int type,
+    required String type,
     required String city,
     required double amount,
     required String address,
