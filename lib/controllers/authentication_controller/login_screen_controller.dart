@@ -88,7 +88,6 @@ class LoginScreenController extends GetxController {
       await Preferences.setToken(token);
       await Preferences.setUserName(user["full_name"]);
       await Preferences.setUserEmail(user["email"]);
-      await Preferences.setRoleID(user["role"]);
       await Preferences.setUserID(user["id"]);
 
       isLoading.value = false;
@@ -97,6 +96,7 @@ class LoginScreenController extends GetxController {
       // Map role and navigate
       int roleId = mapRoleToId(user["role"]);
       print("Mapped role ID: $roleId for role ${user["role"]}");
+      await Preferences.setRoleID(roleId.toString());
 
       navigateBasedOnRole(roleId);
 

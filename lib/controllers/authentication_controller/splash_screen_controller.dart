@@ -27,33 +27,32 @@ class SplashScreenController extends GetxController {
     print("Role ID $role");
     await Future.delayed(const Duration(seconds: 3), () {
       if (isCheck == true) {
-        // if(token != null){
-        //   if(roleId == 1){
-        //     Get.offAll(const MainBottomBar());
-        //   }else if(roleId == 2){
-        //     Get.offAll(const TenantBottomBar());
-        //   }else if(roleId == 3){
-        //     Get.offAll(const ServiceProviderBottomBar());
-        //   }else if(roleId == 4){
-        //     Get.offAll(const VisitorBottomBar());
-        //   }else{
-        //
-        //   }
-        // }
-
-        if (token != null) {
-          if (role == "landlord") {
+        if(token != null){
+          if(role == "1"){
             Get.offAll(const MainBottomBar());
-          } else if (role == "tenant") {
+          }else if(role == "2"){
             Get.offAll(const TenantBottomBar());
-          } else if (role == "service_provider") {
+          }else if(role == "3"){
             Get.offAll(const ServiceProviderBottomBar());
-          } else if (role == "visitor") {
+          }else if(role == "4"){
             Get.offAll(const VisitorBottomBar());
-          } else {}
-        } else {
-          Get.offNamed(kLoginScreen);
+          }else{
+            Get.offNamed(kLoginScreen);
+          }
         }
+        // if (token != null) {
+        //   if (role == "landlord") {
+        //     Get.offAll(const MainBottomBar());
+        //   } else if (role == "tenant") {
+        //     Get.offAll(const TenantBottomBar());
+        //   } else if (role == "service_provider") {
+        //     Get.offAll(const ServiceProviderBottomBar());
+        //   } else if (role == "visitor") {
+        //     Get.offAll(const VisitorBottomBar());
+        //   } else {}
+        // } else {
+        //   Get.offNamed(kLoginScreen);
+        // }
       } else {
         Get.offNamed(kIntroScreen);
       }
