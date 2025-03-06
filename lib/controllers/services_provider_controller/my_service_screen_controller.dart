@@ -459,8 +459,7 @@ class MyServicesDetailScreenController extends GetxController {
     List<XFile>? mediaFiles,
   }) async {
     try {
-      isLoading.value = true;
-
+      // Don't set isLoading here since it's already set in the UI
       var result = await ServiceProviderServices().updateService(
         id: id,
         serviceName: serviceName,
@@ -480,8 +479,8 @@ class MyServicesDetailScreenController extends GetxController {
       );
 
       if (result['status'] == true) {
+        await getService(id: idService.value); // Wait for service refresh
         Get.back();
-        getService(id: idService.value);
         AppUtils.getSnackBar("Success", result['messages']);
       } else {
         AppUtils.errorSnackBar("Error", result['messages'] ?? "Failed to update service");
@@ -489,8 +488,7 @@ class MyServicesDetailScreenController extends GetxController {
     } catch (e) {
       print("Error updating service: $e");
       AppUtils.errorSnackBar("Error", e.toString());
-    } finally {
-      isLoading.value = false;
+      rethrow; // Rethrow to be caught by the UI
     }
   }
 

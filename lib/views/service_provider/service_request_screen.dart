@@ -124,7 +124,7 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
                                           requestId: item.id,
                                           userId: item.userId.toString(),
                                           providerId:
-                                              item.serviceproviderId.toString())
+                                              item.serviceProviderId.toString())
                                       .then((value) {
                                     controller.getServicesRequests(1);
                                   });

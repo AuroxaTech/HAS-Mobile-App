@@ -300,15 +300,23 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                                                       Get.toNamed(
                                                           kNewServiceRequestScreen,
                                                           arguments: [
-                                                            (item.serviceName),
+                                                            item.serviceName,
                                                             item.user == null
                                                                 ? ""
                                                                 : item.user!
                                                                     .email,
-                                                            (item.description),
+                                                            item.description,
                                                             item.userId,
                                                             item.id,
-                                                            imageList[0]
+                                                            imageList[0],
+                                                            item.country,
+                                                            item.city,
+                                                            item.yearsExperience ??
+                                                                "0",
+                                                            "", // cnicFrontPic
+                                                            "", // cnicBackPic
+                                                            "", // certification
+                                                            "", // resume
                                                           ]);
                                                     },
                                                   )

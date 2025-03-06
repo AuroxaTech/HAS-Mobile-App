@@ -50,7 +50,7 @@ class AppUrls {
   static const addServices = "$baseUrl/service/store";
   static const getServices = "$baseUrl/get-services";
   static const getService = "$baseUrl/service";
-  static const deleteService = "$baseUrl/destroy-service";
+  static const deleteService = "$baseUrl/service/delete";
   static const updateService = "$baseUrl/service/update";
   static const addServiceRequest = "$baseUrl/add-service-request";
   static const markCompleteRequest = "$baseUrl/mark-service-job-status";

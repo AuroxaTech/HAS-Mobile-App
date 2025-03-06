@@ -724,17 +724,28 @@ class ServiceListingDetailScreen
                                         onTap: () {
                                           Get.toNamed(kNewServiceRequestScreen,
                                               arguments: [
-                                                (controller.getServiceOne.value!
-                                                    .serviceName),
+                                                controller.getServiceOne.value!
+                                                    .serviceName,
                                                 controller.getServiceOne.value!
                                                     .user!.email,
-                                                (controller.getServiceOne.value!
-                                                    .description),
+                                                controller.getServiceOne.value!
+                                                    .description,
                                                 controller.getServiceOne.value!
                                                     .userId,
                                                 controller
                                                     .getServiceOne.value!.id,
                                                 controller.images[0],
+                                                controller.getServiceOne.value!
+                                                    .country,
+                                                controller
+                                                    .getServiceOne.value!.city,
+                                                controller.getServiceOne.value!
+                                                        .yearsExperience ??
+                                                    "0",
+                                                "", // cnicFrontPic
+                                                "", // cnicBackPic
+                                                "", // certification
+                                                "", // resume
                                               ]);
                                         },
                                         height: 45,
