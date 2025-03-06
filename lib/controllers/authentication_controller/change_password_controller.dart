@@ -36,20 +36,22 @@ class ChangePasswordController extends GetxController {
         },
         body: json.encode({
           'current_password': currentPassword, // Corrected field name and value
-          'password': password, // Corrected value
-          'password_confirmation': conPassword, // Corrected field name and value
+          'new_password': password, // Corrected value
+          'new_password_confirmation': conPassword, // Corrected field name and value
         }),
       );
+
+      print("response ${response.body}");
 
       if (response.statusCode == 200) {
         isLoading.value = false;
         var jsonData =  jsonDecode(response.body);
         Get.back();
-        AppUtils.getSnackBar("Success", jsonData["messages"]);
+        AppUtils.getSnackBar("Success", jsonData["message"]);
       } else {
         isLoading.value = false;
         var jsonData =  jsonDecode(response.body);
-        AppUtils.errorSnackBar("Error", "${jsonData["messages"]}");
+        AppUtils.errorSnackBar("Error", "${jsonData["message"]}");
 
         print('Failed to upload with status code $jsonData}');
       }

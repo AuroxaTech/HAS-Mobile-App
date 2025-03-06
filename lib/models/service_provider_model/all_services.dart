@@ -119,7 +119,7 @@ class AllService {
   int? yearsExperience;
   DateTime createdAt;
   DateTime updatedAt;
-  bool isFavorite;
+  int isFavorite;
   int isApplied;
   int decline;
   int approved;
@@ -202,7 +202,7 @@ class AllService {
       yearsExperience: json["year_experience"] ?? 0,
       createdAt: DateTime.parse(json["created_at"]),
       updatedAt: DateTime.parse(json["updated_at"]),
-      isFavorite: json["is_favorite"] ?? false,
+      isFavorite: json["isFavorite"] ?? 0,
       isApplied: isApplied,
       decline: decline,
       approved: approved,
@@ -367,7 +367,7 @@ class User {
   String fullname;
   String email;
   String? phoneNumber;
-  int roleId;
+  String roleId;
   String profileimage;
   DateTime createdAt;
   DateTime updatedAt;
@@ -385,11 +385,11 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) => User(
         id: json["id"],
-        fullname: json["fullname"],
+        fullname: json["full_name"],
         email: json["email"],
         phoneNumber: json["phone_number"],
-        roleId: json["role_id"],
-        profileimage: json["profileimage"],
+        roleId: json["role"],
+        profileimage: json["profile_image"] ?? "",
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
       );

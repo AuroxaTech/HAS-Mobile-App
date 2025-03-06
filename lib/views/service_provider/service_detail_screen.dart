@@ -87,12 +87,11 @@ class ServiceListingDetailScreen
                                       icon: Icon(
                                         controller.getServiceOne.value!
                                                     .isFavorite ==
-                                                true
+                                                1
                                             ? Icons.favorite
                                             : Icons.favorite_border,
                                         color: controller.getServiceOne.value!
-                                                    .isFavorite ==
-                                                true
+                                                    .isFavorite == 1
                                             ? Colors.red
                                             : greyColor,
                                       ),

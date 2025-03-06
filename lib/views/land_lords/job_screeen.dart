@@ -126,8 +126,7 @@ class JobsScreen extends GetView<JobScreenController> {
                           controller.pending.value
                               ? PagedListView<int, PendingJob>(
                                   shrinkWrap: true,
-                                  pagingController:
-                                      controller.pendingJobController,
+                                  pagingController: controller.pendingJobController,
                                   physics: const BouncingScrollPhysics(),
                                   builderDelegate:
                                       PagedChildBuilderDelegate<PendingJob>(
@@ -149,6 +148,9 @@ class JobsScreen extends GetView<JobScreenController> {
                                     ),
                                     itemBuilder: (context, item, index) {
                                       // Handle null createdAt safely
+
+                                      print("Item $index: $item"); // Debugging line
+
                                       DateTime? createdAt = item.createdAt;
                                       String requestDate = createdAt != null
                                           ? DateFormat('dd-M-yy')

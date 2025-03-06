@@ -128,20 +128,38 @@ class JobScreenController extends GetxController {
     try {
       var id = await Preferences.getUserID();
       var result = await servicesService.getMyJobs(userId: id, page: pageKey);
-      print("API Result: ${json.encode(result)}"); // Log the full result
 
-      if (result['status'] == true) {
-        var data = result['data'];
-        print("Data to be parsed: $data"); // Check raw data before parsing
+      // Log the response for debugging
+      print("API Result: ${json.encode(result)}");
 
-        DataStatus dataStatus = DataStatus.fromJson(data);
+      if (result['success'] == true) {
+        var data = result['payload']["data"];
+        print("Data to be parsed: $data"); // Debugging line
 
-        updatePagination(pendingJobController, dataStatus.pendingJobs,
-            dataStatus.pendingJobsPagination, pageKey);
-        updatePagination(completedJobController, dataStatus.completedJobs,
-            dataStatus.completedJobsPagination, pageKey);
-        updatePagination(rejectedJobController, dataStatus.rejectedJobs,
-            dataStatus.rejectedJobsPagination, pageKey);
+        if (data is List) {
+          // Convert list of JSON to DataStatus object properly
+          List<DataStatus> dataList = data.map((json) => DataStatus.fromJson(json)).toList();
+
+          for (var dataStatus in dataList) {
+            updatePagination(pendingJobController, dataStatus.pendingJobs,
+                dataStatus.pendingJobsPagination, pageKey);
+            updatePagination(completedJobController, dataStatus.completedJobs,
+                dataStatus.completedJobsPagination, pageKey);
+            updatePagination(rejectedJobController, dataStatus.rejectedJobs,
+                dataStatus.rejectedJobsPagination, pageKey);
+          }
+        } else if (data is Map<String, dynamic>) {
+          DataStatus dataStatus = DataStatus.fromJson(data);
+
+          updatePagination(pendingJobController, dataStatus.pendingJobs,
+              dataStatus.pendingJobsPagination, pageKey);
+          updatePagination(completedJobController, dataStatus.completedJobs,
+              dataStatus.completedJobsPagination, pageKey);
+          updatePagination(rejectedJobController, dataStatus.rejectedJobs,
+              dataStatus.rejectedJobsPagination, pageKey);
+        } else {
+          print("Unexpected data format: $data");
+        }
       } else {
         print("API Error: ${result['message']}");
       }
