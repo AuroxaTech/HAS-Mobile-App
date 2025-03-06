@@ -107,15 +107,16 @@ class AllService {
   String startTime;
   String endTime;
   String location;
-  String lat;
+  String? lat;
   int countOfService;
   int totalRate;
   int averageRate;
-  String long;
-  String media;
+  String? long;
+  String? media;
   String city;
   String country;
-  String additionalInformation;
+  String? additionalInformation;
+  int? yearsExperience;
   DateTime createdAt;
   DateTime updatedAt;
   bool isFavorite;
@@ -124,6 +125,7 @@ class AllService {
   int approved;
   User? user;
   List<ServiceProviderRequest>? serviceProviderRequests;
+  List<ServiceImage> serviceImages;
 
   AllService({
     required this.id,
@@ -134,15 +136,16 @@ class AllService {
     required this.startTime,
     required this.endTime,
     required this.location,
-    required this.lat,
+    this.lat,
     required this.countOfService,
     required this.totalRate,
     required this.averageRate,
-    required this.long,
-    required this.media,
+    this.long,
+    this.media,
     required this.city,
     required this.country,
-    required this.additionalInformation,
+    this.additionalInformation,
+    this.yearsExperience,
     required this.createdAt,
     required this.updatedAt,
     required this.isFavorite,
@@ -151,6 +154,7 @@ class AllService {
     required this.approved,
     required this.user,
     this.serviceProviderRequests,
+    required this.serviceImages,
   });
 
   factory AllService.fromJson(Map<String, dynamic> json) {
@@ -195,6 +199,7 @@ class AllService {
       country: json["country"] ?? "",
       city: json["city"] ?? "",
       additionalInformation: json["additional_information"] ?? "",
+      yearsExperience: json["year_experience"] ?? 0,
       createdAt: DateTime.parse(json["created_at"]),
       updatedAt: DateTime.parse(json["updated_at"]),
       isFavorite: json["is_favorite"] ?? false,
@@ -203,6 +208,9 @@ class AllService {
       approved: approved,
       user: json["user"] != null ? User.fromJson(json["user"]) : null,
       serviceProviderRequests: serviceProviderRequests,
+      serviceImages: json["service_images"] != null 
+          ? List<ServiceImage>.from(json["service_images"].map((x) => ServiceImage.fromJson(x)))
+          : [],
     );
   }
 
@@ -224,6 +232,7 @@ class AllService {
         "country": country,
         "city": city,
         "additional_information": additionalInformation,
+        "year_experience": yearsExperience,
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
         "is_favorite": isFavorite,
@@ -235,6 +244,7 @@ class AllService {
             ? List<dynamic>.from(
                 serviceProviderRequests!.map((x) => x.toJson()))
             : null,
+        "service_images": List<dynamic>.from(serviceImages.map((x) => x.toJson())),
       };
 }
 
@@ -453,4 +463,36 @@ class EnumValues<T> {
     reverseMap = map.map((k, v) => MapEntry(v, k));
     return reverseMap;
   }
+}
+
+class ServiceImage {
+  int id;
+  int serviceId;
+  String imagePath;
+  DateTime createdAt;
+  DateTime updatedAt;
+
+  ServiceImage({
+    required this.id,
+    required this.serviceId,
+    required this.imagePath,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory ServiceImage.fromJson(Map<String, dynamic> json) => ServiceImage(
+    id: json["id"],
+    serviceId: json["service_id"],
+    imagePath: json["image_path"],
+    createdAt: DateTime.parse(json["created_at"]),
+    updatedAt: DateTime.parse(json["updated_at"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "service_id": serviceId,
+    "image_path": imagePath,
+    "created_at": createdAt.toIso8601String(),
+    "updated_at": updatedAt.toIso8601String(),
+  };
 }

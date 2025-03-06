@@ -1047,16 +1047,11 @@ Widget myServicesWidget(context,
     required String marla,
     required String rent,
     required String serviceArea,
-    required String duration,
+    required String? duration,
     required String pricing,
     VoidCallback? onTapDetail,
     VoidCallback? editTap,
     VoidCallback? deleteTap}) {
-  late ImageProvider imgVariable;
-  imgVariable = CachedNetworkImageProvider(image, errorListener: (ee) {
-    imgVariable = const AssetImage(AppIcons.appLogo);
-  });
-  print(image);
   return InkWell(
     onTap: onTap,
     child: Container(
@@ -1080,15 +1075,27 @@ Widget myServicesWidget(context,
             ),
             child: Stack(
               children: [
-                CachedNetworkImage(
-                  imageUrl: image,
-                  width: double.infinity,
-                  height: screenHeight(context) * 0.23,
-                  fit: BoxFit.cover,
-                  errorWidget: (context, d, g) {
-                    return Image.asset(AppIcons.appLogo);
-                  },
-                ),
+                image.isNotEmpty
+                    ? CachedNetworkImage(
+                        imageUrl: image,
+                        width: double.infinity,
+                        height: screenHeight(context) * 0.23,
+                        fit: BoxFit.cover,
+                        errorWidget: (context, error, stackTrace) {
+                          return Image.asset(
+                            AppIcons.appLogo,
+                            width: double.infinity,
+                            height: screenHeight(context) * 0.23,
+                            fit: BoxFit.contain,
+                          );
+                        },
+                      )
+                    : Image.asset(
+                        AppIcons.appLogo,
+                        width: double.infinity,
+                        height: screenHeight(context) * 0.23,
+                        fit: BoxFit.contain,
+                      ),
                 Positioned(
                   child: Column(
                         children: [
@@ -1122,32 +1129,9 @@ Widget myServicesWidget(context,
                               ],
                             ),
                           ),
-
                           const SizedBox(
                             height: 25,
                           ),
-
-                          // Center(
-                          //   child: Padding(
-                          //     padding: const EdgeInsets.only(left: 15, right: 15),
-                          //     child: Row(
-                          //       crossAxisAlignment: CrossAxisAlignment.center,
-                          //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          //       children: [
-                          //         CircleAvatar(
-                          //           backgroundColor : Colors.white,
-                          //           child: IconButton(onPressed: (){},
-                          //               icon: const Icon(Icons.arrow_back_ios_new_rounded, color: blackColor)),
-                          //         ),
-                          //         CircleAvatar(
-                          //           backgroundColor : Colors.white,
-                          //           child: IconButton(onPressed: (){},
-                          //               icon: const Icon(Icons.arrow_forward_ios_rounded, color: blackColor,)),
-                          //         ),
-                          //       ],
-                          //     ),
-                          //   ),
-                          // ),
                         ],
                       ) ??
                       const SizedBox(),
@@ -1170,44 +1154,10 @@ Widget myServicesWidget(context,
                           text: title,
                           fontSize: 20,
                         ),
-                        // Row(
-                        //   children: [
-                        //     RatingWidget(
-                        //       maxRating: 5,
-                        //       isRating: true,
-                        //       initialRating: 3,
-                        //       onRatingChanged: (rating) {
-                        //         print('Selected rating: $rating');
-                        //       },
-                        //     ),
-                        //     customText(
-                        //       text: " 5 "
-                        //     ),
-                        //     customText(
-                        //         text: "(25)",
-                        //       color: greyColor
-                        //     )
-                        //   ],
-                        // ),
                       ],
                     ),
                     Row(
                       children: [
-                        // CustomButton(
-                        //   text: "Edit",
-                        //   onTap: editTap,
-                        //   fontSize: 10,
-                        //   height: screenHeight(context) * 0.035,
-                        //   width: screenWidth(context) * 0.1,
-                        // ),
-                        // CustomButton(
-                        //   text: "Delete",
-                        //   onTap: deleteTap,
-                        //   fontSize: 10,
-                        //   height: screenHeight(context) * 0.035,
-                        //   width: screenWidth(context) * 0.1,
-                        // ),
-
                         CustomButton(
                           onTap: onTapDetail,
                           text: "View Detail",

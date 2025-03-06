@@ -1,11 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:property_app/controllers/services_provider_controller/my_service_screen_controller.dart';
-import 'package:property_app/utils/api_urls.dart';
 
 import '../../app_constants/animations.dart';
 import '../../app_constants/app_sizes.dart';
@@ -13,6 +9,7 @@ import '../../app_constants/color_constants.dart';
 import '../../constant_widget/constant_widgets.dart';
 import '../../custom_widgets/custom_button.dart';
 import '../../custom_widgets/custom_text_field.dart';
+import '../../utils/utils.dart';
 
 class MyServiceEditScreen extends GetView<MyServicesDetailScreenController> {
   const MyServiceEditScreen({super.key});
@@ -225,28 +222,32 @@ class MyServiceEditScreen extends GetView<MyServicesDetailScreenController> {
                       },
                     ),
                     h10,
-                    // SizedBox(
-                    //   height: 100,
-                    //   child: ListView.builder(
-                    //     itemCount: (controller.getServiceOne.value?.media ?? '').split(',').length,
-                    //     shrinkWrap: true,
-                    //     scrollDirection: Axis.horizontal,
-                    //     itemBuilder: (context, index) {
-                    //       final List<String> images = (controller.getServiceOne.value?.media ?? '').split(',');
-                    //       final image = images[index].trim();
-                    //       return networkImage(image: AppUrls.mediaImages + image, onTap: () {
-                    //         controller.removeImage(index);
-                    //       });
-                    //     },
-                    //   ),
-                    // ),
-                    // h10,
+                    customText(
+                      text: "Years of Experience : ",
+                      fontSize: 16,
+                      color: greyColor,
+                    ),
+                    h5,
+                    CustomTextField(
+                      controller: controller.yearsExperienceController,
+                      keyboaredtype: TextInputType.number,
+                      hintText: "Enter years of experience",
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Years of experience required';
+                        }
+                        if (int.tryParse(value) == null) {
+                          return 'Please enter a valid number';
+                        }
+                        return null;
+                      },
+                    ),
+                    h10,
                     customText(
                       text: "Media:",
                       fontSize: 16,
                       color: greyColor,
                     ),
-
                     h5,
                     if (controller.pickedImages.isEmpty)
                       SingleChildScrollView(
@@ -262,7 +263,7 @@ class MyServiceEditScreen extends GetView<MyServicesDetailScreenController> {
                                 itemBuilder: (context, index) {
                                   final image = controller.images[index];
                                   return networkImage(
-                                      image: AppUrls.mediaImages + image,
+                                      image: image,
                                       onTap: () {
                                         controller.removeNetWork(index);
                                       });
@@ -274,27 +275,27 @@ class MyServiceEditScreen extends GetView<MyServicesDetailScreenController> {
                                 controller.pickImages();
                               },
                               child: Container(
-                                  width: 90,
-                                  height: 95,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.rectangle,
-                                    border: Border.all(color: blackColor),
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  child: Center(
-                                      child: Column(
+                                width: 90,
+                                height: 95,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.rectangle,
+                                  border: Border.all(color: blackColor),
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: Center(
+                                  child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      const Icon(
-                                        Icons.add,
-                                        size: 25,
-                                      ),
+                                      const Icon(Icons.add, size: 25),
                                       customText(
-                                          text: "Add",
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 22),
+                                        text: "Add",
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 22,
+                                      ),
                                     ],
-                                  ))),
+                                  ),
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -383,72 +384,83 @@ class MyServiceEditScreen extends GetView<MyServicesDetailScreenController> {
                             onTap: () async {
                               if (controller.formKey.currentState!.validate()) {
                                 controller.isLoading.value = true;
-                                if (controller.pickedImages.isEmpty) {
-                                  List<String> fileUrls = controller
-                                      .getServiceOne.value!.media
-                                      .split(",");
-                                  List<File> downloadedFiles = [];
+                                try {
+                                  String formattedStartTime =
+                                      controller.formatTimeOfDay(
+                                          controller.startTime.value);
+                                  String formattedEndTime =
+                                      controller.formatTimeOfDay(
+                                          controller.endTime.value);
 
-                                  for (String url in fileUrls) {
-                                    File downloadedFile =
-                                        await controller.downloadImage(
-                                            AppUrls.mediaImages + url);
-                                    downloadedFiles.add(downloadedFile);
+                                  // Get duration from weekday range or use a default value
+                                  String duration =
+                                      controller.selectedWeekdayRange.value
+                                          .isNotEmpty
+                                      ? controller.selectedWeekdayRange.value
+                                      : "Full Week"; // Use default if not selected
+
+                                  if (controller.pickedImages.isEmpty &&
+                                      controller.images.isNotEmpty) {
+                                    // If no new images picked but existing images present
+                                    controller.updateService(
+                                      id: controller.idService.toString(),
+                                      serviceName: controller
+                                          .servicesNameController.text,
+                                      description:
+                                          controller.descriptionController.text,
+                                      pricing:
+                                          controller.pricingController.text,
+                                      startTime: formattedStartTime,
+                                      endTime: formattedEndTime,
+                                      location:
+                                          controller.locationController.text,
+                                      country:
+                                          controller.selectedCountry.value ??
+                                              "",
+                                      city: controller.cityNameController.text,
+                                      lat: "223.33",
+                                      long: "32.344",
+                                      additionalInformation: controller
+                                          .additionalInfoController.text,
+                                      yearsExperience: controller
+                                          .yearsExperienceController.text,
+                                      weekdayRange: duration,
+                                      duration: duration,
+                                    );
+                                  } else {
+                                    // If new images picked
+                                    controller.updateService(
+                                      id: controller.idService.toString(),
+                                      serviceName: controller
+                                          .servicesNameController.text,
+                                      description:
+                                          controller.descriptionController.text,
+                                      pricing:
+                                          controller.pricingController.text,
+                                      startTime: formattedStartTime,
+                                      endTime: formattedEndTime,
+                                      location:
+                                          controller.locationController.text,
+                                      country:
+                                          controller.selectedCountry.value ??
+                                              "",
+                                      city: controller.cityNameController.text,
+                                      lat: "223.33",
+                                      long: "32.344",
+                                      additionalInformation: controller
+                                          .additionalInfoController.text,
+                                      yearsExperience: controller
+                                          .yearsExperienceController.text,
+                                      weekdayRange: duration,
+                                      duration: duration,
+                                      mediaFiles: controller.pickedImages,
+                                    );
                                   }
-
-                                  List<XFile> mediaFiles = controller
-                                      .convertFilesToXFiles(downloadedFiles);
-
-                                  controller.updateService(
-                                    id: controller.idService.toString(),
-                                    userId: "50",
-                                    serviceName:
-                                        controller.servicesNameController.text,
-                                    description:
-                                        controller.descriptionController.text,
-                                    categoryId:
-                                        controller.categoryController.text,
-                                    pricing: controller.pricingController.text,
-                                    durationId:
-                                        controller.durationController.text,
-                                    startTime: controller.startTime.value
-                                        .format(context),
-                                    endTime: controller.endTime.value
-                                        .format(context),
-                                    location:
-                                        controller.locationController.text,
-                                    lat: "223.33",
-                                    long: "32.344",
-                                    additionalInformation: controller
-                                        .additionalInfoController.text,
-                                    mediaFiles: mediaFiles,
-                                    // mediaFiles: controller.getServiceOne.value?.media.split(","),
-                                  );
-                                } else {
-                                  controller.updateService(
-                                    id: controller.idService.toString(),
-                                    userId: "50",
-                                    serviceName:
-                                        controller.servicesNameController.text,
-                                    description:
-                                        controller.descriptionController.text,
-                                    categoryId:
-                                        controller.categoryController.text,
-                                    pricing: controller.pricingController.text,
-                                    durationId:
-                                        controller.durationController.text,
-                                    startTime: controller.startTime.value
-                                        .format(context),
-                                    endTime: controller.endTime.value
-                                        .format(context),
-                                    location:
-                                        controller.locationController.text,
-                                    lat: "223.33",
-                                    long: "32.344",
-                                    additionalInformation: controller
-                                        .additionalInfoController.text,
-                                    mediaFiles: controller.pickedImages,
-                                  );
+                                } catch (e) {
+                                  print("Error updating service: $e");
+                                  AppUtils.errorSnackBar("Error", e.toString());
+                                } finally {
+                                  controller.isLoading.value = false;
                                 }
                               }
                             },

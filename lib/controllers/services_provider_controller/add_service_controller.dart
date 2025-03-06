@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:property_app/services/property_services/add_services.dart';
 import 'package:property_app/utils/api_urls.dart';
+import 'package:intl/intl.dart';
 
 import '../../utils/utils.dart';
 
@@ -19,6 +20,7 @@ class AddServiceController extends GetxController {
   var availabilityController = TextEditingController();
   var locationController = TextEditingController();
   var additionalInfoController = TextEditingController();
+  var yearsExperienceController = TextEditingController();
 
   var selectedCountry = RxnString();
   var countriesList = <String>[].obs;
@@ -295,12 +297,14 @@ class AddServiceController extends GetxController {
     required double lat,
     required double long,
     required String additionalInformation,
+    required String yearsExperience,
+    required String weekdayRange,
     List<XFile>? mediaFiles,
   }) async {
-    isLoading.value = true;
-
     try {
-      var data = await ServiceProviderServices().addService(
+      isLoading.value = true;
+
+      var result = await ServiceProviderServices().addService(
         userId: userId,
         serviceName: serviceName,
         description: description,
@@ -313,28 +317,22 @@ class AddServiceController extends GetxController {
         lat: lat,
         long: long,
         additionalInformation: additionalInformation,
+        yearsExperience: yearsExperience,
+        duration: weekdayRange,
         mediaFiles: mediaFiles,
       );
 
-      if (kDebugMode) {
-        print("Data : $data");
-      }
-
-      if (data['status'] == true) {
-        isLoading.value = false;
-        // Handle success scenario
+      if (result['status'] == true) {
         Get.back();
-        AppUtils.getSnackBar("Success", data['messages']);
+        AppUtils.getSnackBar("Success", result['messages']);
       } else {
-        isLoading.value = false;
-        // Handle error scenario
-        AppUtils.errorSnackBar("Error", data['messages']);
+        AppUtils.errorSnackBar("Error", result['messages'] ?? "Failed to add service");
       }
     } catch (e) {
+      print("Error adding service: $e");
+      AppUtils.errorSnackBar("Error", e.toString());
+    } finally {
       isLoading.value = false;
-      print(e);
-      // Handle general errors
-      AppUtils.errorSnackBar("Error", "Failed to add service");
     }
   }
 
@@ -406,5 +404,38 @@ class AddServiceController extends GetxController {
     } catch (e) {
       print('Error occurred: $e');
     }
+  }
+
+  @override
+  void onClose() {
+    super.onClose();
+    servicesNameController.dispose();
+    cityNameController.dispose();
+    descriptionController.dispose();
+    categoryController.dispose();
+    pricingController.dispose();
+    durationController.dispose();
+    availabilityController.dispose();
+    locationController.dispose();
+    additionalInfoController.dispose();
+    yearsExperienceController.dispose();
+  }
+
+  String formatTimeOfDay(TimeOfDay time) {
+    // Convert to 12-hour format
+    int hour = time.hourOfPeriod;
+    if (hour == 0) hour = 12; // Handle midnight (12 AM)
+    
+    // Format hour with leading zero if needed
+    String hourStr = hour.toString().padLeft(2, '0');
+    
+    // Format minutes with leading zero if needed
+    String minute = time.minute.toString().padLeft(2, '0');
+    
+    // Determine AM/PM
+    String period = time.period == DayPeriod.am ? 'AM' : 'PM';
+    
+    // Format as "hh:mm PP" (e.g., "04:00 PM" for 4:00 PM)
+    return '$hourStr:$minute $period';
   }
 }

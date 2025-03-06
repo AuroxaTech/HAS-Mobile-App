@@ -27,6 +27,7 @@ class SplashScreenController extends GetxController {
     print("Role ID $role");
     await Future.delayed(const Duration(seconds: 3), () {
       if (isCheck == true) {
+
         if(token != null){
           if(role == "1"){
             Get.offAll(const MainBottomBar());

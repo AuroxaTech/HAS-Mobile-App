@@ -47,11 +47,11 @@ class AppUrls {
       "$baseUrl/approved-contract-property";
 
   //service
-  static const addServices = "$baseUrl/add-service";
+  static const addServices = "$baseUrl/service/store";
   static const getServices = "$baseUrl/get-services";
   static const getService = "$baseUrl/service";
   static const deleteService = "$baseUrl/destroy-service";
-  static const updateService = "$baseUrl/update-service";
+  static const updateService = "$baseUrl/service/update";
   static const addServiceRequest = "$baseUrl/add-service-request";
   static const markCompleteRequest = "$baseUrl/mark-service-job-status";
   static const getServiceProviderRequest = "$baseUrl/get-service-request";

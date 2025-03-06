@@ -289,6 +289,27 @@ class AddServiceScreen extends GetView<AddServiceController> {
                       hintText: "Additional Information  :",
                       controller: controller.additionalInfoController,
                     ),
+                    h10,
+                    customText(
+                      text: "Years of Experience : ",
+                      fontSize: 16,
+                      color: greyColor,
+                    ),
+                    h5,
+                    CustomTextField(
+                      controller: controller.yearsExperienceController,
+                      keyboaredtype: TextInputType.number,
+                      hintText: "Enter years of experience",
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Years of experience required';
+                        }
+                        if (int.tryParse(value) == null) {
+                          return 'Please enter a valid number';
+                        }
+                        return null;
+                      },
+                    ),
                     h30,
                     Row(
                       children: [
@@ -308,55 +329,40 @@ class AddServiceScreen extends GetView<AddServiceController> {
                           child: CustomButton(
                             isLoading: controller.isLoading.value,
                             onTap: () async {
-                              //   controller.uploadDataWithImages(
-                              //   userId: "10",
-                              //   serviceName: controller.servicesNameController.text,
-                              //   description: controller.descriptionController.text,
-                              //   categoryId: "1",
-                              //   pricing: controller.pricingController.text,
-                              //   durationId: controller.durationController.text,
-                              //   startTime: "3 e",
-                              //   endTime: "34",
-                              //   location: controller.locationController.text,
-                              //   lat: "2333.443",
-                              //   long: "2334.344",
-                              //   additionalInformation: controller.additionalInfoController.text,
-                              //   mediaFiles: controller.images,
-                              // );
                               if (controller.formKey.currentState!.validate()) {
                                 if (controller.images.isEmpty) {
-                                  AppUtils.errorSnackBar("Select images",
-                                      "Please select at least one media image",
-                                      backgroundColor: Colors.red);
+                                  AppUtils.errorSnackBar(
+                                    "Select images",
+                                    "Please select at least one media image",
+                                    backgroundColor: Colors.red
+                                  );
                                 } else {
                                   var id = await Preferences.getUserID();
+                                  
+                                  // Format the time properly
+                                  String formattedStartTime = controller.formatTimeOfDay(controller.startTime.value);
+                                  String formattedEndTime = controller.formatTimeOfDay(controller.endTime.value);
+                                  
                                   controller.addService(
                                     userId: id,
-                                    serviceName:
-                                        controller.servicesNameController.text,
-                                    description:
-                                        controller.descriptionController.text,
+                                    serviceName: controller.servicesNameController.text,
+                                    description: controller.descriptionController.text,
                                     pricing: controller.pricingController.text,
-                                    startTime: controller.selectedWeekdayRange +
-                                        controller.startTime.value
-                                            .format(context),
-                                    endTime: controller.endTime.value
-                                        .format(context),
-                                    location:
-                                        controller.locationController.text,
-                                    country: controller.selectedCountry.value
-                                        .toString(),
+                                    startTime: formattedStartTime,
+                                    endTime: formattedEndTime,
+                                    location: controller.locationController.text,
+                                    country: controller.selectedCountry.value.toString(),
                                     city: controller.cityNameController.text,
                                     lat: 223.33,
                                     long: 32.344,
-                                    additionalInformation: controller
-                                            .additionalInfoController
-                                            .text
-                                            .isEmpty
+                                    additionalInformation: controller.additionalInfoController.text.isEmpty
                                         ? ""
-                                        : controller
-                                            .additionalInfoController.text,
+                                        : controller.additionalInfoController.text,
                                     mediaFiles: controller.images,
+                                    yearsExperience: controller.yearsExperienceController.text.isEmpty
+                                        ? ""
+                                        : controller.yearsExperienceController.text,
+                                    weekdayRange: controller.selectedWeekdayRange.value,
                                   );
                                 }
                               }
