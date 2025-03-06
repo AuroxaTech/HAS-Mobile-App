@@ -240,8 +240,8 @@ class NewServiceRequestScreenController extends GetxController {
     userName: '',
     email: '',
     phoneNumber: '',
-    roleId: '',
-    profileImage: '',
+    roleId: "",
+    profileimage: '',
     createdAt: DateTime.now(),
     updatedAt: DateTime.now(),
     platform: '',
@@ -265,8 +265,8 @@ class NewServiceRequestScreenController extends GetxController {
           headers: getHeader(userToken: token));
 
       if (response.statusCode == 200) {
-        var data = User.fromJson(jsonDecode(response.body)["data"]);
-        print(data.profileImage);
+        var data = User.fromJson(jsonDecode(response.body)["payload"]);
+        print(data.profileimage);
         userData(data);
 
         nameController.text = userData.value.fullName;

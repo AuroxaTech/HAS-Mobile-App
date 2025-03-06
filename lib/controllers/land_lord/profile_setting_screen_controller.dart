@@ -42,8 +42,8 @@ class ProfileSettingsScreenController extends GetxController {
     userName: '',
     email: '',
     phoneNumber: '',
-    roleId: '',
-    profileImage: '',
+    roleId: "",
+    profileimage: '',
     createdAt: DateTime.now(),
     updatedAt: DateTime.now(),
     platform: '',
@@ -70,8 +70,9 @@ class ProfileSettingsScreenController extends GetxController {
           headers: getHeader(userToken: token));
 
       if (response.statusCode == 200) {
-        var data = User.fromJson(jsonDecode(response.body)["data"]);
-        print(data.profileImage);
+
+        var data = User.fromJson(jsonDecode(response.body)["payload"]);
+        print(data.profileimage);
         userData(data);
 
         nameController.text = userData.value.fullName;
@@ -109,13 +110,13 @@ class ProfileSettingsScreenController extends GetxController {
       var request = http.MultipartRequest('POST', uri);
 
       // Adding text fields
-      request.fields['fullname'] = name;
+      request.fields['full_name'] = name;
       request.fields['phone_number'] = phoneNumber;
-      request.fields['username'] = username; // Pass username to the API request
+      request.fields['user_name'] = username; // Pass username to the API request
 
       if (filePath != null) {
         request.files.add(await http.MultipartFile.fromPath(
-          'profileimage',
+          'profile_image',
           File(filePath.path).path,
           filename: 'profile_images.jpg',
         ));

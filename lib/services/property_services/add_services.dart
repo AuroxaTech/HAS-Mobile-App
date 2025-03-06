@@ -394,8 +394,6 @@ class ServiceProviderServices {
       }
 
       var url = Uri.parse(AppUrls.addFavouriteService);
-      var id = await Preferences
-          .getUserID(); // Ensure you handle null or exceptions in getUserID
       var token = await Preferences
           .getToken(); // Ensure you handle null or exceptions in getToken
 
@@ -406,6 +404,8 @@ class ServiceProviderServices {
           'service_id': serviceId,
         }),
       );
+
+      print("response body: ${response.body}");
       if (response.statusCode == 200) {
         print(response.body);
         return true;
@@ -419,7 +419,49 @@ class ServiceProviderServices {
     }
   }
 
-  Future<Map<String, dynamic>> deleteService({required int id}) async {
+
+  Future<bool> removeFavoriteService(int propertyId) async {
+    try {
+      // Check internet connectivity first
+      bool? isConnected = await ConnectivityUtility.checkInternetConnectivity();
+      if (!isConnected) {
+        return false; // Return false or throw a custom exception if you prefer
+      }
+
+      // Define the API URL for the DELETE request
+      var url = Uri.parse('${AppUrls.baseUrl}/service-favourites/delete/$propertyId');
+
+      var id = await Preferences.getUserID(); // Ensure you handle null or exceptions in getUserID
+      var token = await Preferences.getToken(); // Ensure you handle null or exceptions in getToken
+
+      // Make the API DELETE call
+      final response = await http.get(
+        url,
+        headers: getHeader(userToken: token),
+      );
+
+      print("Response body: " + response.body);
+
+      if (response.statusCode == 200) {
+        print(response.body);
+        return true; // Successfully removed from favorites
+      } else {
+        print(response.body);
+        return false; // Failed to remove favorite
+      }
+    } catch (e) {
+      print(e); // Consider logging the error
+      return false; // Return false or handle as needed
+    }
+  }
+
+
+
+  deleteService({required int id}) async {
+    Uri url = Uri.parse(
+      "${AppUrls.deleteService}/$id",
+    );
+    var token = await Preferences.getToken();
     try {
       var token = await Preferences.getToken();
       Uri url = Uri.parse("${AppUrls.deleteService}/$id");
@@ -642,7 +684,7 @@ class ServiceProviderServices {
     );
     try {
       var token = await Preferences.getToken();
-      var res = await http.post(url, headers: getHeader(userToken: token));
+      var res = await http.get(url, headers: getHeader(userToken: token));
       return json.decode(res.body);
     } catch (e) {
       if (kDebugMode) {
@@ -673,11 +715,9 @@ class ServiceProviderServices {
     try {
       Uri url = Uri.parse("${AppUrls.getFavourite}?page=$page");
       var id = await Preferences.getUserID();
-      var res = await http.post(url,
+      var res = await http.get(url,
           headers: getHeader(userToken: await Preferences.getToken()),
-          body: json.encode({
-            "user_id": id,
-          }));
+         );
       print(res);
       return json.decode(res.body);
     } catch (e) {

@@ -121,6 +121,7 @@ class MyFavouriteScreenController extends GetxController with GetTickerProviderS
   RxList<FavoriteService> favoriteServiceProviders = <FavoriteService>[].obs;
   RxList<FavoriteProperty> favoriteProperties = <FavoriteProperty>[].obs;
 
+
   Future<void> getFavoriteServices() async {
     isLoading.value = true;
     try {

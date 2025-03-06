@@ -91,7 +91,7 @@ class Property {
   String electricityBill;
   String createdAt;
   String updatedAt;
-  bool isFavorite;
+  int isFavorite;
   User? user;
 
   Property(
@@ -136,7 +136,7 @@ class Property {
       electricityBill: json['electricity_bill'] ?? "",
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
-      isFavorite: json["is_favorite"] ?? false,
+      isFavorite: json["isFavorite"] ?? 0,
       user: json["user"] == null ? null : User.fromJson(json["user"]),
     );
   }
@@ -189,6 +189,7 @@ class User {
         email: json["email"],
         phoneNumber: json["phone_number"],
         role: json["role"],
+
         profileimage: json["profile_image"] ?? "",
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),

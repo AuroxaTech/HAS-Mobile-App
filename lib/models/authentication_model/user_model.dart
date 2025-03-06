@@ -79,6 +79,7 @@ class User {
         updatedAt: DateTime.parse(json["updated_at"]),
       );
 
+
   Map<String, dynamic> toJson() => {
         "id": id,
         "full_name": fullName,

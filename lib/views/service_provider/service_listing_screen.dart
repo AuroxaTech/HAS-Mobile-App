@@ -73,8 +73,7 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                             onPressed: () => controller.getServices(1),
                           ),
                       itemBuilder: (context, item, index) {
-                        print(
-                            "Screen - Building item for service ID: ${item.id}");
+                        print("Screen - Building item for service ID: ${item.id}");
                         print("Screen - isApplied: ${item.isApplied.toInt()}");
                         print("Screen - decline: ${item.decline}");
                         print("Screen - approved: ${item.approved}");
@@ -188,10 +187,10 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                                           ),
                                           IconButton(
                                             icon: Icon(
-                                              item.isFavorite == true
+                                              item.isFavorite == 1
                                                   ? Icons.favorite
                                                   : Icons.favorite_border,
-                                              color: item.isFavorite == true
+                                              color: item.isFavorite == 1
                                                   ? Colors.red
                                                   : greyText,
                                             ),

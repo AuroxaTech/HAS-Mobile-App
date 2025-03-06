@@ -372,11 +372,11 @@ class PropertyServices extends BaseApiService {
     }
   }
 
-  Future<bool> addFavoriteProperty(int propertyId, int favFlag) async {
+  Future<bool> addFavoriteProperty(int propertyId) async {
     try {
       // Check internet connectivity first
       bool? isConnected = await ConnectivityUtility.checkInternetConnectivity();
-      if (!isConnected!) {
+      if (!isConnected) {
         return false; // Return false or throw a custom exception if you prefer
       }
 
@@ -390,9 +390,7 @@ class PropertyServices extends BaseApiService {
         url,
         headers: getHeader(userToken: token),
         body: jsonEncode({
-          'user_id': id,
           'property_id': propertyId,
-          'fav_flag': favFlag.toString(),
         }),
       );
       print( "body" +response.body);
@@ -410,6 +408,44 @@ class PropertyServices extends BaseApiService {
       return false; // Return false or handle as needed
     }
   }
+
+
+// Function to remove a favorite property
+  Future<bool> removeFavoriteProperty(int propertyId) async {
+    try {
+      // Check internet connectivity first
+      bool? isConnected = await ConnectivityUtility.checkInternetConnectivity();
+      if (!isConnected) {
+        return false; // Return false or throw a custom exception if you prefer
+      }
+
+      // Define the API URL for the DELETE request
+      var url = Uri.parse('${AppUrls.baseUrl}/property-favourites/delete/$propertyId');
+
+      var id = await Preferences.getUserID(); // Ensure you handle null or exceptions in getUserID
+      var token = await Preferences.getToken(); // Ensure you handle null or exceptions in getToken
+
+      // Make the API DELETE call
+      final response = await http.get(
+        url,
+        headers: getHeader(userToken: token),
+      );
+
+      print("Response body: " + response.body);
+
+      if (response.statusCode == 200) {
+        print(response.body);
+        return true; // Successfully removed from favorites
+      } else {
+        print(response.body);
+        return false; // Failed to remove favorite
+      }
+    } catch (e) {
+      print(e); // Consider logging the error
+      return false; // Return false or handle as needed
+    }
+  }
+
 
   Future<Map<String, dynamic>> getRentedProperties(int pageKey) async {
     try {
