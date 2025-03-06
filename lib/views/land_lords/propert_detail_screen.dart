@@ -87,7 +87,7 @@ class PropertyDetailScreen extends GetView<MyPropertyDetailController> {
                   child: SmoothPageIndicator(
                     controller: controller.pageController, // Connect the indicator to the controller
                     count: controller.getPropertyOne.value!.propertyImages.length,
-                    effect: WormEffect(
+                    effect: const WormEffect(
                       dotColor: whiteColor,
                       dotHeight: 10,
                       dotWidth: 10

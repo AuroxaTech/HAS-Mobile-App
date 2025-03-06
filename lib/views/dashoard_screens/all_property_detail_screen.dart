@@ -111,8 +111,8 @@ class AllPropertyDetailScreen extends GetView<AllPropertyDetailController> {
                               child: SmoothPageIndicator(
                                 controller: controller
                                     .pageController, // Connect the indicator to the controller
-                                count: controller.images.length,
-                                effect: WormEffect(
+                                count: controller.getPropertyOne.value?.propertyImages.length ?? 0,
+                                effect: const WormEffect(
                                     dotColor: whiteColor,
                                     dotHeight: 10,
                                     dotWidth:
@@ -205,10 +205,7 @@ class MyDraggable extends GetView<AllPropertyDetailController> {
                                                   text: controller
                                                               .getPropertyOne
                                                               .value!
-                                                              .type ==
-                                                          1
-                                                      ? "Rent"
-                                                      : "Sale",
+                                                              .type,
                                                   fontSize: 18,
                                                   color: whiteColor),
                                             ),
@@ -337,7 +334,7 @@ class MyDraggable extends GetView<AllPropertyDetailController> {
                                         children: [
                                           controller.getPropertyOne.value!
                                                       .type ==
-                                                  1
+                                                  "Sale"
                                               ? Center(
                                                   child: CustomButton(
                                                     height:
@@ -415,14 +412,13 @@ class MyDraggable extends GetView<AllPropertyDetailController> {
                                             gradientColor: greenGradient(),
                                             width: screenWidth(context) * 0.4,
                                             onTap: () async {
-                                              print(
-                                                  "Name == ${controller.getPropertyOne.value!.user!.fullname.toString()}");
-                                              print(controller.getPropertyOne
-                                                  .value!.user!.id
-                                                  .toString());
-                                              print(controller.getPropertyOne
-                                                  .value!.user!.profileimage
-                                                  .toString());
+                                              // print("Name == ${controller.getPropertyOne.value!.user!.fullname.toString()}");
+                                              // print(controller.getPropertyOne
+                                              //     .value!.user!.id
+                                              //     .toString());
+                                              // print(controller.getPropertyOne
+                                              //     .value!.user!.profileimage
+                                              //     .toString());
 
                                               //  Get.toNamed(kChatConversionScreen);
                                               var roleId =
@@ -433,7 +429,9 @@ class MyDraggable extends GetView<AllPropertyDetailController> {
                                               } else {
                                                 createConversation(
                                                     controller.getPropertyOne
-                                                        .value!.user!.fullname
+                                                        .value!.user
+
+                                                    !.fullname
                                                         .toString(),
                                                     controller
                                                         .getPropertyOne

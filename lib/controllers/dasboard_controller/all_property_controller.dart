@@ -151,12 +151,12 @@ class AllPropertyController extends GetxController {
       if (filters != null) {
         print(filters);
       }
-      if (result['status'] == true) {
-        final List<Property> newItems = (result['data']['data'] as List)
+      if (result['success'] == true) {
+        final List<Property> newItems = (result['payload']['data'] as List)
             .map((json) => Property.fromJson(json))
             .toList();
         final isLastPage =
-            result['data']['current_page'] == result['data']['last_page'];
+            result['payload']['current_page'] == result['payload']['last_page'];
         if (isLastPage) {
           pagingController.appendLastPage(newItems);
         } else {

@@ -133,29 +133,44 @@ class ServiceProviderServices {
     }
   }
 
-  getAllServices(int page, {Map<String, dynamic>? filters}) async {
-    Uri url = Uri.parse(
-      "${AppUrls.getServices}?page=$page",
-    );
+  Future<Map<String, dynamic>> getAllServices(int page, {Map<String, dynamic>? filters}) async {
+    // Construct query parameters
+    Map<String, String> queryParams = {'page': page.toString()};
+
+    if (filters != null) {
+      filters.forEach((key, value) {
+        if (value != null && value.toString().isNotEmpty) {
+          queryParams[key] = value.toString();
+        }
+      });
+    }
+
+    // Construct final URL with query parameters
+    Uri url = Uri.parse(AppUrls.getServices).replace(queryParameters: queryParams);
+
     try {
       var token = await Preferences.getToken();
       Map<String, String> headers = getHeader(userToken: token);
 
-      // Prepare the body of the POST request
-      Map<String, dynamic> body = filters ?? {};
-      var res = await http.post(url,
-          headers: headers,
-          body: json.encode(body) // Encoding the body to JSON format
-          );
+      // Use GET request instead of POST
+      var res = await http.get(url, headers: headers);
+
       print("All Services ==> ${json.decode(res.body)}");
-      return json.decode(res.body);
+
+      if (res.statusCode == 200) {
+        return json.decode(res.body);
+      } else {
+        print('Error fetching services: ${res.statusCode} ${res.body}');
+        return {'status': false, 'message': 'Error fetching services'};
+      }
     } catch (e) {
       if (kDebugMode) {
         print(e);
       }
-      rethrow;
+      return {'status': false, 'message': e.toString()};
     }
   }
+
 
   Future<Map<String, dynamic>> getService({required int id}) async {
     try {
@@ -307,11 +322,11 @@ class ServiceProviderServices {
     }
   }
 
-  Future<bool> addFavorite(int serviceId, int favFlag) async {
+  Future<bool> addFavorite(int serviceId, ) async {
     try {
       // Check internet connectivity first
       bool? isConnected = await ConnectivityUtility.checkInternetConnectivity();
-      if (!isConnected!) {
+      if (!isConnected) {
         return false; // Return false or throw a custom exception if you prefer
       }
 
@@ -325,9 +340,7 @@ class ServiceProviderServices {
         url,
         headers: getHeader(userToken: token),
         body: jsonEncode({
-          'user_id': id,
           'service_id': serviceId,
-          'fav_flag': favFlag.toString(),
         }),
       );
       if (response.statusCode == 200) {
@@ -501,11 +514,9 @@ class ServiceProviderServices {
     try {
       Uri url = Uri.parse("${AppUrls.getFavourite}?page=$page");
       var id = await Preferences.getUserID();
-      var res = await http.post(url,
+      var res = await http.get(url,
           headers: getHeader(userToken: await Preferences.getToken()),
-          body: json.encode({
-            "user_id": id,
-          }));
+         );
       print(res);
       return json.decode(res.body);
     } catch (e) {

@@ -57,11 +57,11 @@ class MyFavouriteScreenController extends GetxController with GetTickerProviderS
 
       print(result);
       if (result['status'] == true) {
-        final List<FavoriteService> newItems = (result['favorite_services']['data'] as List)
+        final List<FavoriteService> newItems = (result['payload']['data'] as List)
             .map((json) => FavoriteService.fromJson(json))
             .toList();
 
-        final isLastPage = result["favorite_services"]['current_page'] == result['favorite_services']['last_page'];
+        final isLastPage = result["payload"]['current_page'] == result['favorite_services']['last_page'];
 
         if (isLastPage) {
           pagingController.appendLastPage(newItems);

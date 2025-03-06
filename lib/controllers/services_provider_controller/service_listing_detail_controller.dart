@@ -61,7 +61,7 @@ class ServiceListingDetailScreenController extends GetxController{
     // Attempt to update the backend with the new favorite status
     try {
       // Make the API call
-      bool result = await servicesService.addFavorite(serviceId, newFavoriteStatus ? 1 : 2);
+      bool result = await servicesService.addFavorite(serviceId);
       if (!result) {
         throw Exception('API call to add favorite failed.');
       }else{
