@@ -48,8 +48,8 @@ class ServiceListingScreenController extends GetxController {
           await servicesService.getAllServices(pageKey, filters: filters);
       isLoading.value = false;
 
-      if (result['status'] == true) {
-        final List<AllService> newItems = (result['data']['data'] as List)
+      if (result['success'] == true) {
+        final List<AllService> newItems = (result['payload']['data'] as List)
             .map((json) => AllService.fromJson(json))
             .toList();
 
@@ -69,7 +69,7 @@ class ServiceListingScreenController extends GetxController {
         }
 
         final isLastPage =
-            result['data']['current_page'] == result['data']['last_page'];
+            result['payload']['current_page'] == result['payload']['last_page'];
 
         if (isLastPage) {
           pagingController.appendLastPage(newItems);
@@ -139,7 +139,7 @@ class ServiceListingScreenController extends GetxController {
     isFavorite.value = !isFavorite.value; // Toggle the favorite status
     int favFlag =
         isFavorite.value ? 1 : 2; // 1 for favorite, 2 for not favorite
-    bool result = await servicesService.addFavorite(providerId, favFlag);
+    bool result = await servicesService.addFavorite(providerId);
     if (!result) {
       // If the API call failed, revert the favorite status
       isFavorite.value = !isFavorite.value;
@@ -188,7 +188,7 @@ class ServiceListingScreenController extends GetxController {
     try {
       // Make the API call
       bool result = await servicesService.addFavorite(
-          serviceId, newFavoriteStatus ? 1 : 2);
+          serviceId);
       if (!result) {
         throw Exception('API call to add favorite failed.');
       }

@@ -66,8 +66,8 @@ class AppUrls {
 
   // favourite provider
   static const addFavouriteProvider = "$baseUrl/add-fav-provider";
-  static const addFavouriteService = "$baseUrl/add-fav-service";
-  static const getFavourite = "$baseUrl/get-favourite";
+  static const addFavouriteService = "$baseUrl/service-favourites";
+  static const getFavourite = "$baseUrl/get-favourite-services";
 
   // contract api
   static const addContract = "$baseUrl/add-contract";

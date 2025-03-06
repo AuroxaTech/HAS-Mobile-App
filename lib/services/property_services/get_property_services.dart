@@ -62,75 +62,111 @@ class PropertyServices extends BaseApiService {
   //   }
   // }
 
-  Future<Map<String, dynamic>> getAllProperties(int pageKey,
-      {Map<String, dynamic>? filters}) async {
+  // Future<Map<String, dynamic>> getAllProperties(int pageKey,
+  //     {Map<String, dynamic>? filters}) async {
+  //   try {
+  //     var token = await Preferences.getToken();
+  //
+  //     // Build URL with query parameters
+  //     Uri url = Uri.parse(AppUrls.getAllProperty);
+  //     if (filters != null && filters.isNotEmpty) {
+  //       // Add filters as query parameters if they exist
+  //       url = url.replace(queryParameters: {
+  //         'page': pageKey.toString(),
+  //         ...filters.map((key, value) => MapEntry(key, value.toString())),
+  //       });
+  //     } else {
+  //       // Just add page parameter if no filters
+  //       url = url.replace(queryParameters: {'page': pageKey.toString()});
+  //     }
+  //
+  //     // Log request
+  //     BaseApiService.logRequest(
+  //         url.toString(), 'GET', getHeader(userToken: token), filters);
+  //
+  //     // Make GET request
+  //     final response = await http.get(
+  //       url,
+  //       headers: getHeader(userToken: token),
+  //     );
+  //
+  //     // Log response
+  //     BaseApiService.logResponse(
+  //         url.toString(), response.statusCode, response.body);
+  //
+  //     if (response.statusCode == 200) {
+  //       final decodedResponse = json.decode(response.body);
+  //
+  //       // Adapt the response to match the expected format
+  //       if (decodedResponse['success'] == true) {
+  //         final properties = decodedResponse['payload'] as List;
+  //
+  //         // Only return properties if this is the first page
+  //         // For subsequent pages, return empty list to stop pagination
+  //         return {
+  //           'status': true,
+  //           'data': {
+  //             'current_page': pageKey,
+  //             'data': pageKey == 1 ? properties : [],
+  //             'last_page': 1,
+  //           }
+  //         };
+  //       } else {
+  //         throw ApiException(
+  //             decodedResponse['message'] ?? 'Failed to fetch properties',
+  //             statusCode: response.statusCode);
+  //       }
+  //     } else {
+  //       throw ApiException('Error fetching properties',
+  //           statusCode: response.statusCode);
+  //     }
+  //   } catch (e) {
+  //     BaseApiService.logError(AppUrls.getAllProperty, e.toString());
+  //
+  //     if (e is ApiException) {
+  //       BaseApiService.handleApiException(e);
+  //       rethrow;
+  //     }
+  //
+  //     return {'status': false, 'message': e.toString()};
+  //   }
+  // }
+
+  Future<Map<String, dynamic>> getAllProperties(int pageKey, {Map<String, dynamic>? filters}) async {
+    Map<String, String> queryParams = {'page': pageKey.toString()};
+
+    if (filters != null) {
+      filters.forEach((key, value) {
+        if (value != null && value.toString().isNotEmpty) {
+          queryParams[key] = value.toString();
+        }
+      });
+    }
+
+    Uri url = Uri.parse(AppUrls.getAllProperty).replace(queryParameters: queryParams);
+
     try {
       var token = await Preferences.getToken();
+      Map<String, String> headers = getHeader(userToken: token);
 
-      // Build URL with query parameters
-      Uri url = Uri.parse(AppUrls.getAllProperty);
-      if (filters != null && filters.isNotEmpty) {
-        // Add filters as query parameters if they exist
-        url = url.replace(queryParameters: {
-          'page': pageKey.toString(),
-          ...filters.map((key, value) => MapEntry(key, value.toString())),
-        });
-      } else {
-        // Just add page parameter if no filters
-        url = url.replace(queryParameters: {'page': pageKey.toString()});
-      }
-
-      // Log request
-      BaseApiService.logRequest(
-          url.toString(), 'GET', getHeader(userToken: token), filters);
-
-      // Make GET request
-      final response = await http.get(
-        url,
-        headers: getHeader(userToken: token),
-      );
-
-      // Log response
-      BaseApiService.logResponse(
-          url.toString(), response.statusCode, response.body);
+      var response = await http.get(url, headers: headers);
 
       if (response.statusCode == 200) {
-        final decodedResponse = json.decode(response.body);
-
-        // Adapt the response to match the expected format
-        if (decodedResponse['success'] == true) {
-          final properties = decodedResponse['payload'] as List;
-
-          // Only return properties if this is the first page
-          // For subsequent pages, return empty list to stop pagination
-          return {
-            'status': true,
-            'data': {
-              'current_page': pageKey,
-              'data': pageKey == 1 ? properties : [],
-              'last_page': 1,
-            }
-          };
-        } else {
-          throw ApiException(
-              decodedResponse['message'] ?? 'Failed to fetch properties',
-              statusCode: response.statusCode);
-        }
+        return json.decode(response.body);
       } else {
-        throw ApiException('Error fetching properties',
-            statusCode: response.statusCode);
+        print('Error fetching properties: ${response.statusCode} ${response.body}');
+        return {'status': false, 'message': 'Error fetching properties'};
       }
     } catch (e) {
-      BaseApiService.logError(AppUrls.getAllProperty, e.toString());
-
-      if (e is ApiException) {
-        BaseApiService.handleApiException(e);
-        rethrow;
+      if (kDebugMode) {
+        print('Exception caught: $e');
       }
-
       return {'status': false, 'message': e.toString()};
     }
   }
+
+
+
 
   getProperty({required int id}) async {
     Uri url = Uri.parse(
