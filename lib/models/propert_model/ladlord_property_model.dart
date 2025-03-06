@@ -91,7 +91,7 @@ class Property {
   String electricityBill;
   String createdAt;
   String updatedAt;
-  bool isFavorite;
+  int isFavorite;
   User? user;
 
   Property(
@@ -136,7 +136,7 @@ class Property {
       electricityBill: json['electricity_bill'] ?? "",
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
-      isFavorite: json["is_favorite"] ?? false,
+      isFavorite: json["isFavorite"] ?? 0,
       user: json["user"] == null ? null : User.fromJson(json["user"]),
     );
   }
@@ -167,7 +167,7 @@ class User {
   String fullname;
   String email;
   String phoneNumber;
-  int roleId;
+  String roleId;
   String profileimage;
   DateTime createdAt;
   DateTime updatedAt;
@@ -185,11 +185,11 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) => User(
         id: json["id"],
-        fullname: json["fullname"],
+        fullname: json["full_name"],
         email: json["email"],
         phoneNumber: json["phone_number"],
-        roleId: json["role_id"],
-        profileimage: json["profileimage"],
+        roleId: json["role"],
+        profileimage: json["profile_image"] ?? "",
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
       );
@@ -200,7 +200,7 @@ class User {
         "email": email,
         "phone_number": phoneNumber,
         "role_id": roleId,
-        "profileimage": profileimage,
+        "profile_image": profileimage,
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
       };

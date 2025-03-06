@@ -91,16 +91,15 @@ class AllPropertyScreen extends GetView<AllPropertyController> {
                                         backgroundColor: Colors.white,
                                         child: IconButton(
                                           icon: Icon(
-                                            item.isFavorite == true
+                                            item.isFavorite == 1
                                                 ? Icons.favorite
                                                 : Icons.favorite_border,
-                                            color: item.isFavorite == true
+                                            color: item.isFavorite == 1
                                                 ? Colors.red
                                                 : greyText,
                                           ),
                                           onPressed: () {
-                                            controller.toggleFavorite1(
-                                                index, item.id);
+                                            controller.toggleFavorite1(index, item.id);
                                           },
                                         ),
                                       )),

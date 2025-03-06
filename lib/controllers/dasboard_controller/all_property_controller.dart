@@ -183,30 +183,45 @@ class AllPropertyController extends GetxController {
 
   void toggleFavorite1(int index, int propertyId) async {
     if (pagingController.itemList == null) return;
+
     // Retrieve the current service directly from pagingController's itemList
     var service = pagingController.itemList![index];
-    // Toggle the isFavorite status
-    bool newFavoriteStatus = !(service.isFavorite);
+
+    // Toggle the isFavorite status based on integer values (0 for not favorite, 1 for favorite)
+    int newFavoriteStatus = (service.isFavorite == 1) ? 0 : 1;
+
+    // Update the local state (UI update) to reflect the new status
     service.isFavorite = newFavoriteStatus;
+
+    print("Favorite status: $newFavoriteStatus");
 
     // Attempt to update the backend with the new favorite status
     try {
-      // Make the API call
-      bool result = await propertyServices.addFavoriteProperty(
-          propertyId, newFavoriteStatus ? 1 : 2);
-      if (!result) {
-        throw Exception('API call to add favorite failed.');
+      // Check if the property is already favorited (isFavorite == 1)
+      bool result;
+      if (newFavoriteStatus == 1) {
+        // If the property is not in favorites, add it
+        result = await propertyServices.addFavoriteProperty(propertyId);
+      } else {
+        // If the property is in favorites, remove it
+        result = await propertyServices.removeFavoriteProperty(propertyId);
       }
-      // If successful, no need to do anything as the local state is already updated
+
+      // If the API call fails, throw an exception
+      if (!result) {
+        throw Exception('API call to update favorite status failed.');
+      }
     } catch (error) {
-      // If the API call fails, revert the local change
-      service.isFavorite = !newFavoriteStatus;
+      // If the API call fails, revert the local state to the previous value
+      service.isFavorite = (newFavoriteStatus == 1) ? 0 : 1;
       Get.snackbar('Error', 'Could not update favorites. Please try again.');
     }
 
     // Force the UI to refresh and reflect the change
     pagingController.notifyListeners();
   }
+
+
 
   void resetFilters() {
     // Reset all filter values to their defaults

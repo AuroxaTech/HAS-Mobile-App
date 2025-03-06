@@ -78,7 +78,7 @@ class ContractController extends GetxController{
     userName: '',
     email: '',
     phoneNumber: '',
-    roleId: 0,
+    roleId: "",
     profileimage: '',
     createdAt: DateTime.now(),
     updatedAt: DateTime.now(),

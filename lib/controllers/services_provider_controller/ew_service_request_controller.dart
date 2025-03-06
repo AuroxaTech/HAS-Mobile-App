@@ -238,7 +238,7 @@ class NewServiceRequestScreenController extends GetxController {
     userName: '',
     email: '',
     phoneNumber: '',
-    roleId: 0,
+    roleId: "",
     profileimage: '',
     createdAt: DateTime.now(),
     updatedAt: DateTime.now(),
@@ -261,7 +261,7 @@ class NewServiceRequestScreenController extends GetxController {
           headers: getHeader(userToken: token));
 
       if (response.statusCode == 200) {
-        var data = User.fromJson(jsonDecode(response.body)["data"]);
+        var data = User.fromJson(jsonDecode(response.body)["payload"]);
         print(data.profileimage);
         userData(data);
 

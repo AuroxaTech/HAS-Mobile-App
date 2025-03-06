@@ -91,7 +91,7 @@ class PendingJob {
   int userId;
   int requestId;
   int providerId;
-  int status;
+  String status;
   DateTime? createdAt; // Nullable to handle null values
   DateTime? updatedAt; // Nullable to handle null values
   Request request;
@@ -114,7 +114,7 @@ class PendingJob {
   factory PendingJob.fromJson(Map<String, dynamic> json) => PendingJob(
         id: json["id"],
         userId: json["user_id"],
-        requestId: json["request_id"],
+        requestId: json["request_id"] ?? 0,
         providerId: json["provider_id"],
         status: json["status"],
         createdAt: json["created_at"] != null

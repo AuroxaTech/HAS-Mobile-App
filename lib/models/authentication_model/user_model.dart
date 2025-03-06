@@ -38,7 +38,7 @@ class User {
   String userName;
   String email;
   String phoneNumber;
-  int roleId;
+  String roleId;
   String profileimage;
   String platform;
   String deviceToken;
@@ -61,12 +61,12 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) => User(
     id: json["id"],
-    fullname: json["fullname"],
-    userName: json["username"],
+    fullname: json["full_name"],
+    userName: json["user_name"],
     email: json["email"],
     phoneNumber: json["phone_number"],
-    roleId: json["role_id"],
-    profileimage: json["profileimage"],
+    roleId: json["role"],
+    profileimage: json["profile_image"],
     platform: json["platform"] ?? "",
     deviceToken: json["device_token"] ?? "",
     createdAt: DateTime.parse(json["created_at"]),
