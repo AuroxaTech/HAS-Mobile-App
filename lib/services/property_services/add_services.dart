@@ -175,7 +175,8 @@ class ServiceProviderServices {
     }
   }
 
-  Future<Map<String, dynamic>> getAllServices(int page, {Map<String, dynamic>? filters}) async {
+  Future<Map<String, dynamic>> getAllServices(int page,
+      {Map<String, dynamic>? filters}) async {
     // Construct query parameters
     Map<String, String> queryParams = {'page': page.toString()};
 
@@ -188,7 +189,8 @@ class ServiceProviderServices {
     }
 
     // Construct final URL with query parameters
-    Uri url = Uri.parse(AppUrls.getServices).replace(queryParameters: queryParams);
+    Uri url =
+        Uri.parse(AppUrls.getServices).replace(queryParameters: queryParams);
 
     try {
       var token = await Preferences.getToken();
@@ -264,18 +266,24 @@ class ServiceProviderServices {
   }
 
   Future<Map<String, dynamic>> newServiceRequest({
-    required String serviceId,
-    required String serviceProviderId,
-    required String address,
+    required String serviceName,
+    required String location,
     required double lat,
     required double lng,
-    required int propertyType,
-    required String date,
-    required String time,
     required String description,
-    required String additionalInfo,
     required int price,
-    required int postalCode,
+    required String duration,
+    required String startTime,
+    required String endTime,
+    required String additionalInfo,
+    required String country,
+    required String city,
+    required String yearExperience,
+    required String cnicFrontPic,
+    required String cnicBackPic,
+    required String certification,
+    required String resume,
+    required String providerId,
     required int isApplied,
   }) async {
     try {
@@ -288,23 +296,51 @@ class ServiceProviderServices {
         ..headers.addAll(getHeader(userToken: token))
         ..fields.addAll({
           'user_id': userId.toString(),
-          'service_name': serviceId,
-          'location': address,
+          'service_name': serviceName,
+          'location': location,
           'lat': lat.toString(),
           'long': lng.toString(),
           'description': description,
           'pricing': price.toString(),
-          'duration': '1', // Default duration
-          'start_time': time.split(' - ')[0],
-          'end_time': time.split(' - ')[1],
+          'duration': duration,
+          'start_time': startTime,
+          'end_time': endTime,
           'additional_information': additionalInfo,
-          'country': 'Canada', // Default country
-          'city': address.split(',').last.trim(),
-          'year_experience': '0',
-          'postal_code': postalCode.toString(),
+          'country': country,
+          'city': city,
+          'year_experience': yearExperience,
+          'provider_id': providerId,
           'is_applied': isApplied.toString(),
-          'provider_id': serviceProviderId,
         });
+
+      // Add files if they exist
+      if (cnicFrontPic.isNotEmpty) {
+        request.files.add(await http.MultipartFile.fromPath(
+          'cnic_front_pic',
+          cnicFrontPic,
+        ));
+      }
+
+      if (cnicBackPic.isNotEmpty) {
+        request.files.add(await http.MultipartFile.fromPath(
+          'cnic_back_pic',
+          cnicBackPic,
+        ));
+      }
+
+      if (certification.isNotEmpty) {
+        request.files.add(await http.MultipartFile.fromPath(
+          'certification',
+          certification,
+        ));
+      }
+
+      if (resume.isNotEmpty) {
+        request.files.add(await http.MultipartFile.fromPath(
+          'resume',
+          resume,
+        ));
+      }
 
       // Log request
       BaseApiService.logRequest(
@@ -347,7 +383,9 @@ class ServiceProviderServices {
     }
   }
 
- Future<bool> addFavorite(int serviceId, ) async {
+  Future<bool> addFavorite(
+    int serviceId,
+  ) async {
     try {
       // Check internet connectivity first
       bool? isConnected = await ConnectivityUtility.checkInternetConnectivity();
@@ -381,20 +419,49 @@ class ServiceProviderServices {
     }
   }
 
-
-  deleteService({required int id}) async {
-    Uri url = Uri.parse(
-      "${AppUrls.deleteService}/$id",
-    );
-    var token = await Preferences.getToken();
+  Future<Map<String, dynamic>> deleteService({required int id}) async {
     try {
-      var res = await http.delete(url, headers: getHeader(userToken: token));
-      return json.decode(res.body);
+      var token = await Preferences.getToken();
+      Uri url = Uri.parse("${AppUrls.deleteService}/$id");
+
+      // Log request
+      BaseApiService.logRequest(
+          url.toString(), 'GET', getHeader(userToken: token), null);
+
+      var response = await http.get(url, headers: getHeader(userToken: token));
+
+      // Log response
+      BaseApiService.logResponse(
+          url.toString(), response.statusCode, response.body);
+
+      // Check if response is HTML
+      if (response.body.trim().startsWith('<!DOCTYPE html>')) {
+        throw ApiException(
+            'Server returned HTML instead of JSON. Please try again.');
+      }
+
+      if (response.statusCode == 200) {
+        final decodedResponse = json.decode(response.body);
+        return {
+          'success': decodedResponse['success'] ?? false,
+          'messages': decodedResponse['message'] ?? 'Unknown error occurred',
+          'data': decodedResponse['payload']
+        };
+      } else {
+        throw ApiException('Failed to delete service',
+            statusCode: response.statusCode);
+      }
     } catch (e) {
       if (kDebugMode) {
-        print(e);
+        print("Error in deleteService: $e");
       }
-      return e;
+      if (e is FormatException) {
+        return {
+          'success': false,
+          'messages': 'Invalid response format from server'
+        };
+      }
+      return {'success': false, 'messages': e.toString()};
     }
   }
 
@@ -884,4 +951,3 @@ class ServiceProviderServices {
     }
   }
 }
-

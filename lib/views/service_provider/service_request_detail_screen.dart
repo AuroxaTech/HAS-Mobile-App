@@ -257,14 +257,14 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                                         text: "Location :",
                                                         color: greyColor,
                                                         fontSize: 16),
-                                                    h5,
-                                                    customText(
-                                                        text: controller
-                                                            .getServiceRequestOne
-                                                            .value!
-                                                            .address,
-                                                        color: blackColor,
-                                                        fontSize: 16),
+                                                    // h5,
+                                                    // customText(
+                                                    //     text: controller
+                                                    //         .getServiceRequestOne
+                                                    //         .value!
+                                                    //         .address,
+                                                    //     color: blackColor,
+                                                    //     fontSize: 16),
                                                   ],
                                                 ),
                                               ),

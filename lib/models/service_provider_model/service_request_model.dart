@@ -40,7 +40,7 @@ class ServiceRequest {
 class ServiceRequestProvider {
   int id;
   int userId;
-  int serviceproviderId;
+  int serviceProviderId;
   int serviceId;
   String address;
   String? postalCode;
@@ -63,7 +63,7 @@ class ServiceRequestProvider {
   ServiceRequestProvider(
       {required this.id,
       required this.userId,
-      required this.serviceproviderId,
+      required this.serviceProviderId,
       required this.serviceId,
       required this.address,
       required this.lat,
@@ -87,7 +87,7 @@ class ServiceRequestProvider {
       ServiceRequestProvider(
         id: json["id"],
         userId: json["user_id"],
-        serviceproviderId: json["serviceprovider_id"],
+        serviceProviderId: json["provider_id"],
         serviceId: json["service_id"],
         address: json["address"],
         postalCode: json["postal_code"],
@@ -117,7 +117,7 @@ class ServiceRequestProvider {
   Map<String, dynamic> toJson() => {
         "id": id,
         "user_id": userId,
-        "serviceprovider_id": serviceproviderId,
+        "provider_id": serviceProviderId,
         "service_id": serviceId,
         "address": address,
         "postal_code": postalCode,

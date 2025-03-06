@@ -85,13 +85,14 @@ class CalendarScreenController extends GetxController {
       var result = await servicesService.getAllProviderJob(pageKey);
       isLoading.value = false;
       print("My Job Data $result");
-      if (result['status'] == true) {
-        final List<ProviderJobData> newItems = (result['data']['data'] as List)
+      
+      if (result['success'] == true) {
+        final payload = result['payload'];
+        final List<ProviderJobData> newItems = (payload['data'] as List? ?? [])
             .map((json) => ProviderJobData.fromJson(json))
             .toList();
 
-        final isLastPage =
-            result['data']['current_page'] == result['data']['last_page'];
+        final isLastPage = payload['current_page'] == payload['last_page'];
 
         if (isLastPage) {
           pagingController.appendLastPage(newItems);
@@ -101,15 +102,12 @@ class CalendarScreenController extends GetxController {
         }
         updateHighlightedDates();
       } else {
-        pagingController.error = Exception('Failed to fetch services');
+        pagingController.error = Exception(result['message'] ?? 'Failed to fetch services');
       }
     } catch (error) {
       isLoading.value = false;
-      print(error);
-
-      final errorMessage = error.toString();
-      pagingController.error = errorMessage;
-      rethrow;
+      print("Error fetching jobs: $error");
+      pagingController.error = 'Failed to fetch jobs: ${error.toString()}';
     }
   }
 

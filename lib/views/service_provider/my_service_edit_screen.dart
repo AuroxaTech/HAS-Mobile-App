@@ -383,8 +383,9 @@ class MyServiceEditScreen extends GetView<MyServicesDetailScreenController> {
                             isLoading: controller.isLoading.value,
                             onTap: () async {
                               if (controller.formKey.currentState!.validate()) {
-                                controller.isLoading.value = true;
                                 try {
+                                  controller.isLoading.value = true;
+
                                   String formattedStartTime =
                                       controller.formatTimeOfDay(
                                           controller.startTime.value);
@@ -392,17 +393,15 @@ class MyServiceEditScreen extends GetView<MyServicesDetailScreenController> {
                                       controller.formatTimeOfDay(
                                           controller.endTime.value);
 
-                                  // Get duration from weekday range or use a default value
                                   String duration =
                                       controller.selectedWeekdayRange.value
                                           .isNotEmpty
                                       ? controller.selectedWeekdayRange.value
-                                      : "Full Week"; // Use default if not selected
+                                      : "Full Week";
 
                                   if (controller.pickedImages.isEmpty &&
                                       controller.images.isNotEmpty) {
-                                    // If no new images picked but existing images present
-                                    controller.updateService(
+                                    await controller.updateService(
                                       id: controller.idService.toString(),
                                       serviceName: controller
                                           .servicesNameController.text,
@@ -428,8 +427,7 @@ class MyServiceEditScreen extends GetView<MyServicesDetailScreenController> {
                                       duration: duration,
                                     );
                                   } else {
-                                    // If new images picked
-                                    controller.updateService(
+                                    await controller.updateService(
                                       id: controller.idService.toString(),
                                       serviceName: controller
                                           .servicesNameController.text,

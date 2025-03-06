@@ -3,7 +3,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:property_app/constant_widget/constant_widgets.dart';
 import 'package:property_app/custom_widgets/custom_text_field.dart';
-import 'package:property_app/utils/api_urls.dart';
 
 import '../../app_constants/app_sizes.dart';
 import '../../app_constants/color_constants.dart';
@@ -38,8 +37,7 @@ class NewServiceRequestScreen
                   ListTile(
                     leading: CircleAvatar(
                       radius: 30,
-                      backgroundImage: NetworkImage(
-                          AppUrls.mediaImages + controller.data[5]),
+                      backgroundImage: NetworkImage(controller.data[5]),
                     ),
                     title: customText(
                         text: controller.data[0],
@@ -267,28 +265,39 @@ class NewServiceRequestScreen
                             onTap: () {
                               if (controller.formKey.currentState!.validate()) {
                                 controller.newServiceRequest(
-                                    serviceId: controller.data[4].toString(),
-                                    serviceProviderId:
-                                        controller.data[3].toString(),
-                                    address: controller.addressController.text,
+                                    serviceName: controller.data[0],
+                                    providerId: controller.data[3].toString(),
+                                    location: controller.addressController.text,
                                     lat: 33.3334,
                                     lng: 77.3843,
                                     propertyType:
                                         controller.propertyTypeIndex.value,
-                                    date: controller.selectedDays.join(', '),
-                                    time: "${controller.startTime.value.format(context)} - ${controller.endTime.value.format(context)}",
-                                    price: 0,
-                                    postalCode: int.tryParse(
-                                        controller.postalCodeController.text)!,
+                                    duration:
+                                        controller.selectedDays.join(', '),
+                                    startTime: controller.startTime.value
+                                        .format(context),
+                                    endTime: controller.endTime.value
+                                        .format(context),
                                     description:
                                         controller.descriptionController.text,
                                     additionalInfo: controller
                                             .instructionController.text.isEmpty
                                         ? ""
                                         : controller.instructionController.text,
+                                    country: "Canada",
+                                    city: controller.addressController.text
+                                        .split(',')
+                                        .last
+                                        .trim(),
+                                    yearExperience:
+                                        controller.data[9].toString(),
+                                    cnicFrontPic: "",
+                                    cnicBackPic: "",
+                                    certification: "",
+                                    resume: "",
+                                    price: 0,
                                     isApplied: 1);
                               }
-                              //   Get.toNamed(kNewServiceRequestScreen);
                             },
                             height: 45,
                             text: "Submit request",

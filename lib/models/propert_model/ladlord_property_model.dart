@@ -167,7 +167,7 @@ class User {
   String fullname;
   String email;
   String phoneNumber;
-  int roleId;
+  String role;
   String profileimage;
   DateTime createdAt;
   DateTime updatedAt;
@@ -177,7 +177,7 @@ class User {
     required this.fullname,
     required this.email,
     required this.phoneNumber,
-    required this.roleId,
+    required this.role,
     required this.profileimage,
     required this.createdAt,
     required this.updatedAt,
@@ -185,22 +185,22 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) => User(
         id: json["id"],
-        fullname: json["fullname"],
+        fullname: json["full_name"],
         email: json["email"],
         phoneNumber: json["phone_number"],
-        roleId: json["role_id"],
-        profileimage: json["profileimage"],
+        role: json["role"],
+        profileimage: json["profile_image"] ?? "",
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "fullname": fullname,
+        "full_name": fullname,
         "email": email,
         "phone_number": phoneNumber,
-        "role_id": roleId,
-        "profileimage": profileimage,
+        "role": role,
+        "profile_image": profileimage,
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
       };

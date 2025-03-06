@@ -155,9 +155,10 @@ class NewServiceRequestScreenController extends GetxController {
                           if (selectedOption.value == 'Request Now') {
                             Get.back();
                           } else if (selectedOption.value.isNotEmpty &&
-                              (selectedDays.isNotEmpty || selectedOption.value == 'Request Now')) {
+                              (selectedDays.isNotEmpty ||
+                                  selectedOption.value == 'Request Now')) {
                             Get.back();
-                            
+
                             if (selectedOption.value != 'Request Now') {
                               // Select start time using Get.dialog
                               final TimeOfDay? startPicked = await Get.dialog(
@@ -168,7 +169,7 @@ class NewServiceRequestScreenController extends GetxController {
 
                               if (startPicked != null) {
                                 startTime.value = startPicked;
-                                
+
                                 // Select end time using Get.dialog
                                 final TimeOfDay? endPicked = await Get.dialog(
                                   TimePickerDialog(
@@ -182,8 +183,9 @@ class NewServiceRequestScreenController extends GetxController {
                                 if (endPicked != null) {
                                   // Validate end time is after start time
                                   if (endPicked.hour > startPicked.hour ||
-                                      (endPicked.hour == startPicked.hour && 
-                                       endPicked.minute > startPicked.minute)) {
+                                      (endPicked.hour == startPicked.hour &&
+                                          endPicked.minute >
+                                              startPicked.minute)) {
                                     endTime.value = endPicked;
                                   } else {
                                     Get.snackbar(
@@ -219,7 +221,7 @@ class NewServiceRequestScreenController extends GetxController {
       return 'Full Week, ${startTime.value.format(Get.context!)} - ${endTime.value.format(Get.context!)}';
     }
     if (selectedDays.isEmpty) return 'Select days and time';
-    
+
     String daysText = selectedDays.join(', ');
     return '$daysText, ${startTime.value.format(Get.context!)} - ${endTime.value.format(Get.context!)}';
   }
@@ -234,16 +236,18 @@ class NewServiceRequestScreenController extends GetxController {
 
   var userData = User(
     id: 0,
-    fullname: '',
+    fullName: '',
     userName: '',
     email: '',
     phoneNumber: '',
-    roleId: 0,
-    profileimage: '',
+    roleId: '',
+    profileImage: '',
     createdAt: DateTime.now(),
     updatedAt: DateTime.now(),
     platform: '',
     deviceToken: '',
+    address: '',
+    postalCode: '',
   ).obs;
 
   var isLoadingGet = true.obs;
@@ -262,10 +266,10 @@ class NewServiceRequestScreenController extends GetxController {
 
       if (response.statusCode == 200) {
         var data = User.fromJson(jsonDecode(response.body)["data"]);
-        print(data.profileimage);
+        print(data.profileImage);
         userData(data);
 
-        nameController.text = userData.value.fullname;
+        nameController.text = userData.value.fullName;
         emailController.text = userData.value.email;
         contactController.text = userData.value.phoneNumber;
         isLoadingGet(false);
@@ -279,36 +283,49 @@ class NewServiceRequestScreenController extends GetxController {
   }
 
   Future<void> newServiceRequest({
-    required String serviceId,
-    required String serviceProviderId,
-    required String address,
+    required String serviceName,
+    required String providerId,
+    required String location,
     required double lat,
     required double lng,
     required int propertyType,
-    required int price,
-    required String date,
-    required String time,
+    required String duration,
+    required String startTime,
+    required String endTime,
     required String description,
     required String additionalInfo,
-    required int postalCode,
+    required String country,
+    required String city,
+    required String yearExperience,
+    String cnicFrontPic = '',
+    String cnicBackPic = '',
+    String certification = '',
+    String resume = '',
+    required int price,
     required int isApplied,
   }) async {
     isLoading.value = true;
 
     try {
       var data = await ServiceProviderServices().newServiceRequest(
-        serviceId: serviceId,
-        serviceProviderId: serviceProviderId,
-        address: address,
+        serviceName: serviceName,
+        location: location,
         lat: lat,
         lng: lng,
-        propertyType: 1,
-        date: date,
-        time: time,
         description: description,
-        additionalInfo: additionalInfo,
         price: price,
-        postalCode: postalCode,
+        duration: duration,
+        startTime: startTime,
+        endTime: endTime,
+        additionalInfo: additionalInfo,
+        country: country,
+        city: city,
+        yearExperience: yearExperience,
+        cnicFrontPic: cnicFrontPic,
+        cnicBackPic: cnicBackPic,
+        certification: certification,
+        resume: resume,
+        providerId: providerId,
         isApplied: isApplied,
       );
 
@@ -318,19 +335,15 @@ class NewServiceRequestScreenController extends GetxController {
 
       if (data['status'] == true) {
         isLoading.value = false;
-        // Handle success scenario
         Get.back();
         AppUtils.getSnackBar("Success", data['message']);
       } else {
         isLoading.value = false;
-        // Handle error scenario
         AppUtils.errorSnackBar("Error", data['message']);
       }
     } catch (e) {
       isLoading.value = false;
       print(e);
-
-      // Handle general errors
       AppUtils.errorSnackBar("Error", "Failed to add service");
     }
   }
@@ -352,7 +365,8 @@ class NewServiceRequestScreenController extends GetxController {
         startTime.value = picked;
         // Validate that end time is after start time
         if (endTime.value.hour < picked.hour ||
-            (endTime.value.hour == picked.hour && endTime.value.minute < picked.minute)) {
+            (endTime.value.hour == picked.hour &&
+                endTime.value.minute < picked.minute)) {
           // If end time is before start time, set end time to start time + 1 hour
           endTime.value = TimeOfDay(
             hour: (picked.hour + 1) % 24,
@@ -362,7 +376,8 @@ class NewServiceRequestScreenController extends GetxController {
       } else {
         // Validate that selected end time is after start time
         if (picked.hour > startTime.value.hour ||
-            (picked.hour == startTime.value.hour && picked.minute > startTime.value.minute)) {
+            (picked.hour == startTime.value.hour &&
+                picked.minute > startTime.value.minute)) {
           endTime.value = picked;
         } else {
           // Show error message if end time is before start time

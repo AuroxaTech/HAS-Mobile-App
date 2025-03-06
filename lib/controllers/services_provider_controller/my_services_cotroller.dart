@@ -127,23 +127,26 @@ class MyServicesController extends GetxController {
   }
 
   Future<void> deleteService({required int id}) async {
-    print("we are in delete service");
-    isLoading.value = true;
-    var result = await servicesService.deleteService(id: id);
-    print("Service Result : $result");
+    try {
+      isLoading.value = true;
+      var result = await servicesService.deleteService(id: id);
 
-    isLoading.value = false;
-
-    if (result['status'] == true) {
+      if (result['success'] == true) {
+        // Remove the deleted service from the list
+        getServicesList.removeWhere((service) => service.id == id);
+        Get.back();
+        AppUtils.getSnackBar(
+            "Success", result['messages'] ?? "Service deleted successfully");
+      } else {
+        AppUtils.errorSnackBar(
+            "Error", result['messages'] ?? "Failed to delete service");
+      }
+    } catch (e) {
+      print("Error deleting service: $e");
+      AppUtils.errorSnackBar(
+          "Error", "Failed to delete service. Please try again.");
+    } finally {
       isLoading.value = false;
-      Get.back();
-      Get.back();
-      AppUtils.getSnackBar("Delete", result['messages']);
-    } else {
-      isLoading.value = false;
-      print("getPropertyOne is null");
-      AppUtils.errorSnackBar("Error", result['messages']);
     }
-    isLoading.value = false;
   }
 }

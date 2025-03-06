@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:property_app/constant_widget/delete_widgets.dart';
 import 'package:property_app/constant_widget/drawer.dart';
 import 'package:property_app/controllers/services_provider_controller/service_provide_controller.dart';
-import 'package:property_app/utils/api_urls.dart';
 import 'package:property_app/views/service_provider/rating_screen.dart';
 
 import '../../app_constants/animations.dart';
@@ -78,27 +77,34 @@ class ServiceProviderScreen extends GetView<ServiceProviderController> {
                     leading: CircleAvatar(
                       radius: 30,
                       child: ClipOval(
-                        child: controller.getServiceOne.value?.user.profileimage.isNotEmpty == true
+                        child: controller.getServiceOne.value?.user.profileimage
+                                    .isNotEmpty ==
+                                true
                             ? CachedNetworkImage(
                                 fit: BoxFit.cover,
                                 width: 60,
                                 height: 60,
-                                imageUrl: AppUrls.profileImageBaseUrl +
-                                    controller.getServiceOne.value!.user.profileimage,
-                                errorWidget: (context, e, b) => _buildDefaultAvatar(),
+                                imageUrl: controller
+                                    .getServiceOne.value!.user.profileimage,
+                                errorWidget: (context, e, b) =>
+                                    _buildDefaultAvatar(),
                               )
                             : _buildDefaultAvatar(),
                       ),
                     ),
                     title: headingText(
-                        text: controller.getServiceOne.value?.user.fullname ?? "Loading...",
+                        text: controller.getServiceOne.value?.user.fullname ??
+                            "Loading...",
                         fontSize: 24),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         customText(
-                            text: controller.getServiceOne.value?.services.isNotEmpty == true
-                                ? controller.getServiceOne.value!.services.first.serviceName
+                            text: controller.getServiceOne.value?.services
+                                        .isNotEmpty ==
+                                    true
+                                ? controller.getServiceOne.value!.services.first
+                                    .serviceName
                                 : "No services added",
                             fontSize: 14),
                         RatingWidget(
@@ -227,21 +233,26 @@ class ServiceProviderScreen extends GetView<ServiceProviderController> {
               children: [
                 dashboardSmallContainer(
                   context,
-                  title: controller.getServiceOne.value?.totalJobs.toString() ?? "0",
+                  title: controller.getServiceOne.value?.totalJobs.toString() ??
+                      "0",
                   subTitle: "Total",
                   thirdTitle: "Jobs",
                 ),
                 w25,
                 dashboardSmallContainer(
                   context,
-                  title: controller.getServiceOne.value?.totalPrice.toString() ?? "0",
+                  title:
+                      controller.getServiceOne.value?.totalPrice.toString() ??
+                          "0",
                   subTitle: "Total",
                   thirdTitle: "earning",
                 ),
                 w25,
                 dashboardSmallContainer(
                   context,
-                  title: controller.getServiceOne.value?.totalService.toString() ?? "0",
+                  title:
+                      controller.getServiceOne.value?.totalService.toString() ??
+                          "0",
                   subTitle: "Total",
                   thirdTitle: "services",
                 ),

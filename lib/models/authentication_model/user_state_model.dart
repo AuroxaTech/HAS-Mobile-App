@@ -76,12 +76,12 @@ class ServiceData {
   final String serviceName;
   final String description;
   final String pricing;
-  final int duration;
+  final String duration;
   final String startTime;
   final String endTime;
   final String location;
-  final String country;
-  final String yearExperience;
+  final String? country;
+  final dynamic yearExperience;
 
   ServiceData({
     required this.id,
@@ -93,7 +93,7 @@ class ServiceData {
     required this.startTime,
     required this.endTime,
     required this.location,
-    required this.country,
+    this.country,
     required this.yearExperience,
   });
 
@@ -103,12 +103,12 @@ class ServiceData {
     serviceName: json["service_name"],
     description: json["description"],
     pricing: json["pricing"],
-    duration: json["duration"],
+    duration: json["duration"].toString(),
     startTime: json["start_time"],
     endTime: json["end_time"],
     location: json["location"],
     country: json["country"],
-    yearExperience: json["year_experience"].toString(),
+    yearExperience: json["year_experience"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -130,11 +130,18 @@ class User {
   int id;
   String fullname;
   String email;
+  String userName;
   String phoneNumber;
-  int roleId;
+  String role;
+  String? emailVerifiedAt;
+  String? address;
+  String? postalCode;
   String profileimage;
   String platform;
   String deviceToken;
+  int approvedAt;
+  String verificationToken;
+  int isVerified;
   DateTime createdAt;
   DateTime updatedAt;
 
@@ -142,37 +149,58 @@ class User {
     required this.id,
     required this.fullname,
     required this.email,
+    required this.userName,
     required this.phoneNumber,
-    required this.roleId,
+    required this.role,
+    this.emailVerifiedAt,
+    this.address,
+    this.postalCode,
     required this.profileimage,
     required this.platform,
     required this.deviceToken,
+    required this.approvedAt,
+    required this.verificationToken,
+    required this.isVerified,
     required this.createdAt,
     required this.updatedAt,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => User(
     id: json["id"],
-    fullname: json["full_name"] ?? json["fullname"] ?? "",
+    fullname: json["full_name"] ?? "",
     email: json["email"] ?? "",
+    userName: json["user_name"] ?? "",
     phoneNumber: json["phone_number"] ?? "",
-    roleId: json["role_id"] ?? 0,
-    profileimage: json["profile_image"] ?? json["profileimage"] ?? "",
+    role: json["role"] ?? "",
+    emailVerifiedAt: json["email_verified_at"],
+    address: json["address"],
+    postalCode: json["postal_code"],
+    profileimage: json["profile_image"] ?? "",
     platform: json["platform"] ?? "",
     deviceToken: json["device_token"] ?? "",
+    approvedAt: json["approved_at"] ?? 0,
+    verificationToken: json["verification_token"] ?? "",
+    isVerified: json["is_verified"] ?? 0,
     createdAt: DateTime.parse(json["created_at"]),
     updatedAt: DateTime.parse(json["updated_at"]),
   );
 
   Map<String, dynamic> toJson() => {
     "id": id,
-    "fullname": fullname,
+    "full_name": fullname,
     "email": email,
+    "user_name": userName,
     "phone_number": phoneNumber,
-    "role_id": roleId,
-    "profileimage": profileimage,
+    "role": role,
+    "email_verified_at": emailVerifiedAt,
+    "address": address,
+    "postal_code": postalCode,
+    "profile_image": profileimage,
     "platform": platform,
     "device_token": deviceToken,
+    "approved_at": approvedAt,
+    "verification_token": verificationToken,
+    "is_verified": isVerified,
     "created_at": createdAt.toIso8601String(),
     "updated_at": updatedAt.toIso8601String(),
   };
