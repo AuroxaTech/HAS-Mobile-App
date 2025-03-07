@@ -9,7 +9,6 @@ import 'package:property_app/route_management/constant_routes.dart';
 
 import '../../controllers/services_provider_controller/service_request_cotroller.dart';
 import '../../models/service_provider_model/service_request_model.dart';
-import '../../utils/api_urls.dart';
 import '../../utils/shared_preferences/preferences.dart';
 import '../chat_screens/chat_conversion_screen.dart';
 
@@ -72,7 +71,7 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
                     return Column(
                       children: [
                         serviceRequestWidget(context,
-                            image: AppUrls.mediaImages + imageList[0],
+                            image: imageList[0],
                             title: item.service == null
                                 ? ""
                                 : item.service!.serviceName,
@@ -84,7 +83,8 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
                             requestDate: requestDate,
                             requestTime: requestTime,
                             status: item.description,
-                            time: item.time,
+                            startTime: item.startTime,
+                            endTime: item.endTime,
                             date: item.date,
                             contactTap: () {
                               if (item.decline == 1) {

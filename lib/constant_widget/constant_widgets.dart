@@ -1239,7 +1239,8 @@ Widget serviceRequestWidget(
   Color? acceptColor,
   Color? declineColor,
   String? image,
-  String? time,
+  String? startTime,
+  String? endTime,
   String? date,
 }) {
   return InkWell(
@@ -1429,7 +1430,9 @@ Widget serviceRequestWidget(
                               text: " Time :", color: greyColor, fontSize: 10),
                           w10,
                           customText(
-                              text: time ?? "", color: blackColor, fontSize: 8),
+                              text: "$startTime $endTime" ?? "",
+                              color: blackColor,
+                              fontSize: 8),
                         ],
                       )
                     ],

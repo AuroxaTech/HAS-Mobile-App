@@ -18,7 +18,6 @@ import 'package:whatsapp_reactions/whatsapp_reactions.dart';
 import '../../controllers/chat_screens_controller/chat_controller.dart';
 import '../../custom_widgets/custom_button.dart';
 import '../../services/notification_services/notification_services.dart';
-import '../../utils/api_urls.dart';
 import '../../utils/shared_preferences/preferences.dart';
 import 'ToBeReplyMessageWidget.dart';
 
@@ -241,8 +240,7 @@ class _ChatScreen1State extends State<ChatScreen1> {
                             backgroundColor: whiteColor,
                             child: ClipOval(
                               child: CachedNetworkImage(
-                                imageUrl:
-                                    "${AppUrls.profileImageBaseUrl}${widget.image}",
+                                imageUrl: widget.image,
                                 width: 48,
                                 height: 48,
                                 fit: BoxFit.cover,
