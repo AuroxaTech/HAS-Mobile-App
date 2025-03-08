@@ -29,24 +29,24 @@ class JobScreenController extends GetxController {
     super.onInit();
   }
 
-  Future<void> getServicesRequest() async {
-    List<ServiceRequestUser> list = <ServiceRequestUser>[];
-    print("we are in get services");
-    isLoading.value = true;
-    var id = await Preferences.getUserID();
-    var result = await servicesService.getServiceUserRequest(userId: id);
-    print("Service result : $result");
-    if (result["status"] == true) {
-      isLoading.value = false;
-      for (var data in result['data']) {
-        print("Service List :: $data");
-        list.add(ServiceRequestUser.fromJson(data));
-      }
-      getServicesRequestList.value = list;
-    } else {
-      isLoading.value = false;
-    }
-  }
+  // Future<void> getServicesRequest() async {
+  //   List<ServiceRequestUser> list = <ServiceRequestUser>[];
+  //   print("we are in get services");
+  //   isLoading.value = true;
+  //   var id = await Preferences.getUserID();
+  //   var result = await servicesService.getServiceUserRequest(userId: id);
+  //   print("Service result : $result");
+  //   if (result["status"] == true) {
+  //     isLoading.value = false;
+  //     for (var data in result['data']) {
+  //       print("Service List :: $data");
+  //       list.add(ServiceRequestUser.fromJson(data));
+  //     }
+  //     getServicesRequestList.value = list;
+  //   } else {
+  //     isLoading.value = false;
+  //   }
+  // }
 
   RxList<PendingJob> pendingJob = <PendingJob>[].obs;
   RxList<CompletedJob> completedJob = <CompletedJob>[].obs;
@@ -138,7 +138,8 @@ class JobScreenController extends GetxController {
 
         if (data is List) {
           // Convert list of JSON to DataStatus object properly
-          List<DataStatus> dataList = data.map((json) => DataStatus.fromJson(json)).toList();
+          List<DataStatus> dataList =
+              data.map((json) => DataStatus.fromJson(json)).toList();
 
           for (var dataStatus in dataList) {
             updatePagination(pendingJobController, dataStatus.pendingJobs,

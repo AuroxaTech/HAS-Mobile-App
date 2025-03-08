@@ -266,18 +266,20 @@ class NewServiceRequestScreen
                               if (controller.formKey.currentState!.validate()) {
                                 controller.newServiceRequest(
                                     serviceName: controller.data[0],
+                                    serviceId: controller.data[4].toString(),
                                     providerId: controller.data[3].toString(),
                                     location: controller.addressController.text,
                                     lat: 33.3334,
                                     lng: 77.3843,
-                                    propertyType:
-                                        controller.propertyTypeIndex.value,
+                                    propertyType: controller
+                                        .propertyTypeIndex.value
+                                        .toString(),
                                     duration:
                                         controller.selectedDays.join(', '),
-                                    startTime: controller.startTime.value
-                                        .format(context),
-                                    endTime: controller.endTime.value
-                                        .format(context),
+                                    startTime: _formatTimeOfDay(
+                                        controller.startTime.value),
+                                    endTime: _formatTimeOfDay(
+                                        controller.endTime.value),
                                     description:
                                         controller.descriptionController.text,
                                     additionalInfo: controller
@@ -290,12 +292,13 @@ class NewServiceRequestScreen
                                         .last
                                         .trim(),
                                     yearExperience:
-                                        controller.data[9].toString(),
-                                    cnicFrontPic: "",
-                                    cnicBackPic: "",
-                                    certification: "",
-                                    resume: "",
-                                    price: 0,
+                                        controller.data[8].toString(),
+                                    cnicFrontPic: controller.data[9].toString(),
+                                    cnicBackPic: controller.data[10].toString(),
+                                    certification:
+                                        controller.data[11].toString(),
+                                    resume: controller.data[12].toString(),
+                                    price: controller.data[13],
                                     isApplied: 1);
                               }
                             },
@@ -316,4 +319,11 @@ class NewServiceRequestScreen
       ),
     );
   }
+}
+
+String _formatTimeOfDay(TimeOfDay time) {
+  final hour = time.hourOfPeriod;
+  final minute = time.minute.toString().padLeft(2, '0');
+  final period = time.period == DayPeriod.am ? 'AM' : 'PM';
+  return '${hour == 0 ? 12 : hour}:$minute $period';
 }

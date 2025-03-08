@@ -13,21 +13,21 @@ import '../../utils/connectivity.dart';
 import '../../utils/utils.dart';
 
 class PropertyServices extends BaseApiService {
-  getProperties() async {
-    Uri url = Uri.parse(
-      AppUrls.getProperties,
-    );
-    try {
-      var res = await http.get(url,
-          headers: getHeader(userToken: await Preferences.getToken()));
-      return json.decode(res.body);
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
-      return e;
-    }
-  }
+  // getProperties() async {
+  //   Uri url = Uri.parse(
+  //     AppUrls.getProperties,
+  //   );
+  //   try {
+  //     var res = await http.get(url,
+  //         headers: getHeader(userToken: await Preferences.getToken()));
+  //     return json.decode(res.body);
+  //   } catch (e) {
+  //     if (kDebugMode) {
+  //       print(e);
+  //     }
+  //     return e;
+  //   }
+  // }
 
   getLandLordProperties({required int userId}) async {
     Uri url = Uri.parse(
@@ -132,7 +132,8 @@ class PropertyServices extends BaseApiService {
   //   }
   // }
 
-  Future<Map<String, dynamic>> getAllProperties(int pageKey, {Map<String, dynamic>? filters}) async {
+  Future<Map<String, dynamic>> getAllProperties(int pageKey,
+      {Map<String, dynamic>? filters}) async {
     Map<String, String> queryParams = {'page': pageKey.toString()};
 
     if (filters != null) {
@@ -143,7 +144,8 @@ class PropertyServices extends BaseApiService {
       });
     }
 
-    Uri url = Uri.parse(AppUrls.getAllProperty).replace(queryParameters: queryParams);
+    Uri url =
+        Uri.parse(AppUrls.getAllProperty).replace(queryParameters: queryParams);
 
     try {
       var token = await Preferences.getToken();
@@ -154,7 +156,8 @@ class PropertyServices extends BaseApiService {
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
-        print('Error fetching properties: ${response.statusCode} ${response.body}');
+        print(
+            'Error fetching properties: ${response.statusCode} ${response.body}');
         return {'status': false, 'message': 'Error fetching properties'};
       }
     } catch (e) {
@@ -164,9 +167,6 @@ class PropertyServices extends BaseApiService {
       return {'status': false, 'message': e.toString()};
     }
   }
-
-
-
 
   getProperty({required int id}) async {
     Uri url = Uri.parse(
@@ -263,7 +263,6 @@ class PropertyServices extends BaseApiService {
     }
   }
 
-
   Future<Map<String, dynamic>> addProperty({
     required String type,
     required String city,
@@ -333,8 +332,6 @@ class PropertyServices extends BaseApiService {
       //   'availability_end_time': availabilityEndTime,
       // });
 
-
-
       try {
         var response = await request.send();
         print(response.statusCode);
@@ -360,9 +357,7 @@ class PropertyServices extends BaseApiService {
     );
     var token = await Preferences.getToken();
     try {
-      var res = await http.get(url,
-          headers: getHeader(
-              userToken: token));
+      var res = await http.get(url, headers: getHeader(userToken: token));
       return json.decode(res.body);
     } catch (e) {
       if (kDebugMode) {
@@ -393,7 +388,7 @@ class PropertyServices extends BaseApiService {
           'property_id': propertyId,
         }),
       );
-      print( "body" +response.body);
+      print("body" + response.body);
 
       if (response.statusCode == 200) {
         print(response.body);
@@ -409,7 +404,6 @@ class PropertyServices extends BaseApiService {
     }
   }
 
-
 // Function to remove a favorite property
   Future<bool> removeFavoriteProperty(int propertyId) async {
     try {
@@ -420,10 +414,13 @@ class PropertyServices extends BaseApiService {
       }
 
       // Define the API URL for the DELETE request
-      var url = Uri.parse('${AppUrls.baseUrl}/property-favourites/delete/$propertyId');
+      var url = Uri.parse(
+          '${AppUrls.baseUrl}/property-favourites/delete/$propertyId');
 
-      var id = await Preferences.getUserID(); // Ensure you handle null or exceptions in getUserID
-      var token = await Preferences.getToken(); // Ensure you handle null or exceptions in getToken
+      var id = await Preferences
+          .getUserID(); // Ensure you handle null or exceptions in getUserID
+      var token = await Preferences
+          .getToken(); // Ensure you handle null or exceptions in getToken
 
       // Make the API DELETE call
       final response = await http.get(
@@ -446,40 +443,31 @@ class PropertyServices extends BaseApiService {
     }
   }
 
-
   Future<Map<String, dynamic>> getRentedProperties(int pageKey) async {
     try {
       var token = await Preferences.getToken();
-      Uri url = Uri.parse("${AppUrls.getApprovedContractProperty}?page=$pageKey");
+      Uri url =
+          Uri.parse("${AppUrls.getApprovedContractProperty}?page=$pageKey");
 
       // Log request
       BaseApiService.logRequest(
-        url.toString(),
-        'GET',
-        getHeader(userToken: token),
-        null
-      );
+          url.toString(), 'GET', getHeader(userToken: token), null);
 
-      var response = await http.get(
-        url,
-        headers: getHeader(userToken: token)
-      );
+      var response = await http.get(url, headers: getHeader(userToken: token));
 
       // Log response
       BaseApiService.logResponse(
-        url.toString(),
-        response.statusCode,
-        response.body
-      );
+          url.toString(), response.statusCode, response.body);
 
       // Check if response is HTML
       if (response.body.trim().startsWith('<!DOCTYPE html>')) {
-        throw ApiException('Server returned HTML instead of JSON. Please try again.');
+        throw ApiException(
+            'Server returned HTML instead of JSON. Please try again.');
       }
 
       if (response.statusCode == 200) {
         final decodedResponse = json.decode(response.body);
-        
+
         if (decodedResponse['status'] == true) {
           return {
             'status': true,
@@ -487,17 +475,17 @@ class PropertyServices extends BaseApiService {
             'message': decodedResponse['message']
           };
         } else {
-          throw ApiException(decodedResponse['message'] ?? 'Failed to fetch rented properties');
+          throw ApiException(decodedResponse['message'] ??
+              'Failed to fetch rented properties');
         }
       } else {
-        throw ApiException(
-          'Failed to fetch rented properties',
-          statusCode: response.statusCode
-        );
+        throw ApiException('Failed to fetch rented properties',
+            statusCode: response.statusCode);
       }
     } catch (e) {
       // Log error
-      BaseApiService.logError(AppUrls.getApprovedContractProperty, e.toString());
+      BaseApiService.logError(
+          AppUrls.getApprovedContractProperty, e.toString());
 
       if (e is FormatException) {
         throw ApiException('Invalid response format from server');

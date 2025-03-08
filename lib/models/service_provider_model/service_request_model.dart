@@ -47,9 +47,10 @@ class ServiceRequestProvider {
   String lat;
   String long;
   String price;
-  PropertyType? propertyType;
+  String? propertyType;
   String date;
-  String time;
+  String startTime;
+  String endTime;
   String description;
   String additionalInfo;
   int approved;
@@ -71,7 +72,8 @@ class ServiceRequestProvider {
       required this.price,
       required this.propertyType,
       required this.date,
-      required this.time,
+      required this.startTime,
+      required this.endTime,
       required this.description,
       required this.additionalInfo,
       required this.approved,
@@ -88,22 +90,20 @@ class ServiceRequestProvider {
         id: json["id"],
         userId: json["user_id"],
         serviceProviderId: json["provider_id"],
-        serviceId: json["service_id"],
-        address: json["address"],
+        serviceId: json["service_id"] ?? 0,
+        address: json["location"],
         postalCode: json["postal_code"],
         lat: json["lat"],
         long: json["long"],
-        price: json["price"],
-        propertyType: json["property_type"] == null
-            ? null
-            : PropertyType.fromJson(
-                json["property_type"] as Map<String, dynamic>),
-        date: json["date"],
-        time: json["time"],
+        price: json["pricing"],
+        propertyType: json["property_type"] ?? "",
+        date: json["duration"],
+        startTime: json["start_time"],
+        endTime: json["end_time"],
         description: json["description"],
         additionalInfo: json["additional_info"] ?? "",
-        approved: json["approved"],
-        decline: json["decline"],
+        approved: json["approved"] ?? 0,
+        decline: json["decline"] ?? 0,
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
         user: User.fromJson(json["user"] as Map<String, dynamic>? ?? {}),
@@ -119,14 +119,15 @@ class ServiceRequestProvider {
         "user_id": userId,
         "provider_id": serviceProviderId,
         "service_id": serviceId,
-        "address": address,
+        "location": address,
         "postal_code": postalCode,
         "lat": lat,
         "long": long,
-        "price": price,
+        "pricing": price,
         "property_type": propertyType,
-        "date": date,
-        "time": time,
+        "duration": date,
+        "start_time": startTime,
+        "end_time": endTime,
         "description": description,
         "additional_info": additionalInfo,
         "approved": approved,

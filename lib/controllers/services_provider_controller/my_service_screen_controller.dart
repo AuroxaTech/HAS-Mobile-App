@@ -394,7 +394,7 @@ class MyServicesDetailScreenController extends GetxController {
         additionalInfoController.text =
             getServiceOne.value!.additionalInformation.toString();
         yearsExperienceController.text =
-            getServiceOne.value!.yearsExperience.toString();
+            getServiceOne.value!.yearExperience.toString();
         cityNameController.text = getServiceOne.value!.city.toString();
       } else {
         isLoading.value = false;
@@ -483,7 +483,8 @@ class MyServicesDetailScreenController extends GetxController {
         Get.back();
         AppUtils.getSnackBar("Success", result['messages']);
       } else {
-        AppUtils.errorSnackBar("Error", result['messages'] ?? "Failed to update service");
+        AppUtils.errorSnackBar(
+            "Error", result['messages'] ?? "Failed to update service");
       }
     } catch (e) {
       print("Error updating service: $e");
