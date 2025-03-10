@@ -153,7 +153,7 @@ class StripePaymentScreen extends StatelessWidget {
                                 bool paymentSuccess = await stripePaymentController.withdrawPayment(amount, currency);
                                 if (paymentSuccess) {
                                   jobDetailController
-                                      .acceptServiceRequest(jobId: jobId, status: 1)
+                                      .acceptServiceRequest(jobId: jobId, status: "completed")
                                       .then((value) {
                                     jobDetailController.getJobRequest(id: id);
                                   });

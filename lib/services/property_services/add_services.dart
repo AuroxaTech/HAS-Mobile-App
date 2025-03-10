@@ -268,6 +268,7 @@ class ServiceProviderServices {
   Future<Map<String, dynamic>> newServiceRequest({
     required String serviceId,
     required String serviceName,
+    required String serviceId,
     required String location,
     required double lat,
     required double lng,
@@ -808,15 +809,15 @@ class ServiceProviderServices {
 
   Future<Map<String, dynamic>> markJobCompleteRequest({
     required int? jobId,
-    required int? status,
+    required String status,
   }) async {
     try {
-      Uri url = Uri.parse(AppUrls.markCompleteRequest);
+      Uri url = Uri.parse("${AppUrls.markCompleteRequest}/$jobId/status");
       var token = await Preferences.getToken();
       var res = await http.post(
         url,
         body: json.encode({
-          "job_id": jobId,
+        //  "job_id": jobId,
           "status": status,
         }),
         headers: getHeader(userToken: token),

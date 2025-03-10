@@ -22,9 +22,11 @@ class SplashScreenController extends GetxController {
     var token = await Preferences.getToken();
     //var roleId = await Preferences.getRoleID();
     var role = await Preferences.getRoleID();
+    var userId = await Preferences.getUserID();
     print("Check Intro $isCheck");
     print("Token  $token");
     print("Role ID $role");
+    print("User ID $userId");
     await Future.delayed(const Duration(seconds: 3), () {
       if (isCheck == true) {
 

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:property_app/constant_widget/constant_widgets.dart';
 import 'package:property_app/models/authentication_model/user_model.dart';
 import 'package:property_app/utils/api_urls.dart';
@@ -137,17 +138,50 @@ class ContractController extends GetxController {
     }
   }
 
+
+
   Future<void> postContract() async {
     try {
       isLoading.value = true;
-      var url =
-          Uri.parse(AppUrls.addContract); // Replace with your actual endpoint
+      var url = Uri.parse("https://has-backend.wazirafghan.online/api/contract/store");
+
       String utilities = selectedUtilities.join(', ');
       String responsibilities = selectedResponsibility.join(', ');
+      var userId = await Preferences.getUserID();
+      var token = await Preferences.getToken();
 
-      var body = jsonEncode({
-        "property_id": propertyId.value,
-        "landlord_id": landlordId.value,
+      print("Token being used: $token");
+      print("UserID: $userId");
+      print("PropertyID: ${propertyId.value}");
+
+      // **Date Formatting using intl - YYYY/MM/DD**
+      DateFormat backendDateFormat = DateFormat('yyyy/MM/dd'); // Define the format
+
+      DateTime? startDate;
+      DateTime? endDate;
+      DateTime? dueDate;
+
+      try {
+        startDate = DateFormat('dd-MM-yyyy').parse(leasedStartDateController.text); // Parse assuming DD-MM-YYYY format - adjust if needed
+        endDate = DateFormat('dd-MM-yyyy').parse(leaseEndDateController.text);     // Parse assuming DD-MM-YYYY format - adjust if needed
+        dueDate = DateFormat('dd-MM-yyyy').parse(rentDueDateController.text);       // Parse assuming DD-MM-YYYY format - adjust if needed
+      } catch (e) {
+        print("Date parsing error: $e"); // Handle parsing errors gracefully
+        isLoading.value = false;
+        AppUtils.errorSnackBar("Error", "Invalid date format. Please use DD-MM-YYYY."); // Or your input format
+        return; // Stop execution if date parsing fails
+      }
+
+
+      String formattedStartDate = backendDateFormat.format(startDate); // Format to YYYY/MM/DD
+      String formattedEndDate = backendDateFormat.format(endDate);
+      String formattedDueDate = backendDateFormat.format(dueDate);
+
+
+      var body = {
+        "user_id": userId.toString(),
+        "property_id": propertyId.value.toString(),
+        //"landlord_id": landlordId.value.toString(),
         "landlordName": landLordNameController.text,
         "landlordAddress": landLordEmailController.text,
         "landlordPhone": landLordPhoneController.text,
@@ -155,62 +189,70 @@ class ContractController extends GetxController {
         "tenantAddress": tenantAddressController.text,
         "tenantPhone": tenantPhoneController.text,
         "tenantEmail": tenantEmailController.text,
-        "occupants": occupantsController
-            .text, // Assume this to be an array or string based on your API, adjust accordingly
+        "occupants": occupantsController.text,
         "premisesAddress": premisesAddressController.text,
-        "propertyType": propertyType
-            .value, // Fill this in with actual data or leave it as default if optional
-        "leaseStartDate": leasedStartDateController.text,
-        "leaseEndDate": leaseEndDateController.text,
+        "propertyType": propertyType.value,
+        "leaseStartDate": formattedStartDate, // Use formatted dates
+        "leaseEndDate": formattedEndDate,   // Use formatted dates
         "leaseType": leasedType.value,
         "rentAmount": rentAmountController.text,
-        "rentDueDate": rentDueDateController.text,
-        "rentPaymentMethod":
-            paymentType.value, // Fill in the actual data if available
-        "securityDepositAmount": securityDepositAmountController
-            .text, // Ensure this is a number; adjust according to actual data
+        "rentDueDate": formattedDueDate,     // Use formatted dates
+        "rentPaymentMethod": paymentType.value,
+        "securityDepositAmount": securityDepositAmountController.text,
         "includedUtilities": utilities,
         "tenantResponsibilities": responsibilities,
         "emergencyContactName": emergencyContactNameController.text,
         "emergencyContactPhone": emergencyContactPhoneController.text,
         "emergencyContactAddress": emergencyContactAddressController.text,
         "buildingSuperintendentName": buildingSuperintendentNameController.text,
-        "buildingSuperintendentAddress":
-            buildingSuperintendentAddressController.text,
-        "buildingSuperintendentPhone":
-            buildingSuperintendentPhoneController.text,
-        "rentIncreaseNoticePeriod":
-            rentIncreaseNoticePeriodPhoneController.text,
-        "noticePeriodForTermination": noticePeriodForTerminationController.text,
+        "buildingSuperintendentAddress": buildingSuperintendentAddressController.text,
+        "buildingSuperintendentPhone": buildingSuperintendentPhoneController.text,
+        "rentIncreaseNoticePeriod": rentIncreaseNoticePeriodPhoneController.text,
+        "noticePeriodForTermination": int.tryParse(noticePeriodForTerminationController.text),
         "latePaymentFee": latePaymentFeeController.text,
         "rentalIncentives": rentalIncentivesFeeController.text,
-        "additionalTerms": additionalTermsController.text
-        // Add more parameters as required by your API
-      });
+        "additionalTerms": additionalTermsController.text,
+        "status": "1"
+      };
+
+      print("Request Body (x-www-form-urlencoded) with Formatted Dates: $body"); // Print with dates
+
       var response = await http.post(
         url,
-        headers: getHeader(userToken: await Preferences.getToken()),
-        body: body,
+        headers: await header(userToken: token, contentType: 'application/json'),
+        body: jsonEncode(body),
       );
-      print(body);
-      if (response.statusCode == 200) {
-        // Handle successful response
+
+      print("Response Headers: ${response.headers}");
+      print("Response Status Code: ${response.statusCode}");
+      print("Response Body: ${response.body}");
+
+      if (response.statusCode == 201) {
         var jsonData = jsonDecode(response.body);
         print(jsonData);
         Get.back();
         AppUtils.getSnackBar("Success", jsonData["message"]);
-        isLoading.value = false;
-        print("Successfully posted data");
       } else {
-        isLoading.value = false;
-        // Handle error
         AppUtils.errorSnackBar("Error", "Not uploaded");
-        print("Failed to post data");
         throw Exception('Failed to post contract');
       }
+
     } catch (e) {
       isLoading.value = false;
-      print(e);
+      print("Error during postContract: $e");
+    } finally {
+      isLoading.value = false;
     }
   }
-}
+
+  Future<Map<String, String>> header({required String? userToken, String contentType = 'application/json'}) async { // **Add contentType parameter**
+    Map<String, String> headers = {
+      'Content-Type': contentType, // **Use contentType parameter**
+    };
+
+    if (userToken != null) {
+      headers['Authorization'] = 'Bearer $userToken';
+    }
+    print("Headers being sent: $headers");
+    return headers;
+  }}
