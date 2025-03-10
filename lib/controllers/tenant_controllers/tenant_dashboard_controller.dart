@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:property_app/models/stat_models/tenant_stat.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../constant_widget/constant_widgets.dart';
+import '../../route_management/constant_routes.dart';
 import '../../services/auth_services/auth_services.dart';
 import '../../utils/api_urls.dart';
 import '../../utils/base_api_service.dart';
 import '../../utils/shared_preferences/preferences.dart';
 import '../../utils/utils.dart';
-import '../../views/authentication_screens/login_screen.dart';
 
 class TenantDashboardController extends GetxController {
   final GlobalKey<ScaffoldState> key = GlobalKey();
@@ -72,7 +73,11 @@ class TenantDashboardController extends GetxController {
       // Handling the response
       if (response.statusCode == 200) {
         AppUtils.getSnackBar('Success', 'User deleted successfully');
-        Get.offAll(const LoginScreen());
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.remove("token");
+        await prefs.remove("role");
+        await prefs.remove("user_id");
+        Get.offAllNamed(kLoginScreen);
       } else if (response.statusCode == 404) {
         AppUtils.errorSnackBar('Error', 'User not found');
       } else if (response.statusCode == 500) {

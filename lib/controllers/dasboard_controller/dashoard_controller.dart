@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:property_app/constant_widget/constant_widgets.dart';
+import 'package:property_app/route_management/constant_routes.dart';
+import 'package:property_app/utils/api_urls.dart';
 import 'package:property_app/utils/utils.dart';
-import 'package:property_app/views/authentication_screens/login_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../models/stat_models/landlord_stat.dart';
 import '../../services/auth_services/auth_services.dart';
@@ -60,7 +62,7 @@ class DashboardController extends GetxController
   }
 
   Future<void> deleteUser() async {
-    const url = 'https://haservices.ca:8080/user/delete';
+    const url = AppUrls.deleteUser;
     try {
       isLoading(true);
       var userId = await Preferences.getUserID();
@@ -74,7 +76,11 @@ class DashboardController extends GetxController
       // Handling the response
       if (response.statusCode == 200) {
         AppUtils.getSnackBar('Success', 'User deleted successfully');
-        Get.offAll(const LoginScreen());
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.remove("token");
+        await prefs.remove("role");
+        await prefs.remove("user_id");
+        Get.offAllNamed(kLoginScreen);
       } else if (response.statusCode == 404) {
         AppUtils.errorSnackBar('Error', 'User not found');
       } else if (response.statusCode == 500) {

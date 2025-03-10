@@ -2,11 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:property_app/app_constants/app_icon.dart';
 import 'package:property_app/views/service_provider/service_listing_screen.dart';
 
 import '../../app_constants/color_constants.dart';
+import '../../controllers/visitor_controllers/visitor_dashboard_controller.dart';
 import '../../services/notification_services/notification_services.dart';
 import '../../utils/shared_preferences/preferences.dart';
 import '../chat_screens/HomeScreen.dart';
@@ -37,8 +39,10 @@ class _VisitorBottomBarState extends State<VisitorBottomBar> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    // Initialize VisitorDashboardController
+    Get.put(VisitorDashboardController());
+
     notificationServices.requestNotificationPermission();
     notificationServices.forgroundMessage();
     notificationServices.firebaseInit(context);
