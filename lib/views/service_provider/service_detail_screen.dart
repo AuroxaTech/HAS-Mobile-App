@@ -732,8 +732,7 @@ class ServiceListingDetailScreen
                                                     .description,
                                                 controller.getServiceOne.value!
                                                     .userId,
-                                                controller
-                                                    .getServiceOne.value!.id,
+                                                controller.getServiceOne.value!.id,
                                                 controller.images[0],
                                                 controller.getServiceOne.value!
                                                     .country,

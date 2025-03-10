@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../models/propert_model/service_job_status.dart';
 import '../../models/service_provider_model/calendar_service.dart';
 import '../../route_management/constant_routes.dart';
 import '../../services/property_services/add_services.dart';
@@ -13,7 +14,7 @@ class JobDetailController extends GetxController {
   final PageController pageController = PageController();
   ServiceProviderServices serviceRequestService = ServiceProviderServices();
   Rx<bool> isLoading = false.obs;
-  Rx<CalendarData?> getServiceRequestOne = Rx<CalendarData?>(null);
+  Rx<Job?> getServiceRequestOne = Rx<Job?>(null); // Using Job model
 
   List<String> images = [];
 
@@ -28,45 +29,43 @@ class JobDetailController extends GetxController {
     super.onInit();
   }
 
-  Future<void> getJobRequest({required int? id}) async {
-    print("we are in get service");
-    isLoading.value = true;
 
+  Future<void> getJobRequest({required int? id}) async {
+    print("Fetching job details for ID: $id");
+    isLoading.value = true;
     try {
       var result = await serviceRequestService.getServiceJob(id: id);
-      print("Service Result : ${result['data']}");
+      print("Job Detail API Result : ${result['payload']}"); // Log full payload
 
-      if (result['data'] != null) {
-        if (result['data'] is Map) {
-          var data = result['data'];
-          print("Data :: $data");
-          getServiceRequestOne.value = CalendarData.fromJson(data);
+      if (result['success'] == true && result['payload'] != null) {
+        // Assuming payload directly contains the Job data
+        var jobData = result['payload']; // Adjust based on actual API response, assuming 'job' key
+        if (jobData != null && jobData is Map<String, dynamic>) {
+          getServiceRequestOne.value = Job.fromJson(jobData); // Parse directly into Job model
+          print("Parsed Job Detail: ${getServiceRequestOne.value?.toJson()}");
 
-          if (getServiceRequestOne.value!.request.service != null) {
-            String imagesString =
-                getServiceRequestOne.value!.request.service!.media.toString();
-            List<String> imageList = imagesString.split(',');
-            images = imageList;
+          if (getServiceRequestOne.value!.serviceImages != null) {
+            images = getServiceRequestOne.value!.serviceImages.cast<String>().toList(); // Assuming serviceImages is already a list of URLs, cast to String
+            print("Job Detail Images: ${images}");
           } else {
-            print("Service media is null");
+            print("Service images are null");
           }
         } else {
-          print("Data is not a Map");
+          print("Job data is null or not a Map");
         }
       } else {
-        print("Data is null");
+        print("API Error: ${result['message']}");
       }
     } catch (e) {
-      print("Error fetching service request: $e");
+      print("Exception in getJobRequest: $e");
       rethrow;
     } finally {
       isLoading.value = false;
     }
   }
-
   Future<void> acceptServiceRequest({
     required int? jobId,
-    required int? status,
+    required String status,
   }) async {
     isLoading.value = true;
 
@@ -76,7 +75,7 @@ class JobDetailController extends GetxController {
         status: status,
       );
       print(result);
-      if (result['status'] == true) {
+      if (result['success'] == true) {
         await Get.toNamed(kRateExperienceScreen, arguments: jobId);
         AppUtils.getSnackBar("Success", result['message']);
       } else {

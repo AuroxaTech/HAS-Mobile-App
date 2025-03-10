@@ -263,8 +263,10 @@ class NewServiceRequestScreen
                           child: CustomButton(
                             isLoading: controller.isLoading.value,
                             onTap: () {
+
                               if (controller.formKey.currentState!.validate()) {
                                 controller.newServiceRequest(
+                                    serviceId: controller.data[4].toString(),
                                     serviceName: controller.data[0],
                                     providerId: controller.data[3].toString(),
                                     location: controller.addressController.text,

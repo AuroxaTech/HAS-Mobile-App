@@ -53,7 +53,7 @@ class AppUrls {
   static const deleteService = "$baseUrl/service/delete";
   static const updateService = "$baseUrl/service/update";
   static const addServiceRequest = "$baseUrl/add-service-request";
-  static const markCompleteRequest = "$baseUrl/mark-service-job-status";
+  static const markCompleteRequest = "$baseUrl/services";
   static const getServiceProviderRequest = "$baseUrl/get-service-request";
   static const getServiceUserRequest = "$baseUrl/get-user-request";
   static const serviceRequestDecline = "$baseUrl/service-request-decline";
@@ -70,7 +70,7 @@ class AppUrls {
   static const getFavourite = "$baseUrl/get-favourite-services";
 
   // contract api
-  static const addContract = "$baseUrl/add-contract";
+  static const addContract = "$baseUrl/contract/store";
   static const getTenantContract = "$baseUrl/get-contract";
   static const getLandlordContract = "$baseUrl/get-landlord-contract";
   static const acceptContract = "$baseUrl/mark-contract-status";

@@ -241,7 +241,7 @@ class NewServiceRequestScreenController extends GetxController {
     email: '',
     phoneNumber: '',
     roleId: "",
-    profileimage: '',
+    profileImage: '',
     createdAt: DateTime.now(),
     updatedAt: DateTime.now(),
     platform: '',
@@ -266,7 +266,7 @@ class NewServiceRequestScreenController extends GetxController {
 
       if (response.statusCode == 200) {
         var data = User.fromJson(jsonDecode(response.body)["payload"]);
-        print(data.profileimage);
+        print(data.profileImage);
         userData(data);
 
         nameController.text = userData.value.fullName;
@@ -284,6 +284,7 @@ class NewServiceRequestScreenController extends GetxController {
 
   Future<void> newServiceRequest({
     required String serviceName,
+    required String serviceId,
     required String providerId,
     required String location,
     required double lat,
@@ -309,6 +310,7 @@ class NewServiceRequestScreenController extends GetxController {
     try {
       var data = await ServiceProviderServices().newServiceRequest(
         serviceName: serviceName,
+        serviceId: serviceId,
         location: location,
         lat: lat,
         lng: lng,

@@ -43,7 +43,7 @@ class ProfileSettingsScreenController extends GetxController {
     email: '',
     phoneNumber: '',
     roleId: "",
-    profileimage: '',
+    profileImage: '',
     createdAt: DateTime.now(),
     updatedAt: DateTime.now(),
     platform: '',
@@ -72,7 +72,7 @@ class ProfileSettingsScreenController extends GetxController {
       if (response.statusCode == 200) {
 
         var data = User.fromJson(jsonDecode(response.body)["payload"]);
-        print(data.profileimage);
+        print(data.profileImage);
         userData(data);
 
         nameController.text = userData.value.fullName;
