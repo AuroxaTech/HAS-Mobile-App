@@ -1,12 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:property_app/models/service_provider_model/all_services.dart';
 import 'package:property_app/services/property_services/add_services.dart';
 
-import '../../models/service_provider_model/get_services.dart';
-
-class ServiceListingDetailScreenController extends GetxController{
-
+class ServiceListingDetailScreenController extends GetxController {
   ServiceProviderServices servicesService = ServiceProviderServices();
   Rx<bool> isLoading = false.obs;
   Rx<AllService?> getServiceOne = Rx<AllService?>(null);
@@ -17,11 +13,10 @@ class ServiceListingDetailScreenController extends GetxController{
     int id = data[0];
     images = data[1];
     print("IDDDDDD $id");
-    print("Hello");
+    print("Data = $data");
     getService(id: id);
     super.onInit();
   }
-
 
   Future<void> getService({required int id}) async {
     print("we are in get service");
@@ -89,7 +84,8 @@ class ServiceListingDetailScreenController extends GetxController{
       }
     } catch (error) {
       // If the API call fails, revert the local change
-      service.isFavorite = (newFavoriteStatus == 1) ? 0 : 1; // Revert to previous state
+      service.isFavorite =
+          (newFavoriteStatus == 1) ? 0 : 1; // Revert to previous state
       Get.snackbar('Error', 'Could not update favorites. Please try again.');
       print('Error: $error');
       rethrow;
@@ -97,5 +93,4 @@ class ServiceListingDetailScreenController extends GetxController{
 
     // Force the UI to refresh and reflect the change
   }
-
 }

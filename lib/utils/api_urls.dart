@@ -15,13 +15,12 @@ class AppUrls {
 
   static const baseUrl = "https://has-backend.wazirafghan.online/api";
 
-  static const profileImageBaseUrl = "$baseUrl/assets/profile_images/";
-  static const electricityBillBaseUrl = "$baseUrl/assets/electricity_bill/";
-  static const certificateImagesBaseUrl =
-      "$baseUrl/assets/certification_images/";
-  static const CNIC = "$baseUrl/assets/cnic/";
+  // static const electricityBillBaseUrl = "$baseUrl/assets/electricity_bill/";
+  // static const certificateImagesBaseUrl =
+  //     "$baseUrl/assets/certification_images/";
+  // static const CNIC = "$baseUrl/assets/cnic/";
   static const propertyImages = "$baseUrl/assets/property_images/";
-  static const servicesImages = "$baseUrl/assets/service_images/";
+  // static const servicesImages = "$baseUrl/assets/service_images/";
   static const mediaImages = "$baseUrl/assets/media_images/";
 
   //Registration
@@ -34,8 +33,8 @@ class AppUrls {
   static const getUser = "$baseUrl/get-user-by-id";
 
   //property
-  static const getProperties = "$baseUrl/all-properties";
-  static const getLandLordProperty = "$baseUrl/get-properties";
+  // static const getProperties = "$baseUrl/all-properties";
+  // static const getLandLordProperty = "$baseUrl/get-properties";
   static const getAllProperty = "$baseUrl/properties";
   static const propertyDetail = "$baseUrl/property/details";
   static const getProperty = "$baseUrl/get-property";

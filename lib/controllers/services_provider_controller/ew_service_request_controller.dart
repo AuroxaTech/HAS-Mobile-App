@@ -1,3 +1,4 @@
+
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -218,12 +219,19 @@ class NewServiceRequestScreenController extends GetxController {
     if (selectedOption.value.isEmpty) return 'Select days and time';
     if (selectedOption.value == 'Request Now') return 'Request Now';
     if (selectedOption.value == 'Full Week') {
-      return 'Full Week, ${startTime.value.format(Get.context!)} - ${endTime.value.format(Get.context!)}';
+      return 'Full Week, ${_formatTimeOfDay(startTime.value)} - ${_formatTimeOfDay(endTime.value)}';
     }
     if (selectedDays.isEmpty) return 'Select days and time';
 
     String daysText = selectedDays.join(', ');
-    return '$daysText, ${startTime.value.format(Get.context!)} - ${endTime.value.format(Get.context!)}';
+    return '$daysText, ${_formatTimeOfDay(startTime.value)} - ${_formatTimeOfDay(endTime.value)}';
+  }
+
+  String _formatTimeOfDay(TimeOfDay time) {
+    final hour = time.hourOfPeriod;
+    final minute = time.minute.toString().padLeft(2, '0');
+    final period = time.period == DayPeriod.am ? 'AM' : 'PM';
+    return '${hour == 0 ? 12 : hour}:$minute $period';
   }
 
   @override
@@ -283,13 +291,13 @@ class NewServiceRequestScreenController extends GetxController {
   }
 
   Future<void> newServiceRequest({
-    required String serviceName,
     required String serviceId,
+    required String serviceName,
     required String providerId,
     required String location,
     required double lat,
     required double lng,
-    required int propertyType,
+    required String propertyType,
     required String duration,
     required String startTime,
     required String endTime,
@@ -302,7 +310,7 @@ class NewServiceRequestScreenController extends GetxController {
     String cnicBackPic = '',
     String certification = '',
     String resume = '',
-    required int price,
+    required String price,
     required int isApplied,
   }) async {
     isLoading.value = true;
@@ -311,6 +319,7 @@ class NewServiceRequestScreenController extends GetxController {
       var data = await ServiceProviderServices().newServiceRequest(
         serviceName: serviceName,
         serviceId: serviceId,
+        propertyType: propertyType,
         location: location,
         lat: lat,
         lng: lng,

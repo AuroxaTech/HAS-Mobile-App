@@ -266,13 +266,15 @@ class ServiceProviderServices {
   }
 
   Future<Map<String, dynamic>> newServiceRequest({
+    required String serviceId,
     required String serviceName,
     required String serviceId,
     required String location,
     required double lat,
     required double lng,
     required String description,
-    required int price,
+    required String propertyType,
+    required String price,
     required String duration,
     required String startTime,
     required String endTime,
@@ -299,6 +301,7 @@ class ServiceProviderServices {
           'user_id': userId.toString(),
           'service_id': serviceId,
           'service_name': serviceName,
+          'property_type': propertyType,
           'location': location,
           'lat': lat.toString(),
           'long': lng.toString(),
@@ -311,38 +314,42 @@ class ServiceProviderServices {
           'country': country,
           'city': city,
           'year_experience': yearExperience,
+          // 'cnic_front_pic': cnicFrontPic,
+          // 'cnic_back_pic': cnicBackPic,
+          // 'certification': certification,
+          // 'resume': resume,
           'provider_id': providerId,
           'is_applied': isApplied.toString(),
         });
 
-      // Add files if they exist
-      if (cnicFrontPic.isNotEmpty) {
-        request.files.add(await http.MultipartFile.fromPath(
-          'cnic_front_pic',
-          cnicFrontPic,
-        ));
-      }
-
-      if (cnicBackPic.isNotEmpty) {
-        request.files.add(await http.MultipartFile.fromPath(
-          'cnic_back_pic',
-          cnicBackPic,
-        ));
-      }
-
-      if (certification.isNotEmpty) {
-        request.files.add(await http.MultipartFile.fromPath(
-          'certification',
-          certification,
-        ));
-      }
-
-      if (resume.isNotEmpty) {
-        request.files.add(await http.MultipartFile.fromPath(
-          'resume',
-          resume,
-        ));
-      }
+      // // Add files if they exist
+      // if (cnicFrontPic.isNotEmpty) {
+      //   request.files.add(await http.MultipartFile.fromPath(
+      //     'cnic_front_pic',
+      //     cnicFrontPic,
+      //   ));
+      // }
+      //
+      // if (cnicBackPic.isNotEmpty) {
+      //   request.files.add(await http.MultipartFile.fromPath(
+      //     'cnic_back_pic',
+      //     cnicBackPic,
+      //   ));
+      // }
+      //
+      // if (certification.isNotEmpty) {
+      //   request.files.add(await http.MultipartFile.fromPath(
+      //     'certification',
+      //     certification,
+      //   ));
+      // }
+      //
+      // if (resume.isNotEmpty) {
+      //   request.files.add(await http.MultipartFile.fromPath(
+      //     'resume',
+      //     resume,
+      //   ));
+      // }
 
       // Log request
       BaseApiService.logRequest(
@@ -421,7 +428,6 @@ class ServiceProviderServices {
     }
   }
 
-
   Future<bool> removeFavoriteService(int propertyId) async {
     try {
       // Check internet connectivity first
@@ -431,10 +437,13 @@ class ServiceProviderServices {
       }
 
       // Define the API URL for the DELETE request
-      var url = Uri.parse('${AppUrls.baseUrl}/service-favourites/delete/$propertyId');
+      var url =
+          Uri.parse('${AppUrls.baseUrl}/service-favourites/delete/$propertyId');
 
-      var id = await Preferences.getUserID(); // Ensure you handle null or exceptions in getUserID
-      var token = await Preferences.getToken(); // Ensure you handle null or exceptions in getToken
+      var id = await Preferences
+          .getUserID(); // Ensure you handle null or exceptions in getUserID
+      var token = await Preferences
+          .getToken(); // Ensure you handle null or exceptions in getToken
 
       // Make the API DELETE call
       final response = await http.get(
@@ -456,8 +465,6 @@ class ServiceProviderServices {
       return false; // Return false or handle as needed
     }
   }
-
-
 
   deleteService({required int id}) async {
     Uri url = Uri.parse(
@@ -696,30 +703,15 @@ class ServiceProviderServices {
     }
   }
 
-  getMyServiceUserRequest({required int userId}) async {
-    Uri url = Uri.parse(
-      "${AppUrls.getServiceUserRequest}?user_id=$userId",
-    );
-    try {
-      var token = await Preferences.getToken();
-      var res = await http.post(url, headers: getHeader(userToken: token));
-      return json.decode(res.body);
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
-      return e;
-    }
-  }
-
   Future<Map<String, dynamic>> getFavoriteServices(
       {required int id, required int page}) async {
     try {
       Uri url = Uri.parse("${AppUrls.getFavourite}?page=$page");
       var id = await Preferences.getUserID();
-      var res = await http.get(url,
-          headers: getHeader(userToken: await Preferences.getToken()),
-         );
+      var res = await http.get(
+        url,
+        headers: getHeader(userToken: await Preferences.getToken()),
+      );
       print(res);
       return json.decode(res.body);
     } catch (e) {

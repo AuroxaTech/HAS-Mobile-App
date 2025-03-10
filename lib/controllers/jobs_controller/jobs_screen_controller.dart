@@ -29,6 +29,7 @@ class JobScreenController extends GetxController {
     super.onInit();
   }
 
+
   Future<void> getServicesRequest() async {
     List<ServiceRequestUser> list = <ServiceRequestUser>[];
     print("we are in get services");
@@ -48,6 +49,7 @@ class JobScreenController extends GetxController {
     }
   }
   //x
+
 
   final PagingController<int, Job> pendingJobController = // Changed to Job
   PagingController(firstPageKey: 1);

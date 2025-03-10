@@ -368,10 +368,8 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                                   fontSize: 12),
                                               w10,
                                               customText(
-                                                  text: controller
-                                                      .getServiceRequestOne
-                                                      .value!
-                                                      .time,
+                                                  text:
+                                                      "${controller.getServiceRequestOne.value!.startTime} ${controller.getServiceRequestOne.value!.endTime}",
                                                   color: blackColor,
                                                   fontSize: 12),
                                             ],

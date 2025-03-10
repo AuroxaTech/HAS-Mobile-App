@@ -12,7 +12,6 @@ import '../../app_constants/color_constants.dart';
 import '../../constant_widget/constant_widgets.dart';
 import '../../controllers/visitor_controllers/visitor_dashboard_controller.dart';
 import '../../route_management/constant_routes.dart';
-import '../../utils/api_urls.dart';
 import '../chat_screens/HomeScreen.dart';
 
 class VisitorDashBoard extends GetView<VisitorDashboardController> {
@@ -48,20 +47,25 @@ class VisitorDashBoard extends GetView<VisitorDashboardController> {
                           leading: CircleAvatar(
                             radius: 30,
                             child: ClipOval(
-                              child: controller.getVisitor.value?.visitor.profileimage.isNotEmpty == true
+                              child: controller.getVisitor.value?.visitor
+                                          .profileimage.isNotEmpty ==
+                                      true
                                   ? CachedNetworkImage(
                                       fit: BoxFit.cover,
                                       width: 60,
                                       height: 60,
-                                      imageUrl: AppUrls.profileImageBaseUrl +
-                                          controller.getVisitor.value!.visitor.profileimage,
-                                      errorWidget: (context, e, b) => _buildDefaultAvatar(),
+                                      imageUrl: controller.getVisitor.value!
+                                          .visitor.profileimage,
+                                      errorWidget: (context, e, b) =>
+                                          _buildDefaultAvatar(),
                                     )
                                   : _buildDefaultAvatar(),
                             ),
                           ),
                           title: headingText(
-                              text: controller.getVisitor.value?.visitor.fullname ?? "Loading...",
+                              text: controller
+                                      .getVisitor.value?.visitor.fullname ??
+                                  "Loading...",
                               fontSize: 24),
                           subtitle: customText(
                             text: "Visitor",

@@ -4,32 +4,65 @@
 
 import 'dart:convert';
 
-AllServices allServicesFromJson(String str) =>
-    AllServices.fromJson(json.decode(str));
+AllServices allServicesFromJson(String str) {
+  final dynamic decoded = json.decode(str);
+  
+  // Handle different response formats
+  if (decoded is List) {
+    // If it's a list of services, create a custom wrapper
+    return AllServices(
+      success: true,
+      message: "Service list retrieved",
+      payload: Data(
+        currentPage: 1,
+        data: List<AllService>.from(decoded.map((x) => AllService.fromJson(x))),
+        firstPageUrl: "",
+        from: 1,
+        lastPage: 1,
+        lastPageUrl: "",
+        links: [],
+        nextPageUrl: "",
+        path: "",
+        perPage: decoded.length,
+        prevPageUrl: null,
+        to: decoded.length,
+        total: decoded.length,
+      ),
+    );
+  } else {
+    // Regular object response
+    return AllServices.fromJson(decoded);
+  }
+}
 
 String allServicesToJson(AllServices data) => json.encode(data.toJson());
 
 class AllServices {
-  bool status;
+  bool success;
   String message;
-  Data data;
+  Data payload;
 
   AllServices({
-    required this.status,
+    required this.success,
     required this.message,
-    required this.data,
+    required this.payload,
   });
 
-  factory AllServices.fromJson(Map<String, dynamic> json) => AllServices(
-        status: json["status"],
-        message: json["message"],
-        data: Data.fromJson(json["data"]),
-      );
+  factory AllServices.fromJson(Map<String, dynamic> json) {
+    // Handle direct payload (single object) vs paginated response
+    return AllServices(
+      success: json["success"] ?? false,
+      message: json["message"] ?? "",
+      payload: json.containsKey("payload") 
+          ? Data.fromJson(json["payload"]) 
+          : Data.fromJson(json), // Fallback to treating the whole json as data
+    );
+  }
 
   Map<String, dynamic> toJson() => {
-        "status": status,
+        "success": success,
         "message": message,
-        "data": data.toJson(),
+        "payload": payload.toJson(),
       };
 }
 
@@ -64,22 +97,45 @@ class Data {
     required this.total,
   });
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
+  factory Data.fromJson(Map<String, dynamic> json) {
+    // Check if we're dealing with a single object response (not paginated)
+    if (!json.containsKey("current_page")) {
+      // Single object response, not paginated
+      return Data(
+        currentPage: 1,
+        data: [AllService.fromJson(json)],
+        firstPageUrl: "",
+        from: 1,
+        lastPage: 1,
+        lastPageUrl: "",
+        links: [],
+        nextPageUrl: "",
+        path: "",
+        perPage: 1,
+        prevPageUrl: null,
+        to: 1,
+        total: 1,
+      );
+    } else {
+      // Regular paginated response
+      return Data(
         currentPage: json["current_page"],
         data: List<AllService>.from(
             json["data"].map((x) => AllService.fromJson(x))),
         firstPageUrl: json["first_page_url"],
-        from: json["from"],
+        from: json["from"] ?? 0,
         lastPage: json["last_page"],
         lastPageUrl: json["last_page_url"],
         links: List<Link>.from(json["links"].map((x) => Link.fromJson(x))),
-        nextPageUrl: json["next_page_url"],
+        nextPageUrl: json["next_page_url"] ?? "",
         path: json["path"],
         perPage: json["per_page"],
         prevPageUrl: json["prev_page_url"],
-        to: json["to"],
+        to: json["to"] ?? 0,
         total: json["total"],
       );
+    }
+  }
 
   Map<String, dynamic> toJson() => {
         "current_page": currentPage,
@@ -104,25 +160,36 @@ class AllService {
   String serviceName;
   String description;
   String pricing;
+  String duration;
   String startTime;
   String endTime;
   String location;
   String? lat;
-  int countOfService;
-  int totalRate;
-  int averageRate;
   String? long;
-  String? media;
-  String city;
-  String country;
   String? additionalInformation;
-  int? yearsExperience;
+  String country;
+  String city;
+  dynamic yearExperience;
+  String? cnicFrontPic;
+  String? cnicBackPic;
+  String? certification;
+  String? resume;
   DateTime createdAt;
   DateTime updatedAt;
-  int isFavorite;
+  String status;
+  int providerId;
+  String serviceType;
+  String paymentStatus;
+  String? postalCode;
   int isApplied;
-  int decline;
-  int approved;
+  DateTime? assignedAt;
+  DateTime? completedAt;
+  int isFavorite;
+  int? serviceId;
+  String? propertyType;
+  int? countOfService;
+  int? totalRate;
+  int? averageRate;
   User? user;
   List<ServiceProviderRequest>? serviceProviderRequests;
   List<ServiceImage> serviceImages;
@@ -133,26 +200,37 @@ class AllService {
     required this.serviceName,
     required this.description,
     required this.pricing,
+    required this.duration,
     required this.startTime,
     required this.endTime,
     required this.location,
     this.lat,
-    required this.countOfService,
-    required this.totalRate,
-    required this.averageRate,
     this.long,
-    this.media,
-    required this.city,
-    required this.country,
     this.additionalInformation,
-    this.yearsExperience,
+    required this.country,
+    required this.city,
+    this.yearExperience,
+    this.cnicFrontPic,
+    this.cnicBackPic,
+    this.certification,
+    this.resume,
     required this.createdAt,
     required this.updatedAt,
-    required this.isFavorite,
+    required this.status,
+    required this.providerId,
+    required this.serviceType,
+    required this.paymentStatus,
+    this.postalCode,
     required this.isApplied,
-    required this.decline,
-    required this.approved,
-    required this.user,
+    this.assignedAt,
+    this.completedAt,
+    required this.isFavorite,
+    this.serviceId,
+    this.propertyType,
+    this.countOfService,
+    this.totalRate,
+    this.averageRate,
+    this.user,
     this.serviceProviderRequests,
     required this.serviceImages,
   });
@@ -160,7 +238,7 @@ class AllService {
   factory AllService.fromJson(Map<String, dynamic> json) {
     print("All Services List => ${json.toString()}");
 
-    // Parse service provider requests first
+    // Parse service provider requests if they exist
     final serviceProviderRequests = json["service_provider_requests"] != null
         ? List<ServiceProviderRequest>.from(json["service_provider_requests"]
             .map((x) => ServiceProviderRequest.fromJson(x)))
@@ -174,12 +252,8 @@ class AllService {
     }
 
     // Extract values from latestRequest or fallback to json values
-    final isApplied = latestRequest?.isApplied ?? json["is_applied"] ?? 0;
-    final decline = latestRequest?.decline ?? json["decline"] ?? 0;
-    final approved = latestRequest?.approved ?? json["approved"] ?? 0;
+    final isApplied = json["is_applied"] ?? 0;
     print("AllService - isApplied: ${isApplied}");
-    print("AllService - decline: ${decline}");
-    print("AllService - approved: ${approved}");
 
     return AllService(
       id: json["id"],
@@ -187,25 +261,36 @@ class AllService {
       serviceName: json["service_name"],
       description: json["description"],
       pricing: json["pricing"],
+      duration: json["duration"] ?? "0",
       startTime: json["start_time"],
       endTime: json["end_time"],
       location: json["location"],
-      lat: json["lat"] ?? "",
-      long: json["long"] ?? "",
+      lat: json["lat"],
+      long: json["long"],
+      additionalInformation: json["additional_information"],
+      country: json["country"] ?? "",
+      city: json["city"] ?? "",
+      yearExperience: json["year_experience"],
+      cnicFrontPic: json["cnic_front_pic"],
+      cnicBackPic: json["cnic_back_pic"],
+      certification: json["certification"],
+      resume: json["resume"],
+      createdAt: DateTime.parse(json["created_at"]),
+      updatedAt: DateTime.parse(json["updated_at"]),
+      status: json["status"] ?? "pending",
+      providerId: json["provider_id"] ?? 0,
+      serviceType: json["service_type"] ?? "request",
+      paymentStatus: json["payment_status"] ?? "pending",
+      postalCode: json["postal_code"],
+      isApplied: isApplied,
+      assignedAt: json["assigned_at"] != null ? DateTime.parse(json["assigned_at"]) : null,
+      completedAt: json["completed_at"] != null ? DateTime.parse(json["completed_at"]) : null,
+      isFavorite: json["isFavorite"] ?? 0,
+      serviceId: json["service_id"],
+      propertyType: json["property_type"],
       countOfService: json["count_of_service"] ?? 0,
       totalRate: json["total_rate"] ?? 0,
       averageRate: json["average_rate"] ?? 0,
-      media: json["media"] ?? "",
-      country: json["country"] ?? "",
-      city: json["city"] ?? "",
-      additionalInformation: json["additional_information"] ?? "",
-      yearsExperience: json["year_experience"] ?? 0,
-      createdAt: DateTime.parse(json["created_at"]),
-      updatedAt: DateTime.parse(json["updated_at"]),
-      isFavorite: json["isFavorite"] ?? 0,
-      isApplied: isApplied,
-      decline: decline,
-      approved: approved,
       user: json["user"] != null ? User.fromJson(json["user"]) : null,
       serviceProviderRequests: serviceProviderRequests,
       serviceImages: json["service_images"] != null 
@@ -220,25 +305,36 @@ class AllService {
         "service_name": serviceName,
         "description": description,
         "pricing": pricing,
+        "duration": duration,
         "start_time": startTime,
         "end_time": endTime,
         "location": location,
         "lat": lat,
         "long": long,
+        "additional_information": additionalInformation,
+        "country": country,
+        "city": city,
+        "year_experience": yearExperience,
+        "cnic_front_pic": cnicFrontPic,
+        "cnic_back_pic": cnicBackPic,
+        "certification": certification,
+        "resume": resume,
+        "created_at": createdAt.toIso8601String(),
+        "updated_at": updatedAt.toIso8601String(),
+        "status": status,
+        "provider_id": providerId,
+        "service_type": serviceType,
+        "payment_status": paymentStatus,
+        "postal_code": postalCode,
+        "is_applied": isApplied,
+        "assigned_at": assignedAt?.toIso8601String(),
+        "completed_at": completedAt?.toIso8601String(),
+        "isFavorite": isFavorite,
+        "service_id": serviceId,
+        "property_type": propertyType,
         "count_of_service": countOfService,
         "total_rate": totalRate,
         "average_rate": averageRate,
-        "media": media,
-        "country": country,
-        "city": city,
-        "additional_information": additionalInformation,
-        "year_experience": yearsExperience,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
-        "is_favorite": isFavorite,
-        "is_applied": isApplied,
-        "decline": decline,
-        "approved": approved,
         "user": user?.toJson(),
         "service_provider_requests": serviceProviderRequests != null
             ? List<dynamic>.from(
@@ -371,6 +467,9 @@ class User {
   String profileimage;
   DateTime createdAt;
   DateTime updatedAt;
+  String? address;
+  String? postalCode;
+  String? userName;
 
   User({
     required this.id,
@@ -381,6 +480,9 @@ class User {
     required this.profileimage,
     required this.createdAt,
     required this.updatedAt,
+    this.address,
+    this.postalCode,
+    this.userName,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => User(
@@ -392,17 +494,23 @@ class User {
         profileimage: json["profile_image"] ?? "",
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
+        address: json["address"],
+        postalCode: json["postal_code"],
+        userName: json["user_name"],
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "fullname": fullname,
+        "full_name": fullname,
         "email": email,
         "phone_number": phoneNumber,
-        "role_id": roleId,
-        "profileimage": profileimage,
+        "role": roleId,
+        "profile_image": profileimage,
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
+        "address": address,
+        "postal_code": postalCode,
+        "user_name": userName,
       };
 }
 
@@ -425,7 +533,7 @@ enum Profileimage {
 
 final profileimageValues = EnumValues({
   "": Profileimage.EMPTY,
-  "Profile-65e57ee8b26ea-Screenshot 2024-02-25 at 3.19.46 PM.png":
+  "Profile-65e57ee8b26ea-Screenshot 2024-02-25 at 3.19.46 PM.png":
       Profileimage.PROFILE_65_E57_EE8_B26_EA_SCREENSHOT_20240225_AT_31946_PM_PNG
 });
 

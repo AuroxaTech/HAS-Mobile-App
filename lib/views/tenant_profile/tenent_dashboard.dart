@@ -12,7 +12,6 @@ import '../../app_constants/app_sizes.dart';
 import '../../app_constants/color_constants.dart';
 import '../../constant_widget/constant_widgets.dart';
 import '../../route_management/constant_routes.dart';
-import '../../utils/api_urls.dart';
 import '../chat_screens/HomeScreen.dart';
 
 class TenantDashboard extends GetView<TenantDashboardController> {
@@ -53,9 +52,8 @@ class TenantDashboard extends GetView<TenantDashboardController> {
                                 fit: BoxFit.cover,
                                 width: 60,
                                 height: 60,
-                                imageUrl: AppUrls.profileImageBaseUrl +
-                                    controller.getTenant.value!.tenant.user
-                                        .profileimage,
+                                imageUrl: controller
+                                    .getTenant.value!.tenant.user.profileimage,
                                 errorWidget: (context, e, b) {
                                   return Container(
                                     decoration: BoxDecoration(

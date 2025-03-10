@@ -13,7 +13,6 @@ import 'package:property_app/route_management/constant_routes.dart';
 
 import '../../controllers/services_provider_controller/service_listing_screen_controller.dart';
 import '../../models/service_provider_model/all_services.dart';
-import '../../utils/api_urls.dart';
 import '../../utils/shared_preferences/preferences.dart';
 import '../chat_screens/chat_conversion_screen.dart';
 
@@ -73,10 +72,9 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                             onPressed: () => controller.getServices(1),
                           ),
                       itemBuilder: (context, item, index) {
-                        print("Screen - Building item for service ID: ${item.id}");
+                        print(
+                            "Screen - Building item for service ID: ${item.id}");
                         print("Screen - isApplied: ${item.isApplied.toInt()}");
-                        print("Screen - decline: ${item.decline}");
-                        print("Screen - approved: ${item.approved}");
 
                         int? isApplied;
                         int? isDeclined;
@@ -93,12 +91,12 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                           isApproved = latestRequest.approved ?? 0;
                         }
 
-                        String imagesString = item.media.toString();
+                        String imagesString = item.serviceImages.toString();
                         List<String> imageList = imagesString.split(',');
 
                         print(item.isFavorite);
                         print("is Applied => ${item.isApplied}");
-                        print("is decline => ${item.decline}");
+
                         return Padding(
                           padding: const EdgeInsets.only(top: 15),
                           child: InkWell(
@@ -145,9 +143,7 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                                                   borderRadius:
                                                       BorderRadius.circular(10),
                                                   child: CachedNetworkImage(
-                                                    imageUrl:
-                                                        AppUrls.mediaImages +
-                                                            imageList[0],
+                                                    imageUrl: imageList[0],
                                                     width: 60,
                                                     height: 70,
                                                     fit: BoxFit.cover,
@@ -311,12 +307,12 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                                                             imageList[0],
                                                             item.country,
                                                             item.city,
-                                                            item.yearsExperience ??
-                                                                "0",
-                                                            "", // cnicFrontPic
-                                                            "", // cnicBackPic
-                                                            "", // certification
-                                                            "", // resume
+                                                            item.yearExperience,
+                                                            item.cnicFrontPic,
+                                                            item.cnicBackPic,
+                                                            item.certification,
+                                                            item.resume,
+                                                            item.pricing,
                                                           ]);
                                                     },
                                                   )
