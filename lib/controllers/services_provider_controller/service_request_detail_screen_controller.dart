@@ -41,9 +41,9 @@ class ServiceRequestDetailScreenController extends GetxController {
       print("User Data :: ${data['user']}");
 
       getServiceRequestOne.value = ServiceRequestProvider.fromJson(data);
-      String imagesString = getServiceRequestOne.value!.service == null
+      String imagesString = getServiceRequestOne.value!.serviceImages == null
           ? ""
-          : getServiceRequestOne.value!.service!.media.toString();
+          : getServiceRequestOne.value!.serviceImages.toString();
       List<String> imageList = imagesString.split(',');
       images = imageList;
       isLoading.value = false;

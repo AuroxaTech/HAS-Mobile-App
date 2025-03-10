@@ -669,48 +669,48 @@ class ServiceProviderServices {
     }
   }
 
-  Future<Map<String, dynamic>> getServiceUserRequest({required int userId}) async {
+  Future<Map<String, dynamic>> getServiceUserRequest(
+      {required int userId}) async {
+    var token = await Preferences.getToken();
+    var userId = await Preferences.getUserID();
+    Uri url = Uri.parse("${AppUrls.getServiceUserRequest}?user_id=$userId");
     try {
-      var token = await Preferences.getToken();
-      Uri url = Uri.parse("${AppUrls.getServiceUserRequest}?user_id=$userId");
-
-      // Log request
-      BaseApiService.logRequest(url.toString(), 'GET', getHeader(userToken: token), null);
-
+      BaseApiService.logRequest(
+          'GET',
+          '${AppUrls.getServiceUserRequest}?user_id=$userId',
+          getHeader(userToken: token),
+          null);
       var response = await http.get(url, headers: getHeader(userToken: token));
 
-      // Log response
-      BaseApiService.logResponse(url.toString(), response.statusCode, response.body);
-
-      // Check if response is HTML
-      if (response.body.trim().startsWith('<!DOCTYPE html>')) {
-        throw ApiException('Server returned HTML instead of JSON. Please try again.');
+      BaseApiService.logResponse(
+          url.toString(), response.statusCode, response.body);
+      if (response.body.startsWith('<!DOCTYPE html>')) {
+        throw ApiException('Received HTML response instead of JSON');
       }
 
-      if (response.statusCode == 200) {
-        final decodedResponse = json.decode(response.body);
-        
-        if (decodedResponse['status'] == true) {
-          return {
-            'status': true,
-            'data': decodedResponse['data'],
-            'message': decodedResponse['message']
-          };
-        } else {
-          throw ApiException(decodedResponse['message'] ?? 'Failed to fetch service requests');
-        }
+      final Map<String, dynamic> jsonResponse = json.decode(response.body);
+      if (jsonResponse['status'] == true) {
+        return {
+          'status': true,
+          'data': jsonResponse['data'],
+          'message': jsonResponse['message'] ??
+              'Service requests retrieved successfully',
+        };
       } else {
-        throw ApiException('Failed to fetch service requests', statusCode: response.statusCode);
+        return {
+          'status': false,
+          'message':
+              jsonResponse['message'] ?? 'Failed to retrieve service requests',
+        };
       }
     } catch (e) {
-      // Log error
-      BaseApiService.logError(AppUrls.getServiceUserRequest, e.toString());
-
-      if (e is FormatException) {
-        throw ApiException('Invalid response format from server');
+      BaseApiService.logError('getServiceUserRequest', e);
+      if (e is ApiException) {
+        print("'Failed to retrieve service requests: ${e.toString()}");
+        rethrow;
       }
-
-      throw ApiException(e.toString());
+      throw ApiException(
+          'Failed to retrieve service requests: ${e.toString()}');
     }
   }
 
@@ -845,7 +845,7 @@ class ServiceProviderServices {
       var res = await http.post(
         url,
         body: json.encode({
-        //  "job_id": jobId,
+          //  "job_id": jobId,
           "status": status,
         }),
         headers: getHeader(userToken: token),
