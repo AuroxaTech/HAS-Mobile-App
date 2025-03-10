@@ -34,8 +34,8 @@ class ContractModel {
 
 class Contracts {
   int id;
-  String userId;
-  String propertyId;
+  int userId;
+  int propertyId;
   String landlordId;
   String landlordName;
   String landlordAddress;
@@ -44,7 +44,7 @@ class Contracts {
   String tenantAddress;
   String tenantPhone;
   String tenantEmail;
-  String occupants;
+  int occupants;
   String premisesAddress;
   String propertyType;
   String leaseStartDate;
@@ -62,8 +62,8 @@ class Contracts {
   String buildingSuperintendentName;
   String buildingSuperintendentAddress;
   String buildingSuperintendentPhone;
-  String rentIncreaseNoticePeriod;
-  String noticePeriodForTermination;
+  int rentIncreaseNoticePeriod;
+  int noticePeriodForTermination;
   String latePaymentFee;
   String rentalIncentives;
   String additionalTerms;
@@ -121,7 +121,7 @@ class Contracts {
     id: json["id"],
     userId: json["user_id"],
     propertyId: json["property_id"],
-    landlordId: json["landlord_id"],
+    landlordId: json["landlord_id"] ?? "",
     landlordName: json["landlordName"],
     landlordAddress: json["landlordAddress"],
     landlordPhone: json["landlordPhone"],

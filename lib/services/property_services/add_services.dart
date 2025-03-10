@@ -268,7 +268,6 @@ class ServiceProviderServices {
   Future<Map<String, dynamic>> newServiceRequest({
     required String serviceId,
     required String serviceName,
-    required String serviceId,
     required String location,
     required double lat,
     required double lng,
@@ -909,8 +908,8 @@ class ServiceProviderServices {
     }
   }
 
-  getTenantContracts() async {
-    Uri url = Uri.parse(AppUrls.getTenantContract);
+  getTenantContracts(int page) async {
+    Uri url = Uri.parse("${AppUrls.getTenantContract}?per_page=$page");
     try {
       var token = await Preferences.getToken();
       var res = await http.get(
