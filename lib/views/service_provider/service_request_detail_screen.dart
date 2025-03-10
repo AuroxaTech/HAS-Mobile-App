@@ -38,13 +38,13 @@ class ServiceRequestDetailScreen
                       scrollDirection: Axis.horizontal,
                       controller: controller.pageController,
                       itemBuilder: (context, index) {
-                        String imagesString =
-                            controller.getServiceRequestOne.value!.service ==
-                                    null
-                                ? ""
-                                : controller
-                                    .getServiceRequestOne.value!.service!.media
-                                    .toString();
+                        String imagesString = controller.getServiceRequestOne
+                                    .value!.serviceImages ==
+                                null
+                            ? ""
+                            : controller
+                                .getServiceRequestOne.value!.serviceImages
+                                .toString();
                         List<String> imageList = imagesString.split(',');
                         controller.images = imageList;
                         return InkWell(
@@ -133,9 +133,10 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
         // ],
         controller: controller.controller,
         builder: (BuildContext context, ScrollController scrollController) {
-          DateTime createdAt = controller.getServiceRequestOne.value!.createdAt;
+          DateTime? createdAt =
+              controller.getServiceRequestOne.value!.createdAt;
           String requestDate = DateFormat('dd-M-yy')
-              .format(createdAt); // Adjust the pattern as needed
+              .format(createdAt!); // Adjust the pattern as needed
           String requestTime = DateFormat('h:mm a').format(createdAt);
           return DecoratedBox(
             decoration: const BoxDecoration(
@@ -170,11 +171,11 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                     Center(
                                       child: headingText(
                                         text: controller.getServiceRequestOne
-                                                    .value!.service ==
+                                                    .value ==
                                                 null
                                             ? ""
                                             : controller.getServiceRequestOne
-                                                .value!.service!.serviceName,
+                                                .value!.serviceName,
                                         fontSize: 24,
                                       ),
                                     ),
@@ -202,8 +203,8 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                                       text: controller
                                                           .getServiceRequestOne
                                                           .value!
-                                                          .provider!
-                                                          .fullname,
+                                                          .user
+                                                          .fullName,
                                                       color: blackColor,
                                                       fontSize: 16),
                                                 ],
@@ -220,7 +221,7 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                                       text: controller
                                                           .getServiceRequestOne
                                                           .value!
-                                                          .provider!
+                                                          .user!
                                                           .email,
                                                       color: blackColor,
                                                       fontSize: 16),
@@ -350,7 +351,7 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                                   text: controller
                                                       .getServiceRequestOne
                                                       .value!
-                                                      .date,
+                                                      .duration,
                                                   color: blackColor,
                                                   fontSize: 12),
                                             ],
@@ -403,14 +404,14 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                         child: CustomButton(
                                           onTap: () {
                                             if (controller.getServiceRequestOne
-                                                    .value!.approved ==
-                                                1) {
+                                                    .value!.status ==
+                                                "approved") {
                                               null;
                                             } else if (controller
                                                     .getServiceRequestOne
                                                     .value!
-                                                    .decline ==
-                                                1) {
+                                                    .status ==
+                                                "decline") {
                                               Get.snackbar(
                                                 'This request has been declined. Cannot accept now.',
                                                 '',
@@ -435,8 +436,7 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                                       providerId: controller
                                                           .getServiceRequestOne
                                                           .value!
-                                                          .provider!
-                                                          .id
+                                                          .providerId
                                                           .toString())
                                                   .then((value) {
                                                 controller.getServiceRequest(
@@ -451,8 +451,8 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                               color: controller
                                                           .getServiceRequestOne
                                                           .value!
-                                                          .approved ==
-                                                      1
+                                                          .status ==
+                                                      "approved"
                                                   ? Color(0xff14C034)
                                                       .withOpacity(0.3)
                                                   : Color(0xff14C034)),
@@ -463,14 +463,14 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                         child: CustomButton(
                                           onTap: () {
                                             if (controller.getServiceRequestOne
-                                                    .value!.decline ==
-                                                1) {
+                                                    .value!.status ==
+                                                "decline") {
                                               null;
                                             } else if (controller
                                                     .getServiceRequestOne
                                                     .value!
-                                                    .approved ==
-                                                1) {
+                                                    .status ==
+                                                "approved") {
                                               Get.snackbar(
                                                 'This request has been accepted. Cannot decline now.',
                                                 '',
@@ -504,8 +504,8 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                               color: controller
                                                           .getServiceRequestOne
                                                           .value!
-                                                          .decline ==
-                                                      1
+                                                          .status ==
+                                                      "decline"
                                                   ? redColor.withOpacity(0.3)
                                                   : redColor),
                                           height: screenHeight(context) * 0.04,
@@ -518,8 +518,8 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                         child: CustomButton(
                                           onTap: () {
                                             if (controller.getServiceRequestOne
-                                                    .value!.decline ==
-                                                1) {
+                                                    .value!.status ==
+                                                "decline") {
                                               Get.snackbar(
                                                 'This request has been declined. No chats available.',
                                                 '',
@@ -533,21 +533,21 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                               print(
                                                   "Reciver Id ==> ${controller.getServiceRequestOne.value!.user.id.toString()}");
                                               print(
-                                                  "Reciver name ==> ${controller.getServiceRequestOne.value!.user.fullname.toString()}");
+                                                  "Reciver name ==> ${controller.getServiceRequestOne.value!.user.fullName.toString()}");
                                               print(
-                                                  "Reciver Image ==> ${controller.getServiceRequestOne.value!.user.profileimage.toString()}");
+                                                  "Reciver Image ==> ${controller.getServiceRequestOne.value!.user.profileImage.toString()}");
                                               createConversation(
                                                   controller
                                                           .getServiceRequestOne
                                                           .value!
                                                           .user
-                                                          .fullname ??
+                                                          .fullName ??
                                                       "",
                                                   controller
                                                       .getServiceRequestOne
                                                       .value!
                                                       .user
-                                                      .profileimage,
+                                                      .profileImage,
                                                   controller
                                                       .getServiceRequestOne
                                                       .value!

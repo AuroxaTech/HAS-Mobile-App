@@ -37,10 +37,9 @@ class CalendarDetailScreen extends GetView<CalendarDetailController> {
                       controller: controller.pageController,
                       itemBuilder: (context, index) {
                         // Ensure getCalendarOne and service data exist
-                        if (controller.getCalendarOne.value?.request?.service !=
-                            null) {
+                        if (controller.getCalendarOne.value != null) {
                           String imagesString = controller
-                              .getCalendarOne.value!.request.service!.media
+                              .getCalendarOne.value!.serviceImages
                               .toString();
                           List<String> imageList = imagesString.split(',');
                           controller.images = imageList;
@@ -172,7 +171,7 @@ class MyDraggable extends GetView<CalendarDetailController> {
                                     Center(
                                       child: headingText(
                                         text: controller.getCalendarOne.value!
-                                            .request.additionalInfo,
+                                            .additionalInformation,
                                         fontSize: 24,
                                       ),
                                     ),
@@ -202,8 +201,8 @@ class MyDraggable extends GetView<CalendarDetailController> {
                                                       text: controller
                                                           .getCalendarOne
                                                           .value!
-                                                          .provider
-                                                          .fullname,
+                                                          .user
+                                                          .fullName,
                                                       color: blackColor,
                                                       fontSize: 16),
                                                 ],
@@ -225,7 +224,7 @@ class MyDraggable extends GetView<CalendarDetailController> {
                                                         text: controller
                                                             .getCalendarOne
                                                             .value!
-                                                            .provider
+                                                            .user
                                                             .email,
                                                         color: blackColor,
                                                         fontSize: 16),
@@ -242,7 +241,7 @@ class MyDraggable extends GetView<CalendarDetailController> {
                                           h5,
                                           customText(
                                               text: controller.getCalendarOne
-                                                  .value!.request.description,
+                                                  .value!.description,
                                               color: blackColor,
                                               fontSize: 14),
                                           h5,
@@ -265,7 +264,7 @@ class MyDraggable extends GetView<CalendarDetailController> {
                                               ),
                                               customText(
                                                   text:
-                                                      "\$${controller.getCalendarOne.value!.request.price}",
+                                                      "\$${controller.getCalendarOne.value!.pricing}",
                                                   color: blackColor,
                                                   fontSize: 18),
                                             ],
@@ -280,7 +279,7 @@ class MyDraggable extends GetView<CalendarDetailController> {
                                               ),
                                               customText(
                                                   text:
-                                                      " Service Area : ${controller.getCalendarOne.value!.request.description}",
+                                                      " Service Area : ${controller.getCalendarOne.value!.description}",
                                                   color: greyColor,
                                                   fontSize: 15),
                                             ],

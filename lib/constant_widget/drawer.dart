@@ -212,7 +212,7 @@ Widget customDrawer(context, {VoidCallback? onDeleteAccount}) {
                                     await SharedPreferences.getInstance();
                                 await updateUserStatus(false);
                                 await prefs.remove("token");
-                                await prefs.remove("role_id");
+                                await prefs.remove("role");
                                 await prefs.remove("user_id").then((value) {
                                   Get.offAllNamed(kLoginScreen);
                                 });

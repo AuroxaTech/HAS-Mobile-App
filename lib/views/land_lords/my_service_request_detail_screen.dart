@@ -196,16 +196,7 @@ class MyDraggable extends GetView<MyServiceRequestDetailController> {
                                   children: [
                                     Center(
                                       child: headingText(
-                                        text: controller.getServiceRequestOne
-                                                    .value!.request ==
-                                                null
-                                            ? ""
-                                            : controller
-                                                .getServiceRequestOne
-                                                .value!
-                                                .request
-                                                .service!
-                                                .serviceName,
+                                        text: controller.getServiceRequestOne.value?.serviceName ?? "",
                                         fontSize: 24,
                                       ),
                                     ),
@@ -235,8 +226,8 @@ class MyDraggable extends GetView<MyServiceRequestDetailController> {
                                                       text: controller
                                                           .getServiceRequestOne
                                                           .value!
-                                                          .provider!
-                                                          .fullname,
+                                                          .user
+                                                          .fullName,
                                                       color: blackColor,
                                                       fontSize: 16),
                                                 ],
@@ -258,7 +249,7 @@ class MyDraggable extends GetView<MyServiceRequestDetailController> {
                                                         text: controller
                                                             .getServiceRequestOne
                                                             .value!
-                                                            .provider!
+                                                            .user
                                                             .email,
                                                         color: blackColor,
                                                         fontSize: 16),
@@ -277,7 +268,6 @@ class MyDraggable extends GetView<MyServiceRequestDetailController> {
                                               text: controller
                                                   .getServiceRequestOne
                                                   .value!
-                                                  .request
                                                   .description,
                                               color: blackColor,
                                               fontSize: 14),
@@ -301,8 +291,7 @@ class MyDraggable extends GetView<MyServiceRequestDetailController> {
                                                       text: controller
                                                           .getServiceRequestOne
                                                           .value!
-                                                          .request
-                                                          .address,
+                                                          .location,
                                                       color: blackColor,
                                                       fontSize: 16),
                                                 ],
@@ -316,17 +305,20 @@ class MyDraggable extends GetView<MyServiceRequestDetailController> {
                                                       color: greyColor,
                                                       fontSize: 16),
                                                   h5,
-                                                  Image.asset(
-                                                    AppIcons.newBanner,
-                                                    height: 25,
-                                                  )
+                                                  customText(
+                                                      text: controller
+                                                          .getServiceRequestOne
+                                                          .value!
+                                                          .status,
+                                                      color: blackColor,
+                                                      fontSize: 16),
                                                 ],
                                               ),
                                             ],
                                           ),
                                           h5,
                                           customText(
-                                              text: "Request Date & Time : ",
+                                              text: "Service Time : ",
                                               color: greyColor,
                                               fontSize: 16),
                                           h5,
@@ -338,7 +330,7 @@ class MyDraggable extends GetView<MyServiceRequestDetailController> {
                                                 height: 12,
                                               ),
                                               customText(
-                                                  text: " Date :",
+                                                  text: " Start Time :",
                                                   color: greyColor,
                                                   fontSize: 12),
                                               w10,
@@ -346,8 +338,7 @@ class MyDraggable extends GetView<MyServiceRequestDetailController> {
                                                   text: controller
                                                       .getServiceRequestOne
                                                       .value!
-                                                      .request
-                                                      .date,
+                                                      .startTime,
                                                   color: blackColor,
                                                   fontSize: 12),
                                             ],
@@ -361,7 +352,7 @@ class MyDraggable extends GetView<MyServiceRequestDetailController> {
                                                 height: 12,
                                               ),
                                               customText(
-                                                  text: " Time :",
+                                                  text: " End Time :",
                                                   color: greyColor,
                                                   fontSize: 12),
                                               w10,
@@ -369,64 +360,24 @@ class MyDraggable extends GetView<MyServiceRequestDetailController> {
                                                   text: controller
                                                       .getServiceRequestOne
                                                       .value!
-                                                      .request
-                                                      .time,
+                                                      .endTime,
                                                   color: blackColor,
                                                   fontSize: 12),
                                             ],
                                           ),
                                           h5,
                                           customText(
-                                              text: "Client Date & Time : ",
+                                              text: "Additional Information : ",
                                               color: greyColor,
                                               fontSize: 16),
                                           h5,
-                                          Row(
-                                            children: [
-                                              Image.asset(
-                                                AppIcons.calendar,
-                                                width: 12,
-                                                height: 12,
-                                              ),
-                                              customText(
-                                                  text: " Date :",
-                                                  color: greyColor,
-                                                  fontSize: 12),
-                                              w10,
-                                              customText(
-                                                  text: controller
-                                                      .getServiceRequestOne
-                                                      .value!
-                                                      .request
-                                                      .service
-                                                      ?.startTime,
-                                                  color: blackColor,
-                                                  fontSize: 12),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Image.asset(
-                                                AppIcons.clockDuration,
-                                                width: 12,
-                                                height: 12,
-                                              ),
-                                              customText(
-                                                  text: " Time :",
-                                                  color: greyColor,
-                                                  fontSize: 12),
-                                              w10,
-                                              customText(
-                                                  text: controller
-                                                      .getServiceRequestOne
-                                                      .value!
-                                                      .request
-                                                      .service
-                                                      ?.endTime,
-                                                  color: blackColor,
-                                                  fontSize: 12),
-                                            ],
-                                          ),
+                                          customText(
+                                              text: controller
+                                                  .getServiceRequestOne
+                                                  .value!
+                                                  .additionalInformation,
+                                              color: blackColor,
+                                              fontSize: 12),
                                         ],
                                       ),
                                     ),

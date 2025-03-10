@@ -38,104 +38,165 @@ class ServiceRequest {
 }
 
 class ServiceRequestProvider {
+  // Renamed from PendingJob and made generic to handle all job types
   int id;
   int userId;
-  int serviceProviderId;
-  int serviceId;
-  String address;
-  String? postalCode;
-  String lat;
-  String long;
-  String price;
-  String? propertyType;
-  String date;
+  String
+      serviceName; // From response, previously request details were nested. Using service_name directly
+  String description;
+  String pricing;
+  String duration;
   String startTime;
   String endTime;
-  String description;
-  String additionalInfo;
-  int approved;
-  int decline;
-  DateTime createdAt;
-  DateTime updatedAt;
+  String location;
+  String lat;
+  String long;
+  String additionalInformation;
+  String country;
+  String city;
+  int yearExperience;
+  dynamic cnicFrontPic; // dynamic to handle null
+  dynamic cnicBackPic; // dynamic to handle null
+  dynamic certification; // dynamic to handle null
+  dynamic resume; // dynamic to handle null
+  DateTime? createdAt;
+  DateTime? updatedAt;
+  String status;
+  int? providerId; // Nullable as it can be null
+  String serviceType;
+  String paymentStatus;
+  String postalCode;
+  int isApplied;
+  dynamic assignedAt; // dynamic to handle null
+  dynamic completedAt; // dynamic to handle null
+  int isFavorite;
+  dynamic serviceId; // dynamic to handle null
+  dynamic propertyType; // dynamic to handle null
   User user;
-  Service? service;
-  Provider? provider;
+  List<dynamic>
+      serviceImages; // Assuming dynamic as type is not specified, based on [] in response
+  List<dynamic>
+      reviews; // Assuming dynamic as type is not specified, based on [] in response
 
-  ServiceRequestProvider(
-      {required this.id,
-      required this.userId,
-      required this.serviceProviderId,
-      required this.serviceId,
-      required this.address,
-      required this.lat,
-      required this.long,
-      required this.price,
-      required this.propertyType,
-      required this.date,
-      required this.startTime,
-      required this.endTime,
-      required this.description,
-      required this.additionalInfo,
-      required this.approved,
-      required this.decline,
-      required this.createdAt,
-      required this.updatedAt,
-      required this.user,
-      required this.service,
-      required this.provider,
-      this.postalCode});
+  ServiceRequestProvider({
+    // Renamed from PendingJob
+    required this.id,
+    required this.userId,
+    required this.serviceName, // From response
+    required this.description,
+    required this.pricing,
+    required this.duration,
+    required this.startTime,
+    required this.endTime,
+    required this.location,
+    required this.lat,
+    required this.long,
+    required this.additionalInformation,
+    required this.country,
+    required this.city,
+    required this.yearExperience,
+    this.cnicFrontPic,
+    this.cnicBackPic,
+    this.certification,
+    this.resume,
+    this.createdAt,
+    this.updatedAt,
+    required this.status,
+    this.providerId,
+    required this.serviceType,
+    required this.paymentStatus,
+    required this.postalCode,
+    required this.isApplied,
+    this.assignedAt,
+    this.completedAt,
+    required this.isFavorite,
+    this.serviceId,
+    this.propertyType,
+    required this.user,
+    required this.serviceImages,
+    required this.reviews,
+  });
 
   factory ServiceRequestProvider.fromJson(Map<String, dynamic> json) =>
       ServiceRequestProvider(
+        // Renamed from PendingJob
         id: json["id"],
         userId: json["user_id"],
-        serviceProviderId: json["provider_id"],
-        serviceId: json["service_id"] ?? 0,
-        address: json["location"],
-        postalCode: json["postal_code"],
-        lat: json["lat"],
-        long: json["long"],
-        price: json["pricing"],
-        propertyType: json["property_type"] ?? "",
-        date: json["duration"],
-        startTime: json["start_time"],
-        endTime: json["end_time"],
-        description: json["description"],
-        additionalInfo: json["additional_info"] ?? "",
-        approved: json["approved"] ?? 0,
-        decline: json["decline"] ?? 0,
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
-        user: User.fromJson(json["user"] as Map<String, dynamic>? ?? {}),
-        service:
-            json["service"] == null ? null : Service.fromJson(json["service"]),
-        provider: json["provider"] == null
-            ? null
-            : Provider.fromJson(json["provider"]),
+        serviceName: json["service_name"] ?? "", // From response
+        description: json["description"] ?? "",
+        pricing: json["pricing"] ?? "",
+        duration: json["duration"] ?? "",
+        startTime: json["start_time"] ?? "",
+        endTime: json["end_time"] ?? "",
+        location: json["location"] ?? "",
+        lat: json["lat"] ?? "",
+        long: json["long"] ?? "",
+        additionalInformation: json["additional_information"] ?? "",
+        country: json["country"] ?? "",
+        city: json["city"] ?? "",
+        yearExperience: json["year_experience"] ?? 0,
+        cnicFrontPic: json["cnic_front_pic"],
+        cnicBackPic: json["cnic_back_pic"],
+        certification: json["certification"],
+        resume: json["resume"],
+        createdAt: json["created_at"] != null
+            ? DateTime.parse(json["created_at"])
+            : null,
+        updatedAt: json["updated_at"] != null
+            ? DateTime.parse(json["updated_at"])
+            : null,
+        status: json["status"] ?? "",
+        providerId: json["provider_id"],
+        serviceType: json["service_type"] ?? "",
+        paymentStatus: json["payment_status"] ?? "",
+        postalCode: json["postal_code"] ?? "",
+        isApplied: json["is_applied"] ?? 0,
+        assignedAt: json["assigned_at"],
+        completedAt: json["completed_at"],
+        isFavorite: json["isFavorite"] ?? 0,
+        serviceId: json["service_id"],
+        propertyType: json["property_type"],
+        user: User.fromJson(json["user"]),
+        serviceImages: json["service_images"] ?? [],
+        reviews: json["reviews"] ?? [],
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "user_id": userId,
-        "provider_id": serviceProviderId,
-        "service_id": serviceId,
-        "location": address,
-        "postal_code": postalCode,
-        "lat": lat,
-        "long": long,
-        "pricing": price,
-        "property_type": propertyType,
-        "duration": date,
+        "service_name": serviceName, // From response
+        "description": description,
+        "pricing": pricing,
+        "duration": duration,
         "start_time": startTime,
         "end_time": endTime,
-        "description": description,
-        "additional_info": additionalInfo,
-        "approved": approved,
-        "decline": decline,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
+        "location": location,
+        "lat": lat,
+        "long": long,
+        "additional_information": additionalInformation,
+        "country": country,
+        "city": city,
+        "year_experience": yearExperience,
+        "cnic_front_pic": cnicFrontPic,
+        "cnic_back_pic": cnicBackPic,
+        "certification": certification,
+        "resume": resume,
+        "created_at": createdAt?.toIso8601String(),
+        "updated_at": updatedAt?.toIso8601String(),
+        "status": status,
+        "provider_id": providerId,
+        "service_type": serviceType,
+        "payment_status": paymentStatus,
+        "postal_code": postalCode,
+        "is_applied": isApplied,
+        "assigned_at": assignedAt,
+        "completed_at": completedAt,
+        "isFavorite": isFavorite,
+        "service_id": serviceId,
+        "property_type": propertyType,
         "user": user.toJson(),
-        "service": service?.toJson(),
+        "service_images": serviceImages,
+        "reviews": reviews,
       };
 }
 
@@ -240,142 +301,247 @@ class Service {
 }
 
 class User {
+  // Reusing existing User model, seems consistent
   int id;
-  String? fullname;
-  String? email;
+  String fullName; // Changed from fullname to full_name in API response
+  String email;
+  String userName; // Changed from username to user_name in API response
   String phoneNumber;
-  int roleId;
-  String profileimage;
-  DateTime createdAt;
-  DateTime updatedAt;
+  String role;
+  dynamic emailVerifiedAt; // dynamic to handle null
+  String address;
+  String postalCode;
+  String profileImage;
+  String platform;
+  String deviceToken;
+  int approvedAt;
+  String verificationToken;
+  int isVerified;
+  DateTime? createdAt;
+  DateTime? updatedAt;
 
   User({
+    // Reusing existing User model
     required this.id,
-    required this.fullname,
+    required this.fullName, // Changed from fullname
     required this.email,
+    required this.userName, // Changed from username
     required this.phoneNumber,
-    required this.roleId,
-    required this.profileimage,
-    required this.createdAt,
-    required this.updatedAt,
+    required this.role,
+    this.emailVerifiedAt,
+    required this.address,
+    required this.postalCode,
+    required this.profileImage,
+    required this.platform,
+    required this.deviceToken,
+    required this.approvedAt,
+    required this.verificationToken,
+    required this.isVerified,
+    this.createdAt,
+    this.updatedAt,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => User(
-        id: json["id"] as int? ?? 0, // Default to 0 if null
-        fullname: json["fullname"] as String? ??
-            '', // Default to empty string if null
-        email:
-            json["email"] as String? ?? '', // Default to empty string if null
-        phoneNumber: json["phone_number"] as String? ??
-            '', // Default to empty string if null
-        roleId: json["role_id"] ?? 0, // Default to 0 if null
-        profileimage: json["profileimage"] as String? ??
-            '', // Default to empty string if null
+        // Reusing existing User model
+        id: json["id"],
+        fullName: json["full_name"] ?? "", // Changed from fullname
+        email: json["email"] ?? "",
+        userName: json["user_name"] ?? "", // Changed from username
+        phoneNumber: json["phone_number"] ?? "",
+        role: json["role"] ?? "",
+        emailVerifiedAt: json["email_verified_at"],
+        address: json["address"] ?? "",
+        postalCode: json["postal_code"] ?? "",
+        profileImage: json["profile_image"] ?? "",
+        platform: json["platform"] ?? "",
+        deviceToken: json["device_token"] ?? "",
+        approvedAt: json["approved_at"] ?? 0,
+        verificationToken: json["verification_token"] ?? "",
+        isVerified: json["is_verified"] ?? 0,
         createdAt: json["created_at"] != null
             ? DateTime.parse(json["created_at"])
-            : DateTime(1970), // Default to Unix epoch if null
+            : null,
         updatedAt: json["updated_at"] != null
             ? DateTime.parse(json["updated_at"])
-            : DateTime(1970), // Default to Unix epoch if null
+            : null,
       );
 
   Map<String, dynamic> toJson() => {
+        // Reusing existing User model
         "id": id,
-        "fullname": fullname,
+        "full_name": fullName, // Changed from fullname
         "email": email,
+        "user_name": userName, // Changed from username
         "phone_number": phoneNumber,
-        "role_id": roleId,
-        "profileimage": profileimage,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
+        "role": role,
+        "email_verified_at": emailVerifiedAt,
+        "address": address,
+        "postal_code": postalCode,
+        "profile_image": profileImage,
+        "platform": platform,
+        "device_token": deviceToken,
+        "approved_at": approvedAt,
+        "verification_token": verificationToken,
+        "is_verified": isVerified,
+        "created_at": createdAt?.toIso8601String(),
+        "updated_at": updatedAt?.toIso8601String(),
       };
 }
 
 class ServiceRequestUser {
   int id;
   int userId;
-  int serviceproviderId;
-  String? address;
+  String serviceName;
+  String description;
+  String pricing;
+  String duration;
+  String startTime;
+  String endTime;
+  String location;
   String lat;
   String long;
-  String price;
-  PropertyType? propertyType;
-  String? date;
-  String? time;
-  String? description;
-  String additionalInfo;
-  int approved;
-  int decline;
+  String additionalInformation;
+  String country;
+  String city;
+  int yearExperience;
+  String? cnicFrontPic;
+  String? cnicBackPic;
+  String? certification;
+  String? resume;
   DateTime createdAt;
   DateTime updatedAt;
+  String status;
+  int? providerId;
+  String serviceType;
+  String paymentStatus;
+  String? postalCode;
+  int isApplied;
+  DateTime? assignedAt;
+  DateTime? completedAt;
+  int isFavorite;
+  int? serviceId;
+  String? propertyType;
+  List<dynamic> serviceImages;
+  List<dynamic> favourites;
+  List<dynamic> reviews;
   User user;
-  Service? service;
 
   ServiceRequestUser({
     required this.id,
     required this.userId,
-    required this.serviceproviderId,
-    required this.address,
+    required this.serviceName,
+    required this.description,
+    required this.pricing,
+    required this.duration,
+    required this.startTime,
+    required this.endTime,
+    required this.location,
     required this.lat,
     required this.long,
-    required this.price,
-    required this.propertyType,
-    required this.date,
-    required this.time,
-    required this.description,
-    required this.additionalInfo,
-    required this.approved,
-    required this.decline,
+    required this.additionalInformation,
+    required this.country,
+    required this.city,
+    required this.yearExperience,
+    this.cnicFrontPic,
+    this.cnicBackPic,
+    this.certification,
+    this.resume,
     required this.createdAt,
     required this.updatedAt,
+    required this.status,
+    this.providerId,
+    required this.serviceType,
+    required this.paymentStatus,
+    this.postalCode,
+    required this.isApplied,
+    this.assignedAt,
+    this.completedAt,
+    required this.isFavorite,
+    this.serviceId,
+    this.propertyType,
+    required this.serviceImages,
+    required this.favourites,
+    required this.reviews,
     required this.user,
-    required this.service,
   });
 
-  factory ServiceRequestUser.fromJson(Map<String, dynamic> json) =>
-      ServiceRequestUser(
-        id: json["id"],
-        userId: json["user_id"],
-        serviceproviderId: json["serviceprovider_id"],
-        address: json["address"],
-        lat: json["lat"],
-        long: json["long"],
-        price: json["price"],
-        propertyType: json["property_type"] != null
-            ? PropertyType.fromJson(json["property_type"])
-            : null,
-        date: json["date"],
-        time: json["time"],
-        description: json["description"],
-        additionalInfo: json["additional_info"] ?? "",
-        approved: json["approved"],
-        decline: json["decline"],
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
-        user: User.fromJson(json["provider"]),
-        service:
-            json["service"] == null ? null : Service.fromJson(json["service"]),
-      );
+  factory ServiceRequestUser.fromJson(Map<String, dynamic> json) => ServiceRequestUser(
+    id: json["id"],
+    userId: json["user_id"],
+    serviceName: json["service_name"] ?? "",
+    description: json["description"] ?? "",
+    pricing: json["pricing"] ?? "0.00",
+    duration: json["duration"] ?? "0",
+    startTime: json["start_time"] ?? "",
+    endTime: json["end_time"] ?? "",
+    location: json["location"] ?? "",
+    lat: json["lat"] ?? "",
+    long: json["long"] ?? "",
+    additionalInformation: json["additional_information"] ?? "",
+    country: json["country"] ?? "",
+    city: json["city"] ?? "",
+    yearExperience: json["year_experience"] ?? 0,
+    cnicFrontPic: json["cnic_front_pic"],
+    cnicBackPic: json["cnic_back_pic"],
+    certification: json["certification"],
+    resume: json["resume"],
+    createdAt: DateTime.parse(json["created_at"]),
+    updatedAt: DateTime.parse(json["updated_at"]),
+    status: json["status"] ?? "pending",
+    providerId: json["provider_id"],
+    serviceType: json["service_type"] ?? "request",
+    paymentStatus: json["payment_status"] ?? "pending",
+    postalCode: json["postal_code"],
+    isApplied: json["is_applied"] ?? 0,
+    assignedAt: json["assigned_at"] != null ? DateTime.parse(json["assigned_at"]) : null,
+    completedAt: json["completed_at"] != null ? DateTime.parse(json["completed_at"]) : null,
+    isFavorite: json["isFavorite"] ?? 0,
+    serviceId: json["service_id"],
+    propertyType: json["property_type"],
+    serviceImages: json["service_images"] ?? [],
+    favourites: json["favourites"] ?? [],
+    reviews: json["reviews"] ?? [],
+    user: User.fromJson(json["user"]),
+  );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "user_id": userId,
-        "serviceprovider_id": serviceproviderId,
-        "address": address,
-        "lat": lat,
-        "long": long,
-        "price": price,
-        "property_type": propertyType,
-        "date": date,
-        "time": time,
-        "description": description,
-        "additional_info": additionalInfo,
-        "approved": approved,
-        "decline": decline,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
-        "user": user.toJson(),
-      };
+    "id": id,
+    "user_id": userId,
+    "service_name": serviceName,
+    "description": description,
+    "pricing": pricing,
+    "duration": duration,
+    "start_time": startTime,
+    "end_time": endTime,
+    "location": location,
+    "lat": lat,
+    "long": long,
+    "additional_information": additionalInformation,
+    "country": country,
+    "city": city,
+    "year_experience": yearExperience,
+    "cnic_front_pic": cnicFrontPic,
+    "cnic_back_pic": cnicBackPic,
+    "certification": certification,
+    "resume": resume,
+    "created_at": createdAt.toIso8601String(),
+    "updated_at": updatedAt.toIso8601String(),
+    "status": status,
+    "provider_id": providerId,
+    "service_type": serviceType,
+    "payment_status": paymentStatus,
+    "postal_code": postalCode,
+    "is_applied": isApplied,
+    "assigned_at": assignedAt?.toIso8601String(),
+    "completed_at": completedAt?.toIso8601String(),
+    "isFavorite": isFavorite,
+    "service_id": serviceId,
+    "property_type": propertyType,
+    "service_images": serviceImages,
+    "favourites": favourites,
+    "reviews": reviews,
+    "user": user.toJson(),
+  };
 }
 
 class PropertyTypeUser {

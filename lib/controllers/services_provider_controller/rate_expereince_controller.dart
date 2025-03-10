@@ -45,7 +45,6 @@ class RateExperienceController extends GetxController {
     required int serviceId,
     required int rate,
     required String description,
-    required int propertySubTypeId,
   }) async {
     var id = await Preferences.getUserID();
     var token = await Preferences.getToken();
@@ -61,7 +60,6 @@ class RateExperienceController extends GetxController {
         'service_id': serviceId,
         'rate': rate,
         'description': description,
-        'property_sub_type_id': propertySubTypeId,
       }),
     );
 
