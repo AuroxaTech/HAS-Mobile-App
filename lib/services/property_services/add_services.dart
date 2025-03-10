@@ -669,19 +669,48 @@ class ServiceProviderServices {
     }
   }
 
-  getServiceUserRequest({required int userId}) async {
-    Uri url = Uri.parse(
-      "${AppUrls.getServiceUserRequest}?user_id=$userId",
-    );
+  Future<Map<String, dynamic>> getServiceUserRequest({required int userId}) async {
     try {
       var token = await Preferences.getToken();
-      var res = await http.post(url, headers: getHeader(userToken: token));
-      return json.decode(res.body);
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
+      Uri url = Uri.parse("${AppUrls.getServiceUserRequest}?user_id=$userId");
+
+      // Log request
+      BaseApiService.logRequest(url.toString(), 'GET', getHeader(userToken: token), null);
+
+      var response = await http.get(url, headers: getHeader(userToken: token));
+
+      // Log response
+      BaseApiService.logResponse(url.toString(), response.statusCode, response.body);
+
+      // Check if response is HTML
+      if (response.body.trim().startsWith('<!DOCTYPE html>')) {
+        throw ApiException('Server returned HTML instead of JSON. Please try again.');
       }
-      return e;
+
+      if (response.statusCode == 200) {
+        final decodedResponse = json.decode(response.body);
+        
+        if (decodedResponse['status'] == true) {
+          return {
+            'status': true,
+            'data': decodedResponse['data'],
+            'message': decodedResponse['message']
+          };
+        } else {
+          throw ApiException(decodedResponse['message'] ?? 'Failed to fetch service requests');
+        }
+      } else {
+        throw ApiException('Failed to fetch service requests', statusCode: response.statusCode);
+      }
+    } catch (e) {
+      // Log error
+      BaseApiService.logError(AppUrls.getServiceUserRequest, e.toString());
+
+      if (e is FormatException) {
+        throw ApiException('Invalid response format from server');
+      }
+
+      throw ApiException(e.toString());
     }
   }
 

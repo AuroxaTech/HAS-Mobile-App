@@ -27,17 +27,16 @@ class SplashScreenController extends GetxController {
     print("Role ID $role");
     await Future.delayed(const Duration(seconds: 3), () {
       if (isCheck == true) {
-
-        if(token != null){
-          if(role == "1"){
+        if (token != null) {
+          if (role == "1") {
             Get.offAll(const MainBottomBar());
-          }else if(role == "2"){
+          } else if (role == "2") {
             Get.offAll(const TenantBottomBar());
-          }else if(role == "3"){
+          } else if (role == "3") {
             Get.offAll(const ServiceProviderBottomBar());
-          }else if(role == "4"){
+          } else if (role == "4") {
             Get.offAll(const VisitorBottomBar());
-          }else{
+          } else {
             Get.offNamed(kLoginScreen);
           }
         }
@@ -55,7 +54,7 @@ class SplashScreenController extends GetxController {
         //   Get.offNamed(kLoginScreen);
         // }
       } else {
-        Get.offNamed(kIntroScreen);
+        Get.offNamed(kLoginScreen);
       }
     });
   }

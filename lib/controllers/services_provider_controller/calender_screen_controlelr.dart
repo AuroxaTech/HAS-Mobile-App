@@ -3,14 +3,15 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:property_app/utils/api_urls.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../constant_widget/constant_widgets.dart';
 import '../../models/service_provider_model/provider_job.dart';
+import '../../route_management/constant_routes.dart';
 import '../../services/property_services/add_services.dart';
 import '../../utils/shared_preferences/preferences.dart';
 import '../../utils/utils.dart';
-import '../../views/authentication_screens/login_screen.dart';
 
 class CalendarScreenController extends GetxController {
   Rx<CalendarFormat> calendarFormat = CalendarFormat.month.obs;
@@ -85,7 +86,7 @@ class CalendarScreenController extends GetxController {
       var result = await servicesService.getAllProviderJob(pageKey);
       isLoading.value = false;
       print("My Job Data $result");
-      
+
       if (result['success'] == true) {
         final payload = result['payload'];
         final List<ProviderJobData> newItems = (payload['data'] as List? ?? [])
@@ -102,7 +103,8 @@ class CalendarScreenController extends GetxController {
         }
         updateHighlightedDates();
       } else {
-        pagingController.error = Exception(result['message'] ?? 'Failed to fetch services');
+        pagingController.error =
+            Exception(result['message'] ?? 'Failed to fetch services');
       }
     } catch (error) {
       isLoading.value = false;
@@ -125,7 +127,11 @@ class CalendarScreenController extends GetxController {
       // Handling the response
       if (response.statusCode == 200) {
         AppUtils.getSnackBar('Success', 'User deleted successfully');
-        Get.offAll(const LoginScreen());
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.remove("token");
+        await prefs.remove("role");
+        await prefs.remove("user_id");
+        Get.offAllNamed(kLoginScreen);
       } else if (response.statusCode == 404) {
         AppUtils.errorSnackBar('Error', 'User not found');
       } else if (response.statusCode == 500) {

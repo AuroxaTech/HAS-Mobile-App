@@ -3,13 +3,14 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:property_app/services/auth_services/auth_services.dart';
 import 'package:property_app/utils/shared_preferences/preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../constant_widget/constant_widgets.dart';
 import '../../models/authentication_model/user_state_model.dart';
+import '../../route_management/constant_routes.dart';
 import '../../utils/api_urls.dart';
 import '../../utils/base_api_service.dart';
 import '../../utils/utils.dart';
-import '../../views/authentication_screens/login_screen.dart';
 
 class ServiceProviderController extends GetxController {
   RxBool isLoading = false.obs;
@@ -32,7 +33,7 @@ class ServiceProviderController extends GetxController {
 
       if (result['success'] == true && result['payload'] != null) {
         final payload = result['payload'];
-        
+
         // Create a Provider object with the new response format
         final provider = Provider(
           user: User.fromJson(payload['user']),
@@ -44,7 +45,7 @@ class ServiceProviderController extends GetxController {
           totalPrice: payload['total_price'] ?? 0,
           rate: payload['rate'] ?? 0,
         );
-        
+
         getServiceOne.value = provider;
         print("Service provider data loaded successfully");
       } else {
@@ -54,11 +55,11 @@ class ServiceProviderController extends GetxController {
     } catch (e) {
       print("Error loading service provider state: $e");
       String errorMessage = "Failed to load profile data";
-      
+
       if (e is ApiException) {
         errorMessage = e.message;
       }
-      
+
       AppUtils.errorSnackBar("Error", errorMessage);
     } finally {
       isLoading.value = false;
@@ -107,7 +108,11 @@ class ServiceProviderController extends GetxController {
       // Handling the response
       if (response.statusCode == 200) {
         AppUtils.getSnackBar('Success', 'User deleted successfully');
-        Get.offAll(const LoginScreen());
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.remove("token");
+        await prefs.remove("role");
+        await prefs.remove("user_id");
+        Get.offAllNamed(kLoginScreen);
       } else if (response.statusCode == 404) {
         AppUtils.errorSnackBar('Error', 'User not found');
       } else if (response.statusCode == 500) {
