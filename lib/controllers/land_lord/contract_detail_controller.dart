@@ -31,22 +31,13 @@ class ContractDetailController extends GetxController{
     try {
       // Fetch the service data
       var result = await servicesService.getContractDetail(id: id);
-      print("contract Result : ${result['data']}");
+      print("contract Result : ${result['payload']}");
 
       // Check if 'data' is not null
-      if (result['data'] != null) {
+      if (result['payload'] != null) {
         // Handling both Map and List cases
-        var data;
-        if (result['data'] is Map) {
-          data = result['data'];
-        } else if (result['data'] is List) {
-          // If your service is supposed to return a list, handle it appropriately here.
-          // For now, just printing or handling the first element for demo purposes.
-          data = (result['data'] as List).first;
-          // If 'data' should be a List, adjust the logic here instead of taking 'first'.
-        } else {
-          throw FormatException("Unexpected data format");
-        }
+        var data = result['payload'];
+
         print("Data :: $data");
         if (getContractOne != null) {
           getContractOne.value = Contracts.fromJson(data);

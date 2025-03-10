@@ -70,7 +70,7 @@ class AppUrls {
 
   // contract api
   static const addContract = "$baseUrl/contract/store";
-  static const getTenantContract = "$baseUrl/get-contract";
+  static const getTenantContract = "$baseUrl/contracts";
   static const getLandlordContract = "$baseUrl/get-landlord-contract";
   static const acceptContract = "$baseUrl/mark-contract-status";
   static const contractDetail = "$baseUrl/get-contract-detail";

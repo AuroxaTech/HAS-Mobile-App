@@ -246,7 +246,7 @@ class ContractDetailScreen extends GetView<ContractDetailController> {
                                           ),
                                           customText(
                                               text: controller.getContractOne
-                                                  .value!.occupants,
+                                                  .value!.occupants.toString(),
                                               color: blackColor,
                                               fontSize: 18,
                                               fontWeight: FontWeight.w500),
@@ -576,7 +576,7 @@ class ContractDetailScreen extends GetView<ContractDetailController> {
                                   h5,
                                   customText(
                                       text: controller.getContractOne.value!
-                                          .rentIncreaseNoticePeriod,
+                                          .rentIncreaseNoticePeriod.toString(),
                                       color: blackColor,
                                       fontSize: 18,
                                       fontWeight: FontWeight.w500),
@@ -592,7 +592,7 @@ class ContractDetailScreen extends GetView<ContractDetailController> {
                                   h5,
                                   customText(
                                       text: controller.getContractOne.value!
-                                          .noticePeriodForTermination,
+                                          .noticePeriodForTermination.toString(),
                                       color: blackColor,
                                       fontSize: 18,
                                       fontWeight: FontWeight.w500),
