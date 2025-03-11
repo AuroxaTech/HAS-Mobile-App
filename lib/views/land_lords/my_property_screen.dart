@@ -44,50 +44,37 @@ class MyPropertyScreen extends GetView<MyPropertyController> {
                               physics: const NeverScrollableScrollPhysics(),
                               shrinkWrap: true,
                               itemBuilder: (context, index) {
-                                String imagesString = controller
-                                    .getLandLordPropertiesList[index].images
-                                    .toString();
-                                List<String> imageList =
-                                    imagesString.split(',');
-                                return myPropertyWidget(context, onTap: () {
-                                  Get.toNamed(kPropertyDetailScreen,
-                                      arguments: controller
-                                          .getLandLordPropertiesList[index].id);
-                                },
-                                    title: controller
-                                        .getLandLordPropertiesList[index].city
-                                        .toString(),
-                                    image: controller
-                                            .getLandLordPropertiesList[index]
-                                            .propertyImages!
-                                            .isNotEmpty
-                                        ? controller
-                                            .getLandLordPropertiesList[index]
-                                            .propertyImages!
-                                            .first
-                                        : AppUrls.propertyImages + imageList[0],
-                                    price:
-                                        "\$${controller.getLandLordPropertiesList[index].amount.toString()}",
-                                    description: controller
-                                        .getLandLordPropertiesList[index]
-                                        .description
-                                        .toString(),
-                                    bedroom: controller
-                                        .getLandLordPropertiesList[index]
-                                        .bedroom
-                                        .toString(),
-                                    bathroom: controller
-                                        .getLandLordPropertiesList[index]
-                                        .bathroom
-                                        .toString(),
-                                    marla: controller
-                                        .getLandLordPropertiesList[index]
-                                        .areaRange
-                                        .toString(),
-                                    rent:
-                                        controller.getLandLordPropertiesList[index].type == "1"
-                                            ? "Rent"
-                                            : "Sale");
+                                final property = controller.getLandLordPropertiesList[index];
+                                
+                                // Get the image URL
+                                String imageUrl = "";
+                                
+                                // First try to get from propertyImages
+                                if (property.propertyImages.isNotEmpty) {
+                                  imageUrl = property.propertyImages.first;
+                                } 
+                                // Fallback to images field if propertyImages is empty
+                                else if (property.images.isNotEmpty) {
+                                  imageUrl = AppUrls.propertyImages + property.images;
+                                }
+                                
+                                return myPropertyWidget(
+                                  context, 
+                                  onTap: () {
+                                    Get.toNamed(
+                                      kPropertyDetailScreen,
+                                      arguments: property.id
+                                    );
+                                  },
+                                  title: property.city,
+                                  image: imageUrl,
+                                  price: "\$${property.amount}",
+                                  description: property.description,
+                                  bedroom: property.bedroom,
+                                  bathroom: property.bathroom,
+                                  marla: property.areaRange,
+                                  rent: property.type == "1" ? "Rent" : "Sale"
+                                );
                               },
                               separatorBuilder:
                                   (BuildContext context, int index) {
