@@ -29,19 +29,74 @@ class PropertyServices extends BaseApiService {
   //   }
   // }
 
-  getLandLordProperties({required int userId}) async {
+  Future<Map<String, dynamic>> getLandLordProperties({required int userId}) async {
     Uri url = Uri.parse(
       "${AppUrls.getAllProperty}?user_id=$userId",
     );
     try {
-      var token = await Preferences.getToken();
-      var res = await http.get(url, headers: getHeader(userToken: token));
-      return json.decode(res.body);
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
+      // Check for internet connectivity
+      if (!await ConnectivityUtility.checkInternetConnectivity()) {
+        return {
+          'success': false,
+          'message': 'No internet connection. Please check your network settings.'
+        };
       }
-      return e;
+      
+      var token = await Preferences.getToken();
+      
+      // Log request
+      BaseApiService.logRequest(
+        url.toString(), 
+        'GET', 
+        getHeader(userToken: token), 
+        null
+      );
+      
+      var response = await http.get(url, headers: getHeader(userToken: token));
+      
+      // Log response
+      BaseApiService.logResponse(
+        url.toString(), 
+        response.statusCode, 
+        response.body
+      );
+      
+      // Check if response is HTML
+      if (response.body.trim().startsWith('<!DOCTYPE html>')) {
+        print("Received HTML response instead of JSON");
+        return {
+          'success': false,
+          'message': 'Server returned HTML instead of JSON. Please try again.'
+        };
+      }
+      
+      if (response.statusCode == 200) {
+        final decodedResponse = json.decode(response.body);
+        
+        return decodedResponse;
+      } else {
+        return {
+          'success': false,
+          'message': 'Server responded with status code: ${response.statusCode}'
+        };
+      }
+    } catch (e) {
+      print("Error in getLandLordProperties: $e");
+      
+      // Log error
+      BaseApiService.logError(url.toString(), e.toString());
+      
+      if (e is FormatException) {
+        return {
+          'success': false,
+          'message': 'Invalid response format from server'
+        };
+      }
+      
+      return {
+        'success': false,
+        'message': 'Failed to fetch properties: ${e.toString()}'
+      };
     }
   }
 
@@ -294,7 +349,7 @@ class PropertyServices extends BaseApiService {
           // Add other headers as needed
         })
         ..fields.addAll({
-          'type': "$type",
+          'type': type,
           'city': city,
           'amount': amount.toString(),
           'address': address,
@@ -445,53 +500,70 @@ class PropertyServices extends BaseApiService {
 
   Future<Map<String, dynamic>> getRentedProperties(int pageKey) async {
     try {
+      // Check for internet connectivity
+      if (!await ConnectivityUtility.checkInternetConnectivity()) {
+        return {
+          'status': false,
+          'message': 'No internet connection. Please check your network settings.'
+        };
+      }
+      
       var token = await Preferences.getToken();
-      Uri url =
-          Uri.parse("${AppUrls.getApprovedContractProperty}?page=$pageKey");
-
+      Uri url = Uri.parse("${AppUrls.getApprovedContractProperty}?page=$pageKey");
+      
       // Log request
       BaseApiService.logRequest(
-          url.toString(), 'GET', getHeader(userToken: token), null);
-
+        url.toString(), 
+        'GET', 
+        getHeader(userToken: token), 
+        null
+      );
+      
       var response = await http.get(url, headers: getHeader(userToken: token));
-
+      
       // Log response
       BaseApiService.logResponse(
-          url.toString(), response.statusCode, response.body);
-
+        url.toString(), 
+        response.statusCode, 
+        response.body
+      );
+      
       // Check if response is HTML
       if (response.body.trim().startsWith('<!DOCTYPE html>')) {
-        throw ApiException(
-            'Server returned HTML instead of JSON. Please try again.');
+        print("Received HTML response instead of JSON");
+        return {
+          'status': false,
+          'message': 'Server returned HTML instead of JSON. Please try again.'
+        };
       }
-
+      
       if (response.statusCode == 200) {
         final decodedResponse = json.decode(response.body);
-
-        if (decodedResponse['status'] == true) {
-          return {
-            'status': true,
-            'data': decodedResponse['data'],
-            'message': decodedResponse['message']
-          };
-        } else {
-          throw ApiException(decodedResponse['message'] ??
-              'Failed to fetch rented properties');
-        }
+        
+        return decodedResponse;
       } else {
-        throw ApiException('Failed to fetch rented properties',
-            statusCode: response.statusCode);
+        return {
+          'status': false,
+          'message': 'Server responded with status code: ${response.statusCode}'
+        };
       }
     } catch (e) {
+      print("Error in getRentedProperties: $e");
+      
       // Log error
-      BaseApiService.logError(
-          AppUrls.getApprovedContractProperty, e.toString());
-
+      BaseApiService.logError(AppUrls.getApprovedContractProperty, e.toString());
+      
       if (e is FormatException) {
-        throw ApiException('Invalid response format from server');
+        return {
+          'status': false,
+          'message': 'Invalid response format from server'
+        };
       }
-
-      throw ApiException(e.toString());
+      
+      return {
+        'status': false,
+        'message': 'Failed to fetch rented properties: ${e.toString()}'
+      };
     }
   }
 }

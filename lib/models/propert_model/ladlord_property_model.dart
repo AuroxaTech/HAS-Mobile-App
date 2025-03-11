@@ -94,48 +94,61 @@ class Property {
   int isFavorite;
   User? user;
 
-  Property(
-      {required this.id,
-      required this.userId,
-      required this.type,
-      required this.images,
-      required this.propertyImages,
-      required this.city,
-      required this.amount,
-      required this.address,
-      required this.lat,
-      required this.long,
-      required this.areaRange,
-      required this.bedroom,
-      required this.bathroom,
-      required this.description,
-      required this.electricityBill,
-      required this.createdAt,
-      required this.updatedAt,
-      required this.isFavorite,
-      required this.user});
+  Property({
+    required this.id,
+    required this.userId,
+    required this.type,
+    required this.images,
+    required this.propertyImages,
+    required this.city,
+    required this.amount,
+    required this.address,
+    required this.lat,
+    required this.long,
+    required this.areaRange,
+    required this.bedroom,
+    required this.bathroom,
+    required this.description,
+    required this.electricityBill,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.isFavorite,
+    required this.user,
+  });
 
   factory Property.fromJson(Map<String, dynamic> json) {
+    // Parse property images
+    List<String> images = [];
+    if (json['property_images'] != null) {
+      if (json['property_images'] is List) {
+        images = (json['property_images'] as List)
+            .map((image) => 
+                image is Map<String, dynamic> && image.containsKey('image_path') 
+                ? image['image_path'].toString() 
+                : '')
+            .where((path) => path.isNotEmpty)
+            .toList();
+      }
+    }
+    
     return Property(
-      id: json['id'],
-      userId: json['user_id'],
-      type: json['type'],
-      propertyImages: (json['property_images'] as List<dynamic>)
-          .map((image) => image['image_path'].toString())
-          .toList(),
+      id: json['id'] ?? 0,
+      userId: json['user_id'] ?? 0,
+      type: json['type'] ?? "",
+      propertyImages: images,
       images: json['images'] ?? "",
       city: json['city'] ?? "",
-      amount: json['amount'],
-      address: json['address'],
-      lat: json['lat'],
-      long: json['long'],
-      areaRange: json['area_range'],
-      bedroom: json['bedroom'],
-      bathroom: json['bathroom'],
+      amount: json['amount'] ?? "0.00",
+      address: json['address'] ?? "",
+      lat: json['lat'] ?? "0.0",
+      long: json['long'] ?? "0.0",
+      areaRange: json['area_range'] ?? "",
+      bedroom: json['bedroom']?.toString() ?? "0",
+      bathroom: json['bathroom']?.toString() ?? "0",
       description: json['description'] ?? "",
       electricityBill: json['electricity_bill'] ?? "",
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
+      createdAt: json['created_at'] ?? "",
+      updatedAt: json['updated_at'] ?? "",
       isFavorite: json["isFavorite"] ?? 0,
       user: json["user"] == null ? null : User.fromJson(json["user"]),
     );
@@ -189,7 +202,6 @@ class User {
         email: json["email"],
         phoneNumber: json["phone_number"],
         role: json["role"],
-
         profileimage: json["profile_image"] ?? "",
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),

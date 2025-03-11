@@ -101,24 +101,48 @@ class MyPropertyController extends GetxController{
   }
 
  Future<void> getLandLordProperties() async {
-    List<Property>  list  = <Property>[];
+    List<Property> list = <Property>[];
     print("we are in land lord property:");
     isLoading.value = true;
     var uId = await Preferences.getUserID();
     print(uId);
-    var result = await propertyServices.getLandLordProperties(userId: uId);
-    if(result["success"] == true){
-      print("property result :${result["properties"]}");
-      isLoading.value = false;
-      for (var data in result['payload']) {
-        print("property List :: $data");
-        list.add(Property.fromJson(data));
+    
+    try {
+      var result = await propertyServices.getLandLordProperties(userId: uId);
+      print("property result: $result");
+      
+      if (result["success"] == true && result["payload"] != null) {
+        isLoading.value = false;
+        
+        // Check if payload contains a 'data' field (new API structure)
+        if (result["payload"] is Map && result["payload"]["data"] != null) {
+          // New API structure: payload is an object with a data array
+          var propertiesData = result["payload"]["data"];
+          
+          if (propertiesData is List) {
+            for (var data in propertiesData) {
+              print("property List :: $data");
+              list.add(Property.fromJson(data));
+            }
+            getLandLordPropertiesList.value = list;
+          } else {
+            print("Error: properties data is not a list");
+            getLandLordPropertiesList.value = [];
+          }
+        } else {
+          // Fallback to old structure if needed
+          print("Warning: Unexpected payload structure");
+          getLandLordPropertiesList.value = [];
+        }
+      } else {
+        isLoading.value = false;
+        print("Error: API returned success=false or null payload");
+        getLandLordPropertiesList.value = [];
       }
-      getLandLordPropertiesList.value = list;
-    }else{
+    } catch (e) {
+      print("Exception in getLandLordProperties: $e");
       isLoading.value = false;
+      getLandLordPropertiesList.value = [];
     }
   }
-
-
 }

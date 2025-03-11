@@ -105,13 +105,16 @@ class SignUpController extends GetxController {
   RxBool experienceField = true.obs;
   //Add Detail screen
   TextEditingController newYorkController = TextEditingController();
+  TextEditingController cityController = TextEditingController();
   RxBool newYorkField = true.obs;
+  RxBool cityField = true.obs;
   TextEditingController amountController = TextEditingController();
   RxBool amountField = true.obs;
   TextEditingController streetController = TextEditingController();
   TextEditingController postalAddressController = TextEditingController();
   RxBool streetField = true.obs;
   TextEditingController description = TextEditingController();
+  TextEditingController additionalInfo = TextEditingController();
 
   String phone = "";
   String countryCode = "";
@@ -432,11 +435,13 @@ class SignUpController extends GetxController {
     required String phoneNumber,
     required String password,
     required String cPassword,
+    required String city,
     String? address,
     String? postalCode,
     XFile? profileImage,
     required String services,
     required String description,
+    required String additionalInfo,
     required String yearExperience,
     required String availabilityStartTime,
     required String availabilityEndTime,
@@ -456,6 +461,7 @@ class SignUpController extends GetxController {
         phoneNumber: phoneNumber,
         password: password,
         cPassword: cPassword,
+        city: city,
         deviceToken: "werty134",
         address: address,
         postalCode: postalCode,
@@ -469,6 +475,7 @@ class SignUpController extends GetxController {
         cnicBack: cnicBack,
         certification: certification,
         description: description,
+        additionalInfo: additionalInfo,
         certificationFile: certificationFile,
         // Add missing required fields
         pricing: "100", // Add appropriate pricing
@@ -481,9 +488,7 @@ class SignUpController extends GetxController {
         clearFormData();
         Get.back();
         AppUtils.getSnackBar(
-          "Success", 
-          data["message"] ?? "Registration successful"
-        );
+            "Success", data["message"] ?? "Registration successful");
       } else {
         // Handle error messages
         if (data['errors'] != null) {
@@ -510,7 +515,8 @@ class SignUpController extends GetxController {
       String errorMessage = e.toString();
       if (e is ApiException) {
         if (e.statusCode == 422 && e.message.contains("kilobytes")) {
-          errorMessage = "Image size too large. Please use smaller images (max 2MB)";
+          errorMessage =
+              "Image size too large. Please use smaller images (max 2MB)";
         }
       }
       AppUtils.errorSnackBar("Error", errorMessage);

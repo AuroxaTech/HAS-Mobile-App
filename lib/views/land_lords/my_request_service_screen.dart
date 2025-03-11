@@ -51,13 +51,20 @@ class MyServiceRequest extends GetView<MyServiceRequestController> {
                                       .toString();
                                   imageList = imagesString.split(',');
 
+                                  String imageUrl = AppIcons.appLogo;
+                                  
+                                  // Check if serviceImages exists and has items
+                                  if (controller.getServicesRequestList[index].serviceImages != null && 
+                                      controller.getServicesRequestList[index].serviceImages.isNotEmpty) {
+                                    // Access the image_path of the first service image
+                                    imageUrl = controller.getServicesRequestList[index].serviceImages[0].imagePath;
+                                  }
+
                                   return Column(
                                     children: [
                                       jobWidget(
                                         context,
-                                        image: imageList.isNotEmpty
-                                            ? imageList[0]
-                                            : AppIcons.appLogo,
+                                        image: imageUrl,
                                         onTap: () {
                                           Get.toNamed(
                                               kMyServiceRequestDetailScreen,

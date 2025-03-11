@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -58,26 +57,42 @@ class CurrentRented extends GetView<CurrentRantedPropertiesController> {
                         onPressed: () => controller.getProperty(1),
                       ),
                       itemBuilder: (context, item, index) {
-                        String imagesString = item.images.toString();
-                        List<String> imageList = imagesString.split(',');
-                        print(AppUrls.propertyImages + imageList[0],);
+                        // Get the image URL
+                        String imageUrl = "";
+                        
+                        // First try to get from propertyImages if it exists and is not empty
+                        if (item.propertyImages.isNotEmpty) {
+                          imageUrl = item.propertyImages.first;
+                        } 
+                        // Fallback to images field if propertyImages is empty
+                        else if (item.images.isNotEmpty) {
+                          // Check if the image path is a full URL or a relative path
+                          if (item.images.startsWith('http')) {
+                            imageUrl = item.images;
+                          } else {
+                            imageUrl = AppUrls.propertyImages + item.images;
+                          }
+                        }
+                        
+                        print("Property ${item.id} image URL: $imageUrl");
+                        
                         return Column(
                           children: [
-                            myPropertyWidget(context,
-                                onTap: (){
-                                  Get.toNamed(kAllPropertyDetailScreen, arguments: item.id);
-                                },
-                                title: item.city.toString(),
-                                image: AppUrls.propertyImages + imageList[0],
-                                price: "\$${item.amount.toString()}",
-                                description: item.description.toString(),
-                                bedroom: item.bedroom.toString(),
-                                bathroom: item.bathroom.toString(),
-                                marla: item.areaRange.toString(),
-
-                                rent: item.type == "1" ? "Rent" : "Sale"),
-
-                            SizedBox(
+                            myPropertyWidget(
+                              context,
+                              onTap: () {
+                                Get.toNamed(kAllPropertyDetailScreen, arguments: item.id);
+                              },
+                              title: item.city,
+                              image: imageUrl,
+                              price: "\$${item.amount}",
+                              description: item.description,
+                              bedroom: item.bedroom,
+                              bathroom: item.bathroom,
+                              marla: item.areaRange,
+                              rent: item.type == "1" ? "Rent" : "Sale"
+                            ),
+                            const SizedBox(
                               height: 20,
                             )
                           ],
@@ -97,7 +112,6 @@ class CurrentRented extends GetView<CurrentRantedPropertiesController> {
           ],
         ),
       ),
-
     );
   }
 }

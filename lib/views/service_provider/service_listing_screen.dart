@@ -159,7 +159,7 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
-                                                  Container(
+                                                  SizedBox(
                                                     width: 150,
                                                     child: customText(
                                                       text: item.serviceName,

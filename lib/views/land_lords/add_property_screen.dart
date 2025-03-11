@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:property_app/app_constants/color_constants.dart';
 import 'package:property_app/constant_widget/constant_widgets.dart';
 import 'package:property_app/utils/utils.dart';
+
 import '../../app_constants/animations.dart';
 import '../../app_constants/app_icon.dart';
 import '../../app_constants/app_sizes.dart';
@@ -11,19 +12,21 @@ import '../../controllers/land_lord/add_property_controller.dart';
 import '../../custom_widgets/custom_button.dart';
 import '../../custom_widgets/custom_text_field.dart';
 import '../locations/location_screen.dart';
+
 class AddPropertyScreen extends GetView<AddPropertyController> {
   const AddPropertyScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       backgroundColor: whiteColor,
       appBar: titleAppBar("Add Details"),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.only(left: 15, right: 15),
-          child: Obx(() => SingleChildScrollView(
-                  physics: bouncingScrollPhysic,
+          child: Obx(
+            () => SingleChildScrollView(
+              physics: bouncingScrollPhysic,
               child: Form(
                 key: controller.formKey,
                 child: Column(
@@ -32,13 +35,19 @@ class AddPropertyScreen extends GetView<AddPropertyController> {
                     Row(
                       children: [
                         imageButton(
-                            padding:const EdgeInsets.only(top: 5, bottom: 5),
+                            padding: const EdgeInsets.only(top: 5, bottom: 5),
                             onTap: () {
                               controller.isSale.value = false;
                             },
-                            borderColor: controller.isSale.value ? bluishWhite : primaryColor,
-                            textColor: controller.isSale.value ? blackColor : primaryColor,
-                            imageColor: controller.isSale.value ? blackColor : primaryColor,
+                            borderColor: controller.isSale.value
+                                ? bluishWhite
+                                : primaryColor,
+                            textColor: controller.isSale.value
+                                ? blackColor
+                                : primaryColor,
+                            imageColor: controller.isSale.value
+                                ? blackColor
+                                : primaryColor,
                             width: 100,
                             text: "Sale",
                             image: AppIcons.sale),
@@ -46,23 +55,31 @@ class AddPropertyScreen extends GetView<AddPropertyController> {
                           width: 20,
                         ),
                         imageButton(
-                            padding:const EdgeInsets.only(top: 5, bottom: 5),
+                            padding: const EdgeInsets.only(top: 5, bottom: 5),
                             onTap: () {
                               controller.isSale.value = true;
                             },
                             width: 100,
                             text: "Rent",
-                            borderColor: controller.isSale.value ? primaryColor : bluishWhite,
-                            textColor: controller.isSale.value ? primaryColor : blackColor,
-                            imageColor: controller.isSale.value ? primaryColor : blackColor,
+                            borderColor: controller.isSale.value
+                                ? primaryColor
+                                : bluishWhite,
+                            textColor: controller.isSale.value
+                                ? primaryColor
+                                : blackColor,
+                            imageColor: controller.isSale.value
+                                ? primaryColor
+                                : blackColor,
                             image: AppIcons.rent),
                       ],
                     ),
                     h15,
                     if (controller.images.isEmpty)
-                      uploadImageContainer(onTap: (){
-                        controller.pickImages();
-                      },)
+                      uploadImageContainer(
+                        onTap: () {
+                          controller.pickImages();
+                        },
+                      )
                     else
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
@@ -74,15 +91,17 @@ class AddPropertyScreen extends GetView<AddPropertyController> {
                                   itemCount: controller.images.length,
                                   shrinkWrap: true,
                                   scrollDirection: Axis.horizontal,
-                                  itemBuilder: (context, index){
+                                  itemBuilder: (context, index) {
                                     final image = controller.images[index];
-                                    return fileImage(image: image.path, onTap: (){
-                                      controller.removeImage(index);
-                                    });
+                                    return fileImage(
+                                        image: image.path,
+                                        onTap: () {
+                                          controller.removeImage(index);
+                                        });
                                   }),
                             ),
                             InkWell(
-                              onTap: (){
+                              onTap: () {
                                 controller.pickImages();
                               },
                               child: Container(
@@ -93,19 +112,20 @@ class AddPropertyScreen extends GetView<AddPropertyController> {
                                     border: Border.all(color: blackColor),
                                     borderRadius: BorderRadius.circular(15),
                                   ),
-                                  child: Center(child: Column(
+                                  child: Center(
+                                      child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      const Icon(Icons.add, size: 25,),
+                                      const Icon(
+                                        Icons.add,
+                                        size: 25,
+                                      ),
                                       customText(
                                           text: "Add",
                                           fontWeight: FontWeight.w500,
-                                          fontSize: 22
-                                      ),
-
+                                          fontSize: 22),
                                     ],
-                                  ))
-                              ),
+                                  ))),
                             ),
                           ],
                         ),
@@ -116,8 +136,8 @@ class AddPropertyScreen extends GetView<AddPropertyController> {
                     CustomTextField(
                       hintText: "New York",
                       controller: controller.newYorkController,
-                      validator: (value){
-                        if(value.isEmpty){
+                      validator: (value) {
+                        if (value.isEmpty) {
                           return "Please enter city name";
                         }
                         return null;
@@ -135,8 +155,8 @@ class AddPropertyScreen extends GetView<AddPropertyController> {
                       hintText: "97898",
                       keyboaredtype: TextInputType.number,
                       controller: controller.amountController,
-                      validator: (value){
-                        if(value.isEmpty){
+                      validator: (value) {
+                        if (value.isEmpty) {
                           return "Please enter amount";
                         }
                         return null;
@@ -151,24 +171,27 @@ class AddPropertyScreen extends GetView<AddPropertyController> {
                     labelText("Enter Street Address"),
                     h10,
                     CustomTextField(
-
                       validator: (value) {
-                        if (value == null || value.isEmpty || value.length < 1) {
+                        if (value == null ||
+                            value.isEmpty ||
+                            value.length < 1) {
                           return 'Please enter street';
                         }
                         return null;
                       },
                       readOnly: true,
-                      onTap: ()async{
+                      onTap: () async {
                         var result = await Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const LocationScreen()),
+                          MaterialPageRoute(
+                              builder: (context) => const LocationScreen()),
                         );
                         if (result != null) {
                           controller.selectedAddress = result['address'];
                           controller.selectedLat = result['latitude'];
                           controller.selectedLng = result['longitude'];
-                          controller.streetController.text =  controller.selectedAddress;
+                          controller.streetController.text =
+                              controller.selectedAddress;
 
                           print(controller.selectedAddress);
                           print(controller.selectedLat);
@@ -176,7 +199,9 @@ class AddPropertyScreen extends GetView<AddPropertyController> {
                         }
                       },
                       controller: controller.streetController,
-                      errorText: controller.streetField.value ? null : "Please enter street",
+                      errorText: controller.streetField.value
+                          ? null
+                          : "Please enter street",
                       hintText: "Main Canadian street",
                       suffixIcon: Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -187,46 +212,66 @@ class AddPropertyScreen extends GetView<AddPropertyController> {
                     labelText("Area Range"),
                     h10,
                     Obx(() => Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Expanded(
-                          child: CustomBorderTextField(
-                            keyboaredtype: TextInputType.number,
-                            labelText: 'Min Area (sq ft)',
-                            labelStyle: const TextStyle(fontSize: 15,color: Colors.black),
-                            initialValue: controller.currentRange.value.start.round().toString(),
-                            onChanged: (value) {
-                              double? minValue = double.tryParse(value);
-                              if (minValue != null && minValue >= 1 && minValue <= controller.currentRange.value.end) {
-                                controller.currentRange.value = RangeValues(minValue, controller.currentRange.value.end);
-                                print("Min Range ${controller.currentRange.value.start}");
-                              } else {
-                                // Handle invalid input if necessary
-                              }
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: CustomBorderTextField(
-                            keyboaredtype: TextInputType.number,
-                            labelText: 'Max Area (sq ft)',
-                            labelStyle: const TextStyle(fontSize: 15,color: Colors.black),
-                            initialValue: controller.currentRange.value.end.round().toString(),
-                            onChanged: (value) {
-                              double? maxValue = double.tryParse(value);
-                              if (maxValue != null && maxValue >= controller.currentRange.value.start && maxValue <= 1000) {
-                                controller.currentRange.value = RangeValues(controller.currentRange.value.start, maxValue);
-                                controller.selectedRange.value = maxValue.toString();
-                                print("Max Range ${controller.currentRange.value.end}");
-                              } else {
-                                // Handle invalid input if necessary
-                              }
-                            },
-                          ),
-                        ),
-                      ],
-                    )),
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Expanded(
+                              child: CustomBorderTextField(
+                                keyboaredtype: TextInputType.number,
+                                labelText: 'Min Area (sq ft)',
+                                labelStyle: const TextStyle(
+                                    fontSize: 15, color: Colors.black),
+                                initialValue: controller
+                                    .currentRange.value.start
+                                    .round()
+                                    .toString(),
+                                onChanged: (value) {
+                                  double? minValue = double.tryParse(value);
+                                  if (minValue != null &&
+                                      minValue >= 1 &&
+                                      minValue <=
+                                          controller.currentRange.value.end) {
+                                    controller.currentRange.value = RangeValues(
+                                        minValue,
+                                        controller.currentRange.value.end);
+                                    print(
+                                        "Min Range ${controller.currentRange.value.start}");
+                                  } else {
+                                    // Handle invalid input if necessary
+                                  }
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 20),
+                            Expanded(
+                              child: CustomBorderTextField(
+                                keyboaredtype: TextInputType.number,
+                                labelText: 'Max Area (sq ft)',
+                                labelStyle: const TextStyle(
+                                    fontSize: 15, color: Colors.black),
+                                initialValue: controller.currentRange.value.end
+                                    .round()
+                                    .toString(),
+                                onChanged: (value) {
+                                  double? maxValue = double.tryParse(value);
+                                  if (maxValue != null &&
+                                      maxValue >=
+                                          controller.currentRange.value.start &&
+                                      maxValue <= 1000) {
+                                    controller.currentRange.value = RangeValues(
+                                        controller.currentRange.value.start,
+                                        maxValue);
+                                    controller.selectedRange.value =
+                                        maxValue.toString();
+                                    print(
+                                        "Max Range ${controller.currentRange.value.end}");
+                                  } else {
+                                    // Handle invalid input if necessary
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
+                        )),
                     h15,
                     Row(
                       children: [
@@ -238,7 +283,6 @@ class AddPropertyScreen extends GetView<AddPropertyController> {
                     h10,
                     SizedBox(
                       height: 35,
-
                       child: ListView.builder(
                         itemCount: 8,
                         shrinkWrap: true,
@@ -246,14 +290,14 @@ class AddPropertyScreen extends GetView<AddPropertyController> {
                         itemBuilder: (context, index) {
                           index += 1;
                           return Obx(
-                                () => Row(
+                            () => Row(
                               children: [
                                 roundedSmallButton(
                                   text: "$index",
                                   isSelected:
-                                  controller.selectedBedroom.value == index,
+                                      controller.selectedBedroom.value == index,
                                   onTap: () =>
-                                  controller.selectedBedroom.value = index,
+                                      controller.selectedBedroom.value = index,
                                 ),
                                 const SizedBox(width: 15),
                               ],
@@ -279,17 +323,19 @@ class AddPropertyScreen extends GetView<AddPropertyController> {
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (context, index) {
                           return Obx(
-                                () => Row(
+                            () => Row(
                               children: [
                                 roundedSmallButton(
-                                    text:controller.bathroomsList[index],
+                                    text: controller.bathroomsList[index],
                                     isSelected:
-                                    controller.selectedBathrooms.value == index,
+                                        controller.selectedBathrooms.value ==
+                                            index,
                                     onTap: () {
-                                      controller.selectedBathrooms.value = index;
-                                      controller.selectedBothList.value = controller.bathroomsList[index];
-                                    }
-                                ),
+                                      controller.selectedBathrooms.value =
+                                          index;
+                                      controller.selectedBothList.value =
+                                          controller.bathroomsList[index];
+                                    }),
                                 const SizedBox(width: 15),
                               ],
                             ),
@@ -297,7 +343,6 @@ class AddPropertyScreen extends GetView<AddPropertyController> {
                         },
                       ),
                     ),
-
 
                     // h15,
                     // labelText("Description"),
@@ -311,175 +356,195 @@ class AddPropertyScreen extends GetView<AddPropertyController> {
                     h15,
                     labelText("Property Type"),
                     h10,
-                    Obx(() => Container(
-                      height: 45,
-                      width: double.infinity,
-                      decoration: const BoxDecoration(
-                        color: whiteColor,
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: (){
-                                controller.home.value = true;
-                                controller.plots.value = false;
-                                controller.commercial.value = false;
-                              },
-                              child: Container(
-                                decoration:   BoxDecoration(
+                    Obx(
+                      () => Container(
+                        height: 45,
+                        width: double.infinity,
+                        decoration: const BoxDecoration(
+                          color: whiteColor,
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  controller.home.value = true;
+                                  controller.plots.value = false;
+                                  controller.commercial.value = false;
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
                                     border: Border.all(color: Colors.white),
                                     borderRadius: BorderRadius.circular(20),
-                                    color: controller.home.value ? secondaryColor : whiteColor,
-                                ),
-                                child: Center(
-                                  child: customText(
-                                      text: "Homes",
-                                      color: controller.home.value ? whiteColor : blackColor,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500
+                                    color: controller.home.value
+                                        ? secondaryColor
+                                        : whiteColor,
+                                  ),
+                                  child: Center(
+                                    child: customText(
+                                        text: "Homes",
+                                        color: controller.home.value
+                                            ? whiteColor
+                                            : blackColor,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-
-                          const SizedBox(
-                            width: 10,
-                          ),
-
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: (){
-                                controller.plots.value = true;
-                                controller.home.value = false;
-                                controller.commercial.value = false;
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.white),
-                                  borderRadius: BorderRadius.circular(20),
-                                  color: controller.plots.value ? secondaryColor : whiteColor,
-                                ),
-                                child: Center(
-                                  child: customText(
-                                      text: "Plots",
-                                      color: controller.plots.value ? whiteColor : blackColor,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  controller.plots.value = true;
+                                  controller.home.value = false;
+                                  controller.commercial.value = false;
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.white),
+                                    borderRadius: BorderRadius.circular(20),
+                                    color: controller.plots.value
+                                        ? secondaryColor
+                                        : whiteColor,
+                                  ),
+                                  child: Center(
+                                    child: customText(
+                                        text: "Plots",
+                                        color: controller.plots.value
+                                            ? whiteColor
+                                            : blackColor,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-
-
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: (){
-                                controller.commercial.value = true;
-                                controller.home.value = false;
-                                controller.plots.value = false;
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.white),
-                                  borderRadius: BorderRadius.circular(20),
-                                  color: controller.commercial.value ? secondaryColor : whiteColor,
-
-                                ),
-                                child: Center(
-                                  child: customText(
-                                      text: "Commercial",
-                                      color: controller.commercial.value ? whiteColor : blackColor,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  controller.commercial.value = true;
+                                  controller.home.value = false;
+                                  controller.plots.value = false;
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.white),
+                                    borderRadius: BorderRadius.circular(20),
+                                    color: controller.commercial.value
+                                        ? secondaryColor
+                                        : whiteColor,
+                                  ),
+                                  child: Center(
+                                    child: customText(
+                                        text: "Commercial",
+                                        color: controller.commercial.value
+                                            ? whiteColor
+                                            : blackColor,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500),
                                   ),
                                 ),
                               ),
-                            ),
-                          )
-                        ],
+                            )
+                          ],
+                        ),
                       ),
-                    ),
                     ),
                     h15,
 
-                    controller.home.value ?   Obx(() => Wrap(
-                      spacing: 8,
-                      children: controller.selectedHome.keys.map((String key) {
-                        bool isSelected = controller.selectedHome[key]!;
-                        return ChoiceChip(
-                          label: customText(
-                              text: key,
-                              color: isSelected ? whiteColor : blackColor,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500
-                          ),
-                          iconTheme: const IconThemeData(color: Colors.white),
-                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          selected: isSelected,
-                          selectedColor: primaryColor,
-                          backgroundColor: Colors.white,
-                          onSelected: (bool selected) {
-                            controller.toggleHome(key);
-                          },
-                        );
-                      }).toList(),
-                    )) : const SizedBox(),
+                    controller.home.value
+                        ? Obx(() => Wrap(
+                              spacing: 8,
+                              children: controller.selectedHome.keys
+                                  .map((String key) {
+                                bool isSelected = controller.selectedHome[key]!;
+                                return ChoiceChip(
+                                  label: customText(
+                                      text: key,
+                                      color:
+                                          isSelected ? whiteColor : blackColor,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500),
+                                  iconTheme:
+                                      const IconThemeData(color: Colors.white),
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 10),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  selected: isSelected,
+                                  selectedColor: primaryColor,
+                                  backgroundColor: Colors.white,
+                                  onSelected: (bool selected) {
+                                    controller.toggleHome(key);
+                                  },
+                                );
+                              }).toList(),
+                            ))
+                        : const SizedBox(),
 
-                    controller.plots.value ?  Obx(() => Wrap(
-                      spacing: 8,
-                      children: controller.selectedPlots.keys.map((String key) {
-                        bool isSelected = controller.selectedPlots[key]!;
-                        return ChoiceChip(
-                          label: customText(
-                              text: key,
-                              color: isSelected ? whiteColor : blackColor,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          selected: isSelected,
-                          selectedColor: primaryColor,
-                          backgroundColor: Colors.white,
-                          onSelected: (bool selected) {
-                            controller.togglePlots(key);
-                          },
-                        );
-                      }).toList(),
-                    )) : const SizedBox(),
+                    controller.plots.value
+                        ? Obx(() => Wrap(
+                              spacing: 8,
+                              children: controller.selectedPlots.keys
+                                  .map((String key) {
+                                bool isSelected =
+                                    controller.selectedPlots[key]!;
+                                return ChoiceChip(
+                                  label: customText(
+                                      text: key,
+                                      color:
+                                          isSelected ? whiteColor : blackColor,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500),
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 10),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  selected: isSelected,
+                                  selectedColor: primaryColor,
+                                  backgroundColor: Colors.white,
+                                  onSelected: (bool selected) {
+                                    controller.togglePlots(key);
+                                  },
+                                );
+                              }).toList(),
+                            ))
+                        : const SizedBox(),
 
-                    controller.commercial.value ?  Obx(() => Wrap(
-                      spacing: 8,
-                      children: controller.selectedCommercial.keys.map((String key) {
-                        bool isSelected = controller.selectedCommercial[key]!;
-                        return ChoiceChip(
-                          label: customText(
-                              text: key,
-                              color: isSelected ? whiteColor : blackColor,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          selected: isSelected,
-                          selectedColor: primaryColor,
-                          backgroundColor: Colors.white,
-                          onSelected: (bool selected) {
-                            controller.toggleCommercial(key);
-                          },
-                        );
-                      }).toList(),
-                    )) : const SizedBox(),
+                    controller.commercial.value
+                        ? Obx(() => Wrap(
+                              spacing: 8,
+                              children: controller.selectedCommercial.keys
+                                  .map((String key) {
+                                bool isSelected =
+                                    controller.selectedCommercial[key]!;
+                                return ChoiceChip(
+                                  label: customText(
+                                      text: key,
+                                      color:
+                                          isSelected ? whiteColor : blackColor,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500),
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 10),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  selected: isSelected,
+                                  selectedColor: primaryColor,
+                                  backgroundColor: Colors.white,
+                                  onSelected: (bool selected) {
+                                    controller.toggleCommercial(key);
+                                  },
+                                );
+                              }).toList(),
+                            ))
+                        : const SizedBox(),
 
                     h15,
                     labelText("Description"),
@@ -488,29 +553,35 @@ class AddPropertyScreen extends GetView<AddPropertyController> {
                       maxLines: 5,
                       minLines: 3,
                       validator: (value) {
-                        if (value == null || value.isEmpty || value.length < 3) {
+                        if (value == null ||
+                            value.isEmpty ||
+                            value.length < 3) {
                           return 'Description Required';
                         }
                         return null;
                       },
                       controller: controller.description,
-                      hintText: "Clean and Minimalistic House , with modern interior and exterior built in the centre of city with modern facilities",
+                      hintText:
+                          "Clean and Minimalistic House , with modern interior and exterior built in the centre of city with modern facilities",
                     ),
                     h50,
                     Row(
                       children: [
                         Expanded(
                           child: GestureDetector(
-                            onTap: (){
+                            onTap: () {
                               Navigator.pop(context);
                             },
                             child: Container(
                               height: screenHeight(context) * 0.07,
                               decoration: BoxDecoration(
-                                border: Border.all(color: borderColor),
-                                borderRadius: BorderRadius.circular(10)
-                              ),
-                              child: Center(child: SvgPicture.asset(AppIcons.reset, color: const Color(0xff47494C),)),
+                                  border: Border.all(color: borderColor),
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Center(
+                                  child: SvgPicture.asset(
+                                AppIcons.reset,
+                                color: const Color(0xff47494C),
+                              )),
                             ),
                           ),
                         ),
@@ -519,41 +590,45 @@ class AddPropertyScreen extends GetView<AddPropertyController> {
                           flex: 3,
                           child: CustomButton(
                             isLoading: controller.isLoading.value,
-                            onTap: (){
-                              if(controller.formKey.currentState!.validate()){
+                            onTap: () {
+                              if (controller.formKey.currentState!.validate()) {
                                 String propertyType = '1';
-                                if(controller.home.value) {
+                                if (controller.home.value) {
                                   propertyType = '1';
-                                } else if(controller.plots.value) {
+                                } else if (controller.plots.value) {
                                   propertyType = '2';
-                                } else if(controller.commercial.value) {
+                                } else if (controller.commercial.value) {
                                   propertyType = '3';
                                 }
-                              //  String propertySubType = controller.getSelectedSubType();
+                                //  String propertySubType = controller.getSelectedSubType();
                                 int selectedSubType = 1;
                                 if (controller.home.value) {
-                                  selectedSubType = controller.getSelectedHomeSubTypeIndex();
+                                  selectedSubType =
+                                      controller.getSelectedHomeSubTypeIndex();
                                 } else if (controller.plots.value) {
-                                  selectedSubType = controller.getSelectedPlotsSubTypeIndex();
+                                  selectedSubType =
+                                      controller.getSelectedPlotsSubTypeIndex();
                                 } else if (controller.commercial.value) {
-                                  selectedSubType = controller.getSelectedCommercialSubTypeIndex();
+                                  selectedSubType = controller
+                                      .getSelectedCommercialSubTypeIndex();
                                 }
-
-
-
 
                                 print(selectedSubType);
                                 print(propertyType);
-                                if(controller.images.length > 4){
-                                  double amount = double.parse(controller.amountController.text);
+                                if (controller.images.length > 4) {
+                                  double amount = double.parse(
+                                      controller.amountController.text);
                                   controller.addProperty(
-                                    type: controller.isSale.value ? "Sale" : "Rent",
+                                    type: controller.isSale.value
+                                        ? "Rent"
+                                        : "Sale",
                                     city: controller.newYorkController.text,
                                     amount: amount,
                                     address: controller.streetController.text,
                                     lat: controller.selectedLat,
                                     long: controller.selectedLng,
-                                    areaRange: "${controller.selectedRange.value} sq ft",
+                                    areaRange:
+                                        "${controller.selectedRange.value} sq ft",
                                     bedroom: controller.selectedBedroom.value,
                                     bathroom: controller.selectedBothList.value,
                                     electricityBill: controller.images[0],
@@ -563,7 +638,8 @@ class AddPropertyScreen extends GetView<AddPropertyController> {
                                     propertySubType: selectedSubType.toString(),
                                   );
                                 } else {
-                                  AppUtils.errorSnackBar("Select Images", "Minimum 5 images upload");
+                                  AppUtils.errorSnackBar("Select Images",
+                                      "Minimum 5 images upload");
                                 }
                               }
                             },

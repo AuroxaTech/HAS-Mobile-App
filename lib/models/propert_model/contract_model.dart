@@ -117,6 +117,7 @@ class Contracts {
 
   });
 
+
   factory Contracts.fromJson(Map<String, dynamic> json) {
     return Contracts(
       id: json['id'],
@@ -318,26 +319,26 @@ class Landlord {
   });
 
   factory Landlord.fromJson(Map<String, dynamic> json) => Landlord(
-    id: json["id"],
-    fullname: json["fullname"],
-    email: json["email"],
-    phoneNumber: json["phone_number"],
-    roleId: json["role_id"],
-    profileimage: json["profileimage"],
-    createdAt: DateTime.parse(json["created_at"]),
-    updatedAt: DateTime.parse(json["updated_at"]),
-  );
+        id: json["id"],
+        fullname: json["fullname"],
+        email: json["email"],
+        phoneNumber: json["phone_number"],
+        roleId: json["role_id"],
+        profileimage: json["profileimage"],
+        createdAt: DateTime.parse(json["created_at"]),
+        updatedAt: DateTime.parse(json["updated_at"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "fullname": fullname,
-    "email": email,
-    "phone_number": phoneNumber,
-    "role_id": roleId,
-    "profileimage": profileimage,
-    "created_at": createdAt.toIso8601String(),
-    "updated_at": updatedAt.toIso8601String(),
-  };
+        "id": id,
+        "fullname": fullname,
+        "email": email,
+        "phone_number": phoneNumber,
+        "role_id": roleId,
+        "profileimage": profileimage,
+        "created_at": createdAt.toIso8601String(),
+        "updated_at": updatedAt.toIso8601String(),
+      };
 }
 
 class Tenant {
@@ -362,26 +363,26 @@ class Tenant {
   });
 
   factory Tenant.fromJson(Map<String, dynamic> json) => Tenant(
-    id: json["id"],
-    fullname: json["fullname"],
-    email: json["email"],
-    phoneNumber: json["phone_number"],
-    roleId: json["role_id"],
-    profileimage: json["profileimage"],
-    createdAt: DateTime.parse(json["created_at"]),
-    updatedAt: DateTime.parse(json["updated_at"]),
-  );
+        id: json["id"],
+        fullname: json["fullname"],
+        email: json["email"],
+        phoneNumber: json["phone_number"],
+        roleId: json["role_id"],
+        profileimage: json["profileimage"],
+        createdAt: DateTime.parse(json["created_at"]),
+        updatedAt: DateTime.parse(json["updated_at"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "fullname": fullname,
-    "email": email,
-    "phone_number": phoneNumber,
-    "role_id": roleId,
-    "profileimage": profileimage,
-    "created_at": createdAt.toIso8601String(),
-    "updated_at": updatedAt.toIso8601String(),
-  };
+        "id": id,
+        "fullname": fullname,
+        "email": email,
+        "phone_number": phoneNumber,
+        "role_id": roleId,
+        "profileimage": profileimage,
+        "created_at": createdAt.toIso8601String(),
+        "updated_at": updatedAt.toIso8601String(),
+      };
 }
 
 DateTime parseDateFromString(String dateString) {

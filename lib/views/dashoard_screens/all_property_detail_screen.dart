@@ -54,7 +54,7 @@ class AllPropertyDetailScreen extends GetView<AllPropertyDetailController> {
                                 Get.to(
                                     () => ViewImage(
                                           photo: controller.getPropertyOne
-                                              .value!.propertyImages[index],
+                                              .value!.propertyImages![index],
                                         ),
                                     transition: routeTransition);
                               },
@@ -62,7 +62,7 @@ class AllPropertyDetailScreen extends GetView<AllPropertyDetailController> {
                                 width: double.infinity,
                                 height: screenHeight(context) * 0.5,
                                 imageUrl: controller.getPropertyOne.value!
-                                    .propertyImages[index],
+                                    .propertyImages![index],
                                 fit: BoxFit.cover,
                                 errorWidget: (context, e, b) {
                                   return Image.asset(
@@ -111,7 +111,7 @@ class AllPropertyDetailScreen extends GetView<AllPropertyDetailController> {
                                 controller: controller
                                     .pageController, // Connect the indicator to the controller
                                 count: controller.getPropertyOne.value
-                                        ?.propertyImages.length ??
+                                        ?.propertyImages?.length ??
                                     0,
                                 effect: const WormEffect(
                                     dotColor: whiteColor,
