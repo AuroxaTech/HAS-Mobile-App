@@ -63,16 +63,14 @@ class TenantContractDetailScreen extends GetView<ContractDetailController> {
                                       backgroundImage: controller
                                                   .getContractOne
                                                   .value!
-                                                  .tenant!
-                                                  .profileimage ==
+                                                  .user.profileImage ==
                                               ""
                                           ? AssetImage(AppIcons.appLogo)
                                           : CachedNetworkImageProvider(
                                                   controller
                                                       .getContractOne
                                                       .value!
-                                                      .tenant!
-                                                      .profileimage)
+                                                      .user.profileImage!)
                                               as ImageProvider,
                                     ),
                                     // const Icon(
@@ -171,7 +169,7 @@ class TenantContractDetailScreen extends GetView<ContractDetailController> {
                                       ),
                                       customText(
                                           text: controller.getContractOne.value!
-                                                  .landlord?.email ??
+                                                  .property.user?.email ??
                                               "",
                                           color: blackColor,
                                           fontSize: 18,
@@ -229,7 +227,7 @@ class TenantContractDetailScreen extends GetView<ContractDetailController> {
                                           ),
                                           customText(
                                               text: controller.getContractOne
-                                                  .value!.tenant!.phoneNumber
+                                                  .value!.user.phoneNumber
                                                   .toString(),
                                               color: blackColor,
                                               fontSize: 18,

@@ -64,16 +64,16 @@ class ContractDetailScreen extends GetView<ContractDetailController> {
                                       backgroundImage: controller
                                                   .getContractOne
                                                   .value!
-                                                  .tenant!
-                                                  .profileimage ==
+                                                  .user
+                                                  .profileImage ==
                                               ""
                                           ? const AssetImage(AppIcons.appLogo)
                                           : CachedNetworkImageProvider(
                                                   controller
                                                       .getContractOne
                                                       .value!
-                                                      .tenant!
-                                                      .profileimage)
+                                                      .user!
+                                                      .profileImage!)
                                               as ImageProvider,
                                     ),
                                     // const Icon(
@@ -154,7 +154,7 @@ class ContractDetailScreen extends GetView<ContractDetailController> {
                                       ),
                                       customText(
                                           text: controller.getContractOne.value!
-                                              .tenant!.fullname,
+                                              .user.fullName,
                                           color: blackColor,
                                           fontSize: 18,
                                           fontWeight: FontWeight.w500),
@@ -172,7 +172,7 @@ class ContractDetailScreen extends GetView<ContractDetailController> {
                                       ),
                                       customText(
                                           text: controller.getContractOne.value!
-                                              .tenant!.email,
+                                              .user.email,
                                           color: blackColor,
                                           fontSize: 18,
                                           fontWeight: FontWeight.w500),
@@ -229,7 +229,7 @@ class ContractDetailScreen extends GetView<ContractDetailController> {
                                           ),
                                           customText(
                                             text: controller.getContractOne
-                                                .value!.tenant!.phoneNumber
+                                                .value!.user.phoneNumber
                                                 .toString(),
                                             color: blackColor,
                                             fontSize: 18,
