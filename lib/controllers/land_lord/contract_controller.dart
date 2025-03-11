@@ -181,7 +181,7 @@ class ContractController extends GetxController {
       var body = {
         "user_id": userId.toString(),
         "property_id": propertyId.value.toString(),
-        //"landlord_id": landlordId.value.toString(),
+        "landlord_id": landlordId.value.toString(),
         "landlordName": landLordNameController.text,
         "landlordAddress": landLordEmailController.text,
         "landlordPhone": landLordPhoneController.text,
