@@ -1,6 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:property_app/constant_widget/constant_widgets.dart';
@@ -177,11 +177,12 @@ class AuthServices extends BaseApiService {
         ..fields.addAll(fields);
 
       // Add profile image if provided
-      if (profileImage != null) {
+      for (var i = 0; i < propertyImages.length; i++) {
+        File propertyImageFile = File(propertyImages[i].path);
         request.files.add(await http.MultipartFile.fromPath(
-          'profile_image',
-          profileImage.path,
-          filename: 'profile_image.jpg',
+          'property_images[$i]',
+          propertyImageFile.path,
+          filename: 'property_image_$i.jpg',
         ));
       }
 
@@ -231,6 +232,7 @@ class AuthServices extends BaseApiService {
     required String email,
     required String phoneNumber,
     required String password,
+    required String city,
     String? address,
     String? postalCode,
     required String cPassword,
@@ -250,6 +252,7 @@ class AuthServices extends BaseApiService {
     required String country,
     required String location,
     required String description,
+    required String additionalInfo,
   }) async {
     final hasInternet = await ConnectivityUtility.checkInternetConnectivity();
     if (!hasInternet) {
@@ -286,8 +289,9 @@ class AuthServices extends BaseApiService {
         'duration': duration,
         'country': country,
         'location': location,
-        'city': "none",
+        'city': city,
         'description': description,
+        'additional_information': additionalInfo,
       };
 
       // Log request
@@ -604,32 +608,20 @@ class AuthServices extends BaseApiService {
 
       // Log request
       BaseApiService.logRequest(
-        url.toString(),
-        'GET',
-        getHeader(userToken: token),
-        null
-      );
+          url.toString(), 'GET', getHeader(userToken: token), null);
 
-      var response = await http.get(
-        url,
-        headers: getHeader(userToken: token)
-      );
+      var response = await http.get(url, headers: getHeader(userToken: token));
 
       // Log response
       BaseApiService.logResponse(
-        url.toString(),
-        response.statusCode,
-        response.body
-      );
+          url.toString(), response.statusCode, response.body);
 
       if (response.statusCode == 200) {
         final decodedResponse = json.decode(response.body);
         return decodedResponse;
       } else {
-        throw ApiException(
-          'Failed to fetch service provider state',
-          statusCode: response.statusCode
-        );
+        throw ApiException('Failed to fetch service provider state',
+            statusCode: response.statusCode);
       }
     } catch (e) {
       // Log error
@@ -652,9 +644,9 @@ class AuthServices extends BaseApiService {
       AppUrls.landlordStat,
     );
     try {
-      var res = await http.post(url, headers: getHeader(userToken: token), body: jsonEncode({
-        "landlord_id" : data
-      }));
+      var res = await http.post(url,
+          headers: getHeader(userToken: token),
+          body: jsonEncode({"landlord_id": data}));
       return json.decode(res.body);
     } catch (e) {
       // Log error
@@ -711,37 +703,26 @@ class AuthServices extends BaseApiService {
 
       // Log request
       BaseApiService.logRequest(
-        url.toString(),
-        'GET',
-        getHeader(userToken: token),
-        null
-      );
+          url.toString(), 'GET', getHeader(userToken: token), null);
 
-      var response = await http.get(
-        url,
-        headers: getHeader(userToken: token)
-      );
+      var response = await http.get(url, headers: getHeader(userToken: token));
 
       // Log response
       BaseApiService.logResponse(
-        url.toString(),
-        response.statusCode,
-        response.body
-      );
+          url.toString(), response.statusCode, response.body);
 
       // Check if response is HTML
       if (response.body.trim().startsWith('<!DOCTYPE html>')) {
-        throw ApiException('Server returned HTML instead of JSON. Please try again.');
+        throw ApiException(
+            'Server returned HTML instead of JSON. Please try again.');
       }
 
       if (response.statusCode == 200) {
         final decodedResponse = json.decode(response.body);
         return decodedResponse;
       } else {
-        throw ApiException(
-          'Failed to fetch visitor state',
-          statusCode: response.statusCode
-        );
+        throw ApiException('Failed to fetch visitor state',
+            statusCode: response.statusCode);
       }
     } catch (e) {
       // Log error

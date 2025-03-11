@@ -39,12 +39,23 @@ class MyServiceRequestDetailController extends GetxController {
           getServiceRequestOne.value = CalendarData.fromJson(data);
           
           // Handle service images if any
-          if (getServiceRequestOne.value?.serviceImages != null) {
-            images = getServiceRequestOne.value!.serviceImages
-                .map((e) => e.toString())
-                .where((s) => s.trim().isNotEmpty)
-                .toList();
-            print("Loaded ${images.length} images");
+          if (getServiceRequestOne.value?.serviceImages != null && 
+              getServiceRequestOne.value!.serviceImages.isNotEmpty) {
+            
+            // Extract image paths from service images
+            images = [];
+            for (var imageData in getServiceRequestOne.value!.serviceImages) {
+              if (imageData is Map<String, dynamic> && imageData.containsKey('image_path')) {
+                String imagePath = imageData['image_path'].toString();
+                if (imagePath.isNotEmpty) {
+                  images.add(imagePath);
+                }
+              } else if (imageData is String && imageData.isNotEmpty) {
+                images.add(imageData);
+              }
+            }
+            
+            print("Loaded ${images.length} images: $images");
           } else {
             print("No service images found");
             images = [];

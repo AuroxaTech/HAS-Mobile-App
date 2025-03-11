@@ -66,7 +66,7 @@ class TenantContractDetailScreen extends GetView<ContractDetailController> {
                                                   .tenant!
                                                   .profileimage ==
                                               ""
-                                          ? AssetImage(AppIcons.appLogo)
+                                          ? const AssetImage(AppIcons.appLogo)
                                           : CachedNetworkImageProvider(
                                                   controller
                                                       .getContractOne
@@ -245,7 +245,8 @@ class TenantContractDetailScreen extends GetView<ContractDetailController> {
                                           ),
                                           customText(
                                               text: controller.getContractOne
-                                                  .value!.occupants.toString(),
+                                                  .value!.occupants
+                                                  .toString(),
                                               color: blackColor,
                                               fontSize: 18,
                                               fontWeight: FontWeight.w500),
@@ -525,7 +526,8 @@ class TenantContractDetailScreen extends GetView<ContractDetailController> {
                                   h5,
                                   customText(
                                       text: controller.getContractOne.value!
-                                          .rentIncreaseNoticePeriod.toString(),
+                                          .rentIncreaseNoticePeriod
+                                          .toString(),
                                       color: blackColor,
                                       fontSize: 18,
                                       fontWeight: FontWeight.w500),
@@ -541,7 +543,8 @@ class TenantContractDetailScreen extends GetView<ContractDetailController> {
                                   h5,
                                   customText(
                                       text: controller.getContractOne.value!
-                                          .noticePeriodForTermination.toString(),
+                                          .noticePeriodForTermination
+                                          .toString(),
                                       color: blackColor,
                                       fontSize: 18,
                                       fontWeight: FontWeight.w500),

@@ -41,6 +41,8 @@ class SplashScreenController extends GetxController {
           } else {
             Get.offNamed(kLoginScreen);
           }
+        } else {
+          Get.offNamed(kLoginScreen);
         }
         // if (token != null) {
         //   if (role == "landlord") {
@@ -56,7 +58,7 @@ class SplashScreenController extends GetxController {
         //   Get.offNamed(kLoginScreen);
         // }
       } else {
-        Get.offNamed(kLoginScreen);
+        Get.offNamed(kIntroScreen);
       }
     });
   }

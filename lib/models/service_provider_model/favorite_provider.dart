@@ -1,218 +1,188 @@
 // To parse this JSON data, do
 //
-//     final userState = userStateFromJson(jsonString);
+//     final favorite = favoriteFromJson(jsonString);
 
 import 'dart:convert';
 
-Favorite userStateFromJson(String str) => Favorite.fromJson(json.decode(str));
+FavoriteResponse favoriteFromJson(String str) => FavoriteResponse.fromJson(json.decode(str));
 
-String userStateToJson(Favorite data) => json.encode(data.toJson());
+String favoriteToJson(FavoriteResponse data) => json.encode(data.toJson());
 
-class Favorite {
-  bool status;
-  List<FavoriteService> favoriteServices;
-  List<FavoriteProperty> favoriteProperties;
+class FavoriteResponse {
+  bool success;
   String message;
+  FavoritePayload payload;
 
-  Favorite({
-    required this.status,
-    required this.favoriteServices,
-    required this.favoriteProperties,
+  FavoriteResponse({
+    required this.success,
     required this.message,
+    required this.payload,
   });
 
-  factory Favorite.fromJson(Map<String, dynamic> json) => Favorite(
-        status: json["status"],
-        favoriteServices: json["favorite_services"] != null
-            ? List<FavoriteService>.from(json["favorite_services"]["data"]
-                .map((x) => FavoriteService.fromJson(x)))
-            : [],
-        favoriteProperties: json["favorite_properties"] != null
-            ? List<FavoriteProperty>.from(json["favorite_properties"]["data"]
-                .map((x) => FavoriteProperty.fromJson(x)))
-            : [],
-        message: json["message"],
-      );
+  factory FavoriteResponse.fromJson(Map<String, dynamic> json) => FavoriteResponse(
+    success: json["success"] ?? false,
+    message: json["message"] ?? "",
+    payload: FavoritePayload.fromJson(json["payload"] ?? {}),
+  );
 
   Map<String, dynamic> toJson() => {
-        "status": status,
-        "favorite_services":
-            List<dynamic>.from(favoriteServices.map((x) => x.toJson())),
-        "favorite_properties":
-            List<dynamic>.from(favoriteProperties.map((x) => x.toJson())),
-        "message": message,
-      };
+    "success": success,
+    "message": message,
+    "payload": payload.toJson(),
+  };
 }
 
-class FavoriteProperty {
+class FavoritePayload {
+  int currentPage;
+  List<FavoriteItem> data;
+  String firstPageUrl;
+  int from;
+  int lastPage;
+  String lastPageUrl;
+  List<Link> links;
+  String? nextPageUrl;
+  String path;
+  int perPage;
+  String? prevPageUrl;
+  int? to;
+  int total;
+
+  FavoritePayload({
+    required this.currentPage,
+    required this.data,
+    required this.firstPageUrl,
+    required this.from,
+    required this.lastPage,
+    required this.lastPageUrl,
+    required this.links,
+    this.nextPageUrl,
+    required this.path,
+    required this.perPage,
+    this.prevPageUrl,
+    this.to,
+    required this.total,
+  });
+
+  factory FavoritePayload.fromJson(Map<String, dynamic> json) => FavoritePayload(
+    currentPage: json["current_page"] ?? 1,
+    data: List<FavoriteItem>.from((json["data"] ?? []).map((x) => FavoriteItem.fromJson(x))),
+    firstPageUrl: json["first_page_url"] ?? "",
+    from: json["from"] ?? 0,
+    lastPage: json["last_page"] ?? 1,
+    lastPageUrl: json["last_page_url"] ?? "",
+    links: List<Link>.from((json["links"] ?? []).map((x) => Link.fromJson(x))),
+    nextPageUrl: json["next_page_url"],
+    path: json["path"] ?? "",
+    perPage: json["per_page"] ?? 10,
+    prevPageUrl: json["prev_page_url"],
+    to: json["to"],
+    total: json["total"] ?? 0,
+  );
+
+  Map<String, dynamic> toJson() => {
+    "current_page": currentPage,
+    "data": List<dynamic>.from(data.map((x) => x.toJson())),
+    "first_page_url": firstPageUrl,
+    "from": from,
+    "last_page": lastPage,
+    "last_page_url": lastPageUrl,
+    "links": List<dynamic>.from(links.map((x) => x.toJson())),
+    "next_page_url": nextPageUrl,
+    "path": path,
+    "per_page": perPage,
+    "prev_page_url": prevPageUrl,
+    "to": to,
+    "total": total,
+  };
+}
+
+class FavoriteItem {
   int id;
   int userId;
-  int propertyId;
+  int favouritableId;
+  String favouritableType;
   int favFlag;
   DateTime createdAt;
   DateTime updatedAt;
-  PropertData? property;
+  dynamic favouritable;
 
-  FavoriteProperty({
+  FavoriteItem({
     required this.id,
     required this.userId,
-    required this.propertyId,
+    required this.favouritableId,
+    required this.favouritableType,
     required this.favFlag,
     required this.createdAt,
     required this.updatedAt,
-    required this.property,
+    required this.favouritable,
   });
 
-  factory FavoriteProperty.fromJson(Map<String, dynamic> json) =>
-      FavoriteProperty(
-        id: json["id"],
-        userId: json["user_id"],
-        propertyId: json["property_id"],
-        favFlag: json["fav_flag"],
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
-        property: json["property"] == null
-            ? null
-            : PropertData.fromJson(json["property"]),
-      );
+  factory FavoriteItem.fromJson(Map<String, dynamic> json) => FavoriteItem(
+    id: json["id"] ?? 0,
+    userId: json["user_id"] ?? 0,
+    favouritableId: json["favouritable_id"] ?? 0,
+    favouritableType: json["favouritable_type"] ?? "",
+    favFlag: json["fav_flag"] ?? 0,
+    createdAt: DateTime.parse(json["created_at"] ?? DateTime.now().toIso8601String()),
+    updatedAt: DateTime.parse(json["updated_at"] ?? DateTime.now().toIso8601String()),
+    favouritable: json["favouritable"],
+  );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "user_id": userId,
-        "property_id": propertyId,
-        "fav_flag": favFlag,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
-        "property": property,
-      };
+    "id": id,
+    "user_id": userId,
+    "favouritable_id": favouritableId,
+    "favouritable_type": favouritableType,
+    "fav_flag": favFlag,
+    "created_at": createdAt.toIso8601String(),
+    "updated_at": updatedAt.toIso8601String(),
+    "favouritable": favouritable,
+  };
+
+  // Helper method to get property data
+  PropertyData? get property {
+    if (favouritableType.contains("Property") && favouritable != null) {
+      return PropertyData.fromJson(favouritable);
+    }
+    return null;
+  }
+
+  // Helper method to get service data
+  ServiceData? get service {
+    if (favouritableType.contains("Service") && favouritable != null) {
+      return ServiceData.fromJson(favouritable);
+    }
+    return null;
+  }
 }
 
-class FavoriteService {
-  int id;
-  int userId;
-  int serviceId;
-  int favFlag;
-  DateTime createdAt;
-  DateTime updatedAt;
-  Service? service;
+class Link {
+  String? url;
+  String label;
+  bool active;
 
-  FavoriteService({
-    required this.id,
-    required this.userId,
-    required this.serviceId,
-    required this.favFlag,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.service,
+  Link({
+    this.url,
+    required this.label,
+    required this.active,
   });
 
-  factory FavoriteService.fromJson(Map<String, dynamic> json) =>
-      FavoriteService(
-        id: json["id"],
-        userId: json["user_id"],
-        serviceId: json["service_id"],
-        favFlag: json["fav_flag"],
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
-        service:
-            json["service"] == null ? null : Service.fromJson(json["service"]),
-      );
+  factory Link.fromJson(Map<String, dynamic> json) => Link(
+    url: json["url"],
+    label: json["label"] ?? "",
+    active: json["active"] ?? false,
+  );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "user_id": userId,
-        "service_id": serviceId,
-        "fav_flag": favFlag,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
-        "service": service?.toJson(),
-      };
+    "url": url,
+    "label": label,
+    "active": active,
+  };
 }
 
-class Service {
+class PropertyData {
   int id;
-  int userId;
-  String serviceName;
-  String description;
-  String categoryId;
-  String pricing;
-  String durationId;
-  String startTime;
-  String endTime;
-  String location;
-  String lat;
-  String long;
-  String media;
-  String additionalInformation;
-  DateTime createdAt;
-  DateTime updatedAt;
-  bool isFavorite;
-
-  Service(
-      {required this.id,
-      required this.userId,
-      required this.serviceName,
-      required this.description,
-      required this.categoryId,
-      required this.pricing,
-      required this.durationId,
-      required this.startTime,
-      required this.endTime,
-      required this.location,
-      required this.lat,
-      required this.long,
-      required this.media,
-      required this.additionalInformation,
-      required this.createdAt,
-      required this.updatedAt,
-      required this.isFavorite});
-
-  factory Service.fromJson(Map<String, dynamic> json) => Service(
-        id: json["id"],
-        userId: json["user_id"],
-        serviceName: json["service_name"] ?? "",
-        description: json["description"] ?? "",
-        categoryId: json["category_id"] ?? "",
-        pricing: json["pricing"] ?? "",
-        durationId: json["duration_id"] ?? "",
-        startTime: json["start_time"] ?? "",
-        endTime: json["end_time"] ?? "",
-        location: json["location"] ?? "",
-        lat: json["lat"],
-        long: json["long"],
-        media: json["media"] ?? "",
-        additionalInformation: json["additional_information"] ?? "",
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
-        isFavorite: json["is_favorite"] ?? false,
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "user_id": userId,
-        "service_name": serviceName,
-        "description": description,
-        "category_id": categoryId,
-        "pricing": pricing,
-        "duration_id": durationId,
-        "start_time": startTime,
-        "end_time": endTime,
-        "location": location,
-        "lat": lat,
-        "long": long,
-        "media": media,
-        "additional_information": additionalInformation,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
-        "is_favorite": isFavorite,
-      };
-}
-
-class PropertData {
-  int id;
-  int userId;
-  int type;
-  String? images;
+  String type;
   String city;
   String amount;
   String address;
@@ -223,19 +193,18 @@ class PropertData {
   String bathroom;
   String? description;
   String? electricityBill;
-  int propertyType;
-  int propertySubType;
+  String propertyType;
+  String propertySubType;
+  int userId;
   DateTime createdAt;
   DateTime updatedAt;
-  String noOfProperty;
-  String availabilityStartTime;
-  String availabilityEndTime;
+  int isFavorite;
+  String? images;
+  List<PropertyImage> propertyImages;
 
-  PropertData({
+  PropertyData({
     required this.id,
-    required this.userId,
     required this.type,
-    required this.images,
     required this.city,
     required this.amount,
     required this.address,
@@ -244,62 +213,277 @@ class PropertData {
     required this.areaRange,
     required this.bedroom,
     required this.bathroom,
-    required this.description,
-    required this.electricityBill,
+    this.description,
+    this.electricityBill,
     required this.propertyType,
     required this.propertySubType,
+    required this.userId,
     required this.createdAt,
     required this.updatedAt,
-    required this.noOfProperty,
-    required this.availabilityStartTime,
-    required this.availabilityEndTime,
+    required this.isFavorite,
+    this.images,
+    required this.propertyImages,
   });
 
-  factory PropertData.fromJson(Map<String, dynamic> json) => PropertData(
-        id: json["id"],
-        userId: json["user_id"],
-        type: json["type"],
-        images: json["images"],
-        city: json["city"],
-        amount: json["amount"],
-        address: json["address"],
-        lat: json["lat"],
-        long: json["long"],
-        areaRange: json["area_range"],
-        bedroom: json["bedroom"],
-        bathroom: json["bathroom"],
-        description: json["description"],
-        electricityBill: json["electricity_bill"],
-        propertyType: json["property_type"],
-        propertySubType: json["property_sub_type"],
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
-        noOfProperty: json["no_of_property"] ?? "",
-        availabilityStartTime: json["availability_start_time"] ?? "",
-        availabilityEndTime: json["availability_end_time"] ?? "",
-      );
+  factory PropertyData.fromJson(Map<String, dynamic> json) => PropertyData(
+    id: json["id"] ?? 0,
+    type: json["type"]?.toString() ?? "",
+    city: json["city"] ?? "",
+    amount: json["amount"] ?? "0.00",
+    address: json["address"] ?? "",
+    lat: json["lat"] ?? "0.0",
+    long: json["long"] ?? "0.0",
+    areaRange: json["area_range"] ?? "",
+    bedroom: json["bedroom"]?.toString() ?? "0",
+    bathroom: json["bathroom"]?.toString() ?? "0",
+    description: json["description"],
+    electricityBill: json["electricity_bill"],
+    propertyType: json["property_type"]?.toString() ?? "",
+    propertySubType: json["property_sub_type"]?.toString() ?? "",
+    userId: json["user_id"] ?? 0,
+    createdAt: DateTime.parse(json["created_at"] ?? DateTime.now().toIso8601String()),
+    updatedAt: DateTime.parse(json["updated_at"] ?? DateTime.now().toIso8601String()),
+    isFavorite: json["isFavorite"] ?? 0,
+    images: json["images"],
+    propertyImages: json["property_images"] != null 
+        ? List<PropertyImage>.from(json["property_images"].map((x) => PropertyImage.fromJson(x)))
+        : [],
+  );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "user_id": userId,
-        "type": type,
-        "images": images,
-        "city": city,
-        "amount": amount,
-        "address": address,
-        "lat": lat,
-        "long": long,
-        "area_range": areaRange,
-        "bedroom": bedroom,
-        "bathroom": bathroom,
-        "description": description,
-        "electricity_bill": electricityBill,
-        "property_type": propertyType,
-        "property_sub_type": propertySubType,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
-        "no_of_property": noOfProperty,
-        "availability_start_time": availabilityStartTime,
-        "availability_end_time": availabilityEndTime,
-      };
+    "id": id,
+    "type": type,
+    "city": city,
+    "amount": amount,
+    "address": address,
+    "lat": lat,
+    "long": long,
+    "area_range": areaRange,
+    "bedroom": bedroom,
+    "bathroom": bathroom,
+    "description": description,
+    "electricity_bill": electricityBill,
+    "property_type": propertyType,
+    "property_sub_type": propertySubType,
+    "user_id": userId,
+    "created_at": createdAt.toIso8601String(),
+    "updated_at": updatedAt.toIso8601String(),
+    "isFavorite": isFavorite,
+    "images": images,
+    "property_images": List<dynamic>.from(propertyImages.map((x) => x.toJson())),
+  };
+}
+
+class PropertyImage {
+  int id;
+  int propertyId;
+  String imagePath;
+  DateTime createdAt;
+  DateTime updatedAt;
+
+  PropertyImage({
+    required this.id,
+    required this.propertyId,
+    required this.imagePath,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory PropertyImage.fromJson(Map<String, dynamic> json) => PropertyImage(
+    id: json["id"] ?? 0,
+    propertyId: json["property_id"] ?? 0,
+    imagePath: json["image_path"] ?? "",
+    createdAt: DateTime.parse(json["created_at"] ?? DateTime.now().toIso8601String()),
+    updatedAt: DateTime.parse(json["updated_at"] ?? DateTime.now().toIso8601String()),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "property_id": propertyId,
+    "image_path": imagePath,
+    "created_at": createdAt.toIso8601String(),
+    "updated_at": updatedAt.toIso8601String(),
+  };
+}
+
+class ServiceData {
+  int id;
+  int userId;
+  String serviceName;
+  String description;
+  String pricing;
+  String duration;
+  String startTime;
+  String endTime;
+  String location;
+  String? lat;
+  String? long;
+  String? additionalInformation;
+  String country;
+  String city;
+  int yearExperience;
+  String? cnicFrontPic;
+  String? cnicBackPic;
+  String? certification;
+  String? resume;
+  DateTime createdAt;
+  DateTime updatedAt;
+  String status;
+  int? providerId;
+  String serviceType;
+  String paymentStatus;
+  String? postalCode;
+  int isApplied;
+  DateTime? assignedAt;
+  DateTime? completedAt;
+  int isFavorite;
+  int? serviceId;
+  String? propertyType;
+  String? media;
+  List<ServiceImage> serviceImages;
+
+  ServiceData({
+    required this.id,
+    required this.userId,
+    required this.serviceName,
+    required this.description,
+    required this.pricing,
+    required this.duration,
+    required this.startTime,
+    required this.endTime,
+    required this.location,
+    this.lat,
+    this.long,
+    this.additionalInformation,
+    required this.country,
+    required this.city,
+    required this.yearExperience,
+    this.cnicFrontPic,
+    this.cnicBackPic,
+    this.certification,
+    this.resume,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.status,
+    this.providerId,
+    required this.serviceType,
+    required this.paymentStatus,
+    this.postalCode,
+    required this.isApplied,
+    this.assignedAt,
+    this.completedAt,
+    required this.isFavorite,
+    this.serviceId,
+    this.propertyType,
+    this.media,
+    required this.serviceImages,
+  });
+
+  factory ServiceData.fromJson(Map<String, dynamic> json) => ServiceData(
+    id: json["id"] ?? 0,
+    userId: json["user_id"] ?? 0,
+    serviceName: json["service_name"] ?? "",
+    description: json["description"] ?? "",
+    pricing: json["pricing"] ?? "0.00",
+    duration: json["duration"]?.toString() ?? "0",
+    startTime: json["start_time"] ?? "",
+    endTime: json["end_time"] ?? "",
+    location: json["location"] ?? "",
+    lat: json["lat"],
+    long: json["long"],
+    additionalInformation: json["additional_information"],
+    country: json["country"] ?? "",
+    city: json["city"] ?? "",
+    yearExperience: json["year_experience"] ?? 0,
+    cnicFrontPic: json["cnic_front_pic"],
+    cnicBackPic: json["cnic_back_pic"],
+    certification: json["certification"],
+    resume: json["resume"],
+    createdAt: DateTime.parse(json["created_at"] ?? DateTime.now().toIso8601String()),
+    updatedAt: DateTime.parse(json["updated_at"] ?? DateTime.now().toIso8601String()),
+    status: json["status"] ?? "pending",
+    providerId: json["provider_id"],
+    serviceType: json["service_type"] ?? "request",
+    paymentStatus: json["payment_status"] ?? "pending",
+    postalCode: json["postal_code"],
+    isApplied: json["is_applied"] ?? 0,
+    assignedAt: json["assigned_at"] != null ? DateTime.parse(json["assigned_at"]) : null,
+    completedAt: json["completed_at"] != null ? DateTime.parse(json["completed_at"]) : null,
+    isFavorite: json["isFavorite"] ?? 0,
+    serviceId: json["service_id"],
+    propertyType: json["property_type"],
+    media: json["media"],
+    serviceImages: json["service_images"] != null 
+        ? List<ServiceImage>.from(json["service_images"].map((x) => ServiceImage.fromJson(x)))
+        : [],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "user_id": userId,
+    "service_name": serviceName,
+    "description": description,
+    "pricing": pricing,
+    "duration": duration,
+    "start_time": startTime,
+    "end_time": endTime,
+    "location": location,
+    "lat": lat,
+    "long": long,
+    "additional_information": additionalInformation,
+    "country": country,
+    "city": city,
+    "year_experience": yearExperience,
+    "cnic_front_pic": cnicFrontPic,
+    "cnic_back_pic": cnicBackPic,
+    "certification": certification,
+    "resume": resume,
+    "created_at": createdAt.toIso8601String(),
+    "updated_at": updatedAt.toIso8601String(),
+    "status": status,
+    "provider_id": providerId,
+    "service_type": serviceType,
+    "payment_status": paymentStatus,
+    "postal_code": postalCode,
+    "is_applied": isApplied,
+    "assigned_at": assignedAt?.toIso8601String(),
+    "completed_at": completedAt?.toIso8601String(),
+    "isFavorite": isFavorite,
+    "service_id": serviceId,
+    "property_type": propertyType,
+    "media": media,
+    "service_images": List<dynamic>.from(serviceImages.map((x) => x.toJson())),
+  };
+}
+
+class ServiceImage {
+  int id;
+  int serviceId;
+  String imagePath;
+  DateTime createdAt;
+  DateTime updatedAt;
+
+  ServiceImage({
+    required this.id,
+    required this.serviceId,
+    required this.imagePath,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory ServiceImage.fromJson(Map<String, dynamic> json) => ServiceImage(
+    id: json["id"] ?? 0,
+    serviceId: json["service_id"] ?? 0,
+    imagePath: json["image_path"] ?? "",
+    createdAt: DateTime.parse(json["created_at"] ?? DateTime.now().toIso8601String()),
+    updatedAt: DateTime.parse(json["updated_at"] ?? DateTime.now().toIso8601String()),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "service_id": serviceId,
+    "image_path": imagePath,
+    "created_at": createdAt.toIso8601String(),
+    "updated_at": updatedAt.toIso8601String(),
+  };
 }

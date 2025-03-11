@@ -6,7 +6,7 @@ import 'dart:convert';
 
 AllServices allServicesFromJson(String str) {
   final dynamic decoded = json.decode(str);
-  
+
   // Handle different response formats
   if (decoded is List) {
     // If it's a list of services, create a custom wrapper
@@ -53,8 +53,8 @@ class AllServices {
     return AllServices(
       success: json["success"] ?? false,
       message: json["message"] ?? "",
-      payload: json.containsKey("payload") 
-          ? Data.fromJson(json["payload"]) 
+      payload: json.containsKey("payload")
+          ? Data.fromJson(json["payload"])
           : Data.fromJson(json), // Fallback to treating the whole json as data
     );
   }
@@ -267,7 +267,7 @@ class AllService {
       location: json["location"],
       lat: json["lat"],
       long: json["long"],
-      additionalInformation: json["additional_information"],
+      additionalInformation: json["additional_information"] ?? "",
       country: json["country"] ?? "",
       city: json["city"] ?? "",
       yearExperience: json["year_experience"],
@@ -283,8 +283,12 @@ class AllService {
       paymentStatus: json["payment_status"] ?? "pending",
       postalCode: json["postal_code"],
       isApplied: isApplied,
-      assignedAt: json["assigned_at"] != null ? DateTime.parse(json["assigned_at"]) : null,
-      completedAt: json["completed_at"] != null ? DateTime.parse(json["completed_at"]) : null,
+      assignedAt: json["assigned_at"] != null
+          ? DateTime.parse(json["assigned_at"])
+          : null,
+      completedAt: json["completed_at"] != null
+          ? DateTime.parse(json["completed_at"])
+          : null,
       isFavorite: json["isFavorite"] ?? 0,
       serviceId: json["service_id"],
       propertyType: json["property_type"],
@@ -293,8 +297,9 @@ class AllService {
       averageRate: json["average_rate"] ?? 0,
       user: json["user"] != null ? User.fromJson(json["user"]) : null,
       serviceProviderRequests: serviceProviderRequests,
-      serviceImages: json["service_images"] != null 
-          ? List<ServiceImage>.from(json["service_images"].map((x) => ServiceImage.fromJson(x)))
+      serviceImages: json["service_images"] != null
+          ? List<ServiceImage>.from(
+              json["service_images"].map((x) => ServiceImage.fromJson(x)))
           : [],
     );
   }
@@ -340,7 +345,8 @@ class AllService {
             ? List<dynamic>.from(
                 serviceProviderRequests!.map((x) => x.toJson()))
             : null,
-        "service_images": List<dynamic>.from(serviceImages.map((x) => x.toJson())),
+        "service_images":
+            List<dynamic>.from(serviceImages.map((x) => x.toJson())),
       };
 }
 
@@ -589,18 +595,18 @@ class ServiceImage {
   });
 
   factory ServiceImage.fromJson(Map<String, dynamic> json) => ServiceImage(
-    id: json["id"],
-    serviceId: json["service_id"],
-    imagePath: json["image_path"],
-    createdAt: DateTime.parse(json["created_at"]),
-    updatedAt: DateTime.parse(json["updated_at"]),
-  );
+        id: json["id"],
+        serviceId: json["service_id"],
+        imagePath: json["image_path"],
+        createdAt: DateTime.parse(json["created_at"]),
+        updatedAt: DateTime.parse(json["updated_at"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "service_id": serviceId,
-    "image_path": imagePath,
-    "created_at": createdAt.toIso8601String(),
-    "updated_at": updatedAt.toIso8601String(),
-  };
+        "id": id,
+        "service_id": serviceId,
+        "image_path": imagePath,
+        "created_at": createdAt.toIso8601String(),
+        "updated_at": updatedAt.toIso8601String(),
+      };
 }

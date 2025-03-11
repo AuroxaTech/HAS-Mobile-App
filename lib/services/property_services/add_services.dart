@@ -734,7 +734,7 @@ class ServiceProviderServices {
   Future<Map<String, dynamic>> getFavoriteServices(
       {required int id, required int page}) async {
     try {
-      Uri url = Uri.parse("${AppUrls.getFavourite}?page=$page");
+      Uri url = Uri.parse("${AppUrls.getFavouriteServices}?page=$page");
       var id = await Preferences.getUserID();
       var res = await http.get(
         url,
@@ -996,20 +996,73 @@ class ServiceProviderServices {
     }
   }
 
-  getServiceJob({required int? id}) async {
+  Future<Map<String, dynamic>> getServiceJob({required int? id}) async {
     print("Calling service job API for ID: $id");
     Uri url = Uri.parse(
       "${AppUrls.getServiceJobDetail}/$id",
     );
     try {
       var token = await Preferences.getToken();
-      var res = await http.get(url, headers: getHeader(userToken: token));
-      return json.decode(res.body);
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
+
+      // Log request
+      BaseApiService.logRequest(
+          url.toString(), 'GET', getHeader(userToken: token), null);
+
+      var response = await http.get(url, headers: getHeader(userToken: token));
+
+      // Log response
+      BaseApiService.logResponse(
+          url.toString(), response.statusCode, response.body);
+
+      // Check if response is HTML
+      if (response.body.trim().startsWith('<!DOCTYPE html>')) {
+        print("Received HTML response instead of JSON");
+        return {
+          'success': false,
+          'message': 'Server returned HTML instead of JSON. Please try again.'
+        };
       }
-      return e;
+
+      if (response.statusCode == 200) {
+        final decodedResponse = json.decode(response.body);
+
+        if (decodedResponse['success'] == true) {
+          return {
+            'success': true,
+            'payload': decodedResponse['payload'],
+            'message': decodedResponse['message'] ??
+                'Service job details retrieved successfully'
+          };
+        } else {
+          return {
+            'success': false,
+            'message': decodedResponse['message'] ??
+                'Failed to fetch service job details'
+          };
+        }
+      } else {
+        return {
+          'success': false,
+          'message': 'Server responded with status code: ${response.statusCode}'
+        };
+      }
+    } catch (e) {
+      print("Error in getServiceJob: $e");
+
+      // Log error
+      BaseApiService.logError(url.toString(), e.toString());
+
+      if (e is FormatException) {
+        return {
+          'success': false,
+          'message': 'Invalid response format from server'
+        };
+      }
+
+      return {
+        'success': false,
+        'message': 'Failed to fetch service job details: ${e.toString()}'
+      };
     }
   }
 }

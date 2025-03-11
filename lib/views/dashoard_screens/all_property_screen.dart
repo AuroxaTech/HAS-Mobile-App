@@ -74,9 +74,11 @@ class AllPropertyScreen extends GetView<AllPropertyController> {
                             myPropertyWidget(context, onTap: () {
                               Get.toNamed(kAllPropertyDetailScreen,
                                   arguments: item.id);
-                              },
+                            },
                                 title: item.city.toString(),
-                                image: item.propertyImages.isNotEmpty ? item.propertyImages.first : imageList[0],
+                                image: item.propertyImages!.isNotEmpty
+                                    ? item.propertyImages!.first
+                                    : imageList[0],
                                 price: "\$${item.amount.toString()}",
                                 description: item.description.toString(),
                                 bedroom: item.bedroom.toString(),
@@ -99,7 +101,8 @@ class AllPropertyScreen extends GetView<AllPropertyController> {
                                                 : greyText,
                                           ),
                                           onPressed: () {
-                                            controller.toggleFavorite1(index, item.id);
+                                            controller.toggleFavorite1(
+                                                index, item.id);
                                           },
                                         ),
                                       )),

@@ -406,12 +406,16 @@ class JobsScreen extends GetView<JobScreenController> { // Changed to JobListCon
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () async {
-            controller.pendingJobController.itemList!.clear();
-            controller.completedJobController.itemList!.clear();
-            controller.rejectedJobController.itemList!.clear();
-            //controller.acceptedJobController.itemList!.clear(); // Clear accepted jobs
-           // controller.cancelledJobController.itemList!.clear(); // Clear cancelled jobs
-            await Future.microtask(() => controller.getServiceJobs(1, 'pending')); // Default to pending
+            if (controller.pendingJobController.itemList != null) {
+              controller.pendingJobController.itemList!.clear();
+            }
+            if (controller.completedJobController.itemList != null) {
+              controller.completedJobController.itemList!.clear();
+            }
+            if (controller.rejectedJobController.itemList != null) {
+              controller.rejectedJobController.itemList!.clear();
+            }
+            await Future.microtask(() => controller.getServiceJobs(1, 'pending'));
           },
           child: Padding(
             padding: const EdgeInsets.all(18.0),
@@ -430,14 +434,16 @@ class JobsScreen extends GetView<JobScreenController> { // Changed to JobListCon
                               controller.pending.value = true;
                               controller.completed.value = false;
                               controller.reject.value = false;
-                              // controller.accepted.value = false; // Reset accepted
-                              // controller.cancelled.value = false; // Reset cancelled
-                              controller.pendingJobController.itemList!.clear();
-                              controller.completedJobController.itemList!.clear();
-                              controller.rejectedJobController.itemList!.clear();
-                              // controller.acceptedJobController.itemList!.clear(); // Clear accepted
-                              // controller.cancelledJobController.itemList!.clear(); // Clear cancelled
-                              controller.getServiceJobs(1, 'pending'); // Pass status
+                              if (controller.pendingJobController.itemList != null) {
+                                controller.pendingJobController.itemList!.clear();
+                              }
+                              if (controller.completedJobController.itemList != null) {
+                                controller.completedJobController.itemList!.clear();
+                              }
+                              if (controller.rejectedJobController.itemList != null) {
+                                controller.rejectedJobController.itemList!.clear();
+                              }
+                              controller.getServiceJobs(1, 'pending');
                             },
                             text:
                             "Pending(${controller.pendingJobController.itemList?.length ?? 0})",
@@ -456,14 +462,16 @@ class JobsScreen extends GetView<JobScreenController> { // Changed to JobListCon
                               controller.pending.value = false;
                               controller.completed.value = true;
                               controller.reject.value = false;
-                              // controller.accepted.value = false; // Reset accepted
-                              // controller.cancelled.value = false; // Reset cancelled
-                              controller.pendingJobController.itemList!.clear();
-                              controller.completedJobController.itemList!.clear();
-                              controller.rejectedJobController.itemList!.clear();
-                              // controller.acceptedJobController.itemList!.clear(); // Clear accepted
-                              // controller.cancelledJobController.itemList!.clear(); // Clear cancelled
-                              controller.getServiceJobs(1, 'completed'); // Pass status
+                              if (controller.pendingJobController.itemList != null) {
+                                controller.pendingJobController.itemList!.clear();
+                              }
+                              if (controller.completedJobController.itemList != null) {
+                                controller.completedJobController.itemList!.clear();
+                              }
+                              if (controller.rejectedJobController.itemList != null) {
+                                controller.rejectedJobController.itemList!.clear();
+                              }
+                              controller.getServiceJobs(1, 'completed');
                             },
                             text:
                             "Completed(${controller.completedJobController.itemList?.length ?? 0})",
@@ -482,14 +490,16 @@ class JobsScreen extends GetView<JobScreenController> { // Changed to JobListCon
                               controller.pending.value = false;
                               controller.completed.value = false;
                               controller.reject.value = true;
-                              // controller.accepted.value = false; // Reset accepted
-                              // controller.cancelled.value = false; // Reset cancelled
-                              controller.pendingJobController.itemList!.clear();
-                              controller.completedJobController.itemList!.clear();
-                              controller.rejectedJobController.itemList!.clear();
-                              // controller.acceptedJobController.itemList!.clear(); // Clear accepted
-                              // controller.cancelledJobController.itemList!.clear(); // Clear cancelled
-                              controller.getServiceJobs(1, 'rejected'); // Pass status
+                              if (controller.pendingJobController.itemList != null) {
+                                controller.pendingJobController.itemList!.clear();
+                              }
+                              if (controller.completedJobController.itemList != null) {
+                                controller.completedJobController.itemList!.clear();
+                              }
+                              if (controller.rejectedJobController.itemList != null) {
+                                controller.rejectedJobController.itemList!.clear();
+                              }
+                              controller.getServiceJobs(1, 'rejected');
                             },
                             text:
                             "Rejected(${controller.rejectedJobController.itemList?.length ?? 0})",
@@ -556,15 +566,13 @@ class JobsScreen extends GetView<JobScreenController> { // Changed to JobListCon
                       ],
                     ),
                     h15,
-                    // jobWidget(context, ),
-
                     controller.pending.value
-                        ? PagedListView<int, Job>( // Changed to Job
+                        ? PagedListView<int, Job>(
                       shrinkWrap: true,
                       pagingController: controller.pendingJobController,
                       physics: const BouncingScrollPhysics(),
                       builderDelegate:
-                      PagedChildBuilderDelegate<Job>( // Changed to Job
+                      PagedChildBuilderDelegate<Job>(
                         firstPageErrorIndicatorBuilder: (context) =>
                             MaterialButton(
                               child: const Text(
@@ -582,33 +590,31 @@ class JobsScreen extends GetView<JobScreenController> { // Changed to JobListCon
                                   .retryLastFailedRequest(),
                             ),
                         itemBuilder: (context, item, index) {
-                          // Handle null createdAt safely
-
-                          print("Pending Item $index: $item"); // Debugging line
+                          print("Pending Item $index: $item");
 
                           DateTime? createdAt = item.createdAt;
                           String requestDate = createdAt != null
                               ? DateFormat('dd-M-yy')
                               .format(createdAt)
-                              : 'N/A'; // Fallback if createdAt is null
+                              : 'N/A';
                           String requestTime = createdAt != null
                               ? DateFormat('h:mm a')
                               .format(createdAt)
-                              : 'N/A'; // Fallback if createdAt is null
+                              : 'N/A';
 
                           return Column(
                             children: [
                               jobWidget(
                                 context,
-                                image: item.serviceImages.isNotEmpty ?
-                                    item.serviceImages[0] : "https://tse2.mm.bing.net/th?id=OIP.t9Ra4_Fudgqfn9B_hCFuOAHaE7&pid=Api", // Use serviceImages and fallback
-                                title: item.serviceName ?? 'No Service Name', // Null check serviceName directly
-                                contactDetail: item.user.email ?? 'No Email', // Access user.email
-                                clientName: item.user.fullName ?? 'No Client Name', // Access user.fullName
-                                location: item.location ?? 'No Location', // Use location directly
-                                description: item.description ?? 'No Description', // Use description directly
-                                clientDate: requestDate, // Use formatted requestDate
-                                clientTime: requestTime, // Use formatted requestTime
+                                image: item.serviceImages.isNotEmpty && item.serviceImages[0] is String ?
+                                    item.serviceImages[0] : "https://tse2.mm.bing.net/th?id=OIP.t9Ra4_Fudgqfn9B_hCFuOAHaE7&pid=Api",
+                                title: item.serviceName ?? 'No Service Name',
+                                contactDetail: item.user.email ?? 'No Email',
+                                clientName: item.user.fullName ?? 'No Client Name',
+                                location: item.location ?? 'No Location',
+                                description: item.description ?? 'No Description',
+                                clientDate: requestDate,
+                                clientTime: requestTime,
                                 requestTime: requestTime,
                                 requestDate: requestDate,
                                 detailTap: () {
@@ -626,13 +632,13 @@ class JobsScreen extends GetView<JobScreenController> { // Changed to JobListCon
                         : const SizedBox(),
 
                     controller.completed.value
-                        ? PagedListView<int, Job>( // Changed to Job
+                        ? PagedListView<int, Job>(
                       shrinkWrap: true,
                       pagingController:
                       controller.completedJobController,
                       physics: const BouncingScrollPhysics(),
                       builderDelegate: PagedChildBuilderDelegate<
-                          Job>( // Changed to Job
+                          Job>(
                           firstPageErrorIndicatorBuilder:
                               (context) => MaterialButton(
                             child: const Text(
@@ -653,7 +659,7 @@ class JobsScreen extends GetView<JobScreenController> { // Changed to JobListCon
                             DateTime? createdAt = item.createdAt;
                             String requestDate = createdAt != null
                                 ? DateFormat('dd-M-yy').format(createdAt)
-                                : 'N/A'; // Adjust the pattern as needed
+                                : 'N/A';
                             String requestTime = createdAt != null
                                 ? DateFormat('h:mm a')
                                 .format(createdAt)
@@ -662,15 +668,15 @@ class JobsScreen extends GetView<JobScreenController> { // Changed to JobListCon
                               children: [
                                 jobWidget(
                                   context,
-                                  image: item.serviceImages.isNotEmpty ?
-                                  item.serviceImages[0] : "https://tse2.mm.bing.net/th?id=OIP.t9Ra4_Fudgqfn9B_hCFuOAHaE7&pid=Api", // Use serviceImages and fallback
-                                  title: item.serviceName ?? 'No Service Name', // Null check serviceName directly
-                                  contactDetail: item.user.email ?? 'No Email', // Access user.email
-                                  clientName: item.user.fullName ?? 'No Client Name', // Access user.fullName
-                                  location: item.location ?? 'No Location', // Use location directly
-                                  description: item.description ?? 'No Description', // Use description directly
-                                  clientDate: requestDate, // Use formatted requestDate
-                                  clientTime: requestTime, // Use formatted requestTime
+                                  image: item.serviceImages.isNotEmpty && item.serviceImages[0] is String ?
+                                  item.serviceImages[0] : "https://tse2.mm.bing.net/th?id=OIP.t9Ra4_Fudgqfn9B_hCFuOAHaE7&pid=Api",
+                                  title: item.serviceName ?? 'No Service Name',
+                                  contactDetail: item.user.email ?? 'No Email',
+                                  clientName: item.user.fullName ?? 'No Client Name',
+                                  location: item.location ?? 'No Location',
+                                  description: item.description ?? 'No Description',
+                                  clientDate: requestDate,
+                                  clientTime: requestTime,
                                   requestTime: requestTime,
                                   requestDate: requestDate,
                                   // detailTap: (){
@@ -685,13 +691,13 @@ class JobsScreen extends GetView<JobScreenController> { // Changed to JobListCon
                         : const SizedBox(),
 
                     controller.reject.value
-                        ? PagedListView<int, Job>( // Changed to Job
+                        ? PagedListView<int, Job>(
                       shrinkWrap: true,
                       pagingController:
                       controller.rejectedJobController,
                       physics: const BouncingScrollPhysics(),
                       builderDelegate: PagedChildBuilderDelegate<
-                          Job>( // Changed to Job
+                          Job>(
                           firstPageErrorIndicatorBuilder:
                               (context) => MaterialButton(
                             child: const Text(
@@ -712,7 +718,7 @@ class JobsScreen extends GetView<JobScreenController> { // Changed to JobListCon
                             DateTime? createdAt = item.createdAt;
                             String requestDate = createdAt != null
                                 ? DateFormat('dd-M-yy').format(createdAt)
-                                : 'N/A'; // Adjust the pattern as needed
+                                : 'N/A';
                             String requestTime = createdAt != null
                                 ? DateFormat('h:mm a')
                                 .format(createdAt)
@@ -721,15 +727,15 @@ class JobsScreen extends GetView<JobScreenController> { // Changed to JobListCon
                               children: [
                                 jobWidget(
                                   context,
-                                  image: item.serviceImages.isNotEmpty ?
-                                  item.serviceImages[0] : "https://tse2.mm.bing.net/th?id=OIP.t9Ra4_Fudgqfn9B_hCFuOAHaE7&pid=Api", // Use serviceImages and fallback
-                                  title: item.serviceName ?? 'No Service Name', // Null check serviceName directly
-                                  contactDetail: item.user.email ?? 'No Email', // Access user.email
-                                  clientName: item.user.fullName ?? 'No Client Name', // Access user.fullName
-                                  location: item.location ?? 'No Location', // Use location directly
-                                  description: item.description ?? 'No Description', // Use description directly
-                                  clientDate: requestDate, // Use formatted requestDate
-                                  clientTime: requestTime, // Use formatted requestTime
+                                  image: item.serviceImages.isNotEmpty && item.serviceImages[0] is String ?
+                                  item.serviceImages[0] : "https://tse2.mm.bing.net/th?id=OIP.t9Ra4_Fudgqfn9B_hCFuOAHaE7&pid=Api",
+                                  title: item.serviceName ?? 'No Service Name',
+                                  contactDetail: item.user.email ?? 'No Email',
+                                  clientName: item.user.fullName ?? 'No Client Name',
+                                  location: item.location ?? 'No Location',
+                                  description: item.description ?? 'No Description',
+                                  clientDate: requestDate,
+                                  clientTime: requestTime,
                                   requestTime: requestTime,
                                   requestDate: requestDate,
                                   // detailTap: (){

@@ -13,7 +13,6 @@ import '../../constant_widget/constant_widgets.dart';
 import '../../constant_widget/view_photo.dart';
 import '../../controllers/land_lord/my_service_request_detail_controller.dart';
 import '../../custom_widgets/custom_button.dart';
-import '../../utils/api_urls.dart';
 
 class MyServiceRequestDetailScreen
     extends GetView<MyServiceRequestDetailController> {
@@ -68,8 +67,7 @@ class MyServiceRequestDetailScreen
                                     onTap: () {
                                       Get.to(
                                         () => ViewImage(
-                                          photo: AppUrls.mediaImages +
-                                              controller.images[index],
+                                          photo: controller.images[index],
                                         ),
                                         transition: routeTransition,
                                       );
@@ -77,8 +75,7 @@ class MyServiceRequestDetailScreen
                                     child: CachedNetworkImage(
                                       width: double.infinity,
                                       height: screenHeight(context) * 0.5,
-                                      imageUrl: AppUrls.mediaImages +
-                                          controller.images[index],
+                                      imageUrl: controller.images[index],
                                       fit: BoxFit.cover,
                                       errorWidget: (context, e, b) {
                                         return Image.asset(
@@ -196,7 +193,9 @@ class MyDraggable extends GetView<MyServiceRequestDetailController> {
                                   children: [
                                     Center(
                                       child: headingText(
-                                        text: controller.getServiceRequestOne.value?.serviceName ?? "",
+                                        text: controller.getServiceRequestOne
+                                                .value?.serviceName ??
+                                            "",
                                         fontSize: 24,
                                       ),
                                     ),

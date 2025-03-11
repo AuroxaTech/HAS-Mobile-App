@@ -195,7 +195,7 @@ class ServiceRequestProvider {
         "service_id": serviceId,
         "property_type": propertyType,
         "user": user.toJson(),
-        "service_images": serviceImages,
+        "service_images": List<dynamic>.from(serviceImages.map((x) => x.toJson())),
         "reviews": reviews,
       };
 }
@@ -421,7 +421,7 @@ class ServiceRequestUser {
   int isFavorite;
   int? serviceId;
   String? propertyType;
-  List<dynamic> serviceImages;
+  List<ServiceImage> serviceImages;
   List<dynamic> favourites;
   List<dynamic> reviews;
   User user;
@@ -498,7 +498,9 @@ class ServiceRequestUser {
     isFavorite: json["isFavorite"] ?? 0,
     serviceId: json["service_id"],
     propertyType: json["property_type"],
-    serviceImages: json["service_images"] ?? [],
+    serviceImages: json["service_images"] != null 
+        ? List<ServiceImage>.from(json["service_images"].map((x) => ServiceImage.fromJson(x)))
+        : [],
     favourites: json["favourites"] ?? [],
     reviews: json["reviews"] ?? [],
     user: User.fromJson(json["user"]),
@@ -537,7 +539,7 @@ class ServiceRequestUser {
     "isFavorite": isFavorite,
     "service_id": serviceId,
     "property_type": propertyType,
-    "service_images": serviceImages,
+    "service_images": List<dynamic>.from(serviceImages.map((x) => x.toJson())),
     "favourites": favourites,
     "reviews": reviews,
     "user": user.toJson(),
@@ -619,4 +621,36 @@ class Provider {
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
       };
+}
+
+class ServiceImage {
+  int id;
+  int serviceId;
+  String imagePath;
+  DateTime createdAt;
+  DateTime updatedAt;
+
+  ServiceImage({
+    required this.id,
+    required this.serviceId,
+    required this.imagePath,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory ServiceImage.fromJson(Map<String, dynamic> json) => ServiceImage(
+    id: json["id"] ?? 0,
+    serviceId: json["service_id"] ?? 0,
+    imagePath: json["image_path"] ?? "",
+    createdAt: DateTime.parse(json["created_at"] ?? DateTime.now().toIso8601String()),
+    updatedAt: DateTime.parse(json["updated_at"] ?? DateTime.now().toIso8601String()),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "service_id": serviceId,
+    "image_path": imagePath,
+    "created_at": createdAt.toIso8601String(),
+    "updated_at": updatedAt.toIso8601String(),
+  };
 }

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:property_app/controllers/authentication_controller/sign_up_controller.dart';
 import 'package:property_app/route_management/constant_routes.dart';
@@ -648,6 +649,24 @@ class SignUpScreen extends GetView<SignUpController> {
   Widget servicesProvider(context) {
     return Column(
       children: [
+        CustomTextField(
+          hintText: "New York",
+          controller: controller.cityController,
+          errorText:
+              controller.cityField.value ? null : "Please enter city name",
+          validator: (value) {
+            if (value == null || value.isEmpty || value.length < 3) {
+              return 'Please enter city name';
+            }
+            return null;
+          },
+          prefixConstraints: BoxConstraints(
+            minWidth: Get.width * 0.12,
+            minHeight: Get.width * 0.038,
+          ),
+          prefix: SvgPicture.asset(AppIcons.city),
+        ),
+        h15,
         CustomDropDown(
           value: controller.electricalValue.value,
           validator: (value) {
@@ -711,7 +730,21 @@ class SignUpScreen extends GetView<SignUpController> {
                     icon: const Icon(Icons.calendar_month)),
               ),
         h15,
-        labelText("Description"),
+        labelText("Main Services You Offer"),
+        h10,
+        CustomTextField(
+          maxLines: 5,
+          minLines: 3,
+          validator: (value) {
+            if (value == null || value.isEmpty || value.length < 3) {
+              return 'Additional Info Required';
+            }
+            return null;
+          },
+          controller: controller.additionalInfo,
+          hintText: "Add your main services you offer",
+        ),
+        h15,
         h10,
         CustomTextField(
           maxLines: 5,
@@ -1068,6 +1101,7 @@ class SignUpScreen extends GetView<SignUpController> {
                               password: controller.passwordController.text,
                               cPassword:
                                   controller.confirmPasswordController.text,
+                              city: controller.cityController.text,
                               services: controller.electricalValue.value,
                               yearExperience:
                                   controller.experienceController.text,
@@ -1079,6 +1113,7 @@ class SignUpScreen extends GetView<SignUpController> {
                               cnicFront: controller.frontCNICImage.value!,
                               cnicBack: controller.backCNICImage.value!,
                               description: controller.description.text,
+                              additionalInfo: controller.additionalInfo.text,
                             );
                             // Registration successful, navigate or perform other actions
                           } catch (e) {
@@ -1102,6 +1137,8 @@ class SignUpScreen extends GetView<SignUpController> {
                               password: controller.passwordController.text,
                               cPassword:
                                   controller.confirmPasswordController.text,
+                              city: controller.cityController.text,
+
                               services: controller.electricalValue.value,
                               yearExperience:
                                   controller.experienceController.text,
@@ -1116,6 +1153,7 @@ class SignUpScreen extends GetView<SignUpController> {
                               certificationFile:
                                   controller.certificateImage.value!,
                               description: controller.description.text,
+                              additionalInfo: controller.additionalInfo.text,
 
                               // No certification information provided
                             );
@@ -1145,6 +1183,7 @@ class SignUpScreen extends GetView<SignUpController> {
                               password: controller.passwordController.text,
                               cPassword:
                                   controller.confirmPasswordController.text,
+                              city: controller.cityController.text,
                               profileImage: controller.profileImage.value!,
                               services: controller.electricalValue.value,
                               yearExperience: experience.toString(),
@@ -1155,6 +1194,7 @@ class SignUpScreen extends GetView<SignUpController> {
                               cnicFront: controller.frontCNICImage.value!,
                               cnicBack: controller.backCNICImage.value!,
                               description: controller.description.text,
+                              additionalInfo: controller.additionalInfo.text,
                             );
 
                             // Registration successful, navigate or perform other actions
@@ -1179,6 +1219,8 @@ class SignUpScreen extends GetView<SignUpController> {
                               password: controller.passwordController.text,
                               cPassword:
                                   controller.confirmPasswordController.text,
+                              city: controller.cityController.text,
+
                               profileImage: controller.profileImage.value!,
                               services: controller.electricalValue.value,
                               yearExperience:
@@ -1193,6 +1235,7 @@ class SignUpScreen extends GetView<SignUpController> {
                               certificationFile:
                                   controller.certificateImage.value!,
                               description: controller.description.text,
+                              additionalInfo: controller.additionalInfo.text,
 
                               // No certification information provided
                             );

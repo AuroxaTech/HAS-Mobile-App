@@ -4,7 +4,8 @@
 
 import 'dart:convert';
 
-ContractModel contractModelFromJson(String str) => ContractModel.fromJson(json.decode(str));
+ContractModel contractModelFromJson(String str) =>
+    ContractModel.fromJson(json.decode(str));
 
 String contractModelToJson(ContractModel data) => json.encode(data.toJson());
 
@@ -20,16 +21,17 @@ class ContractModel {
   });
 
   factory ContractModel.fromJson(Map<String, dynamic> json) => ContractModel(
-    status: json["status"],
-    data: List<Contracts>.from(json["data"].map((x) => Contracts.fromJson(x))),
-    message: json["message"],
-  );
+        status: json["status"],
+        data: List<Contracts>.from(
+            json["data"].map((x) => Contracts.fromJson(x))),
+        message: json["message"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "status": status,
-    "data": List<dynamic>.from(data.map((x) => x.toJson())),
-    "message": message,
-  };
+        "status": status,
+        "data": List<dynamic>.from(data.map((x) => x.toJson())),
+        "message": message,
+      };
 }
 
 class Contracts {
@@ -118,90 +120,92 @@ class Contracts {
   });
 
   factory Contracts.fromJson(Map<String, dynamic> json) => Contracts(
-    id: json["id"],
-    userId: json["user_id"],
-    propertyId: json["property_id"],
-    landlordId: json["landlord_id"] ?? "",
-    landlordName: json["landlordName"],
-    landlordAddress: json["landlordAddress"],
-    landlordPhone: json["landlordPhone"],
-    tenantName: json["tenantName"],
-    tenantAddress: json["tenantAddress"],
-    tenantPhone: json["tenantPhone"],
-    tenantEmail: json["tenantEmail"],
-    occupants: json["occupants"],
-    premisesAddress: json["premisesAddress"],
-    propertyType: json["propertyType"],
-    leaseStartDate: json["leaseStartDate"],
-    leaseEndDate: json["leaseEndDate"],
-    leaseType: json["leaseType"],
-    rentAmount: json["rentAmount"],
-    rentDueDate: json["rentDueDate"],
-    rentPaymentMethod: json["rentPaymentMethod"],
-    securityDepositAmount: json["securityDepositAmount"],
-    includedUtilities: json["includedUtilities"],
-    tenantResponsibilities: json["tenantResponsibilities"],
-    emergencyContactName: json["emergencyContactName"],
-    emergencyContactPhone: json["emergencyContactPhone"],
-    emergencyContactAddress: json["emergencyContactAddress"],
-    buildingSuperintendentName: json["buildingSuperintendentName"],
-    buildingSuperintendentAddress: json["buildingSuperintendentAddress"],
-    buildingSuperintendentPhone: json["buildingSuperintendentPhone"],
-    rentIncreaseNoticePeriod: json["rentIncreaseNoticePeriod"],
-    noticePeriodForTermination: json["noticePeriodForTermination"],
-    latePaymentFee: json["latePaymentFee"],
-    rentalIncentives: json["rentalIncentives"],
-    additionalTerms: json["additionalTerms"],
-    status: json["status"].toString(),
-    createdAt: DateTime.parse(json["created_at"]),
-    updatedAt: DateTime.parse(json["updated_at"]),
-    property: json["property"],
-    tenant: json["tenant"] != null ? Tenant.fromJson(json["tenant"]) : null,
-    landlord: json["landlord"] != null ? Landlord.fromJson(json["landlord"]) : null,
-  );
+        id: json["id"],
+        userId: json["user_id"],
+        propertyId: json["property_id"],
+        landlordId: json["landlord_id"] ?? "",
+        landlordName: json["landlordName"],
+        landlordAddress: json["landlordAddress"],
+        landlordPhone: json["landlordPhone"],
+        tenantName: json["tenantName"],
+        tenantAddress: json["tenantAddress"],
+        tenantPhone: json["tenantPhone"],
+        tenantEmail: json["tenantEmail"],
+        occupants: json["occupants"],
+        premisesAddress: json["premisesAddress"],
+        propertyType: json["propertyType"],
+        leaseStartDate: json["leaseStartDate"],
+        leaseEndDate: json["leaseEndDate"],
+        leaseType: json["leaseType"],
+        rentAmount: json["rentAmount"],
+        rentDueDate: json["rentDueDate"],
+        rentPaymentMethod: json["rentPaymentMethod"],
+        securityDepositAmount: json["securityDepositAmount"],
+        includedUtilities: json["includedUtilities"] ?? "",
+        tenantResponsibilities: json["tenantResponsibilities"],
+        emergencyContactName: json["emergencyContactName"],
+        emergencyContactPhone: json["emergencyContactPhone"],
+        emergencyContactAddress: json["emergencyContactAddress"],
+        buildingSuperintendentName: json["buildingSuperintendentName"],
+        buildingSuperintendentAddress: json["buildingSuperintendentAddress"],
+        buildingSuperintendentPhone: json["buildingSuperintendentPhone"],
+        rentIncreaseNoticePeriod: json["rentIncreaseNoticePeriod"],
+        noticePeriodForTermination: json["noticePeriodForTermination"],
+        latePaymentFee: json["latePaymentFee"],
+        rentalIncentives: json["rentalIncentives"],
+        additionalTerms: json["additionalTerms"],
+        status: json["status"].toString(),
+        createdAt: DateTime.parse(json["created_at"]),
+        updatedAt: DateTime.parse(json["updated_at"]),
+        property: json["property"],
+        tenant: json["tenant"] != null ? Tenant.fromJson(json["tenant"]) : null,
+        landlord: json["landlord"] != null
+            ? Landlord.fromJson(json["landlord"])
+            : null,
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "user_id": userId,
-    "property_id": propertyId,
-    "landlord_id": landlordId,
-    "landlordName": landlordName,
-    "landlordAddress": landlordAddress,
-    "landlordPhone": landlordPhone,
-    "tenantName": tenantName,
-    "tenantAddress": tenantAddress,
-    "tenantPhone": tenantPhone,
-    "tenantEmail": tenantEmail,
-    "occupants": occupants,
-    "premisesAddress": premisesAddress,
-    "propertyType": propertyType,
-    "leaseStartDate": leaseStartDate,
-    "leaseEndDate": leaseEndDate,
-    "leaseType": leaseType,
-    "rentAmount": rentAmount,
-    "rentDueDate": rentDueDate,
-    "rentPaymentMethod": rentPaymentMethod,
-    "securityDepositAmount": securityDepositAmount,
-    "includedUtilities": includedUtilities,
-    "tenantResponsibilities": tenantResponsibilities,
-    "emergencyContactName": emergencyContactName,
-    "emergencyContactPhone": emergencyContactPhone,
-    "emergencyContactAddress": emergencyContactAddress,
-    "buildingSuperintendentName": buildingSuperintendentName,
-    "buildingSuperintendentAddress": buildingSuperintendentAddress,
-    "buildingSuperintendentPhone": buildingSuperintendentPhone,
-    "rentIncreaseNoticePeriod": rentIncreaseNoticePeriod,
-    "noticePeriodForTermination": noticePeriodForTermination,
-    "latePaymentFee": latePaymentFee,
-    "rentalIncentives": rentalIncentives,
-    "additionalTerms": additionalTerms,
-    "status": status,
-    "created_at": createdAt.toIso8601String(),
-    "updated_at": updatedAt.toIso8601String(),
-    "property": property,
-    "tenant": tenant,
-    "landlord": landlord,
-  };
+        "id": id,
+        "user_id": userId,
+        "property_id": propertyId,
+        "landlord_id": landlordId,
+        "landlordName": landlordName,
+        "landlordAddress": landlordAddress,
+        "landlordPhone": landlordPhone,
+        "tenantName": tenantName,
+        "tenantAddress": tenantAddress,
+        "tenantPhone": tenantPhone,
+        "tenantEmail": tenantEmail,
+        "occupants": occupants,
+        "premisesAddress": premisesAddress,
+        "propertyType": propertyType,
+        "leaseStartDate": leaseStartDate,
+        "leaseEndDate": leaseEndDate,
+        "leaseType": leaseType,
+        "rentAmount": rentAmount,
+        "rentDueDate": rentDueDate,
+        "rentPaymentMethod": rentPaymentMethod,
+        "securityDepositAmount": securityDepositAmount,
+        "includedUtilities": includedUtilities,
+        "tenantResponsibilities": tenantResponsibilities,
+        "emergencyContactName": emergencyContactName,
+        "emergencyContactPhone": emergencyContactPhone,
+        "emergencyContactAddress": emergencyContactAddress,
+        "buildingSuperintendentName": buildingSuperintendentName,
+        "buildingSuperintendentAddress": buildingSuperintendentAddress,
+        "buildingSuperintendentPhone": buildingSuperintendentPhone,
+        "rentIncreaseNoticePeriod": rentIncreaseNoticePeriod,
+        "noticePeriodForTermination": noticePeriodForTermination,
+        "latePaymentFee": latePaymentFee,
+        "rentalIncentives": rentalIncentives,
+        "additionalTerms": additionalTerms,
+        "status": status,
+        "created_at": createdAt.toIso8601String(),
+        "updated_at": updatedAt.toIso8601String(),
+        "property": property,
+        "tenant": tenant,
+        "landlord": landlord,
+      };
 }
 
 class Landlord {
@@ -226,26 +230,26 @@ class Landlord {
   });
 
   factory Landlord.fromJson(Map<String, dynamic> json) => Landlord(
-    id: json["id"],
-    fullname: json["fullname"],
-    email: json["email"],
-    phoneNumber: json["phone_number"],
-    roleId: json["role_id"],
-    profileimage: json["profileimage"],
-    createdAt: DateTime.parse(json["created_at"]),
-    updatedAt: DateTime.parse(json["updated_at"]),
-  );
+        id: json["id"],
+        fullname: json["fullname"],
+        email: json["email"],
+        phoneNumber: json["phone_number"],
+        roleId: json["role_id"],
+        profileimage: json["profileimage"],
+        createdAt: DateTime.parse(json["created_at"]),
+        updatedAt: DateTime.parse(json["updated_at"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "fullname": fullname,
-    "email": email,
-    "phone_number": phoneNumber,
-    "role_id": roleId,
-    "profileimage": profileimage,
-    "created_at": createdAt.toIso8601String(),
-    "updated_at": updatedAt.toIso8601String(),
-  };
+        "id": id,
+        "fullname": fullname,
+        "email": email,
+        "phone_number": phoneNumber,
+        "role_id": roleId,
+        "profileimage": profileimage,
+        "created_at": createdAt.toIso8601String(),
+        "updated_at": updatedAt.toIso8601String(),
+      };
 }
 
 class Tenant {
@@ -270,26 +274,26 @@ class Tenant {
   });
 
   factory Tenant.fromJson(Map<String, dynamic> json) => Tenant(
-    id: json["id"],
-    fullname: json["fullname"],
-    email: json["email"],
-    phoneNumber: json["phone_number"],
-    roleId: json["role_id"],
-    profileimage: json["profileimage"],
-    createdAt: DateTime.parse(json["created_at"]),
-    updatedAt: DateTime.parse(json["updated_at"]),
-  );
+        id: json["id"],
+        fullname: json["fullname"],
+        email: json["email"],
+        phoneNumber: json["phone_number"],
+        roleId: json["role_id"],
+        profileimage: json["profileimage"],
+        createdAt: DateTime.parse(json["created_at"]),
+        updatedAt: DateTime.parse(json["updated_at"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "fullname": fullname,
-    "email": email,
-    "phone_number": phoneNumber,
-    "role_id": roleId,
-    "profileimage": profileimage,
-    "created_at": createdAt.toIso8601String(),
-    "updated_at": updatedAt.toIso8601String(),
-  };
+        "id": id,
+        "fullname": fullname,
+        "email": email,
+        "phone_number": phoneNumber,
+        "role_id": roleId,
+        "profileimage": profileimage,
+        "created_at": createdAt.toIso8601String(),
+        "updated_at": updatedAt.toIso8601String(),
+      };
 }
 
 DateTime parseDateFromString(String dateString) {

@@ -78,7 +78,7 @@ class Property {
   String type;
   String images;
   String city;
-  List<String> propertyImages; // Updated to list of image URLs
+  List<String>? propertyImages; // Updated to list of image URLs
 
   String amount;
   String address;
@@ -116,13 +116,17 @@ class Property {
       required this.user});
 
   factory Property.fromJson(Map<String, dynamic> json) {
+    List<String> images = [];
+    if (json['property_images'] != null) {
+      images = (json['property_images'] as List<dynamic>)
+          .map((image) => image['image_path'].toString())
+          .toList();
+    }
     return Property(
       id: json['id'],
       userId: json['user_id'],
       type: json['type'],
-      propertyImages: (json['property_images'] as List<dynamic>)
-          .map((image) => image['image_path'].toString())
-          .toList(),
+      propertyImages: images,
       images: json['images'] ?? "",
       city: json['city'] ?? "",
       amount: json['amount'],
@@ -189,7 +193,6 @@ class User {
         email: json["email"],
         phoneNumber: json["phone_number"],
         role: json["role"],
-
         profileimage: json["profile_image"] ?? "",
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),

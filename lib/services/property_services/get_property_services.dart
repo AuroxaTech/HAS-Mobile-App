@@ -294,7 +294,7 @@ class PropertyServices extends BaseApiService {
           // Add other headers as needed
         })
         ..fields.addAll({
-          'type': "$type",
+          'type': type,
           'city': city,
           'amount': amount.toString(),
           'address': address,
