@@ -50,7 +50,7 @@ class _MainBottomBarState extends State<MainBottomBar> {
     const PropertyTabsScreen(),
     const ChatListing(),
     ServicesListingScreen(),
-    const JobsScreen(
+    JobsScreen(
       isBack: false,
     ),
     const DashBoardScreen(),

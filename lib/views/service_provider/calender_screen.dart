@@ -193,11 +193,11 @@ class CalendarScreen extends GetView<CalendarScreenController> {
                                             ),
                                           ),
                                           title: customText(
-                                            text: item.provider.fullname,
+                                            text: item.provider.fullName,
                                             fontSize: 21,
                                           ),
                                           subtitle: customText(
-                                            text: item.request.time,
+                                            text: item.endTime,
                                             color: greyColor,
                                           ),
                                         ),

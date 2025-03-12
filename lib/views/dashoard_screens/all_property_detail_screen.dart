@@ -335,7 +335,7 @@ class MyDraggable extends GetView<AllPropertyDetailController> {
                                         children: [
                                           controller.getPropertyOne.value!
                                                       .type ==
-                                                  "Sale"
+                                                  "Rent"
                                               ? Center(
                                                   child: CustomButton(
                                                     height:

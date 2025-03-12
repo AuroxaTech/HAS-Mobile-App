@@ -36,9 +36,9 @@ class CalendarDetailController extends GetxController {
 
       print("Type of result['data']: ${result['data']?.runtimeType}");
 
-      if (result['data'] != null) {
-        if (result['data'] is Map) {
-          var data = result['data'];
+      if (result['payload'] != null) {
+        if (result['payload'] is Map) {
+          var data = result['payload'];
           print("Data :: $data");
           getCalendarOne.value = CalendarData.fromJson(data);
 

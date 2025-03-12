@@ -72,7 +72,7 @@ class RateExperienceController extends GetxController {
       // Get.back();
       // Get.back();
       // Get.back();
-      Get.off(() => const JobsScreen(isBack: true));
+      Get.off(() =>  JobsScreen(isBack: true));
       AppUtils.getSnackBar("Feedback", jsonData["message"]);
     } else {
       isLoading.value = false;

@@ -22,8 +22,11 @@ class ContractStatusScreenController extends GetxController {
   }
 
   List<Contracts> getFilteredContractList(String status) {
-    return getContractList.where((contract) => contract.status == status).toList();
+    final filtered = getContractList.where((contract) => contract.status == status).toList();
+    print("Filtering for status $status found ${filtered.length} contracts");
+    return filtered;
   }
+
 
   Future<void> getServices() async {
     List<Contracts>  list  = <Contracts>[];
@@ -31,7 +34,7 @@ class ContractStatusScreenController extends GetxController {
     isLoading.value = true;
     var result = await servicesService.getLandLordContracts();
     print("Service result : $result" );
-    if(result["success"] == true){
+    if(result["status"] == true){
       isLoading.value = false;
       for (var data in result['data']["data"]) {
         print("Service List :: $data");

@@ -110,6 +110,7 @@ class CalendarScreenController extends GetxController {
       isLoading.value = false;
       print("Error fetching jobs: $error");
       pagingController.error = 'Failed to fetch jobs: ${error.toString()}';
+      rethrow;
     }
   }
 

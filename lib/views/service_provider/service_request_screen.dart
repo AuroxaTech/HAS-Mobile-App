@@ -85,7 +85,7 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
                             endTime: item.endTime,
                             date: item.duration,
                             contactTap: () {
-                              if (item.status == "decline") {
+                              if (item.status == "rejected") {
                                 Get.snackbar(
                                   'This request has been declined. No chats available',
                                   '',
@@ -103,7 +103,7 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
                               }
                             },
                             acceptTap: () {
-                              if (item.status == "decline") {
+                              if (item.status == "rejected") {
                                 Get.snackbar(
                                   'This request has been declined. You cannot accept it',
                                   '',
@@ -129,10 +129,10 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
                                 });
                               }
                             },
-                            acceptColor: item.status == "approved"
+                            acceptColor: item.status == "accepted"
                                 ? const Color(0xff14C034).withOpacity(0.3)
                                 : const Color(0xff14C034),
-                            declineColor: item.status == "decline"
+                            declineColor: item.status == "rejected"
                                 ? redColor.withOpacity(0.3)
                                 : redColor,
                             onTap: () {
@@ -146,9 +146,9 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
                                   arguments: item.id);
                             },
                             declineTap: () {
-                              if (item.status == "decline") {
+                              if (item.status == "rejected") {
                                 null;
-                              } else if (item.status == "approved") {
+                              } else if (item.status == "accepted") {
                                 Get.snackbar(
                                   'This request has been accepted. Cannot decline now.',
                                   '',
@@ -163,7 +163,9 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
                                         "Are you sure to decline this request",
                                     yesButtonText: "Decline", yesTap: () {
                                   controller
-                                      .declineServiceRequest(requestId: item.id)
+                                      .declineServiceRequest(
+                                      requestId: item.id,
+                                      serviceProviderId: item.providerId!)
                                       .then((value) {
                                     controller.getServicesRequests(1);
                                   });
