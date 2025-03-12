@@ -49,23 +49,28 @@ class ServiceListingScreenController extends GetxController {
       isLoading.value = false;
 
       if (result['success'] == true) {
-        final List<AllService> newItems = (result['payload']['data'] as List)
-            .map((json) => AllService.fromJson(json))
-            .toList();
-
+        final List<AllService> newItems = [];
+        
+        // Get the data array from the payload
+        final dataList = result['payload']['data'] as List;
+        
         // Fetch current user ID
         int currentUserId = await Preferences.getUserID();
-        // Update isApplied status for each service
-        for (var item in newItems) {
-          item.isApplied = 0; // Default to 0
-          if (item.serviceProviderRequests != null) {
-            for (var request in item.serviceProviderRequests!) {
-              if (request.userId == currentUserId) {
-                item.isApplied = request.isApplied ?? 0;
-                break; // No need to check further
-              }
-            }
-          }
+        print("Current user ID: $currentUserId");
+        
+        // Process each service item
+        for (var json in dataList) {
+          // Create the AllService object from JSON
+          AllService service = AllService.fromJson(json);
+          
+          // Debug the isApplied value from API
+          print("Service ID ${service.id} - API isApplied value: ${json['is_applied']}");
+          
+          // Ensure isApplied is set directly from the API response
+          service.isApplied = json['is_applied'] ?? 0;
+          
+          // Add to our list
+          newItems.add(service);
         }
 
         final isLastPage =
@@ -82,7 +87,7 @@ class ServiceListingScreenController extends GetxController {
       }
     } catch (error) {
       isLoading.value = false;
-      print(error);
+      print("Error fetching services: $error");
 
       final errorMessage = error.toString();
       pagingController.error = errorMessage;

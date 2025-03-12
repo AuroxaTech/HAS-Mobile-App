@@ -152,8 +152,8 @@ class ContractDetail {
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
       propertys: json["property"],
-      // property:
-      //     json['property'] == null ? null : Property.fromJson(json['property']),
+      property:
+          json['property'] == null ? null : Property.fromJson(json['property']),
       user: User.fromJson(json['user']),
     );
   }
@@ -431,22 +431,22 @@ class Landlord {
 
   factory Landlord.fromJson(Map<String, dynamic> json) => Landlord(
         id: json["id"],
-        fullname: json["fullname"],
+        fullname: json["full_name"],
         email: json["email"],
         phoneNumber: json["phone_number"],
         roleId: json["role_id"],
-        profileimage: json["profileimage"],
+        profileimage: json["profile_image"],
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "fullname": fullname,
+        "full_name": fullname,
         "email": email,
         "phone_number": phoneNumber,
         "role_id": roleId,
-        "profileimage": profileimage,
+        "profile_image": profileimage,
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
       };
@@ -475,22 +475,22 @@ class Tenant {
 
   factory Tenant.fromJson(Map<String, dynamic> json) => Tenant(
         id: json["id"],
-        fullname: json["fullname"],
+        fullname: json["full_name"],
         email: json["email"],
         phoneNumber: json["phone_number"],
         roleId: json["role_id"],
-        profileimage: json["profileimage"],
+        profileimage: json["profile_image"],
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "fullname": fullname,
+        "full_name": fullname,
         "email": email,
         "phone_number": phoneNumber,
         "role_id": roleId,
-        "profileimage": profileimage,
+        "profile_image": profileimage,
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
       };

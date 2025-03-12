@@ -72,32 +72,32 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                             onPressed: () => controller.getServices(1),
                           ),
                       itemBuilder: (context, item, index) {
-                        print(
-                            "Screen - Building item for service ID: ${item.id}");
-                        print("Screen - isApplied: ${item.isApplied.toInt()}");
+                        print("Screen - Building item for service ID: ${item.id}");
+                        print("Screen - isApplied value: ${item.isApplied}");
+                        print("Screen - Raw isApplied type: ${item.isApplied.runtimeType}");
+                        print("Screen - Condition check: item.isApplied == 1 is ${item.isApplied == 1}");
+                        print("Favourite = ${item.isFavorite}");
+                        print("is Applied => ${item.isApplied}");
 
                         int? isApplied;
-                        int? isDeclined;
-                        int? isApproved;
+                        // int? isDeclined;
+                        // int? isApproved;
 
-                        // If serviceProviderRequests exists, print the latest request details
-                        if (item.serviceProviderRequests != null &&
-                            item.serviceProviderRequests!.isNotEmpty) {
-                          var latestRequest = item.serviceProviderRequests!
-                              .reduce((curr, next) =>
-                                  curr.id > next.id ? curr : next);
-                          isApplied = latestRequest.isApplied ?? 0;
-                          isDeclined = latestRequest.decline ?? 0;
-                          isApproved = latestRequest.approved ?? 0;
-                        }
+                        // // If serviceProviderRequests exists, print the latest request details
+                        // if (item.serviceProviderRequests != null &&
+                        //     item.serviceProviderRequests!.isNotEmpty) {
+                        //   var latestRequest = item.serviceProviderRequests!
+                        //       .reduce((curr, next) =>
+                        //           curr.id > next.id ? curr : next);
+                        //   isApplied = latestRequest.isApplied ?? 0;
+                        //   isDeclined = latestRequest.decline ?? 0;
+                        //   isApproved = latestRequest.approved ?? 0;
+                        // }
 
                         String imageUrl = AppIcons.appLogo;
                         if (item.serviceImages.isNotEmpty) {
                           imageUrl = item.serviceImages[0].imagePath;
                         }
-
-                        print(item.isFavorite);
-                        print("is Applied => ${item.isApplied}");
 
                         return Padding(
                           padding: const EdgeInsets.only(top: 15),
@@ -288,11 +288,20 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                                           ),
                                           w15,
                                           Expanded(
-                                            child: _shouldShowBookService(
-                                                    isApplied,
-                                                    isDeclined,
-                                                    isApproved)
+                                            child: item.isApplied == 1
                                                 ? CustomButton(
+                                                    gradientColor:
+                                                        detailGradient(),
+                                                    height:
+                                                        screenHeight(context) *
+                                                            0.06,
+                                                    text: "Pending",
+                                                    fontSize: 18,
+                                                    onTap: () {
+                                                      print("Service ${item.id} is already applied (isApplied=${item.isApplied})");
+                                                    },
+                                                  )
+                                                : CustomButton(
                                                     height:
                                                         screenHeight(context) *
                                                             0.06,
@@ -300,6 +309,7 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                                                     fontSize: 18,
                                                     gradientColor: gradient(),
                                                     onTap: () {
+                                                      print("Booking service ${item.id} (isApplied=${item.isApplied})");
                                                       Get.toNamed(
                                                           kNewServiceRequestScreen,
                                                           arguments: [
@@ -322,16 +332,6 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                                                             item.pricing,
                                                           ]);
                                                     },
-                                                  )
-                                                : CustomButton(
-                                                    gradientColor:
-                                                        detailGradient(),
-                                                    height:
-                                                        screenHeight(context) *
-                                                            0.06,
-                                                    text: "Pending",
-                                                    fontSize: 18,
-                                                    onTap: () {},
                                                   ),
                                           )
                                         ],

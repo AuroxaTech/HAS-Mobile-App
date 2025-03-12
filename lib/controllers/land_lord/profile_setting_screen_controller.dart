@@ -70,7 +70,6 @@ class ProfileSettingsScreenController extends GetxController {
           headers: getHeader(userToken: token));
 
       if (response.statusCode == 200) {
-
         var data = User.fromJson(jsonDecode(response.body)["payload"]);
         print(data.profileImage);
         userData(data);
@@ -80,7 +79,7 @@ class ProfileSettingsScreenController extends GetxController {
         email.text = userData.value.email;
         email.text = userData.value.email;
         phoneNumber.text = userData.value.phoneNumber;
-        image = userData.value.profileImage;
+        image = userData.value.profileImage!;
         isLoadingGet(false);
       } else {
         isLoadingGet(false);
@@ -112,7 +111,8 @@ class ProfileSettingsScreenController extends GetxController {
       // Adding text fields
       request.fields['full_name'] = name;
       request.fields['phone_number'] = phoneNumber;
-      request.fields['user_name'] = username; // Pass username to the API request
+      request.fields['user_name'] =
+          username; // Pass username to the API request
 
       if (filePath != null) {
         request.files.add(await http.MultipartFile.fromPath(
