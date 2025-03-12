@@ -41,7 +41,7 @@ class User {
   String postalCode;
   String phoneNumber;
   String roleId;
-  String profileImage;
+  String? profileImage;
   String platform;
   String deviceToken;
   DateTime createdAt;
@@ -56,7 +56,7 @@ class User {
     required this.postalCode,
     required this.phoneNumber,
     required this.roleId,
-    required this.profileImage,
+    this.profileImage,
     required this.platform,
     required this.deviceToken,
     required this.createdAt,
@@ -72,13 +72,12 @@ class User {
         postalCode: json["postal_code"],
         phoneNumber: json["phone_number"],
         roleId: json["role"],
-        profileImage: json["profile_image"],
+        profileImage: json["profile_image"] ?? "",
         platform: json["platform"] ?? "",
         deviceToken: json["device_token"] ?? "",
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
       );
-
 
   Map<String, dynamic> toJson() => {
         "id": id,

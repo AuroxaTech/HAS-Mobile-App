@@ -177,15 +177,13 @@ class AuthServices extends BaseApiService {
         ..fields.addAll(fields);
 
       // Add profile image if provided
-      for (var i = 0; i < propertyImages.length; i++) {
-        File propertyImageFile = File(propertyImages[i].path);
+      if (profileImage != null) {
         request.files.add(await http.MultipartFile.fromPath(
-          'property_images[$i]',
-          propertyImageFile.path,
-          filename: 'property_image_$i.jpg',
+          'profile_image',
+          File(profileImage.path).path,
+          filename: 'profile_image.jpg',
         ));
       }
-
       // Add electricity bill image
       request.files.add(await http.MultipartFile.fromPath(
         'electricity_bill',
@@ -195,9 +193,10 @@ class AuthServices extends BaseApiService {
 
       // Add property images
       for (var i = 0; i < propertyImages.length; i++) {
+        File propertyImageFile = File(propertyImages[i].path);
         request.files.add(await http.MultipartFile.fromPath(
           'property_images[$i]',
-          propertyImages[i].path,
+          propertyImageFile.path,
           filename: 'property_image_$i.jpg',
         ));
       }

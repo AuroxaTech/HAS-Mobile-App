@@ -244,16 +244,9 @@ class AllService {
             .map((x) => ServiceProviderRequest.fromJson(x)))
         : null;
 
-    // Find the latest request (highest ID) if requests exist
-    ServiceProviderRequest? latestRequest;
-    if (serviceProviderRequests != null && serviceProviderRequests.isNotEmpty) {
-      latestRequest = serviceProviderRequests
-          .reduce((curr, next) => curr.id > next.id ? curr : next);
-    }
-
-    // Extract values from latestRequest or fallback to json values
-    final isApplied = json["is_applied"] ?? 0;
-    print("AllService - isApplied: ${isApplied}");
+    // Ensure isApplied is properly extracted from the JSON
+    int isApplied = json["is_applied"] ?? 0;
+    print("AllService ID ${json["id"]} - isApplied from JSON: $isApplied");
 
     return AllService(
       id: json["id"],
