@@ -35,10 +35,10 @@ class ServiceRequestDetailScreenController extends GetxController {
 
     isLoading.value = false;
 
-    if (result['data'] != null && result['data'] is Map) {
-      var data = result['data'] as Map<String, dynamic>;
+    if (result['payload'] != null && result['payload'] is Map) {
+      var data = result['payload'] as Map<String, dynamic>;
       print("Data :: $data");
-      print("User Data :: ${data['user']}");
+   //   print("User Data :: ${data['user']}");
 
       getServiceRequestOne.value = ServiceRequestProvider.fromJson(data);
       String imagesString = getServiceRequestOne.value!.serviceImages == null
@@ -57,12 +57,15 @@ class ServiceRequestDetailScreenController extends GetxController {
     }
   }
 
-  Future<void> declineServiceRequest({required int requestId}) async {
+  Future<void> declineServiceRequest({required int requestId, required int providerId, }) async {
     isLoading.value = true;
 
     try {
       var result = await serviceRequestService.declineServiceRequest(
-          requestId: requestId);
+          requestId: requestId,
+         serviceProviderId: providerId
+
+      );
       print(result);
       if (result['status'] == true) {
         Get.back();

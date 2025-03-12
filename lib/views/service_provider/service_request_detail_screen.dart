@@ -405,13 +405,13 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                           onTap: () {
                                             if (controller.getServiceRequestOne
                                                     .value!.status ==
-                                                "approved") {
+                                                "accepted") {
                                               null;
                                             } else if (controller
                                                     .getServiceRequestOne
                                                     .value!
                                                     .status ==
-                                                "decline") {
+                                                "rejected") {
                                               Get.snackbar(
                                                 'This request has been declined. Cannot accept now.',
                                                 '',
@@ -452,10 +452,10 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                                           .getServiceRequestOne
                                                           .value!
                                                           .status ==
-                                                      "approved"
-                                                  ? Color(0xff14C034)
+                                                      "accepted"
+                                                  ? const Color(0xff14C034)
                                                       .withOpacity(0.3)
-                                                  : Color(0xff14C034)),
+                                                  : const Color(0xff14C034)),
                                         ),
                                       ),
                                       w10,
@@ -464,13 +464,13 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                           onTap: () {
                                             if (controller.getServiceRequestOne
                                                     .value!.status ==
-                                                "decline") {
+                                                "rejected") {
                                               null;
                                             } else if (controller
                                                     .getServiceRequestOne
                                                     .value!
                                                     .status ==
-                                                "approved") {
+                                                "accepted") {
                                               Get.snackbar(
                                                 'This request has been accepted. Cannot decline now.',
                                                 '',
@@ -492,7 +492,13 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                                         requestId: controller
                                                             .getServiceRequestOne
                                                             .value!
-                                                            .id)
+                                                            .id,
+                                                        providerId: controller
+                                                            .getServiceRequestOne
+                                                            .value!
+                                                            .providerId!,
+
+                                                )
                                                     .then((value) {
                                                   controller.getServiceRequest(
                                                       id: controller.id.value);
@@ -505,7 +511,7 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                                           .getServiceRequestOne
                                                           .value!
                                                           .status ==
-                                                      "decline"
+                                                      "rejected"
                                                   ? redColor.withOpacity(0.3)
                                                   : redColor),
                                           height: screenHeight(context) * 0.04,
@@ -519,7 +525,7 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                           onTap: () {
                                             if (controller.getServiceRequestOne
                                                     .value!.status ==
-                                                "decline") {
+                                                "rejected") {
                                               Get.snackbar(
                                                 'This request has been declined. No chats available.',
                                                 '',

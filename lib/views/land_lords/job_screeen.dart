@@ -391,7 +391,9 @@ import '../../utils/api_urls.dart';
 
 class JobsScreen extends GetView<JobScreenController> { // Changed to JobListController
   final bool isBack;
-  const JobsScreen({super.key, required this.isBack});
+    JobsScreen({super.key, required this.isBack});
+  @override
+  final controller = Get.put(JobScreenController());
 
   @override
   Widget build(BuildContext context) {

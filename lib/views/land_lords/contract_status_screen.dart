@@ -115,7 +115,7 @@ class ContractStatusScreen extends GetView<ContractStatusScreenController> {
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Padding(
-                                      padding: const EdgeInsets.only(left: 15, top: 12),
+                                      padding: const EdgeInsets.only(left: 10, top: 12),
                                       child: Row(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
@@ -141,20 +141,22 @@ class ContractStatusScreen extends GetView<ContractStatusScreenController> {
                                       ),
                                     ),
 
-                                    Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Container(
-                                        decoration:  BoxDecoration(
-                                          color: greenColor,
-                                            border: Border.all(color: greenColor, ),
-                                            borderRadius: BorderRadius.circular(8,)
-                                        ),
-                                        padding: const EdgeInsets.only(top: 5, bottom: 5, left: 12, right: 12),
-                                        child: Center(
-                                          child: customText(
-                                              text: "Approved",
-                                              color: Colors.white,
-                                              fontSize: 10
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: Container(
+                                          decoration:  BoxDecoration(
+                                            color: greenColor,
+                                              border: Border.all(color: greenColor, ),
+                                              borderRadius: BorderRadius.circular(8,)
+                                          ),
+                                          padding: const EdgeInsets.only(top: 5, bottom: 5, left: 8, right: 8),
+                                          child: Center(
+                                            child: customText(
+                                                text: "Approved",
+                                                color: Colors.white,
+                                                fontSize: 10
+                                            ),
                                           ),
                                         ),
                                       ),

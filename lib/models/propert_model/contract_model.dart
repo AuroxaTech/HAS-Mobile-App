@@ -117,7 +117,7 @@ class ContractDetail {
     return ContractDetail(
       id: json['id'],
       userId: json['user_id'],
-      status: json['status'],
+      status: json['status'].toString(),
       propertyId: json['property_id'],
       landlordName: json['landlordName'],
       landlordAddress: json['landlordAddress'],
@@ -240,7 +240,7 @@ class Contracts {
     return Contracts(
       id: json['id'],
       userId: json['user_id'],
-      status: json['status'],
+      status: json['status'].toString(),
       propertyId: json['property_id'],
       landlordName: json['landlordName'],
       landlordAddress: json['landlordAddress'],

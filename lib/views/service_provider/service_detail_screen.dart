@@ -71,7 +71,7 @@ class ServiceListingDetailScreen
                                     backgroundColor: Colors.transparent,
                                     child: ClipOval(
                                       child: CachedNetworkImage(
-                                        imageUrl: controller.images[0],
+                                        imageUrl: controller.images.isEmpty ? "" : controller.images[0],
                                         width: 120,
                                         height: 120,
                                         fit: BoxFit.cover,

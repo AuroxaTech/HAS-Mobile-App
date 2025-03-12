@@ -753,15 +753,22 @@ class ServiceProviderServices {
 
   Future<Map<String, dynamic>> declineServiceRequest({
     required int requestId,
+    required int serviceProviderId,
   }) async {
     try {
+      print("iddd $requestId $serviceProviderId");
       Uri url = Uri.parse(AppUrls.serviceRequestDecline);
       var token = await Preferences.getToken();
       var res = await http.post(
         url,
-        body: json.encode({"request_id": requestId}),
+        body: json.encode({
+          "service_request_id": requestId,
+          "serviceprovider_id": serviceProviderId,
+        }),
         headers: getHeader(userToken: token),
       );
+
+      print("rescue ${res.body}");
       return json.decode(res.body);
     } catch (e) {
       if (kDebugMode) {
