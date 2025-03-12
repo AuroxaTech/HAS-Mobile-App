@@ -13,7 +13,6 @@ import '../../constant_widget/view_photo.dart';
 import '../../controllers/services_provider_controller/my_service_screen_controller.dart';
 import '../../custom_widgets/custom_button.dart';
 import '../../route_management/constant_routes.dart';
-import '../../utils/api_urls.dart';
 
 class MyServicesDetailScreen extends GetView<MyServicesDetailScreenController> {
   const MyServicesDetailScreen({Key? key}) : super(key: key);
@@ -37,14 +36,14 @@ class MyServicesDetailScreen extends GetView<MyServicesDetailScreenController> {
                           onTap: () {
                             Get.to(
                                 () => ViewImage(
-                                      photo: AppUrls.mediaImages + image,
+                                      photo: image,
                                     ),
                                 transition: routeTransition);
                           },
                           child: CachedNetworkImage(
                             width: double.infinity,
                             height: screenHeight(context) * 0.5,
-                            imageUrl: AppUrls.mediaImages + image,
+                            imageUrl: image,
                             fit: BoxFit.fill,
                             errorWidget: (context, e, b) {
                               return Image.asset(AppIcons.appLogo);

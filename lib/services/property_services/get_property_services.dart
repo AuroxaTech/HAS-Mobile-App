@@ -29,7 +29,8 @@ class PropertyServices extends BaseApiService {
   //   }
   // }
 
-  Future<Map<String, dynamic>> getLandLordProperties({required int userId}) async {
+  Future<Map<String, dynamic>> getLandLordProperties(
+      {required int userId}) async {
     Uri url = Uri.parse(
       "${AppUrls.getAllProperty}?user_id=$userId",
     );
@@ -38,29 +39,23 @@ class PropertyServices extends BaseApiService {
       if (!await ConnectivityUtility.checkInternetConnectivity()) {
         return {
           'success': false,
-          'message': 'No internet connection. Please check your network settings.'
+          'message':
+              'No internet connection. Please check your network settings.'
         };
       }
-      
+
       var token = await Preferences.getToken();
-      
+
       // Log request
       BaseApiService.logRequest(
-        url.toString(), 
-        'GET', 
-        getHeader(userToken: token), 
-        null
-      );
-      
+          url.toString(), 'GET', getHeader(userToken: token), null);
+
       var response = await http.get(url, headers: getHeader(userToken: token));
-      
+
       // Log response
       BaseApiService.logResponse(
-        url.toString(), 
-        response.statusCode, 
-        response.body
-      );
-      
+          url.toString(), response.statusCode, response.body);
+
       // Check if response is HTML
       if (response.body.trim().startsWith('<!DOCTYPE html>')) {
         print("Received HTML response instead of JSON");
@@ -69,10 +64,10 @@ class PropertyServices extends BaseApiService {
           'message': 'Server returned HTML instead of JSON. Please try again.'
         };
       }
-      
+
       if (response.statusCode == 200) {
         final decodedResponse = json.decode(response.body);
-        
+
         return decodedResponse;
       } else {
         return {
@@ -82,17 +77,17 @@ class PropertyServices extends BaseApiService {
       }
     } catch (e) {
       print("Error in getLandLordProperties: $e");
-      
+
       // Log error
       BaseApiService.logError(url.toString(), e.toString());
-      
+
       if (e is FormatException) {
         return {
           'success': false,
           'message': 'Invalid response format from server'
         };
       }
-      
+
       return {
         'success': false,
         'message': 'Failed to fetch properties: ${e.toString()}'
@@ -240,8 +235,8 @@ class PropertyServices extends BaseApiService {
   }
 
   Future<Map<String, dynamic>> updateProperty({
+    required String id,
     required String type,
-    required int id,
     required String city,
     required double amount,
     required String address,
@@ -256,12 +251,20 @@ class PropertyServices extends BaseApiService {
     required String propertySubType,
     required String description,
   }) async {
-    if (await ConnectivityUtility.checkInternetConnectivity() == true) {
-      var url = Uri.parse("${AppUrls.updateProperty}/$id");
+    try {
+      // Check internet connectivity
+      if (!await ConnectivityUtility.checkInternetConnectivity()) {
+        AppUtils.getSnackBarNoInternet();
+        throw ApiException('No internet connectivity');
+      }
+
       var token = await Preferences.getToken();
+      var url = Uri.parse("${AppUrls.updateProperty}/$id");
+
+      // Create multipart request
       var request = http.MultipartRequest('POST', url)
         ..headers.addAll({
-          'Content-Type': 'multipart/form-data',
+          'Accept': 'application/json',
           'Authorization': 'Bearer $token',
         })
         ..fields.addAll({
@@ -274,47 +277,70 @@ class PropertyServices extends BaseApiService {
           'area_range': areaRange,
           'bedroom': bedroom.toString(),
           'bathroom': bathroom.toString(),
-          "property_type": propertyType,
-          "property_sub_type": propertySubType,
+          'property_type': propertyType,
+          'property_sub_type': propertySubType,
           'description': description,
         });
 
       // Add electricity bill file
-      request.files.add(await http.MultipartFile.fromPath(
-        'electricity_bill_image',
-        electricityBill.path,
-        filename: 'electricity_bill.jpg',
-      ));
+      if (electricityBill.path.isNotEmpty) {
+        request.files.add(await http.MultipartFile.fromPath(
+          'electricity_bill_image',
+          electricityBill.path,
+          filename: 'electricity_bill.jpg',
+        ));
+      }
 
       // Add property images
       for (var i = 0; i < propertyImages.length; i++) {
+        File propertyImageFile = File(propertyImages[i].path);
         request.files.add(await http.MultipartFile.fromPath(
           'property_images[$i]',
-          propertyImages[i].path,
+          propertyImageFile.path,
           filename: 'property_image_$i.jpg',
         ));
       }
 
-      var response = await request.send();
-      var responseBody = await response.stream.bytesToString();
+      // Log request details
+      BaseApiService.logRequest(
+        url.toString(),
+        'POST',
+        request.headers,
+        request.fields,
+      );
 
-      print("Raw Response: $responseBody"); // Debugging step
+      // Send request
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
 
-      try {
-        var response = await request.send();
-        var responseBody = await response.stream.bytesToString();
+      // Log response
+      BaseApiService.logResponse(
+        url.toString(),
+        response.statusCode,
+        response.body,
+      );
 
-        print("Raw Response: $responseBody"); // Debugging step
-
-        var data = json.decode(responseBody);
-        return data;
-      } catch (e) {
-        print("Error updating property: $e");
-        throw Exception('Failed to update property: $e');
+      // Check if response is HTML
+      if (response.body.trim().startsWith('<!DOCTYPE html>')) {
+        throw ApiException(
+            'Server returned HTML instead of JSON. Please try again.');
       }
-    } else {
-      AppUtils.getSnackBarNoInternet();
-      throw Exception('No internet connectivity');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final decodedResponse = json.decode(response.body);
+        return decodedResponse;
+      } else {
+        throw ApiException(
+          'Failed to update property. Status code: ${response.statusCode}',
+          statusCode: response.statusCode,
+        );
+      }
+    } catch (e) {
+      print("Error updating property: $e");
+      if (e is ApiException) {
+        rethrow;
+      }
+      throw ApiException('Failed to update property: $e');
     }
   }
 
@@ -504,30 +530,25 @@ class PropertyServices extends BaseApiService {
       if (!await ConnectivityUtility.checkInternetConnectivity()) {
         return {
           'status': false,
-          'message': 'No internet connection. Please check your network settings.'
+          'message':
+              'No internet connection. Please check your network settings.'
         };
       }
-      
+
       var token = await Preferences.getToken();
-      Uri url = Uri.parse("${AppUrls.getApprovedContractProperty}?page=$pageKey");
-      
+      Uri url =
+          Uri.parse("${AppUrls.getApprovedContractProperty}?page=$pageKey");
+
       // Log request
       BaseApiService.logRequest(
-        url.toString(), 
-        'GET', 
-        getHeader(userToken: token), 
-        null
-      );
-      
+          url.toString(), 'GET', getHeader(userToken: token), null);
+
       var response = await http.get(url, headers: getHeader(userToken: token));
-      
+
       // Log response
       BaseApiService.logResponse(
-        url.toString(), 
-        response.statusCode, 
-        response.body
-      );
-      
+          url.toString(), response.statusCode, response.body);
+
       // Check if response is HTML
       if (response.body.trim().startsWith('<!DOCTYPE html>')) {
         print("Received HTML response instead of JSON");
@@ -536,10 +557,10 @@ class PropertyServices extends BaseApiService {
           'message': 'Server returned HTML instead of JSON. Please try again.'
         };
       }
-      
+
       if (response.statusCode == 200) {
         final decodedResponse = json.decode(response.body);
-        
+
         return decodedResponse;
       } else {
         return {
@@ -549,17 +570,18 @@ class PropertyServices extends BaseApiService {
       }
     } catch (e) {
       print("Error in getRentedProperties: $e");
-      
+
       // Log error
-      BaseApiService.logError(AppUrls.getApprovedContractProperty, e.toString());
-      
+      BaseApiService.logError(
+          AppUrls.getApprovedContractProperty, e.toString());
+
       if (e is FormatException) {
         return {
           'status': false,
           'message': 'Invalid response format from server'
         };
       }
-      
+
       return {
         'status': false,
         'message': 'Failed to fetch rented properties: ${e.toString()}'

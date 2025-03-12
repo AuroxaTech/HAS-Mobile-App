@@ -538,8 +538,8 @@ class EditMyPropertyScreen extends GetView<MyPropertyDetailController> {
                                     city: controller.newYorkController.text,
                                     amount: amount!,
                                     address: controller.streetController.text,
-                                    lat: 232.43,
-                                    long: 433.433,
+                                    lat: 43.651070,  // Default Toronto latitude
+                                    long: -79.347015, // Default Toronto longitude
                                     areaRange: controller.selectedArea.value
                                         .toString(),
                                     bedroom: controller.selectedBedroom.value,

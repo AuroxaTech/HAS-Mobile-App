@@ -50,7 +50,7 @@ class DashBoardScreen extends GetView<DashboardController> {
                                 width: 60,
                                 height: 60,
                                 imageUrl: controller.getLandlord.value!.landlord
-                                    .user!.profileimage,
+                                    .user?.profileimage ?? '',
                                 errorWidget: (context, e, b) {
                                   return Container(
                                     decoration: BoxDecoration(
@@ -75,7 +75,7 @@ class DashBoardScreen extends GetView<DashboardController> {
                           title: headingText(
                               text: controller.getLandlord.value!.landlord.user
                                       ?.fullname ??
-                                  "",
+                                  "User",
                               fontSize: 24),
                           subtitle: customText(text: "Landlord", fontSize: 14),
                         ),

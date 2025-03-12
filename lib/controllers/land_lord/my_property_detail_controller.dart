@@ -203,23 +203,31 @@ class MyPropertyDetailController extends GetxController {
     required List<XFile> propertyImages,
     required String propertyType,
     required String propertySubType,
-    // required int noOfProperty,
-    // required String propertyType,
-    // required String availabilityStartTime,
-    // required String availabilityEndTime,
     required String description,
   }) async {
-    isLoading.value = true;
-
     try {
-      var data = await propertyService.updateProperty(
-        id: id.value,
+      isLoading.value = true;
+
+      // Validate and constrain lat/long values
+      double validLat = lat;
+      double validLong = long;
+
+      // Ensure latitude is between -90 and 90
+      if (lat < -90) validLat = -90;
+      if (lat > 90) validLat = 90;
+
+      // Ensure longitude is between -180 and 180
+      if (long < -180) validLong = -180;
+      if (long > 180) validLong = 180;
+
+      var result = await propertyService.updateProperty(
+        id: id.value.toString(),
         type: type,
         city: city,
         amount: amount,
         address: address,
-        lat: lat,
-        long: long,
+        lat: validLat,
+        long: validLong,
         areaRange: areaRange,
         bedroom: bedroom,
         bathroom: bathroom,
@@ -227,35 +235,26 @@ class MyPropertyDetailController extends GetxController {
         propertyImages: propertyImages,
         propertyType: propertyType,
         propertySubType: propertySubType,
-        // noOfProperty: noOfProperty,
-        // propertyType: propertyType,
-        // availabilityStartTime: availabilityStartTime,
-        // availabilityEndTime: availabilityEndTime,
         description: description,
       );
 
-      print("Data : $data");
-
-      if (data['success'] == true) {
-        // Handle success scenario
-        debugPrint("Print if ${data["messages"]}");
+      if (result['success'] == true) {
         Get.back();
         Get.back();
         Get.back();
-        AppUtils.getSnackBar("Success",data["message"]);
-
-        isLoading.value = false;
+        AppUtils.getSnackBar("Success", result["message"] ?? "Property updated successfully");
       } else {
-        // Handle error scenario
-        isLoading.value = false;
-        AppUtils.errorSnackBar("Error", data['message']);
+        AppUtils.errorSnackBar("Error", result['message'] ?? "Failed to update property");
       }
     } catch (e) {
-      // Handle general errors
-      print(e);
+      print("Error in updateProperty: $e");
+      String errorMessage = e.toString();
+      if (errorMessage.contains('Numeric value out of range')) {
+        errorMessage = 'Invalid latitude or longitude values. Please provide valid coordinates.';
+      }
+      AppUtils.errorSnackBar("Error", errorMessage);
+    } finally {
       isLoading.value = false;
-      AppUtils.errorSnackBar("Error", e.toString());
-      rethrow;
     }
   }
 

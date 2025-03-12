@@ -91,8 +91,10 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                           isApproved = latestRequest.approved ?? 0;
                         }
 
-                        String imagesString = item.serviceImages.toString();
-                        List<String> imageList = imagesString.split(',');
+                        String imageUrl = AppIcons.appLogo;
+                        if (item.serviceImages.isNotEmpty) {
+                          imageUrl = item.serviceImages[0].imagePath;
+                        }
 
                         print(item.isFavorite);
                         print("is Applied => ${item.isApplied}");
@@ -103,7 +105,12 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                             onTap: () {
                               Get.toNamed(
                                 kServiceListingScreenDetail,
-                                arguments: [item.id, imageList],
+                                arguments: [
+                                  item.id,
+                                  item.serviceImages
+                                      .map((img) => img.imagePath)
+                                      .toList()
+                                ],
                               );
                             },
                             child: Container(
@@ -143,7 +150,7 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                                                   borderRadius:
                                                       BorderRadius.circular(10),
                                                   child: CachedNetworkImage(
-                                                    imageUrl: imageList[0],
+                                                    imageUrl: imageUrl,
                                                     width: 60,
                                                     height: 70,
                                                     fit: BoxFit.cover,
@@ -304,7 +311,7 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                                                             item.description,
                                                             item.userId,
                                                             item.id,
-                                                            imageList[0],
+                                                            imageUrl,
                                                             item.country,
                                                             item.city,
                                                             item.yearExperience,

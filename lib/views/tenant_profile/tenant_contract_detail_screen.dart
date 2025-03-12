@@ -60,17 +60,16 @@ class TenantContractDetailScreen extends GetView<ContractDetailController> {
                                     ),
                                     CircleAvatar(
                                       radius: 50,
-                                      backgroundImage: controller
-                                                  .getContractOne
-                                                  .value!
-                                                  .user.profileImage ==
+                                      backgroundImage: controller.getContractOne
+                                                  .value!.user.profileImage ==
                                               ""
                                           ? const AssetImage(AppIcons.appLogo)
                                           : CachedNetworkImageProvider(
                                                   controller
                                                       .getContractOne
                                                       .value!
-                                                      .user.profileImage!)
+                                                      .user
+                                                      .profileImage!)
                                               as ImageProvider,
                                     ),
                                     // const Icon(
@@ -167,13 +166,13 @@ class TenantContractDetailScreen extends GetView<ContractDetailController> {
                                       const SizedBox(
                                         height: 2,
                                       ),
-                                      customText(
-                                          text: controller.getContractOne.value!
-                                                  .property.user?.email ??
-                                              "",
-                                          color: blackColor,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500),
+                                      // customText(
+                                      //     text: controller.getContractOne.value!
+                                      //             .property?.user?.email ??
+                                      //         "",
+                                      //     color: blackColor,
+                                      //     fontSize: 18,
+                                      //     fontWeight: FontWeight.w500),
                                       Divider(
                                         color: Colors.grey.shade200,
                                       ),
