@@ -34,14 +34,24 @@ class DashboardController extends GetxController
 
       if (result['success'] == true && result['payload'] != null) {
         final payload = result['payload'];
-        final data = {
-          'landlord': payload['landlord'],
-          'total_properties': payload['total_properties'] ?? 0,
-          'pending_contract': payload['pending_contract'] ?? 0,
-          'total_spend': payload['total_rent_income'] ?? 0,
+        final landlordData = {
+          'landlord': {
+            'id': payload['landlord']?['id'],
+            'full_name': payload['landlord']?['full_name'],
+            'email': payload['landlord']?['email'],
+            'phone_number': payload['landlord']?['phone_number'],
+            'profile_image': payload['landlord']?['profile_image'],
+            'user': {
+              'fullname': payload['landlord']?['full_name'],
+              'profileimage': payload['landlord']?['profile_image'],
+            },
+          },
+          'total_properties': payload['total_properties'],
+          'pending_contract': payload['pending_contract'],
+          'total_spend': payload['total_rent_income'],
         };
 
-        getLandlord.value = LandLordData.fromJson(data);
+        getLandlord.value = LandLordData.fromJson(landlordData);
         print("Landlord data loaded successfully");
       } else {
         print("Invalid response format: ${result['message']}");

@@ -40,14 +40,14 @@ class LandLordData {
 
   LandLordData({
     required this.landlord,
-    required this.totalProperties,
-    this.pendingContract = 0, // Default value
-    required this.totalSpend,
+    this.totalProperties = 0,
+    this.pendingContract = 0,
+    this.totalSpend = 0,
   });
 
   factory LandLordData.fromJson(Map<String, dynamic> json) {
     return LandLordData(
-      landlord: Landlord.fromJson(json['landlord']),
+      landlord: Landlord.fromJson(json['landlord'] ?? {}),
       totalProperties: json['total_properties'] ?? 0,
       pendingContract: json['pending_contract'] ?? 0,
       totalSpend: json['total_spend'] ?? 0,
@@ -63,19 +63,19 @@ class LandLordData {
 }
 
 class Landlord {
-  final int id;
-  final String fullName;
-  final String email;
-  final String phoneNumber;
-  final String profileImage;
+  final int? id;
+  final String? fullName;
+  final String? email;
+  final String? phoneNumber;
+  final String? profileImage;
   final User? user;
 
   Landlord({
-    required this.id,
-    required this.fullName,
-    required this.email,
-    required this.phoneNumber,
-    required this.profileImage,
+    this.id,
+    this.fullName,
+    this.email,
+    this.phoneNumber,
+    this.profileImage,
     this.user,
   });
 
@@ -86,9 +86,9 @@ class Landlord {
       email: json['email'],
       phoneNumber: json['phone_number'],
       profileImage: json['profile_image'],
-      user: User(
-        fullname: json['full_name'],
-        profileimage: json['profile_image'],
+      user: json['user'] != null ? User.fromJson(json['user']) : User(
+        fullname: json['full_name'] ?? '',
+        profileimage: json['profile_image'] ?? '',
       ),
     );
   }
@@ -99,7 +99,7 @@ class Landlord {
     "email": email,
     "phone_number": phoneNumber,
     "profile_image": profileImage,
-    "user": user,
+    "user": user?.toJson(),
   };
 }
 
@@ -111,6 +111,13 @@ class User {
     required this.fullname,
     required this.profileimage,
   });
+
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      fullname: json['fullname'] ?? '',
+      profileimage: json['profileimage'] ?? '',
+    );
+  }
 
   Map<String, dynamic> toJson() => {
     "fullname": fullname,

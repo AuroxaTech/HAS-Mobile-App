@@ -1,19 +1,13 @@
-import 'dart:convert';
-
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:property_app/models/propert_model/contract_model.dart';
-import 'package:property_app/models/service_provider_model/all_services.dart';
 import 'package:property_app/services/property_services/add_services.dart';
 
-import '../../models/service_provider_model/get_services.dart';
 import '../../utils/utils.dart';
 
-class ContractDetailController extends GetxController{
-
+class ContractDetailController extends GetxController {
   ServiceProviderServices servicesService = ServiceProviderServices();
   Rx<bool> isLoading = false.obs;
-  Rx<Contracts?> getContractOne = Rx<Contracts?>(null);
+  Rx<ContractDetail?> getContractOne = Rx<ContractDetail?>(null);
   List<String> images = [];
   @override
   void onInit() {
@@ -23,7 +17,6 @@ class ContractDetailController extends GetxController{
     getContractDetail(id: data);
     super.onInit();
   }
-
 
   Future<void> getContractDetail({required int id}) async {
     print("we are in get contract");
@@ -40,7 +33,7 @@ class ContractDetailController extends GetxController{
 
         print("Data :: $data");
         if (getContractOne != null) {
-          getContractOne.value = Contracts.fromJson(data);
+          getContractOne.value = ContractDetail.fromJson(data);
         } else {
           print("contract is null");
         }
@@ -56,7 +49,10 @@ class ContractDetailController extends GetxController{
     }
   }
 
-  Future<void> acceptContractRequest({required int contractId, required String status,}) async {
+  Future<void> acceptContractRequest({
+    required int contractId,
+    required String status,
+  }) async {
     isLoading.value = true;
 
     try {
@@ -81,5 +77,4 @@ class ContractDetailController extends GetxController{
       isLoading.value = false;
     }
   }
-
 }

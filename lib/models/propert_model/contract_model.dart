@@ -2,8 +2,6 @@
 //
 //     final contractModel = contractModelFromJson(jsonString);
 
-import 'dart:convert';
-
 // ContractModel contractModelFromJson(String str) => ContractModel.fromJson(json.decode(str));
 //
 // String contractModelToJson(ContractModel data) => json.encode(data.toJson());
@@ -31,6 +29,135 @@ import 'dart:convert';
 //     "message": message,
 //   };
 // }
+
+class ContractDetail {
+  final int id;
+  final int userId;
+  final String status;
+  final int propertyId;
+  final String landlordName;
+  final String landlordAddress;
+  final String landlordPhone;
+  final String tenantName;
+  final String tenantAddress;
+  final String tenantPhone;
+  final String tenantEmail;
+  final int occupants;
+  final String premisesAddress;
+  final String propertyType;
+  final String leaseStartDate;
+  final String leaseEndDate;
+  final String leaseType;
+  final String rentAmount;
+  final String rentDueDate;
+  final String rentPaymentMethod;
+  final String securityDepositAmount;
+  final String includedUtilities;
+  final String tenantResponsibilities;
+  final String emergencyContactName;
+  final String emergencyContactPhone;
+  final String emergencyContactAddress;
+  final String buildingSuperintendentName;
+  final String buildingSuperintendentAddress;
+  final String buildingSuperintendentPhone;
+  final int rentIncreaseNoticePeriod;
+  final int noticePeriodForTermination;
+  final String latePaymentFee;
+  final String rentalIncentives;
+  final String additionalTerms;
+  final String createdAt;
+  final String updatedAt;
+  final Property? property;
+  final User user;
+  dynamic propertys;
+
+  ContractDetail({
+    required this.id,
+    required this.userId,
+    required this.status,
+    required this.propertyId,
+    required this.landlordName,
+    required this.landlordAddress,
+    required this.landlordPhone,
+    required this.tenantName,
+    required this.tenantAddress,
+    required this.tenantPhone,
+    required this.tenantEmail,
+    required this.occupants,
+    required this.premisesAddress,
+    required this.propertyType,
+    required this.leaseStartDate,
+    required this.leaseEndDate,
+    required this.leaseType,
+    required this.rentAmount,
+    required this.rentDueDate,
+    required this.rentPaymentMethod,
+    required this.securityDepositAmount,
+    required this.includedUtilities,
+    required this.tenantResponsibilities,
+    required this.emergencyContactName,
+    required this.emergencyContactPhone,
+    required this.emergencyContactAddress,
+    required this.buildingSuperintendentName,
+    required this.buildingSuperintendentAddress,
+    required this.buildingSuperintendentPhone,
+    required this.rentIncreaseNoticePeriod,
+    required this.noticePeriodForTermination,
+    required this.latePaymentFee,
+    required this.rentalIncentives,
+    required this.additionalTerms,
+    required this.createdAt,
+    required this.updatedAt,
+    this.property,
+    required this.user,
+    required this.propertys,
+  });
+
+  factory ContractDetail.fromJson(Map<String, dynamic> json) {
+    return ContractDetail(
+      id: json['id'],
+      userId: json['user_id'],
+      status: json['status'],
+      propertyId: json['property_id'],
+      landlordName: json['landlordName'],
+      landlordAddress: json['landlordAddress'],
+      landlordPhone: json['landlordPhone'],
+      tenantName: json['tenantName'],
+      tenantAddress: json['tenantAddress'],
+      tenantPhone: json['tenantPhone'],
+      tenantEmail: json['tenantEmail'],
+      occupants: json['occupants'],
+      premisesAddress: json['premisesAddress'],
+      propertyType: json['propertyType'],
+      leaseStartDate: json['leaseStartDate'],
+      leaseEndDate: json['leaseEndDate'],
+      leaseType: json['leaseType'],
+      rentAmount: json['rentAmount'],
+      rentDueDate: json['rentDueDate'],
+      rentPaymentMethod: json['rentPaymentMethod'],
+      securityDepositAmount: json['securityDepositAmount'],
+      includedUtilities: json['includedUtilities'],
+      tenantResponsibilities: json['tenantResponsibilities'],
+      emergencyContactName: json['emergencyContactName'],
+      emergencyContactPhone: json['emergencyContactPhone'],
+      emergencyContactAddress: json['emergencyContactAddress'],
+      buildingSuperintendentName: json['buildingSuperintendentName'],
+      buildingSuperintendentAddress: json['buildingSuperintendentAddress'],
+      buildingSuperintendentPhone: json['buildingSuperintendentPhone'],
+      rentIncreaseNoticePeriod: json['rentIncreaseNoticePeriod'],
+      noticePeriodForTermination: json['noticePeriodForTermination'],
+      latePaymentFee: json['latePaymentFee'],
+      rentalIncentives: json['rentalIncentives'],
+      additionalTerms: json['additionalTerms'],
+      createdAt: json['created_at'],
+      updatedAt: json['updated_at'],
+      propertys: json["property"],
+      // property:
+      //     json['property'] == null ? null : Property.fromJson(json['property']),
+      user: User.fromJson(json['user']),
+    );
+  }
+}
 
 class Contracts {
   final int id;
@@ -69,10 +196,6 @@ class Contracts {
   final String additionalTerms;
   final String createdAt;
   final String updatedAt;
-  final Property property;
-  final User user;
-  dynamic propertys;
-
 
   Contracts({
     required this.id,
@@ -111,12 +234,7 @@ class Contracts {
     required this.additionalTerms,
     required this.createdAt,
     required this.updatedAt,
-    required this.property,
-    required this.user,
-    required this.propertys,
-
   });
-
 
   factory Contracts.fromJson(Map<String, dynamic> json) {
     return Contracts(
@@ -156,10 +274,6 @@ class Contracts {
       additionalTerms: json['additionalTerms'],
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
-      propertys: json["property"],
-
-      property: Property.fromJson(json['property'] ?? ""),
-      user: User.fromJson(json['user']),
     );
   }
 }
@@ -232,7 +346,6 @@ class Property {
   }
 }
 
-
 class User {
   final int id;
   final String fullName;
@@ -294,8 +407,6 @@ class User {
     );
   }
 }
-
-
 
 class Landlord {
   int id;

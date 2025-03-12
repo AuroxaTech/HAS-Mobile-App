@@ -730,7 +730,6 @@ class SignUpScreen extends GetView<SignUpController> {
                     icon: const Icon(Icons.calendar_month)),
               ),
         h15,
-        labelText("Main Services You Offer"),
         h10,
         CustomTextField(
           maxLines: 5,
