@@ -417,7 +417,18 @@ class JobsScreen extends GetView<JobScreenController> { // Changed to JobListCon
             if (controller.rejectedJobController.itemList != null) {
               controller.rejectedJobController.itemList!.clear();
             }
+            if (controller.acceptedJobController.itemList != null) {
+              controller.acceptedJobController.itemList!.clear();
+            }
+            controller.pending.value = true;
+            controller.completed.value = false;
+            controller.reject.value = false;
+            controller.accepted.value = false;
+
             await Future.microtask(() => controller.getServiceJobs(1, 'pending'));
+            await Future.microtask(() => controller.getServiceJobs(1, 'completed'));
+            await Future.microtask(() => controller.getServiceJobs(1, 'rejected'));
+            await Future.microtask(() => controller.getServiceJobs(1, 'accepted'));
           },
           child: Padding(
             padding: const EdgeInsets.all(18.0),
@@ -428,23 +439,21 @@ class JobsScreen extends GetView<JobScreenController> { // Changed to JobListCon
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
                   children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: topContainer(
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          topContainer(
                             onTap: () {
                               controller.pending.value = true;
                               controller.completed.value = false;
                               controller.reject.value = false;
+                              controller.accepted.value = false;
+
                               if (controller.pendingJobController.itemList != null) {
                                 controller.pendingJobController.itemList!.clear();
                               }
-                              if (controller.completedJobController.itemList != null) {
-                                controller.completedJobController.itemList!.clear();
-                              }
-                              if (controller.rejectedJobController.itemList != null) {
-                                controller.rejectedJobController.itemList!.clear();
-                              }
+
                               controller.getServiceJobs(1, 'pending');
                             },
                             text:
@@ -456,23 +465,40 @@ class JobsScreen extends GetView<JobScreenController> { // Changed to JobListCon
                                 ? primaryColor
                                 : greyColor,
                           ),
-                        ),
-                        w10,
-                        Expanded(
-                          child: topContainer(
+                          w10,
+                          topContainer(
+                            onTap: () {
+                              controller.pending.value = false;
+                              controller.completed.value = false;
+                              controller.reject.value = false;
+                              controller.accepted.value = true;
+
+                              if (controller.acceptedJobController.itemList != null) {
+                                controller.acceptedJobController.itemList!.clear();
+                              }
+                              controller.getServiceJobs(1, 'accepted');
+                            },
+                            text:
+                            "Accepted(${controller.acceptedJobController.itemList?.length ?? 0})",
+                            textColor: controller.accepted.value
+                                ? primaryColor
+                                : greyColor,
+                            borderColor: controller.accepted.value
+                                ? primaryColor
+                                : greyColor,
+                          ),
+                          w10,
+                          topContainer(
                             onTap: () {
                               controller.pending.value = false;
                               controller.completed.value = true;
                               controller.reject.value = false;
-                              if (controller.pendingJobController.itemList != null) {
-                                controller.pendingJobController.itemList!.clear();
-                              }
+                              controller.accepted.value = false;
+
                               if (controller.completedJobController.itemList != null) {
                                 controller.completedJobController.itemList!.clear();
                               }
-                              if (controller.rejectedJobController.itemList != null) {
-                                controller.rejectedJobController.itemList!.clear();
-                              }
+
                               controller.getServiceJobs(1, 'completed');
                             },
                             text:
@@ -484,20 +510,14 @@ class JobsScreen extends GetView<JobScreenController> { // Changed to JobListCon
                                 ? primaryColor
                                 : greyColor,
                           ),
-                        ),
-                        w10,
-                        Expanded(
-                          child: topContainer(
+                          w10,
+                          topContainer(
                             onTap: () {
                               controller.pending.value = false;
                               controller.completed.value = false;
+                              controller.accepted.value = false;
                               controller.reject.value = true;
-                              if (controller.pendingJobController.itemList != null) {
-                                controller.pendingJobController.itemList!.clear();
-                              }
-                              if (controller.completedJobController.itemList != null) {
-                                controller.completedJobController.itemList!.clear();
-                              }
+
                               if (controller.rejectedJobController.itemList != null) {
                                 controller.rejectedJobController.itemList!.clear();
                               }
@@ -512,60 +532,61 @@ class JobsScreen extends GetView<JobScreenController> { // Changed to JobListCon
                                 ? primaryColor
                                 : greyColor,
                           ),
-                        ),
-                        w10,
-                        // Expanded(
-                        //   child: topContainer(
-                        //     onTap: () {
-                        //       controller.pending.value = false;
-                        //       controller.completed.value = false;
-                        //       controller.reject.value = false;
-                        //       controller.accepted.value = true; // Set accepted
-                        //       controller.cancelled.value = false; // Reset cancelled
-                        //       controller.pendingJobController.itemList!.clear();
-                        //       controller.completedJobController.itemList!.clear();
-                        //       controller.rejectedJobController.itemList!.clear();
-                        //       controller.acceptedJobController.itemList!.clear(); // Clear accepted
-                        //       controller.cancelledJobController.itemList!.clear(); // Clear cancelled
-                        //       controller.getServiceJobs(1, 'accepted'); // Pass status
-                        //     },
-                        //     text:
-                        //     "Accepted(${controller.acceptedJobController.itemList?.length ?? 0})",
-                        //     textColor: controller.accepted.value
-                        //         ? primaryColor
-                        //         : greyColor,
-                        //     borderColor: controller.accepted.value
-                        //         ? primaryColor
-                        //         : greyColor,
-                        //   ),
-                        // ),
-                        // w10,
-                        // Expanded(
-                        //   child: topContainer(
-                        //     onTap: () {
-                        //       controller.pending.value = false;
-                        //       controller.completed.value = false;
-                        //       controller.reject.value = false;
-                        //       controller.accepted.value = false; // Reset accepted
-                        //       controller.cancelled.value = true; // Set cancelled
-                        //       controller.pendingJobController.itemList!.clear();
-                        //       controller.completedJobController.itemList!.clear();
-                        //       controller.rejectedJobController.itemList!.clear();
-                        //       controller.acceptedJobController.itemList!.clear(); // Clear accepted
-                        //       controller.cancelledJobController.itemList!.clear(); // Clear cancelled
-                        //       controller.getServiceJobs(1, 'cancelled'); // Pass status
-                        //     },
-                        //     text:
-                        //     "Cancelled(${controller.cancelledJobController.itemList?.length ?? 0})",
-                        //     textColor: controller.cancelled.value
-                        //         ? primaryColor
-                        //         : greyColor,
-                        //     borderColor: controller.cancelled.value
-                        //         ? primaryColor
-                        //         : greyColor,
-                        //   ),
-                        // ),
-                      ],
+
+                          w10,
+                          // Expanded(
+                          //   child: topContainer(
+                          //     onTap: () {
+                          //       controller.pending.value = false;
+                          //       controller.completed.value = false;
+                          //       controller.reject.value = false;
+                          //       controller.accepted.value = true; // Set accepted
+                          //       controller.cancelled.value = false; // Reset cancelled
+                          //       controller.pendingJobController.itemList!.clear();
+                          //       controller.completedJobController.itemList!.clear();
+                          //       controller.rejectedJobController.itemList!.clear();
+                          //       controller.acceptedJobController.itemList!.clear(); // Clear accepted
+                          //       controller.cancelledJobController.itemList!.clear(); // Clear cancelled
+                          //       controller.getServiceJobs(1, 'accepted'); // Pass status
+                          //     },
+                          //     text:
+                          //     "Accepted(${controller.acceptedJobController.itemList?.length ?? 0})",
+                          //     textColor: controller.accepted.value
+                          //         ? primaryColor
+                          //         : greyColor,
+                          //     borderColor: controller.accepted.value
+                          //         ? primaryColor
+                          //         : greyColor,
+                          //   ),
+                          // ),
+                          // w10,
+                          // Expanded(
+                          //   child: topContainer(
+                          //     onTap: () {
+                          //       controller.pending.value = false;
+                          //       controller.completed.value = false;
+                          //       controller.reject.value = false;
+                          //       controller.accepted.value = false; // Reset accepted
+                          //       controller.cancelled.value = true; // Set cancelled
+                          //       controller.pendingJobController.itemList!.clear();
+                          //       controller.completedJobController.itemList!.clear();
+                          //       controller.rejectedJobController.itemList!.clear();
+                          //       controller.acceptedJobController.itemList!.clear(); // Clear accepted
+                          //       controller.cancelledJobController.itemList!.clear(); // Clear cancelled
+                          //       controller.getServiceJobs(1, 'cancelled'); // Pass status
+                          //     },
+                          //     text:
+                          //     "Cancelled(${controller.cancelledJobController.itemList?.length ?? 0})",
+                          //     textColor: controller.cancelled.value
+                          //         ? primaryColor
+                          //         : greyColor,
+                          //     borderColor: controller.cancelled.value
+                          //         ? primaryColor
+                          //         : greyColor,
+                          //   ),
+                          // ),
+                        ],
+                      ),
                     ),
                     h15,
                     controller.pending.value
@@ -608,8 +629,8 @@ class JobsScreen extends GetView<JobScreenController> { // Changed to JobListCon
                             children: [
                               jobWidget(
                                 context,
-                                image: item.serviceImages.isNotEmpty && item.serviceImages[0] is String ?
-                                    item.serviceImages[0] : "https://tse2.mm.bing.net/th?id=OIP.t9Ra4_Fudgqfn9B_hCFuOAHaE7&pid=Api",
+                                image: item.serviceImages.isNotEmpty  ?
+                                    item.serviceImages[0].imagePath : "https://tse2.mm.bing.net/th?id=OIP.t9Ra4_Fudgqfn9B_hCFuOAHaE7&pid=Api",
                                 title: item.serviceName ?? 'No Service Name',
                                 contactDetail: item.user.email ?? 'No Email',
                                 clientName: item.user.fullName ?? 'No Client Name',
@@ -670,8 +691,8 @@ class JobsScreen extends GetView<JobScreenController> { // Changed to JobListCon
                               children: [
                                 jobWidget(
                                   context,
-                                  image: item.serviceImages.isNotEmpty && item.serviceImages[0] is String ?
-                                  item.serviceImages[0] : "https://tse2.mm.bing.net/th?id=OIP.t9Ra4_Fudgqfn9B_hCFuOAHaE7&pid=Api",
+                                    image: item.serviceImages.isNotEmpty  ?
+                                    item.serviceImages[0].imagePath : "https://tse2.mm.bing.net/th?id=OIP.t9Ra4_Fudgqfn9B_hCFuOAHaE7&pid=Api",
                                   title: item.serviceName ?? 'No Service Name',
                                   contactDetail: item.user.email ?? 'No Email',
                                   clientName: item.user.fullName ?? 'No Client Name',
@@ -681,6 +702,11 @@ class JobsScreen extends GetView<JobScreenController> { // Changed to JobListCon
                                   clientTime: requestTime,
                                   requestTime: requestTime,
                                   requestDate: requestDate,
+                                  detailTap: (){
+                                    print(item.id);
+                                    Get.toNamed(kJobDetailScreen,
+                                        arguments: item.id);
+                                  }
                                   // detailTap: (){
                                   //   Get.toNamed(kJobDetailScreen, arguments: item.id );
                                   // }
@@ -729,8 +755,8 @@ class JobsScreen extends GetView<JobScreenController> { // Changed to JobListCon
                               children: [
                                 jobWidget(
                                   context,
-                                  image: item.serviceImages.isNotEmpty && item.serviceImages[0] is String ?
-                                  item.serviceImages[0] : "https://tse2.mm.bing.net/th?id=OIP.t9Ra4_Fudgqfn9B_hCFuOAHaE7&pid=Api",
+                                    image: item.serviceImages.isNotEmpty  ?
+                                    item.serviceImages[0].imagePath : "https://tse2.mm.bing.net/th?id=OIP.t9Ra4_Fudgqfn9B_hCFuOAHaE7&pid=Api",
                                   title: item.serviceName ?? 'No Service Name',
                                   contactDetail: item.user.email ?? 'No Email',
                                   clientName: item.user.fullName ?? 'No Client Name',
@@ -740,9 +766,72 @@ class JobsScreen extends GetView<JobScreenController> { // Changed to JobListCon
                                   clientTime: requestTime,
                                   requestTime: requestTime,
                                   requestDate: requestDate,
-                                  // detailTap: (){
-                                  //   Get.toNamed(kJobDetailScreen, arguments: item.id );
-                                  // }
+                                    detailTap: (){
+                                      print(item.id);
+                                      Get.toNamed(kJobDetailScreen,
+                                          arguments: item.id);
+                                    }
+                                ),
+                                const SizedBox(height: 20),
+                              ],
+                            );
+                          }),
+                    )
+                        : const SizedBox(),
+
+                    controller.accepted.value
+                        ? PagedListView<int, Job>(
+                      shrinkWrap: true,
+                      pagingController:
+                      controller.acceptedJobController,
+                      physics: const BouncingScrollPhysics(),
+                      builderDelegate: PagedChildBuilderDelegate<
+                          Job>(
+                          firstPageErrorIndicatorBuilder:
+                              (context) => MaterialButton(
+                            child: const Text(
+                                "No Data Found, Tap to try again."),
+                            onPressed: () => controller
+                                .acceptedJobController
+                                .refresh(),
+                          ),
+                          newPageErrorIndicatorBuilder: (context) =>
+                              MaterialButton(
+                                child: const Text(
+                                    "Failed to load more items. Tap to try again."),
+                                onPressed: () => controller
+                                    .acceptedJobController
+                                    .retryLastFailedRequest(),
+                              ),
+                          itemBuilder: (context, item, index) {
+                            DateTime? createdAt = item.createdAt;
+                            String requestDate = createdAt != null
+                                ? DateFormat('dd-M-yy').format(createdAt)
+                                : 'N/A';
+                            String requestTime = createdAt != null
+                                ? DateFormat('h:mm a')
+                                .format(createdAt)
+                                : 'N/A';
+                            return Column(
+                              children: [
+                                jobWidget(
+                                  context,
+                                    image: item.serviceImages.isNotEmpty  ?
+                                    item.serviceImages[0].imagePath : "https://tse2.mm.bing.net/th?id=OIP.t9Ra4_Fudgqfn9B_hCFuOAHaE7&pid=Api",
+                                  title: item.serviceName ?? 'No Service Name',
+                                  contactDetail: item.user.email ?? 'No Email',
+                                  clientName: item.user.fullName ?? 'No Client Name',
+                                  location: item.location ?? 'No Location',
+                                  description: item.description ?? 'No Description',
+                                  clientDate: requestDate,
+                                  clientTime: requestTime,
+                                  requestTime: requestTime,
+                                  requestDate: requestDate,
+                                    detailTap: (){
+                                      print(item.id);
+                                      Get.toNamed(kJobDetailScreen,
+                                          arguments: item.id);
+                                    }
                                 ),
                                 const SizedBox(height: 20),
                               ],
@@ -891,7 +980,7 @@ class JobsScreen extends GetView<JobScreenController> { // Changed to JobListCon
           border: Border.all(color: borderColor!),
           borderRadius: BorderRadius.circular(30),
         ),
-        padding: const EdgeInsets.only(top: 8, bottom: 8, left: 2, right: 2),
+        padding: const EdgeInsets.only(top: 8, bottom: 8, left: 10, right: 10),
         child: Center(
           child: customText(text: text, color: textColor, fontSize: 10),
         ),

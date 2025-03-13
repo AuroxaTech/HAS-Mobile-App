@@ -119,7 +119,7 @@ class StripePaymentScreenController extends GetxController {
     print('Payout Response ===> ${response.body}');
     print('Status Code ===> ${response.statusCode}');
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200) {
       Get.snackbar(
           "Payment Successful", "The payment was successfully processed.");
       return true;

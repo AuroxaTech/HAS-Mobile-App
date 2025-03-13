@@ -42,7 +42,7 @@ class PropertyDetailScreen extends GetView<MyPropertyDetailController> {
                             Get.to(
                                 () => ViewImage(
                                     photo: controller.getPropertyOne.value!
-                                        .propertyImages![index]),
+                                        .propertyImages[index]),
                                 transition: routeTransition);
                           },
                           child: CachedNetworkImage(

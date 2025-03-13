@@ -15,7 +15,7 @@ class ServiceRequestDetailScreenController extends GetxController {
   Rx<ServiceRequestProvider?> getServiceRequestOne =
       Rx<ServiceRequestProvider?>(null);
 
-  List<String> images = [];
+  List<ServiceImage> images = [];
   RxInt id = 0.obs;
   @override
   void onInit() {
@@ -40,12 +40,12 @@ class ServiceRequestDetailScreenController extends GetxController {
       print("Data :: $data");
    //   print("User Data :: ${data['user']}");
 
-      getServiceRequestOne.value = ServiceRequestProvider.fromJson(data);
-      String imagesString = getServiceRequestOne.value!.serviceImages == null
-          ? ""
-          : getServiceRequestOne.value!.serviceImages.toString();
-      List<String> imageList = imagesString.split(',');
-      images = imageList;
+       getServiceRequestOne.value = ServiceRequestProvider.fromJson(data);
+      // String imagesString = getServiceRequestOne.value!.serviceImages == null
+      //     ? ""
+      //     : getServiceRequestOne.value!.serviceImages.toString();
+      // List<String> imageList = imagesString.split(',');
+      images = getServiceRequestOne.value!.serviceImages;
       isLoading.value = false;
       // selectedBathrooms.value = int.parse(getPropertyOne.value!.bathroom);
       // selectedBedroom.value = int.parse(getPropertyOne.value!.bedroom);

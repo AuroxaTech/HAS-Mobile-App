@@ -32,24 +32,26 @@ class JobDetailScreen extends GetView<JobDetailController> {
               : Stack(
             children: [
               PageView.builder(
-                itemCount: controller.images.length,
+                itemCount: controller.getServiceRequestOne.value?.serviceImages.length,
                 scrollDirection: Axis.horizontal,
                 controller: controller.pageController,
                 itemBuilder: (context, index) {
-                  String imageUrl = controller.images[index]; // Get image URL directly from controller.images
+                  var imageUrl = controller.getServiceRequestOne.value?.serviceImages[index]; // Get image URL directly from controller.images
+                  
+                  print("imageUrl ${imageUrl!.imagePath}");
 
                   return InkWell(
                     onTap: () {
                       Get.to(
                               () => ViewImage(
-                            photo: AppUrls.mediaImages + imageUrl, // Assuming images in controller.images are relative paths
+                            photo: imageUrl.imagePath, // Assuming images in controller.images are relative paths
                           ),
                           transition: routeTransition);
                     },
                     child: CachedNetworkImage(
                       width: double.infinity,
                       height: screenHeight(context) * 0.5,
-                      imageUrl: AppUrls.mediaImages + imageUrl, // Load image with base URL
+                      imageUrl: imageUrl!.imagePath, // Load image with base URL
                       fit: BoxFit.cover,
                       errorWidget: (context, e, b) {
                         return Image.asset(AppIcons.appLogo);
@@ -358,7 +360,7 @@ class MyDraggable extends GetView<JobDetailController> {
                                 const SizedBox(
                                   height: 10,
                                 ),
-                                Padding(
+                                jobDetail?.status == "pending" || jobDetail?.status == "rejected" || jobDetail?.status == "completed" ? const SizedBox() : Padding(
                                   padding: const EdgeInsets.all(12.0),
                                   child: Row(
                                     children: [

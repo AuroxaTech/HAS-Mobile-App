@@ -1,4 +1,3 @@
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -71,7 +70,9 @@ class ServiceListingDetailScreen
                                     backgroundColor: Colors.transparent,
                                     child: ClipOval(
                                       child: CachedNetworkImage(
-                                        imageUrl: controller.images.isEmpty ? "" : controller.images[0],
+                                        imageUrl: controller.images.isEmpty
+                                            ? ""
+                                            : controller.images[0],
                                         width: 120,
                                         height: 120,
                                         fit: BoxFit.cover,
@@ -826,6 +827,8 @@ class ServiceListingDetailScreen
                                                     .resume,
                                                 controller.getServiceOne.value!
                                                     .pricing,
+                                                controller.getServiceOne.value!
+                                                    .serviceImages
                                               ]);
                                         },
                                         height: 45,

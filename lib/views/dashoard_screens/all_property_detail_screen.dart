@@ -54,7 +54,7 @@ class AllPropertyDetailScreen extends GetView<AllPropertyDetailController> {
                                 Get.to(
                                     () => ViewImage(
                                           photo: controller.getPropertyOne
-                                              .value!.propertyImages![index],
+                                              .value!.propertyImages[index],
                                         ),
                                     transition: routeTransition);
                               },

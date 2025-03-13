@@ -44,12 +44,12 @@ class JobDetailController extends GetxController {
           getServiceRequestOne.value = Job.fromJson(jobData); // Parse directly into Job model
           print("Parsed Job Detail: ${getServiceRequestOne.value?.toJson()}");
 
-          if (getServiceRequestOne.value!.serviceImages != null) {
-            images = getServiceRequestOne.value!.serviceImages.cast<String>().toList(); // Assuming serviceImages is already a list of URLs, cast to String
-            print("Job Detail Images: ${images}");
-          } else {
-            print("Service images are null");
-          }
+          // if (getServiceRequestOne.value!.serviceImages != null) {
+          //   images = getServiceRequestOne.value!.serviceImages.cast<String>().toList(); // Assuming serviceImages is already a list of URLs, cast to String
+          //   print("Job Detail Images: ${images}");
+          // } else {
+          //   print("Service images are null");
+          // }
         } else {
           print("Job data is null or not a Map");
         }
@@ -74,7 +74,7 @@ class JobDetailController extends GetxController {
         jobId: jobId,
         status: status,
       );
-      print(result);
+      print("job response $result");
       if (result['success'] == true) {
         await Get.toNamed(kRateExperienceScreen, arguments: jobId);
         AppUtils.getSnackBar("Success", result['message']);

@@ -60,18 +60,25 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
                       ),
                   itemBuilder: (context, item, index) {
                     print('Service Request ID: ${item.id}');
-                    String imagesString = item.serviceImages == null
-                        ? ""
-                        : item.serviceImages.toString();
-                    List<String> imageList = imagesString.split(',');
+                    String imageUrl = "";
+                    if (item.serviceImages.isNotEmpty) {
+                      imageUrl = item.serviceImages[0].imagePath;
+                      print("First image URL: $imageUrl");
+                    } else {
+                      print("No service images available");
+                    }
                     DateTime? createdAt = item.createdAt;
                     String requestDate = DateFormat('dd-M-yy')
                         .format(createdAt!); // Adjust the pattern as needed
                     String requestTime = DateFormat('h:mm a').format(createdAt);
+
+                    print("images  :: $imageUrl");
+
+
                     return Column(
                       children: [
                         serviceRequestWidget(context,
-                            image: imageList[0],
+                            image: imageUrl,
                             title: item.serviceName ?? "",
                             contactDetail: item.user.email,
                             clientName: item.user.fullName,

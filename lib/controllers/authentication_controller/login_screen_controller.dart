@@ -90,14 +90,34 @@ class LoginScreenController extends GetxController {
       await Preferences.setUserEmail(user["email"]);
       await Preferences.setUserID(user["id"]);
 
-      isLoading.value = false;
+
+
+
+
       AppUtils.getSnackBar("Success", data["message"]);
 
       // Map role and navigate
       int roleId = mapRoleToId(user["role"]);
       print("Mapped role ID: $roleId for role ${user["role"]}");
-      await Preferences.setRoleID(roleId.toString());
 
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+      final String userId = user["id"].toString();
+      await Preferences.setRoleID(roleId.toString());
+        Map<String, dynamic> userDataMap = {
+          'fullname': user["full_name"],
+          'user_name': user["user_name"],
+          'email': user["email"],
+          "userId": userId,
+          'role_id': roleId,
+          "online": true,
+          'profileimage': user["profile_image"],
+          'lastSeen': FieldValue.serverTimestamp(),
+          "deviceToken": "deviceId",
+          'mobileNumber': user["phone_number"],
+          "createdAT": FieldValue.serverTimestamp(),
+        };
+        await firestore.collection('users').doc(userId).set(userDataMap);
+      isLoading.value = false;
       navigateBasedOnRole(roleId);
 
       // await Preferences.setToken(data["token"]);
@@ -126,14 +146,16 @@ class LoginScreenController extends GetxController {
           await firestore.collection('users').doc(userId).get();
 
       Map<String, dynamic> userDataMap = {
-        'fullname': userData["fullname"],
+        'fullname': userData["full_name"],
         'email': userData["email"],
         "userId": userData["id"],
-        'role_id': userData["role_id"],
+        'role_id': userData["role"],
         "online": true,
-        'profileimage': userData["profileimage"],
+        'profileimage': userData["profileImage"],
         'lastSeen': FieldValue.serverTimestamp(),
-        "deviceToken": "deviceId"
+        "deviceToken": "deviceId",
+        'mobileNumber': userData["phone_number"],
+        "createdAT": FieldValue.serverTimestamp(),
       };
 
       if (docSnapshot.exists) {

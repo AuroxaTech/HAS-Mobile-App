@@ -39,27 +39,25 @@ class ServiceRequestDetailScreen
                       controller: controller.pageController,
                       itemBuilder: (context, index) {
                         String imagesString = controller.getServiceRequestOne
-                                    .value!.serviceImages ==
-                                null
-                            ? ""
+                                    .value!.serviceImages == null ? ""
                             : controller
                                 .getServiceRequestOne.value!.serviceImages
                                 .toString();
-                        List<String> imageList = imagesString.split(',');
-                        controller.images = imageList;
+                        // List<String> imageList = imagesString.split(',');
+                        // controller.images = controller.getServiceRequestOne
+                        //     .value!.serviceImages;
                         return InkWell(
                           onTap: () {
                             Get.to(
                                 () => ViewImage(
-                                      photo: AppUrls.mediaImages +
-                                          imageList[index],
+                                      photo: controller.images[index].imagePath,
                                     ),
                                 transition: routeTransition);
                           },
                           child: CachedNetworkImage(
                             width: double.infinity,
                             height: screenHeight(context) * 0.5,
-                            imageUrl: AppUrls.mediaImages + imageList[index],
+                            imageUrl: controller.images[index].imagePath,
                             fit: BoxFit.cover,
                             errorWidget: (context, e, b) {
                               return Image.asset(AppIcons.appLogo);

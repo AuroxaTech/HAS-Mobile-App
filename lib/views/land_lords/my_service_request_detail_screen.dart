@@ -50,7 +50,7 @@ class MyServiceRequestDetailScreen
                     )
                   : Stack(
                       children: [
-                        controller.images.isEmpty
+                        controller.getServiceRequestOne.value!.serviceImages.isEmpty
                             ? Center(
                                 child: Image.asset(
                                   AppIcons.appLogo,
@@ -59,7 +59,7 @@ class MyServiceRequestDetailScreen
                                 ),
                               )
                             : PageView.builder(
-                                itemCount: controller.images.length,
+                                itemCount:  controller.getServiceRequestOne.value!.serviceImages.length,
                                 scrollDirection: Axis.horizontal,
                                 controller: controller.pageController,
                                 itemBuilder: (context, index) {
@@ -67,7 +67,7 @@ class MyServiceRequestDetailScreen
                                     onTap: () {
                                       Get.to(
                                         () => ViewImage(
-                                          photo: controller.images[index],
+                                          photo: controller.getServiceRequestOne.value!.serviceImages[index].imagePath,
                                         ),
                                         transition: routeTransition,
                                       );
@@ -75,7 +75,7 @@ class MyServiceRequestDetailScreen
                                     child: CachedNetworkImage(
                                       width: double.infinity,
                                       height: screenHeight(context) * 0.5,
-                                      imageUrl: controller.images[index],
+                                      imageUrl: controller.getServiceRequestOne.value!.serviceImages[index].imagePath,
                                       fit: BoxFit.cover,
                                       errorWidget: (context, e, b) {
                                         return Image.asset(

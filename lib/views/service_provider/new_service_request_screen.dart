@@ -299,6 +299,7 @@ class NewServiceRequestScreen
                                         controller.data[11].toString(),
                                     resume: controller.data[12].toString(),
                                     price: controller.data[13],
+                                    serviceImages: controller.data[14],
                                     isApplied: 1);
                               }
                             },

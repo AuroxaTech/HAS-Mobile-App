@@ -69,7 +69,7 @@ class CalendarData {
   int isFavorite;
   int? serviceId;
   String? propertyType;
-  List<dynamic> serviceImages;
+  List<ServiceImage> serviceImages;
   List<dynamic> reviews;
   User user;
 
@@ -149,8 +149,10 @@ class CalendarData {
       isFavorite: json["isFavorite"] ?? 0,
       serviceId: json["service_id"],
       propertyType: json["property_type"],
-      serviceImages: json["service_images"] ?? [],
-      reviews: json["reviews"] ?? [],
+      serviceImages: json["service_images"] != null
+          ? List<ServiceImage>.from(
+          json["service_images"].map((x) => ServiceImage.fromJson(x)))
+          : [],      reviews: json["reviews"] ?? [],
       user: User.fromJson(json["user"]),
     );
   }

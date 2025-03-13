@@ -290,8 +290,8 @@ class NewServiceRequestScreenController extends GetxController {
   }
 
   Future<void> newServiceRequest({
-    required String serviceId,
     required String serviceName,
+    required String serviceId,
     required String providerId,
     required String location,
     required double lat,
@@ -311,6 +311,7 @@ class NewServiceRequestScreenController extends GetxController {
     String resume = '',
     required String price,
     required int isApplied,
+    required List<dynamic> serviceImages,
   }) async {
     isLoading.value = true;
 
@@ -337,6 +338,7 @@ class NewServiceRequestScreenController extends GetxController {
         resume: resume,
         providerId: providerId,
         isApplied: isApplied,
+        serviceImages: serviceImages,
       );
 
       if (kDebugMode) {

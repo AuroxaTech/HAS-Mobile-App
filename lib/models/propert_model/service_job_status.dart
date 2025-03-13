@@ -508,6 +508,8 @@
 
 import 'dart:convert';
 
+import '../service_provider_model/all_services.dart';
+
 ServiceStatus serviceStatusFromJson(String str) =>
     ServiceStatus.fromJson(json.decode(str));
 
@@ -691,7 +693,7 @@ class Job { // Renamed from PendingJob and made generic to handle all job types
   dynamic serviceId; // dynamic to handle null
   dynamic propertyType; // dynamic to handle null
   User user;
-  List<dynamic> serviceImages; // Assuming dynamic as type is not specified, based on [] in response
+  List<ServiceImage> serviceImages;
   List<dynamic> reviews; // Assuming dynamic as type is not specified, based on [] in response
 
 
@@ -767,8 +769,12 @@ class Job { // Renamed from PendingJob and made generic to handle all job types
     serviceId: json["service_id"],
     propertyType: json["property_type"],
     user: User.fromJson(json["user"]),
-    serviceImages: json["service_images"] ?? [],
+    serviceImages: json["service_images"] != null
+        ? List<ServiceImage>.from(
+        json["service_images"].map((x) => ServiceImage.fromJson(x)))
+        : [],
     reviews: json["reviews"] ?? [],
+
   );
 
   Map<String, dynamic> toJson() => {

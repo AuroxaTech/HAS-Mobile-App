@@ -73,8 +73,7 @@ class ServiceRequestProvider {
   dynamic serviceId; // dynamic to handle null
   dynamic propertyType; // dynamic to handle null
   User user;
-  List<dynamic>?
-      serviceImages; // Assuming dynamic as type is not specified, based on [] in response
+  List<ServiceImage> serviceImages;
   List<dynamic>
       reviews; // Assuming dynamic as type is not specified, based on [] in response
 
@@ -113,7 +112,7 @@ class ServiceRequestProvider {
     this.serviceId,
     this.propertyType,
     required this.user,
-    this.serviceImages,
+    required this.serviceImages,
     required this.reviews,
   });
 
@@ -157,7 +156,10 @@ class ServiceRequestProvider {
         serviceId: json["service_id"],
         propertyType: json["property_type"],
         user: User.fromJson(json["user"]),
-        // serviceImages: json["service_images"] ?? [],
+        serviceImages: json["service_images"] != null
+            ? List<ServiceImage>.from(
+            json["service_images"].map((x) => ServiceImage.fromJson(x)))
+            : [],
         reviews: json["reviews"] ?? [],
       );
 
