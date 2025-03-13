@@ -138,12 +138,11 @@ class ContractController extends GetxController {
     }
   }
 
-
-
   Future<void> postContract() async {
     try {
       isLoading.value = true;
-      var url = Uri.parse("https://has-backend.wazirafghan.online/api/contract/store");
+      var url = Uri.parse(
+          "https://has-backend.wazirafghan.online/api/contract/store");
 
       String utilities = selectedUtilities.join(', ');
       String responsibilities = selectedResponsibility.join(', ');
@@ -155,28 +154,32 @@ class ContractController extends GetxController {
       print("PropertyID: ${propertyId.value}");
 
       // **Date Formatting using intl - YYYY/MM/DD**
-      DateFormat backendDateFormat = DateFormat('yyyy/MM/dd'); // Define the format
+      DateFormat backendDateFormat =
+          DateFormat('yyyy/MM/dd'); // Define the format
 
       DateTime? startDate;
       DateTime? endDate;
       DateTime? dueDate;
 
       try {
-        startDate = DateFormat('dd-MM-yyyy').parse(leasedStartDateController.text); // Parse assuming DD-MM-YYYY format - adjust if needed
-        endDate = DateFormat('dd-MM-yyyy').parse(leaseEndDateController.text);     // Parse assuming DD-MM-YYYY format - adjust if needed
-        dueDate = DateFormat('dd-MM-yyyy').parse(rentDueDateController.text);       // Parse assuming DD-MM-YYYY format - adjust if needed
+        startDate = DateFormat('dd-MM-yyyy').parse(leasedStartDateController
+            .text); // Parse assuming DD-MM-YYYY format - adjust if needed
+        endDate = DateFormat('dd-MM-yyyy').parse(leaseEndDateController
+            .text); // Parse assuming DD-MM-YYYY format - adjust if needed
+        dueDate = DateFormat('dd-MM-yyyy').parse(rentDueDateController
+            .text); // Parse assuming DD-MM-YYYY format - adjust if needed
       } catch (e) {
         print("Date parsing error: $e"); // Handle parsing errors gracefully
         isLoading.value = false;
-        AppUtils.errorSnackBar("Error", "Invalid date format. Please use DD-MM-YYYY."); // Or your input format
+        AppUtils.errorSnackBar("Error",
+            "Invalid date format. Please use DD-MM-YYYY."); // Or your input format
         return; // Stop execution if date parsing fails
       }
 
-
-      String formattedStartDate = backendDateFormat.format(startDate); // Format to YYYY/MM/DD
+      String formattedStartDate =
+          backendDateFormat.format(startDate); // Format to YYYY/MM/DD
       String formattedEndDate = backendDateFormat.format(endDate);
       String formattedDueDate = backendDateFormat.format(dueDate);
-
 
       var body = {
         "user_id": userId.toString(),
@@ -193,10 +196,10 @@ class ContractController extends GetxController {
         "premisesAddress": premisesAddressController.text,
         "propertyType": propertyType.value,
         "leaseStartDate": formattedStartDate, // Use formatted dates
-        "leaseEndDate": formattedEndDate,   // Use formatted dates
+        "leaseEndDate": formattedEndDate, // Use formatted dates
         "leaseType": leasedType.value,
         "rentAmount": rentAmountController.text,
-        "rentDueDate": formattedDueDate,     // Use formatted dates
+        "rentDueDate": formattedDueDate, // Use formatted dates
         "rentPaymentMethod": paymentType.value,
         "securityDepositAmount": securityDepositAmountController.text,
         "includedUtilities": utilities,
@@ -205,21 +208,27 @@ class ContractController extends GetxController {
         "emergencyContactPhone": emergencyContactPhoneController.text,
         "emergencyContactAddress": emergencyContactAddressController.text,
         "buildingSuperintendentName": buildingSuperintendentNameController.text,
-        "buildingSuperintendentAddress": buildingSuperintendentAddressController.text,
-        "buildingSuperintendentPhone": buildingSuperintendentPhoneController.text,
-        "rentIncreaseNoticePeriod": rentIncreaseNoticePeriodPhoneController.text,
-        "noticePeriodForTermination": int.tryParse(noticePeriodForTerminationController.text),
+        "buildingSuperintendentAddress":
+            buildingSuperintendentAddressController.text,
+        "buildingSuperintendentPhone":
+            buildingSuperintendentPhoneController.text,
+        "rentIncreaseNoticePeriod":
+            rentIncreaseNoticePeriodPhoneController.text,
+        "noticePeriodForTermination":
+            int.tryParse(noticePeriodForTerminationController.text),
         "latePaymentFee": latePaymentFeeController.text,
         "rentalIncentives": rentalIncentivesFeeController.text,
         "additionalTerms": additionalTermsController.text,
-        "status": "1"
+        "status": "0"
       };
 
-      print("Request Body (x-www-form-urlencoded) with Formatted Dates: $body"); // Print with dates
+      print(
+          "Request Body (x-www-form-urlencoded) with Formatted Dates: $body"); // Print with dates
 
       var response = await http.post(
         url,
-        headers: await header(userToken: token, contentType: 'application/json'),
+        headers:
+            await header(userToken: token, contentType: 'application/json'),
         body: jsonEncode(body),
       );
 
@@ -236,7 +245,6 @@ class ContractController extends GetxController {
         AppUtils.errorSnackBar("Error", "Not uploaded");
         throw Exception('Failed to post contract');
       }
-
     } catch (e) {
       isLoading.value = false;
       print("Error during postContract: $e");
@@ -245,7 +253,10 @@ class ContractController extends GetxController {
     }
   }
 
-  Future<Map<String, String>> header({required String? userToken, String contentType = 'application/json'}) async { // **Add contentType parameter**
+  Future<Map<String, String>> header(
+      {required String? userToken,
+      String contentType = 'application/json'}) async {
+    // **Add contentType parameter**
     Map<String, String> headers = {
       'Content-Type': contentType, // **Use contentType parameter**
     };
@@ -255,4 +266,5 @@ class ContractController extends GetxController {
     }
     print("Headers being sent: $headers");
     return headers;
-  }}
+  }
+}

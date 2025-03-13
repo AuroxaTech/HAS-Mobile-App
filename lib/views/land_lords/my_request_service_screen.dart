@@ -52,12 +52,15 @@ class MyServiceRequest extends GetView<MyServiceRequestController> {
                                   imageList = imagesString.split(',');
 
                                   String imageUrl = AppIcons.appLogo;
-                                  
+
                                   // Check if serviceImages exists and has items
-                                  if (controller.getServicesRequestList[index].serviceImages != null && 
-                                      controller.getServicesRequestList[index].serviceImages.isNotEmpty) {
+                                  if (controller.getServicesRequestList[index]
+                                      .serviceImages.isNotEmpty) {
                                     // Access the image_path of the first service image
-                                    imageUrl = controller.getServicesRequestList[index].serviceImages[0].imagePath;
+                                    imageUrl = controller
+                                        .getServicesRequestList[index]
+                                        .serviceImages[0]
+                                        .imagePath;
                                   }
 
                                   return Column(

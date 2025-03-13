@@ -73,7 +73,7 @@ class ServiceRequestProvider {
   dynamic serviceId; // dynamic to handle null
   dynamic propertyType; // dynamic to handle null
   User user;
-  List<dynamic>
+  List<dynamic>?
       serviceImages; // Assuming dynamic as type is not specified, based on [] in response
   List<dynamic>
       reviews; // Assuming dynamic as type is not specified, based on [] in response
@@ -113,7 +113,7 @@ class ServiceRequestProvider {
     this.serviceId,
     this.propertyType,
     required this.user,
-    required this.serviceImages,
+    this.serviceImages,
     required this.reviews,
   });
 
@@ -157,7 +157,7 @@ class ServiceRequestProvider {
         serviceId: json["service_id"],
         propertyType: json["property_type"],
         user: User.fromJson(json["user"]),
-        serviceImages: json["service_images"] ?? [],
+        // serviceImages: json["service_images"] ?? [],
         reviews: json["reviews"] ?? [],
       );
 
@@ -195,7 +195,7 @@ class ServiceRequestProvider {
         "service_id": serviceId,
         "property_type": propertyType,
         "user": user.toJson(),
-        "service_images": List<dynamic>.from(serviceImages.map((x) => x.toJson())),
+        // "service_images": List<dynamic>.from(serviceImages.map((x) => x.toJson())),
         "reviews": reviews,
       };
 }
@@ -465,85 +465,92 @@ class ServiceRequestUser {
     required this.user,
   });
 
-  factory ServiceRequestUser.fromJson(Map<String, dynamic> json) => ServiceRequestUser(
-    id: json["id"],
-    userId: json["user_id"],
-    serviceName: json["service_name"] ?? "",
-    description: json["description"] ?? "",
-    pricing: json["pricing"] ?? "0.00",
-    duration: json["duration"] ?? "0",
-    startTime: json["start_time"] ?? "",
-    endTime: json["end_time"] ?? "",
-    location: json["location"] ?? "",
-    lat: json["lat"] ?? "",
-    long: json["long"] ?? "",
-    additionalInformation: json["additional_information"] ?? "",
-    country: json["country"] ?? "",
-    city: json["city"] ?? "",
-    yearExperience: json["year_experience"] ?? 0,
-    cnicFrontPic: json["cnic_front_pic"],
-    cnicBackPic: json["cnic_back_pic"],
-    certification: json["certification"],
-    resume: json["resume"],
-    createdAt: DateTime.parse(json["created_at"]),
-    updatedAt: DateTime.parse(json["updated_at"]),
-    status: json["status"] ?? "pending",
-    providerId: json["provider_id"],
-    serviceType: json["service_type"] ?? "request",
-    paymentStatus: json["payment_status"] ?? "pending",
-    postalCode: json["postal_code"],
-    isApplied: json["is_applied"] ?? 0,
-    assignedAt: json["assigned_at"] != null ? DateTime.parse(json["assigned_at"]) : null,
-    completedAt: json["completed_at"] != null ? DateTime.parse(json["completed_at"]) : null,
-    isFavorite: json["isFavorite"] ?? 0,
-    serviceId: json["service_id"],
-    propertyType: json["property_type"],
-    serviceImages: json["service_images"] != null 
-        ? List<ServiceImage>.from(json["service_images"].map((x) => ServiceImage.fromJson(x)))
-        : [],
-    favourites: json["favourites"] ?? [],
-    reviews: json["reviews"] ?? [],
-    user: User.fromJson(json["user"]),
-  );
+  factory ServiceRequestUser.fromJson(Map<String, dynamic> json) =>
+      ServiceRequestUser(
+        id: json["id"],
+        userId: json["user_id"],
+        serviceName: json["service_name"] ?? "",
+        description: json["description"] ?? "",
+        pricing: json["pricing"] ?? "0.00",
+        duration: json["duration"] ?? "0",
+        startTime: json["start_time"] ?? "",
+        endTime: json["end_time"] ?? "",
+        location: json["location"] ?? "",
+        lat: json["lat"] ?? "",
+        long: json["long"] ?? "",
+        additionalInformation: json["additional_information"] ?? "",
+        country: json["country"] ?? "",
+        city: json["city"] ?? "",
+        yearExperience: json["year_experience"] ?? 0,
+        cnicFrontPic: json["cnic_front_pic"],
+        cnicBackPic: json["cnic_back_pic"],
+        certification: json["certification"],
+        resume: json["resume"],
+        createdAt: DateTime.parse(json["created_at"]),
+        updatedAt: DateTime.parse(json["updated_at"]),
+        status: json["status"] ?? "pending",
+        providerId: json["provider_id"],
+        serviceType: json["service_type"] ?? "request",
+        paymentStatus: json["payment_status"] ?? "pending",
+        postalCode: json["postal_code"],
+        isApplied: json["is_applied"] ?? 0,
+        assignedAt: json["assigned_at"] != null
+            ? DateTime.parse(json["assigned_at"])
+            : null,
+        completedAt: json["completed_at"] != null
+            ? DateTime.parse(json["completed_at"])
+            : null,
+        isFavorite: json["isFavorite"] ?? 0,
+        serviceId: json["service_id"],
+        propertyType: json["property_type"],
+        serviceImages: json["service_images"] != null
+            ? List<ServiceImage>.from(
+                json["service_images"].map((x) => ServiceImage.fromJson(x)))
+            : [],
+        favourites: json["favourites"] ?? [],
+        reviews: json["reviews"] ?? [],
+        user: User.fromJson(json["user"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "user_id": userId,
-    "service_name": serviceName,
-    "description": description,
-    "pricing": pricing,
-    "duration": duration,
-    "start_time": startTime,
-    "end_time": endTime,
-    "location": location,
-    "lat": lat,
-    "long": long,
-    "additional_information": additionalInformation,
-    "country": country,
-    "city": city,
-    "year_experience": yearExperience,
-    "cnic_front_pic": cnicFrontPic,
-    "cnic_back_pic": cnicBackPic,
-    "certification": certification,
-    "resume": resume,
-    "created_at": createdAt.toIso8601String(),
-    "updated_at": updatedAt.toIso8601String(),
-    "status": status,
-    "provider_id": providerId,
-    "service_type": serviceType,
-    "payment_status": paymentStatus,
-    "postal_code": postalCode,
-    "is_applied": isApplied,
-    "assigned_at": assignedAt?.toIso8601String(),
-    "completed_at": completedAt?.toIso8601String(),
-    "isFavorite": isFavorite,
-    "service_id": serviceId,
-    "property_type": propertyType,
-    "service_images": List<dynamic>.from(serviceImages.map((x) => x.toJson())),
-    "favourites": favourites,
-    "reviews": reviews,
-    "user": user.toJson(),
-  };
+        "id": id,
+        "user_id": userId,
+        "service_name": serviceName,
+        "description": description,
+        "pricing": pricing,
+        "duration": duration,
+        "start_time": startTime,
+        "end_time": endTime,
+        "location": location,
+        "lat": lat,
+        "long": long,
+        "additional_information": additionalInformation,
+        "country": country,
+        "city": city,
+        "year_experience": yearExperience,
+        "cnic_front_pic": cnicFrontPic,
+        "cnic_back_pic": cnicBackPic,
+        "certification": certification,
+        "resume": resume,
+        "created_at": createdAt.toIso8601String(),
+        "updated_at": updatedAt.toIso8601String(),
+        "status": status,
+        "provider_id": providerId,
+        "service_type": serviceType,
+        "payment_status": paymentStatus,
+        "postal_code": postalCode,
+        "is_applied": isApplied,
+        "assigned_at": assignedAt?.toIso8601String(),
+        "completed_at": completedAt?.toIso8601String(),
+        "isFavorite": isFavorite,
+        "service_id": serviceId,
+        "property_type": propertyType,
+        "service_images":
+            List<dynamic>.from(serviceImages.map((x) => x.toJson())),
+        "favourites": favourites,
+        "reviews": reviews,
+        "user": user.toJson(),
+      };
 }
 
 class PropertyTypeUser {
@@ -639,18 +646,20 @@ class ServiceImage {
   });
 
   factory ServiceImage.fromJson(Map<String, dynamic> json) => ServiceImage(
-    id: json["id"] ?? 0,
-    serviceId: json["service_id"] ?? 0,
-    imagePath: json["image_path"] ?? "",
-    createdAt: DateTime.parse(json["created_at"] ?? DateTime.now().toIso8601String()),
-    updatedAt: DateTime.parse(json["updated_at"] ?? DateTime.now().toIso8601String()),
-  );
+        id: json["id"] ?? 0,
+        serviceId: json["service_id"] ?? 0,
+        imagePath: json["image_path"] ?? "",
+        createdAt: DateTime.parse(
+            json["created_at"] ?? DateTime.now().toIso8601String()),
+        updatedAt: DateTime.parse(
+            json["updated_at"] ?? DateTime.now().toIso8601String()),
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "service_id": serviceId,
-    "image_path": imagePath,
-    "created_at": createdAt.toIso8601String(),
-    "updated_at": updatedAt.toIso8601String(),
-  };
+        "id": id,
+        "service_id": serviceId,
+        "image_path": imagePath,
+        "created_at": createdAt.toIso8601String(),
+        "updated_at": updatedAt.toIso8601String(),
+      };
 }

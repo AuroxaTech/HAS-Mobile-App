@@ -5,7 +5,7 @@ import '../../services/property_services/add_services.dart';
 import '../../utils/utils.dart';
 
 class ContractStatusScreenController extends GetxController {
- // RxBool messages = true.obs;
+  // RxBool messages = true.obs;
   RxBool approved = true.obs;
   RxBool pending = false.obs;
 
@@ -22,32 +22,34 @@ class ContractStatusScreenController extends GetxController {
   }
 
   List<Contracts> getFilteredContractList(String status) {
-    final filtered = getContractList.where((contract) => contract.status == status).toList();
+    final filtered =
+        getContractList.where((contract) => contract.status == status).toList();
     print("Filtering for status $status found ${filtered.length} contracts");
     return filtered;
   }
 
-
   Future<void> getServices() async {
-    List<Contracts>  list  = <Contracts>[];
+    List<Contracts> list = <Contracts>[];
     print("we are in get services");
     isLoading.value = true;
     var result = await servicesService.getLandLordContracts();
-    print("Service result : $result" );
-    if(result["status"] == true){
+    print("Service result : $result");
+    if (result["status"] == true) {
       isLoading.value = false;
       for (var data in result['data']["data"]) {
         print("Service List :: $data");
         list.add(Contracts.fromJson(data));
       }
       getContractList.value = list;
-    }else {
+    } else {
       isLoading.value = false;
     }
-
   }
 
-  Future<void> acceptContractRequest({required int contractId, required String status,}) async {
+  Future<void> acceptContractRequest({
+    required int contractId,
+    required String status,
+  }) async {
     isLoading.value = true;
 
     try {
@@ -56,7 +58,7 @@ class ContractStatusScreenController extends GetxController {
         status: status,
       );
       print(result);
-      if (result['status'] == true) {
+      if (result['success'] == true) {
         Get.back();
         AppUtils.getSnackBar("Success", result['message']);
       } else {
@@ -72,7 +74,4 @@ class ContractStatusScreenController extends GetxController {
       isLoading.value = false;
     }
   }
-
-
-
 }

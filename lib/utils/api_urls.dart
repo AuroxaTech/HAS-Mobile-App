@@ -81,6 +81,7 @@ class AppUrls {
   static const updatePassword = "$baseUrl/update-password";
   static const forgotPassword = "$baseUrl/forgot-password";
   static const deleteUser = "$baseUrl/user/delete";
+  static const searchUser = "$baseUrl/get-user";
 
   static const makeFeedBack = "$baseUrl/make-service-feedback";
 }
