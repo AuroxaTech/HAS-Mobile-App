@@ -458,6 +458,24 @@ class SignUpController extends GetxController {
   }) async {
     try {
       isLoading.value = true;
+      
+      // Validate service images
+      if (serviceImages == null || serviceImages.isEmpty) {
+        AppUtils.errorSnackBar("Error", "Please add at least one service image");
+        isLoading.value = false;
+        return;
+      }
+
+      // Print debug information
+      print("Registering service provider with:");
+      print("Full Name: $fullName");
+      print("Email: $email");
+      print("Services: $services");
+      print("Service Images Count: ${serviceImages.length}");
+      
+      for (var image in serviceImages) {
+        print("Service Image Path: ${image.path}");
+      }
 
       // Call the API function with the updated parameters
       final data = await authServices.registerServiceProvider(
@@ -486,8 +504,8 @@ class SignUpController extends GetxController {
         pricing: pricing,
         duration: duration,
         country: country,
-        serviceImages: serviceImages, // Included service images
-        resume: resume, // Included resume file
+        serviceImages: serviceImages,
+        resume: resume,
       );
 
       if (data['success'] == true && data['payload'] != null) {
@@ -522,7 +540,7 @@ class SignUpController extends GetxController {
       if (e is ApiException) {
         if (e.statusCode == 422 && e.message.contains("kilobytes")) {
           errorMessage =
-          "Image size too large. Please use smaller images (max 2MB)";
+              "Image size too large. Please use smaller images (max 2MB)";
         }
       }
       AppUtils.errorSnackBar("Error", errorMessage);
@@ -530,7 +548,6 @@ class SignUpController extends GetxController {
       isLoading.value = false;
     }
   }
-
 
   Future<void> registerTenant({
     required String fullName,
@@ -641,15 +658,6 @@ class SignUpController extends GetxController {
     propertyTypeIndex.value = 0;
     noOfPropertiesValue.value = 'No of Properties';
   }
-
-
-
-
-
-
-
-
-
 
   //Serive adding
 
@@ -854,7 +862,7 @@ class SignUpController extends GetxController {
       countriesList.assignAll(
         allCountries
             .where((country) =>
-            country.toLowerCase().contains(query.toLowerCase()))
+                country.toLowerCase().contains(query.toLowerCase()))
             .toList(),
       );
     }
@@ -877,8 +885,4 @@ class SignUpController extends GetxController {
     // Format as "hh:mm PP" (e.g., "04:00 PM" for 4:00 PM)
     return '$hourStr:$minute $period';
   }
-
-
-
-
 }

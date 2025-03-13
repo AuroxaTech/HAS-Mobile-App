@@ -190,6 +190,7 @@ class AllService {
   int? countOfService;
   int? totalRate;
   int? averageRate;
+  bool? isBooked;
   User? user;
   List<ServiceProviderRequest>? serviceProviderRequests;
   List<ServiceImage> serviceImages;
@@ -230,6 +231,7 @@ class AllService {
     this.countOfService,
     this.totalRate,
     this.averageRate,
+    this.isBooked,
     this.user,
     this.serviceProviderRequests,
     required this.serviceImages,
@@ -288,6 +290,7 @@ class AllService {
       countOfService: json["count_of_service"] ?? 0,
       totalRate: json["total_rate"] ?? 0,
       averageRate: json["average_rate"] ?? 0,
+      isBooked: json["is_booked"] ?? false,
       user: json["user"] != null ? User.fromJson(json["user"]) : null,
       serviceProviderRequests: serviceProviderRequests,
       serviceImages: json["service_images"] != null
@@ -333,6 +336,7 @@ class AllService {
         "count_of_service": countOfService,
         "total_rate": totalRate,
         "average_rate": averageRate,
+        "is_booked": isBooked,
         "user": user?.toJson(),
         "service_provider_requests": serviceProviderRequests != null
             ? List<dynamic>.from(

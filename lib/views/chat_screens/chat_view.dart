@@ -228,25 +228,38 @@ class _ChatViewState extends State<ChatView> {
                                                   child: CircleAvatar(
                                                     radius: 24,
                                                     backgroundColor: whiteColor,
-                                                    child: CachedNetworkImage(
-                                                      imageUrl:
-                                                          profilePictureUrl,
-                                                      errorWidget: (e, r, f) {
-                                                        return CircleAvatar(
-                                                          child: Text(
-                                                              otherParticipantName[
-                                                                      0]
-                                                                  .toUpperCase()), // Display the first letter of the name
-                                                        );
-                                                      },
-                                                    ),
-                                                    // backgroundImage: CachedNetworkImageProvider(profilePictureUrl),
+                                                    backgroundImage: profilePictureUrl
+                                                            .isNotEmpty
+                                                        ? CachedNetworkImageProvider(
+                                                            profilePictureUrl)
+                                                        : null,
+                                                    child: profilePictureUrl
+                                                            .isEmpty
+                                                        ? Text(
+                                                            otherParticipantName
+                                                                    .isNotEmpty
+                                                                ? otherParticipantName[
+                                                                        0]
+                                                                    .toUpperCase()
+                                                                : "?",
+                                                            style:
+                                                                const TextStyle(
+                                                              fontSize: 18,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              color:
+                                                                  primaryColor,
+                                                            ),
+                                                          )
+                                                        : null,
                                                   ),
                                                 ),
                                                 Flexible(
                                                   child: Container(
-                                                    padding: EdgeInsets.only(
-                                                        left: 12),
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 12),
                                                     child: Column(
                                                       crossAxisAlignment:
                                                           CrossAxisAlignment
@@ -261,7 +274,7 @@ class _ChatViewState extends State<ChatView> {
                                                                     GoogleFonts
                                                                         .roboto(
                                                                   textStyle:
-                                                                      TextStyle(
+                                                                      const TextStyle(
                                                                     fontSize:
                                                                         14,
                                                                     fontWeight:

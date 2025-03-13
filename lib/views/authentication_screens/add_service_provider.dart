@@ -1,10 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:property_app/app_constants/app_sizes.dart';
 import 'package:property_app/app_constants/color_constants.dart';
 import 'package:property_app/constant_widget/constant_widgets.dart';
@@ -15,7 +12,6 @@ import 'package:property_app/utils/shared_preferences/preferences.dart';
 import 'package:property_app/utils/utils.dart';
 
 import '../../app_constants/animations.dart';
-import '../../controllers/services_provider_controller/add_service_controller.dart';
 
 class AddServiceProvider extends GetView<SignUpController> {
   const AddServiceProvider({Key? key}) : super(key: key);
@@ -41,19 +37,19 @@ class AddServiceProvider extends GetView<SignUpController> {
                 ),
                 Expanded(
                   child: Obx(() => ListView.builder(
-                    itemCount: controller.countriesList.length,
-                    itemBuilder: (context, index) {
-                      var country = controller.countriesList[index];
-                      return ListTile(
-                        title: customText(
-                            text: country, fontSize: 16, color: blackColor),
-                        onTap: () {
-                          controller.selectedCountry.value = country;
-                          Navigator.pop(context);
+                        itemCount: controller.countriesList.length,
+                        itemBuilder: (context, index) {
+                          var country = controller.countriesList[index];
+                          return ListTile(
+                            title: customText(
+                                text: country, fontSize: 16, color: blackColor),
+                            onTap: () {
+                              controller.selectedCountry.value = country;
+                              Navigator.pop(context);
+                            },
+                          );
                         },
-                      );
-                    },
-                  )),
+                      )),
                 ),
               ],
             ),
@@ -74,7 +70,7 @@ class AddServiceProvider extends GetView<SignUpController> {
           child: SingleChildScrollView(
             physics: bouncingScrollPhysic,
             child: Obx(
-                  () => Form(
+              () => Form(
                 key: controller.formKey1,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -155,13 +151,13 @@ class AddServiceProvider extends GetView<SignUpController> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Obx(() => Text(
-                              controller.selectedCountry.value ??
-                                  'Select Country',
-                              style: GoogleFonts.poppins(
-                                  color: blackColor,
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 16),
-                            )),
+                                  controller.selectedCountry.value ??
+                                      'Select Country',
+                                  style: GoogleFonts.poppins(
+                                      color: blackColor,
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 16),
+                                )),
                             const Icon(Icons.arrow_drop_down),
                           ],
                         ),
@@ -288,202 +284,86 @@ class AddServiceProvider extends GetView<SignUpController> {
                           child: CustomButton(
                             isLoading: controller.isLoading.value,
                             onTap: () async {
-                              if (controller.formKey1.currentState!.validate()) {
+                              if (controller.formKey1.currentState!
+                                  .validate()) {
                                 if (controller.images.isEmpty) {
-                                  AppUtils.errorSnackBar(
-                                      "Select images",
+                                  AppUtils.errorSnackBar("Select images",
                                       "Please select at least one media image",
-                                      backgroundColor: Colors.red
-                                  );
+                                      backgroundColor: Colors.red);
                                 } else {
-                                  var id = await Preferences.getUserID();
                                   // Format the time properly
-                                  String formattedStartTime = controller.formatTimeOfDay(controller.startTime.value);
-                                  String formattedEndTime = controller.formatTimeOfDay(controller.endTime.value);
-                                  if (controller.formKey1.currentState!.validate()) {
-                                    if (controller.frontCNICImage.value == null) {
-                                      AppUtils.errorSnackBar(
-                                          "Please Select", "Please Select CNIC Front Image");
-                                    } else if
-                                    (controller.backCNICImage.value == null) {
-                                      AppUtils.errorSnackBar(
-                                          "Please Select", "Please Select CNIC Back Image");
-                                    } else {
-                                      int experience =
-                                      int.parse(controller.experienceController.text);
-                                      if (controller.profileImage.value == null) {
-                                        if (controller.yesValue.value == "Any Certificate ?" ||
-                                            controller.yesValue.value == "No") {
-                                          // User has provided certification
-                                          try {
-                                            await controller.registerServiceProvider(
-                                              fullName: controller.nameController.text,
-                                              userName: controller.userNameController.text,
-                                              email: controller.emailController.text,
-                                              address: controller.addressController.text.isEmpty
-                                                  ? "Test"
-                                                  : controller.addressController.text,
-                                              postalCode: controller.postalCode.text.isEmpty
-                                                  ? "00000"
-                                                  : controller.postalCode.text,
-                                              phoneNumber: controller.phoneController.text,
-                                              password: controller.passwordController.text,
-                                              cPassword:
-                                              controller.confirmPasswordController.text,
-                                              city: controller.cityController.text,
-                                              services: [controller.electricalValue.value],
-                                              yearExperience:
-                                              controller.experienceController.text,
-                                              availabilityStartTime: formattedStartTime,
-                                              availabilityEndTime: formattedStartTime,
-                                              cnicFront: controller.frontCNICImage.value!,
-                                              cnicBack: controller.backCNICImage.value!,
-                                              description: controller.description.text,
-                                              additionalInfo: controller.additionalInfo.text,
-                                              serviceImages: controller.images,
-                                              pricing: controller.pricingController.text, duration: controller.selectedWeekdayRange.value,
-                                              country:  controller.selectedCountry.value.toString(),
-                                              resume: controller.pickFile.value?.xFile,
-                                            );
-                                            // Registration successful, navigate or perform other actions
-                                          } catch (e) {
-                                            // Handle registration failure, show error message or take appropriate action
-                                            print('Registration failed: $e');
-                                          }
-                                        } else {
-                                          // User has not provided certification
-                                          try {
-                                            await controller.registerServiceProvider(
-                                              fullName: controller.nameController.text,
-                                              userName: controller.userNameController.text,
-                                              email: controller.emailController.text,
-                                              address: controller.addressController.text.isEmpty
-                                                  ? "Test"
-                                                  : controller.addressController.text,
-                                              postalCode: controller.postalCode.text.isEmpty
-                                                  ? "00000"
-                                                  : controller.postalCode.text,
-                                              phoneNumber: controller.phoneController.text,
-                                              password: controller.passwordController.text,
-                                              cPassword:
-                                              controller.confirmPasswordController.text,
-                                              city: controller.cityController.text,
-
-                                              services: [controller.electricalValue.value],
-                                              yearExperience:
-                                              controller.experienceController.text,
-                                              availabilityStartTime: formattedStartTime,
-                                              availabilityEndTime: formattedStartTime,
-                                              cnicFront: controller.frontCNICImage.value!,
-                                              cnicBack: controller.backCNICImage.value!,
-                                              certification: controller.yesValue.value,
-                                              certificationFile:
-                                              controller.certificateImage.value!,
-                                              description: controller.description.text,
-                                              additionalInfo: controller.additionalInfo.text,
-                                              serviceImages: controller.images,
-                                              pricing: controller.pricingController.text, duration: controller.selectedWeekdayRange.value,
-                                              country:  controller.selectedCountry.value.toString(),
-                                              resume: controller.pickFile.value?.xFile,
-                                              // No certification information provided
-                                            );
-
-                                            // Registration successful, navigate or perform other actions
-                                          } catch (e) {
-                                            // Handle registration failure, show error message or take appropriate action
-                                            print('Registration failed: $e');
-                                          }
-                                        }
-                                      } else {
-                                        if (controller.yesValue.value == "Any Certificate ?" ||
-                                            controller.yesValue.value == "No") {
-                                          // User has provided certification
-                                          try {
-                                            await controller.registerServiceProvider(
-                                              address: controller.addressController.text.isEmpty
-                                                  ? "Test"
-                                                  : controller.addressController.text,
-                                              postalCode: controller.postalCode.text.isEmpty
-                                                  ? "00000"
-                                                  : controller.postalCode.text,
-                                              fullName: controller.nameController.text,
-                                              userName: controller.userNameController.text,
-                                              email: controller.emailController.text,
-                                              phoneNumber: controller.phoneController.text,
-                                              password: controller.passwordController.text,
-                                              cPassword:
-                                              controller.confirmPasswordController.text,
-                                              city: controller.cityController.text,
-                                              profileImage: controller.profileImage.value!,
-                                              services: [controller.electricalValue.value],
-                                              yearExperience: experience.toString(),
-                                              availabilityStartTime: formattedStartTime,
-                                              availabilityEndTime: formattedStartTime,
-                                              cnicFront: controller.frontCNICImage.value!,
-                                              cnicBack: controller.backCNICImage.value!,
-                                              description: controller.description.text,
-                                              serviceImages: controller.images,
-                                              additionalInfo: controller.additionalInfo.text,
-                                              pricing: controller.pricingController.text, duration: controller.selectedWeekdayRange.value,
-                                              country:  controller.selectedCountry.value.toString(),
-                                              resume: controller.pickFile.value?.xFile,
-                                            );
-
-                                            // Registration successful, navigate or perform other actions
-                                          } catch (e) {
-                                            // Handle registration failure, show error message or take appropriate action
-                                            print('Registration failed: $e');
-                                          }
-                                        } else {
-                                          // User has not provided certification
-                                          try {
-                                            await controller.registerServiceProvider(
-                                              address: controller.addressController.text.isEmpty
-                                                  ? "Test"
-                                                  : controller.addressController.text,
-                                              postalCode: controller.postalCode.text.isEmpty
-                                                  ? "00000"
-                                                  : controller.postalCode.text,
-                                              fullName: controller.nameController.text,
-                                              userName: controller.userNameController.text,
-                                              email: controller.emailController.text,
-                                              phoneNumber: controller.phoneController.text,
-                                              password: controller.passwordController.text,
-                                              cPassword:
-                                              controller.confirmPasswordController.text,
-                                              city: controller.cityController.text,
-
-                                              profileImage: controller.profileImage.value!,
-                                              services: [controller.electricalValue.value],
-                                              yearExperience:
-                                              controller.experienceController.text,
-                                              availabilityStartTime: formattedStartTime,
-                                              availabilityEndTime: formattedStartTime,
-
-                                              cnicFront: controller.frontCNICImage.value!,
-                                              cnicBack: controller.backCNICImage.value!,
-                                              certification: controller.yesValue.value,
-                                              certificationFile:
-                                              controller.certificateImage.value!,
-                                              description: controller.description.text,
-                                              additionalInfo: controller.additionalInfo.text,
-                                              serviceImages: controller.images,
-                                              pricing: controller.pricingController.text, duration: controller.selectedWeekdayRange.value,
-                                              country:  controller.selectedCountry.value.toString(),
-                                              resume: controller.pickFile.value?.xFile,
-                                              // No certification information provided
-                                            );
-
-                                            // Registration successful, navigate or perform other actions
-                                          } catch (e) {
-                                            // Handle registration failure, show error message or take appropriate action
-                                            print('Registration failed: $e');
-                                          }
-                                        }
-                                      }
-                                    }
+                                  String formattedStartTime =
+                                      controller.formatTimeOfDay(
+                                          controller.startTime.value);
+                                  String formattedEndTime =
+                                      controller.formatTimeOfDay(
+                                          controller.endTime.value);
+                                  
+                                  // Validate required fields
+                                  if (controller.frontCNICImage.value == null) {
+                                    AppUtils.errorSnackBar("Please Select",
+                                        "Please Select CNIC Front Image");
+                                    return;
+                                  } 
+                                  
+                                  if (controller.backCNICImage.value == null) {
+                                    AppUtils.errorSnackBar("Please Select",
+                                        "Please Select CNIC Back Image");
+                                    return;
                                   }
-
+                                  
+                                  // Validate country selection
+                                  if (controller.selectedCountry.value == null) {
+                                    AppUtils.errorSnackBar("Please Select",
+                                        "Please Select a Country");
+                                    return;
+                                  }
+                                  
+                                  print("Starting service provider registration...");
+                                  print("Service images count: ${controller.images.length}");
+                                  
+                                  try {
+                                    await controller.registerServiceProvider(
+                                      fullName: controller.nameController.text,
+                                      userName: controller.userNameController.text,
+                                      email: controller.emailController.text,
+                                      address: controller.locationController.text.isEmpty
+                                          ? "Test"
+                                          : controller.locationController.text,
+                                      postalCode: controller.postalCode.text.isEmpty
+                                          ? "00000"
+                                          : controller.postalCode.text,
+                                      phoneNumber: controller.phoneController.text,
+                                      password: controller.passwordController.text,
+                                      cPassword: controller.confirmPasswordController.text,
+                                      city: controller.cityController.text.isEmpty 
+                                          ? "Test City" 
+                                          : controller.cityController.text,
+                                      services: [controller.electricalValue.value],
+                                      yearExperience: controller.experienceController.text,
+                                      availabilityStartTime: formattedStartTime,
+                                      availabilityEndTime: formattedEndTime,
+                                      cnicFront: controller.frontCNICImage.value!,
+                                      cnicBack: controller.backCNICImage.value!,
+                                      certification: controller.yesValue.value == "Yes" ? "Yes" : "No",
+                                      certificationFile: controller.yesValue.value == "Yes" ? controller.certificateImage.value : null,
+                                      description: controller.description.text,
+                                      additionalInfo: controller.additionalInfo.text.isEmpty 
+                                          ? "No additional information" 
+                                          : controller.additionalInfo.text,
+                                      serviceImages: controller.images,
+                                      pricing: controller.pricingController.text,
+                                      duration: controller.selectedWeekdayRange.value.isEmpty 
+                                          ? "Monday to Friday" 
+                                          : controller.selectedWeekdayRange.value,
+                                      country: controller.selectedCountry.value!,
+                                      profileImage: controller.profileImage.value,
+                                      resume: controller.pickFile.value?.xFile,
+                                    );
+                                  } catch (e) {
+                                    print('Registration failed: $e');
+                                    AppUtils.errorSnackBar("Error", e.toString());
+                                  }
                                 }
                               }
                             },
@@ -547,8 +427,8 @@ class _SearchableDropdownState extends State<SearchableDropdown> {
                       setState(() {
                         tempSearchList = countries
                             .where((country) => country
-                            .toLowerCase()
-                            .contains(value.toLowerCase()))
+                                .toLowerCase()
+                                .contains(value.toLowerCase()))
                             .toList();
                       });
                     },

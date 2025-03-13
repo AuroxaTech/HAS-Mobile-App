@@ -39,9 +39,17 @@ class _ContactsPageState extends State<ContactsPage> {
       // Debugging the response
       print("Search Response: $response");
 
-      if (response['status'] == true) {
+      if (response['success'] == true) {
         setState(() {
-          searchResults = response['data'];
+          // Handle both single user and list of users
+          var payload = response['payload'];
+          if (payload is List) {
+            searchResults = payload;
+          } else if (payload is Map) {
+            searchResults = [payload];
+          } else {
+            searchResults = [];
+          }
           isLoading = false;
         });
       } else {
@@ -113,12 +121,12 @@ class _ContactsPageState extends State<ContactsPage> {
                           itemBuilder: (context, index) {
                             final user = searchResults[index];
                             return ListTile(
-                              title: Text(user['fullname']),
+                              title: Text(user['full_name']),
                               subtitle: Text(user['email']),
                               onTap: () {
                                 createConversation(
-                                    user['fullname'],
-                                    user['profileimage'],
+                                    user['full_name'],
+                                    user['profile_image'],
                                     user['id'].toString(),
                                     context);
                               },

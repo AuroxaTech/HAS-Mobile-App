@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -7,12 +8,10 @@ import 'package:property_app/app_constants/color_constants.dart';
 import 'package:property_app/utils/shared_preferences/preferences.dart';
 import 'package:property_app/utils/utils.dart';
 import 'package:property_app/views/chat_screens/contacts_screen.dart';
+
 import '../../constant_widget/constant_widgets.dart';
 import '../../services/notification_services/notification_services.dart';
 import 'chat_view.dart';
-
-
-
 
 class ChatListing extends StatefulWidget {
   const ChatListing({super.key});
@@ -29,7 +28,6 @@ class _ChatListingState extends State<ChatListing>
   NotificationServices notificationServices = NotificationServices();
   final firestore = FirebaseFirestore.instance;
 
-
   var userId;
 
   getUserId() async {
@@ -38,10 +36,13 @@ class _ChatListingState extends State<ChatListing>
       userId = id;
     });
   }
-   _updateUserStatus(bool isOnline) async{
 
+  _updateUserStatus(bool isOnline) async {
     if (userId != null) {
-      FirebaseFirestore.instance.collection('users').doc(userId.toString()).update({
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId.toString())
+          .update({
         'online': isOnline,
         'lastSeen': FieldValue.serverTimestamp(),
       });
@@ -52,7 +53,7 @@ class _ChatListingState extends State<ChatListing>
   @override
   void initState() {
     super.initState();
-   // getUserId();
+    // getUserId();
     _controller = TabController(length: 2, vsync: this, initialIndex: 0);
     _controller.addListener(_handleTabIndex);
     notificationServices.requestNotificationPermission();
@@ -65,7 +66,7 @@ class _ChatListingState extends State<ChatListing>
     //     print(value);
     //   }
     // });
-  //  getUserId();
+    //  getUserId();
     getCheck();
     _updateUserStatus(true);
   }
@@ -78,11 +79,13 @@ class _ChatListingState extends State<ChatListing>
         .snapshots()
         .listen((snapshot) {
       for (var conversationChange in snapshot.docChanges) {
-        if (conversationChange.type == DocumentChangeType.added || conversationChange.type == DocumentChangeType.modified) {
+        if (conversationChange.type == DocumentChangeType.added ||
+            conversationChange.type == DocumentChangeType.modified) {
           // Get the conversation document ID
-          String receiverId = conversationChange.doc["user1"].toString() == userId.toString()
-              ? conversationChange.doc["user2"].toString()
-              : conversationChange.doc["user1"].toString();
+          String receiverId =
+              conversationChange.doc["user1"].toString() == userId.toString()
+                  ? conversationChange.doc["user2"].toString()
+                  : conversationChange.doc["user1"].toString();
           String conversationId = receiverId;
           print(conversationId);
 
@@ -91,7 +94,9 @@ class _ChatListingState extends State<ChatListing>
               .collection('messagesListing')
               .doc(conversationId)
               .collection('messages')
-              .where('receiverId', isEqualTo: userId.toString()) // Messages sent to the current user
+              .where('receiverId',
+                  isEqualTo:
+                      userId.toString()) // Messages sent to the current user
               .snapshots()
               .listen((messageSnapshot) {
             for (var messageChange in messageSnapshot.docChanges) {
@@ -99,7 +104,8 @@ class _ChatListingState extends State<ChatListing>
                 String senderId = messageChange.doc['senderId'].toString();
                 String messageId = messageChange.doc.id;
 
-                print("Trying to update message from sender: $senderId with message ID: $messageId");
+                print(
+                    "Trying to update message from sender: $senderId with message ID: $messageId");
 
                 // Path to the sender's message document
                 var senderMessagesRef = firestore
@@ -110,7 +116,7 @@ class _ChatListingState extends State<ChatListing>
 
                 // Update the status to 'delivered' and initialize the time
                 senderMessagesRef.update({
-                  "delivered" : true,
+                  "delivered": true,
                 }).catchError((error) {
                   print("Failed to update message status: $error");
                 });
@@ -120,7 +126,6 @@ class _ChatListingState extends State<ChatListing>
         }
       }
     });
-
   }
 
   @override
@@ -133,6 +138,7 @@ class _ChatListingState extends State<ChatListing>
   void _handleTabIndex() {
     setState(() {});
   }
+
   final AppState _appState = AppState();
 
   List<File>? selectedMedia = [];
@@ -150,14 +156,18 @@ class _ChatListingState extends State<ChatListing>
         source: ImageSource.camera,
         imageQuality: 75,
       );
-
       if (pickedFile != null) {
-         setState(() {
-           selectedMedia!.add(File(pickedFile.path));  // Add cropped file to the list
-           String extension = path.extension(pickedFile.path).toLowerCase();
-           mediaTypes!.add((extension == '.jpg' || extension == '.jpeg' || extension == '.png') ? 'Photo' : 'Unknown');
-         });
-        if(selectedMedia != null){
+        setState(() {
+          selectedMedia!
+              .add(File(pickedFile.path)); // Add cropped file to the list
+          String extension = path.extension(pickedFile.path).toLowerCase();
+          mediaTypes!.add((extension == '.jpg' ||
+                  extension == '.jpeg' ||
+                  extension == '.png')
+              ? 'Photo'
+              : 'Unknown');
+        });
+        if (selectedMedia != null) {
           // Navigator
           //     .push(
           //     ctx,
@@ -165,11 +175,10 @@ class _ChatListingState extends State<ChatListing>
           //         builder: (
           //             context) =>
           //             ForwardContactScreen1(file: selectedMedia!.first,)));
-         }
+        }
 
-          // Add media type to the list
-
-      }else{
+        // Add media type to the list
+      } else {
         Navigator.pop(context);
       }
 
@@ -177,9 +186,8 @@ class _ChatListingState extends State<ChatListing>
     } catch (e) {
       isLoading = false;
       AppUtils.errorSnackBar("Error", "Unable to pick files, please try again");
-     }
+    }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -187,13 +195,16 @@ class _ChatListingState extends State<ChatListing>
     print("home build");
     return Scaffold(
       backgroundColor: whiteColor,
-      appBar: titleAppBar("Chats", action: [
-        IconButton(onPressed: (){
-          setState(() {
-            searchBox = !searchBox;
-          });
-        },
-            icon:  searchBox ?  const Icon(Icons.close ) : Icon(Icons.search ))
+      appBar: titleAppBar(
+        "Chats",
+        action: [
+          IconButton(
+              onPressed: () {
+                setState(() {
+                  searchBox = !searchBox;
+                });
+              },
+              icon: searchBox ? const Icon(Icons.close) : Icon(Icons.search))
         ],
       ),
       // backgroundColor: whiteColor,
@@ -401,10 +412,6 @@ class _ChatListingState extends State<ChatListing>
   }
 }
 
-
-
-
-
 class AppState with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -420,11 +427,11 @@ class AppState with WidgetsBindingObserver {
         break;
       case AppLifecycleState.hidden:
         _updateUserStatus(false);
-        // TODO: Handle this case.
+      // TODO: Handle this case.
     }
   }
 
-  void _updateUserStatus(bool isOnline) async{
+  void _updateUserStatus(bool isOnline) async {
     var id = await Preferences.getUserID();
 
     if (id != null) {
