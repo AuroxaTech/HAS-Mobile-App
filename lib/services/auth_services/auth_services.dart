@@ -225,6 +225,159 @@ class AuthServices extends BaseApiService {
 
   //Service Provider
 
+  // Future<Map<String, dynamic>> registerServiceProvider({
+  //   required String fullName,
+  //   required String userName,
+  //   required String email,
+  //   required String phoneNumber,
+  //   required String password,
+  //   required String city,
+  //   String? address,
+  //   String? postalCode,
+  //   required String cPassword,
+  //   required String deviceToken,
+  //   required String platform,
+  //   XFile? profileImage,
+  //   required String services,
+  //   required String yearExperience,
+  //   required String availabilityStartTime,
+  //   required String availabilityEndTime,
+  //   required XFile cnicFront,
+  //   required XFile cnicBack,
+  //   String? certification,
+  //   XFile? certificationFile,
+  //   required String pricing,
+  //   required String duration,
+  //   required String country,
+  //   required String location,
+  //   required String description,
+  //   required String additionalInfo,
+  // }) async {
+  //   final hasInternet = await ConnectivityUtility.checkInternetConnectivity();
+  //   if (!hasInternet) {
+  //     AppUtils.getSnackBarNoInternet();
+  //     throw ApiException('No internet connectivity');
+  //   }
+  //
+  //   try {
+  //     apiUrl = AppUrls.registerUrl;
+  //     final url = Uri.parse(apiUrl);
+  //
+  //     // Convert services to array format
+  //     final servicesList = [services]; // Create array with single service
+  //
+  //     // Prepare form data
+  //     final fields = {
+  //       'full_name': fullName,
+  //       'user_name': userName,
+  //       'email': email,
+  //       'phone_number': phoneNumber,
+  //       'password': password,
+  //       'device_token': "werty134",
+  //       'platform': platform,
+  //       'password_confirmation': cPassword,
+  //       'role': "service_provider",
+  //       'services[]': servicesList, // Send as array
+  //       'address': address ?? '',
+  //       'postal_code': postalCode ?? '',
+  //       'year_experience': yearExperience,
+  //       'availability_start_time': availabilityStartTime,
+  //       'availability_end_time': availabilityEndTime,
+  //       'certification': certification ?? 'No',
+  //       'pricing': pricing,
+  //       'duration': duration,
+  //       'country': country,
+  //       'location': location,
+  //       'city': city,
+  //       'description': description,
+  //       'additional_information': additionalInfo,
+  //     };
+  //
+  //     // Log request
+  //     BaseApiService.logRequest(
+  //         url.toString(),
+  //         'POST',
+  //         {'Accept': 'application/json', 'Content-Type': 'multipart/form-data'},
+  //         fields);
+  //
+  //     // Create multipart request
+  //     var request = http.MultipartRequest('POST', url)
+  //       ..headers.addAll({
+  //         'Accept': 'application/json',
+  //       });
+  //
+  //     // Add all fields except services
+  //     fields.forEach((key, value) {
+  //       if (key != 'services[]') {
+  //         request.fields[key] = value.toString();
+  //       }
+  //     });
+  //
+  //     // Add services as array
+  //     for (var service in servicesList) {
+  //       request.fields['services[]'] = service;
+  //     }
+  //
+  //     // Add profile image if provided
+  //     if (profileImage != null) {
+  //       request.files.add(await http.MultipartFile.fromPath(
+  //         'profile_image',
+  //         profileImage.path,
+  //         filename: 'profile_image.jpg',
+  //       ));
+  //     }
+  //
+  //     // Add CNIC images
+  //     request.files.add(await http.MultipartFile.fromPath(
+  //       'cnic_front',
+  //       cnicFront.path,
+  //       filename: 'cnic_front.jpg',
+  //     ));
+  //
+  //     request.files.add(await http.MultipartFile.fromPath(
+  //       'cnic_back',
+  //       cnicBack.path,
+  //       filename: 'cnic_back.jpg',
+  //     ));
+  //
+  //     // Add certification file if provided
+  //     if (certificationFile != null) {
+  //       request.files.add(await http.MultipartFile.fromPath(
+  //         'certification_file',
+  //         certificationFile.path,
+  //         filename: 'certification_file.jpg',
+  //       ));
+  //     }
+  //
+  //     var response = await request.send();
+  //     var responseBody = await response.stream.bytesToString();
+  //
+  //     // Log response
+  //     BaseApiService.logResponse(
+  //         url.toString(), response.statusCode, responseBody);
+  //
+  //     // Parse and validate response
+  //     final decodedResponse = json.decode(responseBody);
+  //     validateResponse(response.statusCode, decodedResponse);
+  //
+  //     return decodedResponse;
+  //   } catch (e) {
+  //     BaseApiService.logError(apiUrl, e.toString());
+  //     if (e is ApiException) {
+  //       BaseApiService.handleApiException(e);
+  //       rethrow;
+  //     }
+  //     throw ApiException('Failed to register service provider: $e');
+  //   }
+  // }
+
+  Future<http.MultipartFile> convertToFile(XFile file, String fieldName) async {
+    return await http.MultipartFile.fromPath(
+      fieldName,
+      file.path,
+      filename: '${fieldName}_${DateTime.now().millisecondsSinceEpoch}.jpg', // Ensure unique filename
+    );
+  }
   Future<Map<String, dynamic>> registerServiceProvider({
     required String fullName,
     required String userName,
@@ -238,7 +391,7 @@ class AuthServices extends BaseApiService {
     required String deviceToken,
     required String platform,
     XFile? profileImage,
-    required String services,
+    required List<String> services,
     required String yearExperience,
     required String availabilityStartTime,
     required String availabilityEndTime,
@@ -249,9 +402,10 @@ class AuthServices extends BaseApiService {
     required String pricing,
     required String duration,
     required String country,
-    required String location,
     required String description,
     required String additionalInfo,
+    List<XFile>? serviceImages,
+    XFile? resume,
   }) async {
     final hasInternet = await ConnectivityUtility.checkInternetConnectivity();
     if (!hasInternet) {
@@ -263,21 +417,21 @@ class AuthServices extends BaseApiService {
       apiUrl = AppUrls.registerUrl;
       final url = Uri.parse(apiUrl);
 
-      // Convert services to array format
-      final servicesList = [services]; // Create array with single service
+      // Create multipart request
+      var request = http.MultipartRequest('POST', url)
+        ..headers.addAll({'Accept': 'application/json'}); // Remove Content-Type
 
-      // Prepare form data
-      final fields = {
+      // Add regular form fields
+      request.fields.addAll({
         'full_name': fullName,
         'user_name': userName,
         'email': email,
         'phone_number': phoneNumber,
         'password': password,
-        'device_token': "werty134",
+        'device_token': deviceToken,
         'platform': platform,
         'password_confirmation': cPassword,
         'role': "service_provider",
-        'services[]': servicesList, // Send as array
         'address': address ?? '',
         'postal_code': postalCode ?? '',
         'year_experience': yearExperience,
@@ -287,89 +441,76 @@ class AuthServices extends BaseApiService {
         'pricing': pricing,
         'duration': duration,
         'country': country,
-        'location': location,
+        "location": country,
         'city': city,
         'description': description,
         'additional_information': additionalInfo,
-      };
-
-      // Log request
-      BaseApiService.logRequest(
-          url.toString(),
-          'POST',
-          {'Accept': 'application/json', 'Content-Type': 'multipart/form-data'},
-          fields);
-
-      // Create multipart request
-      var request = http.MultipartRequest('POST', url)
-        ..headers.addAll({
-          'Accept': 'application/json',
-        });
-
-      // Add all fields except services
-      fields.forEach((key, value) {
-        if (key != 'services[]') {
-          request.fields[key] = value.toString();
-        }
       });
 
-      // Add services as array
-      for (var service in servicesList) {
-        request.fields['services[]'] = service;
+      // Add services array CORRECTLY
+      print("Services:");
+      for (var service in services) {
+        request.files.add(  // Add to files list, not fields
+          http.MultipartFile.fromString('services[]', service),
+        );
+        print("Service: $service");
       }
 
-      // Add profile image if provided
+      // Add files
+      print("Uploaded Files:");
       if (profileImage != null) {
         request.files.add(await http.MultipartFile.fromPath(
           'profile_image',
           profileImage.path,
           filename: 'profile_image.jpg',
         ));
+        print("Profile Image: ${profileImage.path}");
       }
 
-      // Add CNIC images
-      request.files.add(await http.MultipartFile.fromPath(
-        'cnic_front',
-        cnicFront.path,
-        filename: 'cnic_front.jpg',
-      ));
+      // Add CNIC files
+      request.files.add(await convertToFile(cnicFront, 'cnic_front_pic'));
+      request.files.add(await convertToFile(cnicBack, 'cnic_back_pic'));
 
-      request.files.add(await http.MultipartFile.fromPath(
-        'cnic_back',
-        cnicBack.path,
-        filename: 'cnic_back.jpg',
-      ));
-
-      // Add certification file if provided
       if (certificationFile != null) {
-        request.files.add(await http.MultipartFile.fromPath(
-          'certification_file',
-          certificationFile.path,
-          filename: 'certification_file.jpg',
-        ));
+        request.files.add(await convertToFile(certificationFile, 'certification_file'));
       }
 
+      // Add service images
+      if (serviceImages != null) {
+        for (int i = 0; i < serviceImages.length; i++) {
+          var imageFile = await convertToFile(serviceImages[i], 'service_images[]'); // Use []
+          request.files.add(imageFile);
+          print("✅ Added Service Image: ${imageFile.filename}");
+        }
+      }
+
+      // Add resume
+      if (resume != null) {
+        request.files.add(await http.MultipartFile.fromPath(
+          'resume',
+          resume.path,
+          filename: 'resume.pdf',
+        ));
+        print("Resume File: ${resume.path}");
+      }
+
+      // Send request
       var response = await request.send();
       var responseBody = await response.stream.bytesToString();
 
-      // Log response
-      BaseApiService.logResponse(
-          url.toString(), response.statusCode, responseBody);
-
-      // Parse and validate response
       final decodedResponse = json.decode(responseBody);
+
+      print("decodedResponse $decodedResponse");
       validateResponse(response.statusCode, decodedResponse);
 
       return decodedResponse;
     } catch (e) {
       BaseApiService.logError(apiUrl, e.toString());
-      if (e is ApiException) {
-        BaseApiService.handleApiException(e);
-        rethrow;
-      }
+      if (e is ApiException) rethrow;
       throw ApiException('Failed to register service provider: $e');
     }
   }
+
 
   Future<Map<String, dynamic>> registerTenant({
     required String fullName,
