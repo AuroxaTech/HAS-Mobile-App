@@ -375,9 +375,11 @@ class AuthServices extends BaseApiService {
     return await http.MultipartFile.fromPath(
       fieldName,
       file.path,
-      filename: '${fieldName}_${DateTime.now().millisecondsSinceEpoch}.jpg', // Ensure unique filename
+      filename:
+          '${fieldName}_${DateTime.now().millisecondsSinceEpoch}.jpg', // Ensure unique filename
     );
   }
+
   Future<Map<String, dynamic>> registerServiceProvider({
     required String fullName,
     required String userName,
@@ -415,102 +417,128 @@ class AuthServices extends BaseApiService {
 
     try {
       apiUrl = AppUrls.registerUrl;
-      final url = Uri.parse(apiUrl);
 
-      // Create multipart request
-      var request = http.MultipartRequest('POST', url)
-        ..headers.addAll({'Accept': 'application/json'}); // Remove Content-Type
+      // Create a multipart request directly
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse(apiUrl),
+      );
 
-      // Add regular form fields
-      request.fields.addAll({
-        'full_name': fullName,
-        'user_name': userName,
-        'email': email,
-        'phone_number': phoneNumber,
-        'password': password,
-        'device_token': deviceToken,
-        'platform': platform,
-        'password_confirmation': cPassword,
-        'role': "service_provider",
-        'address': address ?? '',
-        'postal_code': postalCode ?? '',
-        'year_experience': yearExperience,
-        'availability_start_time': availabilityStartTime,
-        'availability_end_time': availabilityEndTime,
-        'certification': certification ?? 'No',
-        'pricing': pricing,
-        'duration': duration,
-        'country': country,
-        "location": country,
-        'city': city,
-        'description': description,
-        'additional_information': additionalInfo,
+      // Add headers
+      request.headers.addAll({
+        'Accept': 'application/json',
       });
 
-      // Add services array CORRECTLY
-      print("Services:");
+      // Add all text fields
+      request.fields['full_name'] = fullName;
+      request.fields['user_name'] = userName;
+      request.fields['email'] = email;
+      request.fields['phone_number'] = phoneNumber;
+      request.fields['password'] = password;
+      request.fields['device_token'] = deviceToken;
+      request.fields['platform'] = platform;
+      request.fields['password_confirmation'] = cPassword;
+      request.fields['role'] = "service_provider";
+      request.fields['address'] = address ?? '';
+      request.fields['postal_code'] = postalCode ?? '';
+      request.fields['year_experience'] = yearExperience;
+      request.fields['availability_start_time'] = availabilityStartTime;
+      request.fields['availability_end_time'] = availabilityEndTime;
+      request.fields['pricing'] = pricing;
+      request.fields['duration'] = duration;
+      request.fields['country'] = country;
+      request.fields['location'] = country;
+      request.fields['city'] = city;
+      request.fields['description'] = description;
+      request.fields['additional_information'] = additionalInfo;
+
+      // Add services
       for (var service in services) {
-        request.files.add(  // Add to files list, not fields
-          http.MultipartFile.fromString('services[]', service),
-        );
-        print("Service: $service");
+        request.fields['services[]'] = service;
       }
 
-      // Add files
-      print("Uploaded Files:");
+      // Add profile image if provided
       if (profileImage != null) {
-        request.files.add(await http.MultipartFile.fromPath(
+        var profileFile = await http.MultipartFile.fromPath(
           'profile_image',
           profileImage.path,
-          filename: 'profile_image.jpg',
-        ));
-        print("Profile Image: ${profileImage.path}");
+        );
+        request.files.add(profileFile);
+        print("Added profile image: ${profileImage.path}");
       }
 
-      // Add CNIC files
-      request.files.add(await convertToFile(cnicFront, 'cnic_front_pic'));
-      request.files.add(await convertToFile(cnicBack, 'cnic_back_pic'));
+      // Add CNIC front image
+      var cnicFrontFile = await http.MultipartFile.fromPath(
+        'cnic_front_pic',
+        cnicFront.path,
+      );
+      request.files.add(cnicFrontFile);
+      print("Added CNIC front: ${cnicFront.path}");
 
+      // Add CNIC back image
+      var cnicBackFile = await http.MultipartFile.fromPath(
+        'cnic_back_pic',
+        cnicBack.path,
+      );
+      request.files.add(cnicBackFile);
+      print("Added CNIC back: ${cnicBack.path}");
+
+      // Add certification file if provided
       if (certificationFile != null) {
-        request.files.add(await convertToFile(certificationFile, 'certification_file'));
+        var certFile = await http.MultipartFile.fromPath(
+          'certification',
+          certificationFile.path,
+        );
+        request.files.add(certFile);
+        print("Added certification file: ${certificationFile.path}");
       }
 
-      // Add service images
-      if (serviceImages != null) {
+      // Add service images - using a different approach
+      if (serviceImages != null && serviceImages.isNotEmpty) {
         for (int i = 0; i < serviceImages.length; i++) {
-          var imageFile = await convertToFile(serviceImages[i], 'service_images[]'); // Use []
-          request.files.add(imageFile);
-          print("✅ Added Service Image: ${imageFile.filename}");
+          var serviceImageFile = await http.MultipartFile.fromPath(
+            'service_images[$i]', // Try using indexed notation like property images
+            serviceImages[i].path,
+          );
+          request.files.add(serviceImageFile);
+          print("Added service image $i: ${serviceImages[i].path}");
         }
       }
 
-      // Add resume
+      // Add resume if provided
       if (resume != null) {
-        request.files.add(await http.MultipartFile.fromPath(
+        var resumeFile = await http.MultipartFile.fromPath(
           'resume',
           resume.path,
-          filename: 'resume.pdf',
-        ));
-        print("Resume File: ${resume.path}");
+        );
+        request.files.add(resumeFile);
+        print("Added resume: ${resume.path}");
       }
 
-      // Send request
-      var response = await request.send();
-      var responseBody = await response.stream.bytesToString();
+      // Log request details
+      print("Request URL: ${apiUrl}");
+      print("Request Headers: ${request.headers}");
+      print("Request Fields: ${request.fields}");
+      print("Request Files Count: ${request.files.length}");
 
-      final decodedResponse = json.decode(responseBody);
+      // Send the request
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
 
-      print("decodedResponse $decodedResponse");
-      validateResponse(response.statusCode, decodedResponse);
+      // Log response details
+      print("Response Status Code: ${response.statusCode}");
+      print("Response Body: ${response.body}");
+
+      // Parse response
+      final decodedResponse = json.decode(response.body);
 
       return decodedResponse;
     } catch (e) {
-      BaseApiService.logError(apiUrl, e.toString());
+      print("Registration Error: $e");
       if (e is ApiException) rethrow;
       throw ApiException('Failed to register service provider: $e');
     }
   }
-
 
   Future<Map<String, dynamic>> registerTenant({
     required String fullName,

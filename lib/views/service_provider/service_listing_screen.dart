@@ -72,10 +72,13 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                             onPressed: () => controller.getServices(1),
                           ),
                       itemBuilder: (context, item, index) {
-                        print("Screen - Building item for service ID: ${item.id}");
+                        print(
+                            "Screen - Building item for service ID: ${item.id}");
                         print("Screen - isApplied value: ${item.isApplied}");
-                        print("Screen - Raw isApplied type: ${item.isApplied.runtimeType}");
-                        print("Screen - Condition check: item.isApplied == 1 is ${item.isApplied == 1}");
+                        print(
+                            "Screen - Raw isApplied type: ${item.isApplied.runtimeType}");
+                        print(
+                            "Screen - Condition check: item.isApplied == 1 is ${item.isApplied == 1}");
                         print("Favourite = ${item.isFavorite}");
                         print("is Applied => ${item.isApplied}");
 
@@ -288,7 +291,7 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                                           ),
                                           w15,
                                           Expanded(
-                                            child: item.isApplied == 1
+                                            child: item.isBooked == true
                                                 ? CustomButton(
                                                     gradientColor:
                                                         detailGradient(),
@@ -298,7 +301,8 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                                                     text: "Pending",
                                                     fontSize: 18,
                                                     onTap: () {
-                                                      print("Service ${item.id} is already applied (isApplied=${item.isApplied})");
+                                                      print(
+                                                          "Service ${item.id} is already applied (isApplied=${item.isApplied})");
                                                     },
                                                   )
                                                 : CustomButton(
@@ -309,7 +313,8 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                                                     fontSize: 18,
                                                     gradientColor: gradient(),
                                                     onTap: () {
-                                                      print("Booking service ${item.id} (isApplied=${item.isApplied})");
+                                                      print(
+                                                          "Booking service ${item.id} (isApplied=${item.isApplied})");
                                                       Get.toNamed(
                                                           kNewServiceRequestScreen,
                                                           arguments: [

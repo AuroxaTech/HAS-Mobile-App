@@ -916,7 +916,7 @@ class ServiceProviderServices {
   }
 
   getTenantContracts(int page) async {
-    Uri url = Uri.parse("${AppUrls.getTenantContract}?per_page=$page");
+    Uri url = Uri.parse("${AppUrls.getTenantContract}");
     try {
       var token = await Preferences.getToken();
       var res = await http.get(

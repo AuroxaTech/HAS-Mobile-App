@@ -7,8 +7,7 @@ import 'package:property_app/utils/shared_preferences/preferences.dart';
 
 class ChatServices {
   Future<Map<String, dynamic>> searchUser(String query) async {
-    final url = Uri.parse(
-        'https://haservices.ca:8080${AppUrls.searchUser}?username_or_email=$query');
+    final url = Uri.parse('${AppUrls.searchUser}?query=$query');
     var userToken = await Preferences.getToken();
     try {
       final response =
