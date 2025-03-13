@@ -46,10 +46,10 @@ class CalendarDetailScreen extends GetView<CalendarDetailController> {
 
                           return InkWell(
                             onTap: () {
-                              if (imageList.isNotEmpty) {
+                              if (controller.images.isNotEmpty) {
                                 Get.to(
                                   () => ViewImage(
-                                    photo: AppUrls.mediaImages + imageList[0],
+                                    photo: AppUrls.mediaImages + controller.images[0],
                                   ),
                                   transition: routeTransition,
                                 );
@@ -59,7 +59,7 @@ class CalendarDetailScreen extends GetView<CalendarDetailController> {
                               width: double.infinity,
                               height: screenHeight(context) * 0.5,
                               imageUrl: imageList.isNotEmpty
-                                  ? AppUrls.mediaImages + imageList[0]
+                                  ? controller.images[index]
                                   : '', // Fallback for empty image list
                               fit: BoxFit.cover,
                               errorWidget: (context, e, b) {

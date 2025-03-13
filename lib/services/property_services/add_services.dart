@@ -1,11 +1,14 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:property_app/constant_widget/constant_widgets.dart';
 import 'package:property_app/utils/shared_preferences/preferences.dart';
+import 'package:path/path.dart' as path;
 
+import '../../models/service_provider_model/all_services.dart';
 import '../../utils/api_urls.dart';
 import '../../utils/base_api_service.dart';
 import '../../utils/connectivity.dart';
@@ -287,6 +290,7 @@ class ServiceProviderServices {
     required String resume,
     required String providerId,
     required int isApplied,
+    required List<dynamic> serviceImages,
   }) async {
     try {
       var token = await Preferences.getToken();
@@ -295,7 +299,10 @@ class ServiceProviderServices {
 
       // Create multipart request
       var request = http.MultipartRequest('POST', url)
-        ..headers.addAll(getHeader(userToken: token))
+        ..headers.addAll({
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        })
         ..fields.addAll({
           'user_id': userId.toString(),
           'service_id': serviceId,
@@ -305,7 +312,7 @@ class ServiceProviderServices {
           'lat': lat.toString(),
           'long': lng.toString(),
           'description': description,
-          'pricing': price.toString(),
+          'pricing': price,
           'duration': duration,
           'start_time': startTime,
           'end_time': endTime,
@@ -313,46 +320,55 @@ class ServiceProviderServices {
           'country': country,
           'city': city,
           'year_experience': yearExperience,
-          // 'cnic_front_pic': cnicFrontPic,
-          // 'cnic_back_pic': cnicBackPic,
-          // 'certification': certification,
-          // 'resume': resume,
           'provider_id': providerId,
           'is_applied': isApplied.toString(),
         });
 
-      // // Add files if they exist
-      // if (cnicFrontPic.isNotEmpty) {
-      //   request.files.add(await http.MultipartFile.fromPath(
-      //     'cnic_front_pic',
-      //     cnicFrontPic,
-      //   ));
-      // }
-      //
-      // if (cnicBackPic.isNotEmpty) {
-      //   request.files.add(await http.MultipartFile.fromPath(
-      //     'cnic_back_pic',
-      //     cnicBackPic,
-      //   ));
-      // }
-      //
-      // if (certification.isNotEmpty) {
-      //   request.files.add(await http.MultipartFile.fromPath(
-      //     'certification',
-      //     certification,
-      //   ));
-      // }
-      //
-      // if (resume.isNotEmpty) {
-      //   request.files.add(await http.MultipartFile.fromPath(
-      //     'resume',
-      //     resume,
-      //   ));
-      // }
+      // Add service images
+      if (serviceImages.isNotEmpty) {
+        for (int i = 0; i < serviceImages.length; i++) {
+          var image = serviceImages[i];
+          String imageUrl;
+
+          if (image is ServiceImage) {
+            imageUrl = image.imagePath;
+          } else if (image is Map) {
+            imageUrl = image['image_path'];
+          } else {
+            imageUrl = image.toString();
+          }
+
+          try {
+            // Download the image
+            var imageResponse = await http.get(Uri.parse(imageUrl));
+            if (imageResponse.statusCode == 200) {
+              // Create a temporary file
+              final tempDir = Directory.systemTemp;
+              final fileName = path.basename(imageUrl);
+              final tempFile = File('${tempDir.path}/$fileName');
+              await tempFile.writeAsBytes(imageResponse.bodyBytes);
+
+              // Add the file to the request
+              var multipartFile = await http.MultipartFile.fromPath(
+                'service_images[$i]',
+                tempFile.path,
+              );
+              request.files.add(multipartFile);
+            }
+          } catch (e) {
+            print('Error downloading image $i: $e');
+            continue;
+          }
+        }
+      }
 
       // Log request
       BaseApiService.logRequest(
-          url.toString(), 'POST', request.headers, request.fields);
+        url.toString(),
+        'POST',
+        request.headers,
+        request.fields,
+      );
 
       // Send request
       var streamedResponse = await request.send();
@@ -360,9 +376,12 @@ class ServiceProviderServices {
 
       // Log response
       BaseApiService.logResponse(
-          url.toString(), response.statusCode, response.body);
+        url.toString(),
+        response.statusCode,
+        response.body,
+      );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         final decodedResponse = json.decode(response.body);
 
         if (decodedResponse['success'] == true) {
@@ -373,20 +392,17 @@ class ServiceProviderServices {
           };
         } else {
           throw ApiException(
-              decodedResponse['message'] ?? 'Failed to create service request');
+            decodedResponse['message'] ?? 'Failed to create service request',
+          );
         }
       } else {
-        throw ApiException('Failed to create service request',
-            statusCode: response.statusCode);
+        throw ApiException(
+          'Failed to create service request',
+          statusCode: response.statusCode,
+        );
       }
     } catch (e) {
-      // Log error
-      BaseApiService.logError(AppUrls.addServiceRequest, e.toString());
-
-      if (e is FormatException) {
-        throw ApiException('Invalid response format from server');
-      }
-
+      print("Error in newServiceRequest: $e");
       throw ApiException(e.toString());
     }
   }

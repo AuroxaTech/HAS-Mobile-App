@@ -12,6 +12,7 @@ class JobScreenController extends GetxController {
   RxBool pending = true.obs;
   RxBool completed = false.obs;
   RxBool reject = false.obs;
+  RxBool accepted = false.obs;
 
   ServiceProviderServices servicesService = ServiceProviderServices();
   Rx<bool> isLoading = false.obs;
@@ -26,6 +27,9 @@ class JobScreenController extends GetxController {
     pendingJobController.addPageRequestListener((pageKey) {
       Future.microtask(() => getServiceJobs(pageKey, "pending"));
     });
+    getServiceJobs(1, 'completed');
+    getServiceJobs(1, 'rejected');
+    getServiceJobs(1, 'accepted');
     super.onInit();
   }
 
@@ -56,6 +60,8 @@ class JobScreenController extends GetxController {
   final PagingController<int, Job> completedJobController = // Changed to Job
   PagingController(firstPageKey: 1);
   final PagingController<int, Job> rejectedJobController = // Changed to Job
+  PagingController(firstPageKey: 1);
+  final PagingController<int, Job> acceptedJobController = // Changed to Job
   PagingController(firstPageKey: 1);
 
 
@@ -131,7 +137,7 @@ class JobScreenController extends GetxController {
             break;
           case 'accepted': // Handle accepted jobs
             jobsData = serviceStatus.data.acceptedJobs;
-          //  currentController = acceptedJobController;
+            currentController = acceptedJobController;
             break;
           case 'cancelled': // Handle cancelled jobs
             jobsData = serviceStatus.data.cancelledJobs;

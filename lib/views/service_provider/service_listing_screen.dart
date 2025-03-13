@@ -330,6 +330,7 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                                                             item.certification,
                                                             item.resume,
                                                             item.pricing,
+                                                            item.serviceImages
                                                           ]);
                                                     },
                                                   ),

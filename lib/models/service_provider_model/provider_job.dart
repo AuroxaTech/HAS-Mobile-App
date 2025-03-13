@@ -173,7 +173,7 @@ class Provider {
     email: json["email"],
     phoneNumber: json["phone_number"],
     role: json["role"],
-    profileImage: json["profile_image"],
+    profileImage: json["profile_image"] ?? "",
     createdAt: DateTime.parse(json["created_at"]),
     updatedAt: DateTime.parse(json["updated_at"]),
   );

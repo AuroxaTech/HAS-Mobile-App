@@ -44,16 +44,16 @@ class MyServiceRequestDetailController extends GetxController {
             
             // Extract image paths from service images
             images = [];
-            for (var imageData in getServiceRequestOne.value!.serviceImages) {
-              if (imageData is Map<String, dynamic> && imageData.containsKey('image_path')) {
-                String imagePath = imageData['image_path'].toString();
-                if (imagePath.isNotEmpty) {
-                  images.add(imagePath);
-                }
-              } else if (imageData is String && imageData.isNotEmpty) {
-                images.add(imageData);
-              }
-            }
+            // for (var imageData in getServiceRequestOne.value!.serviceImages) {
+            //   if (imageData is Map<String, dynamic> && imageData.containsKey('image_path')) {
+            //     String imagePath = imageData['image_path'].toString();
+            //     if (imagePath.isNotEmpty) {
+            //       images.add(imagePath);
+            //     }
+            //   } else if (imageData is String && imageData.isNotEmpty) {
+            //     images.add(imageData);
+            //   }
+            // }
             
             print("Loaded ${images.length} images: $images");
           } else {

@@ -4,10 +4,12 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 import 'package:property_app/app_constants/theme.dart';
 import 'package:property_app/controllers/authentication_controller/splash_screen_controller.dart';
 import 'package:property_app/route_management/routes.dart';
+import 'package:property_app/utils/api_urls.dart';
 
 import 'firebase_options.dart';
 import 'route_management/constant_routes.dart';
@@ -25,7 +27,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
+    // Stripe.publishableKey = AppUrls.;
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   Get.put(SplashScreenController());
   HttpOverrides.global = MyHttpOverrides();
