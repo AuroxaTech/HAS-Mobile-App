@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:property_app/controllers/authentication_controller/sign_up_controller.dart';
 import 'package:property_app/route_management/constant_routes.dart';
+import 'package:property_app/views/authentication_screens/add_service_provider.dart';
 
 import '../../app_constants/animations.dart';
 import '../../app_constants/app_icon.dart';
@@ -744,20 +745,7 @@ class SignUpScreen extends GetView<SignUpController> {
           hintText: "Add your main services you offer",
         ),
         h15,
-        h10,
-        CustomTextField(
-          maxLines: 5,
-          minLines: 3,
-          validator: (value) {
-            if (value == null || value.isEmpty || value.length < 3) {
-              return 'Description Required';
-            }
-            return null;
-          },
-          controller: controller.description,
-          hintText: "Describe your service....",
-        ),
-        h15,
+
         CustomDropDown(
           value: controller.yesValue.value,
           onChange: (value) {
@@ -1066,189 +1054,16 @@ class SignUpScreen extends GetView<SignUpController> {
         h50,
         CustomButton(
           width: double.infinity,
-          text: "Register",
+          text: "Next",
           isLoading: controller.isLoading.value,
           onTap: controller.isLoading.value
               ? null
               : () async {
-                  if (controller.formKey.currentState!.validate()) {
-                    if (controller.frontCNICImage.value == null) {
-                      AppUtils.errorSnackBar(
-                          "Please Select", "Please Select CNIC Front Image");
-                    } else if (controller.backCNICImage.value == null) {
-                      AppUtils.errorSnackBar(
-                          "Please Select", "Please Select CNIC Back Image");
-                    } else {
-                      int experience =
-                          int.parse(controller.experienceController.text);
-                      if (controller.profileImage.value == null) {
-                        if (controller.yesValue.value == "Any Certificate ?" ||
-                            controller.yesValue.value == "No") {
-                          // User has provided certification
-                          try {
-                            await controller.registerServiceProvider(
-                              fullName: controller.nameController.text,
-                              userName: controller.userNameController.text,
-                              email: controller.emailController.text,
-                              address: controller.addressController.text.isEmpty
-                                  ? "Test"
-                                  : controller.addressController.text,
-                              postalCode: controller.postalCode.text.isEmpty
-                                  ? "00000"
-                                  : controller.postalCode.text,
-                              phoneNumber: controller.phoneController.text,
-                              password: controller.passwordController.text,
-                              cPassword:
-                                  controller.confirmPasswordController.text,
-                              city: controller.cityController.text,
-                              services: controller.electricalValue.value,
-                              yearExperience:
-                                  controller.experienceController.text,
-                              availabilityStartTime: controller
-                                      .selectedWeekdayRange.value +
-                                  controller.startTime.value.format(context),
-                              availabilityEndTime:
-                                  controller.endTime.value.format(context),
-                              cnicFront: controller.frontCNICImage.value!,
-                              cnicBack: controller.backCNICImage.value!,
-                              description: controller.description.text,
-                              additionalInfo: controller.additionalInfo.text,
-                            );
-                            // Registration successful, navigate or perform other actions
-                          } catch (e) {
-                            // Handle registration failure, show error message or take appropriate action
-                            print('Registration failed: $e');
-                          }
-                        } else {
-                          // User has not provided certification
-                          try {
-                            await controller.registerServiceProvider(
-                              fullName: controller.nameController.text,
-                              userName: controller.userNameController.text,
-                              email: controller.emailController.text,
-                              address: controller.addressController.text.isEmpty
-                                  ? "Test"
-                                  : controller.addressController.text,
-                              postalCode: controller.postalCode.text.isEmpty
-                                  ? "00000"
-                                  : controller.postalCode.text,
-                              phoneNumber: controller.phoneController.text,
-                              password: controller.passwordController.text,
-                              cPassword:
-                                  controller.confirmPasswordController.text,
-                              city: controller.cityController.text,
 
-                              services: controller.electricalValue.value,
-                              yearExperience:
-                                  controller.experienceController.text,
-                              availabilityStartTime: controller
-                                      .selectedWeekdayRange.value +
-                                  controller.startTime.value.format(context),
-                              availabilityEndTime:
-                                  controller.endTime.value.format(context),
-                              cnicFront: controller.frontCNICImage.value!,
-                              cnicBack: controller.backCNICImage.value!,
-                              certification: controller.yesValue.value,
-                              certificationFile:
-                                  controller.certificateImage.value!,
-                              description: controller.description.text,
-                              additionalInfo: controller.additionalInfo.text,
+    if (controller.formKey.currentState!.validate()) {
+      Get.to(const AddServiceProvider());
+    }},
 
-                              // No certification information provided
-                            );
-
-                            // Registration successful, navigate or perform other actions
-                          } catch (e) {
-                            // Handle registration failure, show error message or take appropriate action
-                            print('Registration failed: $e');
-                          }
-                        }
-                      } else {
-                        if (controller.yesValue.value == "Any Certificate ?" ||
-                            controller.yesValue.value == "No") {
-                          // User has provided certification
-                          try {
-                            await controller.registerServiceProvider(
-                              address: controller.addressController.text.isEmpty
-                                  ? "Test"
-                                  : controller.addressController.text,
-                              postalCode: controller.postalCode.text.isEmpty
-                                  ? "00000"
-                                  : controller.postalCode.text,
-                              fullName: controller.nameController.text,
-                              userName: controller.userNameController.text,
-                              email: controller.emailController.text,
-                              phoneNumber: controller.phoneController.text,
-                              password: controller.passwordController.text,
-                              cPassword:
-                                  controller.confirmPasswordController.text,
-                              city: controller.cityController.text,
-                              profileImage: controller.profileImage.value!,
-                              services: controller.electricalValue.value,
-                              yearExperience: experience.toString(),
-                              availabilityStartTime:
-                                  controller.startTime.value.format(context),
-                              availabilityEndTime:
-                                  controller.endTime.value.format(context),
-                              cnicFront: controller.frontCNICImage.value!,
-                              cnicBack: controller.backCNICImage.value!,
-                              description: controller.description.text,
-                              additionalInfo: controller.additionalInfo.text,
-                            );
-
-                            // Registration successful, navigate or perform other actions
-                          } catch (e) {
-                            // Handle registration failure, show error message or take appropriate action
-                            print('Registration failed: $e');
-                          }
-                        } else {
-                          // User has not provided certification
-                          try {
-                            await controller.registerServiceProvider(
-                              address: controller.addressController.text.isEmpty
-                                  ? "Test"
-                                  : controller.addressController.text,
-                              postalCode: controller.postalCode.text.isEmpty
-                                  ? "00000"
-                                  : controller.postalCode.text,
-                              fullName: controller.nameController.text,
-                              userName: controller.userNameController.text,
-                              email: controller.emailController.text,
-                              phoneNumber: controller.phoneController.text,
-                              password: controller.passwordController.text,
-                              cPassword:
-                                  controller.confirmPasswordController.text,
-                              city: controller.cityController.text,
-
-                              profileImage: controller.profileImage.value!,
-                              services: controller.electricalValue.value,
-                              yearExperience:
-                                  controller.experienceController.text,
-                              availabilityStartTime:
-                                  controller.startTime.value.format(context),
-                              availabilityEndTime:
-                                  controller.endTime.value.format(context),
-                              cnicFront: controller.frontCNICImage.value!,
-                              cnicBack: controller.backCNICImage.value!,
-                              certification: controller.yesValue.value,
-                              certificationFile:
-                                  controller.certificateImage.value!,
-                              description: controller.description.text,
-                              additionalInfo: controller.additionalInfo.text,
-
-                              // No certification information provided
-                            );
-
-                            // Registration successful, navigate or perform other actions
-                          } catch (e) {
-                            // Handle registration failure, show error message or take appropriate action
-                            print('Registration failed: $e');
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
         ),
         h50,
       ],
