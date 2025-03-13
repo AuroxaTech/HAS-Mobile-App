@@ -1197,6 +1197,7 @@ Widget myServicesWidget(context,
                 ),
                 h5,
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Image.asset(AppIcons.serviceArea),
                     w10,
@@ -1206,8 +1207,10 @@ Widget myServicesWidget(context,
                         fontWeight: FontWeight.w500,
                         color: greyColor),
                     w10,
-                    customText(
-                        text: serviceArea, fontSize: 14, color: descColor),
+                    Expanded(
+                      child: customText(
+                          text: serviceArea, fontSize: 14, color: descColor),
+                    ),
                   ],
                 ),
               ],

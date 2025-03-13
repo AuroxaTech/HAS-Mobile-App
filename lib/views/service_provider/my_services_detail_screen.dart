@@ -117,9 +117,9 @@ class MyDraggable extends GetView<MyServicesDetailScreenController> {
     return LayoutBuilder(builder: (context, constraints) {
       return DraggableScrollableSheet(
         key: controller.sheet,
-        initialChildSize: 0.5,
-        maxChildSize: 0.5, // Set maxChildSize to the same value (0.5)
-        minChildSize: 0.5,
+        initialChildSize: 0.55,
+        maxChildSize: 0.55, // Set maxChildSize to the same value (0.5)
+        minChildSize: 0.55,
         // expand: true,
         // snap: true,
         // snapSizes: const [
@@ -240,19 +240,24 @@ class MyDraggable extends GetView<MyServicesDetailScreenController> {
                                           Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
-                                              Row(
+                                              Column(
                                                 children: [
-                                                  Image.asset(
-                                                    AppIcons.clockDuration,
-                                                    width: 20,
-                                                    height: 20,
-                                                  ),
                                                   customText(
-                                                      text:
-                                                          " Duration : ${controller.getServiceOne.value!.startTime}",
+                                                      text: "Duration",
                                                       color: greyColor,
+                                                      fontSize: 16),
+                                                  h5,
+                                                  customText(
+                                                      text: controller
+                                                          .getServiceOne
+                                                          .value!
+                                                          .duration,
+                                                      color: blackColor,
                                                       fontSize: 15),
+                                                  h5,
                                                 ],
                                               ),
                                               customText(
@@ -277,7 +282,27 @@ class MyDraggable extends GetView<MyServicesDetailScreenController> {
                                                   fontSize: 16),
                                             ],
                                           ),
-                                          h50,
+                                          h5,
+                                          Row(
+                                            children: [
+                                              Image.asset(
+                                                AppIcons.clockDuration,
+                                                width: 20,
+                                                height: 20,
+                                              ),
+                                              w5,
+                                              customText(
+                                                  text: "Service Time : ",
+                                                  color: greyColor,
+                                                  fontSize: 16),
+                                              customText(
+                                                  text:
+                                                      "${controller.getServiceOne.value!.startTime} - ${controller.getServiceOne.value!.endTime}",
+                                                  color: blackColor,
+                                                  fontSize: 12),
+                                            ],
+                                          ),
+                                          h30,
                                           Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,

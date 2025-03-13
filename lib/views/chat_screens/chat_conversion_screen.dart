@@ -1229,7 +1229,7 @@ class _ChatScreen1State extends State<ChatScreen1> {
         color: primaryColor,
       ),
       child: Padding(
-        padding: const EdgeInsets.only(top: 35, bottom: 15),
+        padding: const EdgeInsets.only(top: 60, bottom: 15),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1249,18 +1249,18 @@ class _ChatScreen1State extends State<ChatScreen1> {
                 });
               },
             ),
-            const SizedBox(
-              width: 10,
-            ),
-            Text(
-              "${dataProvider.selectedMessages.length}",
-              style: GoogleFonts.poppins(
-                textStyle: const TextStyle(
-                  fontSize: 18,
-                  color: whiteColor,
-                ),
-              ),
-            ),
+            // const SizedBox(
+            //   width: 10,
+            // ),
+            Obx(() => Text(
+                  "${dataProvider.selectedMessages.length}",
+                  style: GoogleFonts.poppins(
+                    textStyle: const TextStyle(
+                      fontSize: 18,
+                      color: whiteColor,
+                    ),
+                  ),
+                )),
             const SizedBox(
               width: 30,
             ),
@@ -1280,41 +1280,41 @@ class _ChatScreen1State extends State<ChatScreen1> {
             const SizedBox(
               width: 20,
             ),
-            dataProvider.selectedMessages.length == 1
-                ? InkWell(
-                    child: const Icon(
-                      Icons.info_outline,
-                      color: whiteColor,
-                    ),
-                    onTap: () {
-                      // Get.to(MessageInfoScreen(
-                      //   time: chatController.replyMessage1.value!.get("created"), message:
-                      // chatController.replyMessage1.value!.get("content"),
-                      //   send: true,
-                      //   delivered: true,
-                      //
-                      // ));
-                    },
-                  )
-                : const SizedBox(),
+            // dataProvider.selectedMessages.length == 1
+            //     ? InkWell(
+            //         child: const Icon(
+            //           Icons.info_outline,
+            //           color: whiteColor,
+            //         ),
+            //         onTap: () {
+            //           // Get.to(MessageInfoScreen(
+            //           //   time: chatController.replyMessage1.value!.get("created"), message:
+            //           // chatController.replyMessage1.value!.get("content"),
+            //           //   send: true,
+            //           //   delivered: true,
+            //           //
+            //           // ));
+            //         },
+            //       )
+            //     : const SizedBox(),
             const SizedBox(
               width: 20,
             ),
-            InkWell(
-              child: const Icon(
-                Icons.star_border,
-                color: whiteColor,
-              ),
-              onTap: () {
-                for (var data in dataProvider.selectedMessages) {
-                  if (kDebugMode) {
-                    print(data);
-                  }
-                }
-
-                starSelectedMessages(dataProvider);
-              },
-            ),
+            // InkWell(
+            //   child: const Icon(
+            //     Icons.star_border,
+            //     color: whiteColor,
+            //   ),
+            //   onTap: () {
+            //     for (var data in dataProvider.selectedMessages) {
+            //       if (kDebugMode) {
+            //         print(data);
+            //       }
+            //     }
+            //
+            //     starSelectedMessages(dataProvider);
+            //   },
+            // ),
             const SizedBox(
               width: 20,
             ),
@@ -1373,35 +1373,35 @@ class _ChatScreen1State extends State<ChatScreen1> {
                     });
               },
             ),
-            const SizedBox(
-              width: 20,
-            ),
-            InkWell(
-              child: Image.asset(
-                "assets/png/forward.png",
-                width: 25,
-                height: 30,
-              ),
-              onTap: () {
-                if (dataProvider.selectedMessages.isNotEmpty) {
-                  for (var data in dataProvider.selectedMessages) {
-                    if (kDebugMode) {
-                      print(data);
-                    }
-                  }
-
-                  // Get.to(() =>
-                  //     ForwardContactScreen(
-                  //       conversationData: widget.data,
-                  //       image: widget.image,
-                  //       name: widget.name,
-                  //     ));
-                }
-              },
-            ),
-            const SizedBox(
-              width: 20,
-            ),
+            // const SizedBox(
+            //   width: 20,
+            // ),
+            // InkWell(
+            //   child: Image.asset(
+            //     "assets/png/forward.png",
+            //     width: 25,
+            //     height: 30,
+            //   ),
+            //   onTap: () {
+            //     if (dataProvider.selectedMessages.isNotEmpty) {
+            //       for (var data in dataProvider.selectedMessages) {
+            //         if (kDebugMode) {
+            //           print(data);
+            //         }
+            //       }
+            //
+            //       // Get.to(() =>
+            //       //     ForwardContactScreen(
+            //       //       conversationData: widget.data,
+            //       //       image: widget.image,
+            //       //       name: widget.name,
+            //       //     ));
+            //     }
+            //   },
+            // ),
+            // const SizedBox(
+            //   width: 20,
+            // ),
             // InkWell(
             //   child: const Icon(
             //     Icons.more_vert,
@@ -1410,92 +1410,92 @@ class _ChatScreen1State extends State<ChatScreen1> {
             //   onTap: () {},
             // ),
 
-            PopupMenuButton<String>(
-                color: whiteColor,
-                surfaceTintColor: whiteColor,
-                icon: const Icon(
-                  Icons.more_vert, // Use the three dots menu icon
-                  color: Colors.white,
-                ),
-                onSelected: (value) {
-                  if (value == "Settings") {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) => const SettingsScreen(),
-                    //   ),
-                    // );
-                  } else if (value == "Starred messages") {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) =>
-                    //         StarredMessagesScreen(
-                    //           data: widget.data,
-                    //         ),
-                    //   ),
-                    // );
-                  }
-                },
-                itemBuilder: (BuildContext context) {
-                  return [
-                    // PopupMenuItem(
-                    //   value: 'New Group',
-                    //   child: Text(
-                    //     'New Group',
-                    //     style: GoogleFonts.roboto(
-                    //       textStyle: const TextStyle(
-                    //         fontSize: 15.0,
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
-                    // PopupMenuItem(
-                    //   value: 'New broadcast',
-                    //   child: Text(
-                    //     'New broadcast',
-                    //     style: GoogleFonts.roboto(
-                    //       textStyle: const TextStyle(
-                    //         fontSize: 15.0,
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
-                    // PopupMenuItem(
-                    //   value: 'Linked devices',
-                    //   child: Text(
-                    //     'Linked devices',
-                    //     style: GoogleFonts.roboto(
-                    //       textStyle: const TextStyle(
-                    //         fontSize: 15.0,
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
-                    PopupMenuItem(
-                      value: 'Starred messages',
-                      child: Text(
-                        'Starred messages',
-                        style: GoogleFonts.roboto(
-                          textStyle: const TextStyle(
-                            fontSize: 15.0,
-                          ),
-                        ),
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: 'Settings',
-                      child: Text(
-                        'Settings',
-                        style: GoogleFonts.roboto(
-                          textStyle: const TextStyle(
-                            fontSize: 15.0,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ];
-                }),
+            // PopupMenuButton<String>(
+            //     color: whiteColor,
+            //     surfaceTintColor: whiteColor,
+            //     icon: const Icon(
+            //       Icons.more_vert, // Use the three dots menu icon
+            //       color: Colors.white,
+            //     ),
+            //     onSelected: (value) {
+            //       if (value == "Settings") {
+            //         // Navigator.push(
+            //         //   context,
+            //         //   MaterialPageRoute(
+            //         //     builder: (context) => const SettingsScreen(),
+            //         //   ),
+            //         // );
+            //       } else if (value == "Starred messages") {
+            //         // Navigator.push(
+            //         //   context,
+            //         //   MaterialPageRoute(
+            //         //     builder: (context) =>
+            //         //         StarredMessagesScreen(
+            //         //           data: widget.data,
+            //         //         ),
+            //         //   ),
+            //         // );
+            //       }
+            //     },
+            //     itemBuilder: (BuildContext context) {
+            //       return [
+            //         // PopupMenuItem(
+            //         //   value: 'New Group',
+            //         //   child: Text(
+            //         //     'New Group',
+            //         //     style: GoogleFonts.roboto(
+            //         //       textStyle: const TextStyle(
+            //         //         fontSize: 15.0,
+            //         //       ),
+            //         //     ),
+            //         //   ),
+            //         // ),
+            //         // PopupMenuItem(
+            //         //   value: 'New broadcast',
+            //         //   child: Text(
+            //         //     'New broadcast',
+            //         //     style: GoogleFonts.roboto(
+            //         //       textStyle: const TextStyle(
+            //         //         fontSize: 15.0,
+            //         //       ),
+            //         //     ),
+            //         //   ),
+            //         // ),
+            //         // PopupMenuItem(
+            //         //   value: 'Linked devices',
+            //         //   child: Text(
+            //         //     'Linked devices',
+            //         //     style: GoogleFonts.roboto(
+            //         //       textStyle: const TextStyle(
+            //         //         fontSize: 15.0,
+            //         //       ),
+            //         //     ),
+            //         //   ),
+            //         // ),
+            //         PopupMenuItem(
+            //           value: 'Starred messages',
+            //           child: Text(
+            //             'Starred messages',
+            //             style: GoogleFonts.roboto(
+            //               textStyle: const TextStyle(
+            //                 fontSize: 15.0,
+            //               ),
+            //             ),
+            //           ),
+            //         ),
+            //         PopupMenuItem(
+            //           value: 'Settings',
+            //           child: Text(
+            //             'Settings',
+            //             style: GoogleFonts.roboto(
+            //               textStyle: const TextStyle(
+            //                 fontSize: 15.0,
+            //               ),
+            //             ),
+            //           ),
+            //         ),
+            //       ];
+            //     }),
             const SizedBox(
               width: 10,
             ),
