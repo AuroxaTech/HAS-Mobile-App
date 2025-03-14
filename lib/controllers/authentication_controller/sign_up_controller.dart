@@ -458,10 +458,11 @@ class SignUpController extends GetxController {
   }) async {
     try {
       isLoading.value = true;
-      
+
       // Validate service images
       if (serviceImages == null || serviceImages.isEmpty) {
-        AppUtils.errorSnackBar("Error", "Please add at least one service image");
+        AppUtils.errorSnackBar(
+            "Error", "Please add at least one service image");
         isLoading.value = false;
         return;
       }
@@ -472,7 +473,7 @@ class SignUpController extends GetxController {
       print("Email: $email");
       print("Services: $services");
       print("Service Images Count: ${serviceImages.length}");
-      
+
       for (var image in serviceImages) {
         print("Service Image Path: ${image.path}");
       }
@@ -510,6 +511,7 @@ class SignUpController extends GetxController {
 
       if (data['success'] == true && data['payload'] != null) {
         clearFormData();
+        Get.back();
         Get.back();
         AppUtils.getSnackBar(
             "Success", data["message"] ?? "Registration successful");
