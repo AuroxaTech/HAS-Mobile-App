@@ -343,7 +343,7 @@ class _ChatViewState extends State<ChatView> {
                                                                                       child: Text(
                                                                                         unreadCount.toString(),
                                                                                         style: GoogleFonts.poppins(
-                                                                                          textStyle: TextStyle(
+                                                                                          textStyle: const TextStyle(
                                                                                             fontSize: 8,
                                                                                             color: whiteColor,
                                                                                             fontWeight: FontWeight.bold,
