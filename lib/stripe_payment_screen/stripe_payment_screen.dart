@@ -10,6 +10,7 @@ class StripePaymentScreen extends StatelessWidget {
   int? jobId;
   int? id;
   String? serviceProviderName;
+  String? serviceId;
   String? serviceProviderEmail;
   final StripePaymentScreenController stripePaymentController =
       Get.put(StripePaymentScreenController());
@@ -21,7 +22,8 @@ class StripePaymentScreen extends StatelessWidget {
       this.jobId,
       this.id,
       this.serviceProviderName,
-      this.serviceProviderEmail})
+      this.serviceProviderEmail,
+      this.serviceId})
       : super(
           key: key,
         );
@@ -156,7 +158,10 @@ class StripePaymentScreen extends StatelessWidget {
                                       .acceptServiceRequest(jobId: jobId, status: "completed")
                                       .then((value) {
                                     jobDetailController.getJobRequest(id: id);
+                                   jobDetailController.makePayment(amount: amount, serviceId: serviceId.toString());
                                   });
+                                  await jobDetailController.makePayment(amount: amount, serviceId: serviceId.toString());
+
                                 } else {
                                   Get.back();
                                 }

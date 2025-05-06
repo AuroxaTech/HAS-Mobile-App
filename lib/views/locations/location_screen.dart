@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 import 'package:location_geocoder/location_geocoder.dart';
 import 'package:property_app/app_constants/color_constants.dart';
 import 'package:property_app/custom_widgets/custom_button.dart';
+import 'package:property_app/custom_widgets/custom_text_field.dart';
 import 'package:property_app/utils/api_urls.dart';
 
 enum AddressType { Home, Office, Other }
@@ -124,11 +125,11 @@ class _LocationScreenState extends State<LocationScreen> {
     Map<String, dynamic> parameters = {
       'input': input,
       'key': AppUrls.mapKey,
-      'components': 'country:ca',
+      'components': 'country:CA',
       'language': 'en',
     };
 
-    if (lat.value != null && lng.value != null) {
+    if (lat.value != 0.0 && lng.value != 0.0) {
       parameters.addAll({
         "location": "${lat.value},${lng.value}",
         "radius": "500",
@@ -145,9 +146,13 @@ class _LocationScreenState extends State<LocationScreen> {
 
       final data = json.decode(response.body);
       if (data != null && data['predictions'] != null) {
+
+        var suggestions = List<String>.from(
+            data['predictions'].map((s) => s['description'] as String));
         setState(() {
-          _autocompleteSuggestions = List<String>.from(
-              data['predictions'].map((s) => s['description'] as String));
+          _autocompleteSuggestions.assignAll(suggestions);
+          // _autocompleteSuggestions = List<String>.from(
+          //     data['predictions'].map((s) => s['description'] as String));
           _isLoading = false;
         });
       } else {
@@ -329,36 +334,29 @@ class _LocationScreenState extends State<LocationScreen> {
                             ),
                             child: Column(
                               children: [
-                                TextFormField(
+
+                                CustomTextField(
                                   controller: _controller,
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w300,
-                                  ),
-                                  textAlign: TextAlign.start,
-                                  textAlignVertical: TextAlignVertical.center,
-                                  decoration: InputDecoration(
-                                    hintText: 'Search Places',
-                                    suffixIcon: _isLoading
-                                        ? const CircularProgressIndicator()
-                                        : IconButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                _controller.clear();
-                                                _autocompleteSuggestions
-                                                    .clear();
-                                              });
-                                            },
-                                            icon: const Icon(Icons.close),
-                                          ),
-                                    border: InputBorder.none,
+                                  hintText: 'Search Places',
+                                  suffixIcon: _isLoading
+                                      ? const CircularProgressIndicator()
+                                      : IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _controller.clear();
+                                        _autocompleteSuggestions
+                                            .clear();
+                                      });
+                                    },
+                                    icon: const Icon(Icons.close),
                                   ),
                                   onChanged: _getAutocomplete,
+
                                 ),
                                 ListView.builder(
                                   itemCount: _autocompleteSuggestions.length,
                                   shrinkWrap: true,
+                                  padding: EdgeInsets.zero,
                                   itemBuilder: (context, index) {
                                     return ListTile(
                                       title: Text(

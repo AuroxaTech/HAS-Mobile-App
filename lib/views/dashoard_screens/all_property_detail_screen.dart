@@ -52,9 +52,10 @@ class AllPropertyDetailScreen extends GetView<AllPropertyDetailController> {
                             return InkWell(
                               onTap: () {
                                 Get.to(
-                                    () => ViewImage(
+                                    () => ViewImages(
                                           photo: controller.getPropertyOne
-                                              .value!.propertyImages[index],
+                                              .value!.propertyImages,
+                                          index: index,
                                         ),
                                     transition: routeTransition);
                               },

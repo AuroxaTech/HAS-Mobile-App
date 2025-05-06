@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -203,6 +205,7 @@ class AddServiceController extends GetxController {
   void onInit() {
     super.onInit();
     countriesList.addAll(allCountries);
+    fetchCategories();
   }
 
   void searchCountry(String query) {
@@ -299,6 +302,7 @@ class AddServiceController extends GetxController {
     required String additionalInformation,
     required String yearsExperience,
     required String weekdayRange,
+    required String categoryId,
     List<XFile>? mediaFiles,
   }) async {
     try {
@@ -320,6 +324,7 @@ class AddServiceController extends GetxController {
         yearsExperience: yearsExperience,
         duration: weekdayRange,
         mediaFiles: mediaFiles,
+        categoryId: categoryId
       );
 
       if (result['status'] == true) {
@@ -335,6 +340,7 @@ class AddServiceController extends GetxController {
       isLoading.value = false;
     }
   }
+
 
   Future<void> uploadDataWithImages({
     required String userId,
@@ -437,5 +443,40 @@ class AddServiceController extends GetxController {
     
     // Format as "hh:mm PP" (e.g., "04:00 PM" for 4:00 PM)
     return '$hourStr:$minute $period';
+  }
+
+
+  var categoriesList = [].obs;
+  var subCategoriesList = [].obs;
+  var selectedCategory = 'Choose Category'.obs;
+  var selectedCategoryId = ''.obs;
+  var selectedSubCategory = 'Choose a subcategory'.obs;
+
+
+  Future<void> fetchCategories() async {
+    try {
+      var response = await http.get(Uri.parse("${AppUrls.baseUrl}/categories"));
+      if (response.statusCode == 200) {
+        var jsonData = json.decode(response.body);
+        categoriesList.value = jsonData['payload']['data'];
+      } else {
+        Get.snackbar("Error", "Failed to fetch categories");
+      }
+    } catch (e) {
+      Get.snackbar("Error", "Something went wrong");
+    }
+  }
+
+  void updateSubCategories(String categoryName) {
+    var selected = categoriesList.firstWhere(
+          (category) => category['name'] == categoryName,
+      orElse: () => null,
+    );
+
+    if (selected != null) {
+      subCategoriesList.value = selected['children'] ?? [];
+    } else {
+      subCategoriesList.clear();
+    }
   }
 }

@@ -24,6 +24,7 @@ class TenantDashboard extends GetView<TenantDashboardController> {
       backgroundColor: whiteColor,
       appBar: homeAppBar(context,
           isBack: true,
+          isMenu: true,
           text: "Tenant Profile",
           menuOnTap: () => controller.key.currentState!.openDrawer(),
           back: false),

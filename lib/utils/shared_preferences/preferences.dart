@@ -12,6 +12,18 @@ class Preferences {
     return boolValue;
   }
 
+  static setBiometricEnabled(bool check) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('bioMetric', check);
+  }
+
+  static getBiometricEnabled() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool? boolValue = prefs.getBool("bioMetric");
+    return boolValue;
+  }
+
+
   static setToken(String token) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('token', token);

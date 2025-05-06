@@ -130,9 +130,11 @@ class AllPropertyController extends GetxController {
   void onInit() {
     super.onInit();
     // Removed TabController initialization
+    pagingController.itemList?.clear();
     pagingController.addPageRequestListener((pageKey) {
       getProperties(pageKey);
     });
+
     // getLandLordProperties();
   }
 

@@ -24,6 +24,7 @@ class DashBoardScreen extends GetView<DashboardController> {
       backgroundColor: whiteColor,
       appBar: homeAppBar(context,
           isBack: true,
+          isMenu: true,
           menuOnTap: () => controller.key.currentState!.openDrawer(),
           back: false),
       drawer: customDrawer(context, onDeleteAccount: () {
