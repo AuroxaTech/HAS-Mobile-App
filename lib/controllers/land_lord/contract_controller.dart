@@ -142,7 +142,7 @@ class ContractController extends GetxController {
     try {
       isLoading.value = true;
       var url = Uri.parse(
-          "https://has-backend.wazirafghan.online/api/contract/store");
+          "${AppUrls.baseUrl}/contract/store");
 
       String utilities = selectedUtilities.join(', ');
       String responsibilities = selectedResponsibility.join(', ');

@@ -92,12 +92,13 @@ class LoginScreen extends GetView<LoginScreenController> {
                     CustomButton(
                       onTap: () {
                         if (controller.formKey.currentState!.validate()) {
-                          //Get.to(() => MainBottomBar());
-                          //  Get.toNamed(kServiceProvider);
+                          // Get.to(() => MainBottomBar());
+                          // Get.toNamed(kServiceProvider);
                           controller.login(
                               context,
                               controller.emailController.text,
-                              controller.passwordController.text);
+                              controller.passwordController.text,
+                          );
                         }
                       },
                       isLoading: controller.isLoading.value,

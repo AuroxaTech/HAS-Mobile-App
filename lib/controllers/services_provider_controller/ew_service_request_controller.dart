@@ -98,7 +98,7 @@ class NewServiceRequestScreenController extends GetxController {
                             if (value == 'Full Week') {
                               selectedDays.value = List.from(weekDays);
                             } else if (value == 'Request Now') {
-                              selectedDays.clear();
+                              selectedDays.value = List.from(weekDays);
                             }
                           });
                         },
@@ -153,10 +153,47 @@ class NewServiceRequestScreenController extends GetxController {
                       ElevatedButton(
                         onPressed: () async {
                           if (selectedOption.value == 'Request Now') {
+                            final TimeOfDay? startPicked = await Get.dialog(
+                              TimePickerDialog(
+                                initialTime: startTime.value,
+                              ),
+                            );
+
+                            if (startPicked != null) {
+                              startTime.value = startPicked;
+
+                              // Select end time using Get.dialog
+                              final TimeOfDay? endPicked = await Get.dialog(
+                                TimePickerDialog(
+                                  initialTime: TimeOfDay(
+                                    hour: (startPicked.hour + 1) % 24,
+                                    minute: startPicked.minute,
+                                  ),
+                                ),
+                              );
+
+                              if (endPicked != null) {
+                                // Validate end time is after start time
+                                if (endPicked.hour > startPicked.hour ||
+                                    (endPicked.hour == startPicked.hour &&
+                                        endPicked.minute >
+                                            startPicked.minute)) {
+                                  endTime.value = endPicked;
+                                } else {
+                                  Get.snackbar(
+                                    'Invalid Time',
+                                    'End time must be after start time',
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    backgroundColor: Colors.red,
+                                    colorText: Colors.white,
+                                  );
+                                }
+                              }
+                            }
                             Get.back();
+
                           } else if (selectedOption.value.isNotEmpty &&
-                              (selectedDays.isNotEmpty ||
-                                  selectedOption.value == 'Request Now')) {
+                              (selectedDays.isNotEmpty)) {
                             Get.back();
 
                             if (selectedOption.value != 'Request Now') {
@@ -216,7 +253,12 @@ class NewServiceRequestScreenController extends GetxController {
 
   String get getSelectedTimeRangeText {
     if (selectedOption.value.isEmpty) return 'Select days and time';
-    if (selectedOption.value == 'Request Now') return 'Request Now';
+    if (selectedOption.value == 'Request Now'){
+      return 'Request Now ${_formatTimeOfDay(startTime.value)} - ${_formatTimeOfDay(endTime.value)}';
+
+    }
+
+
     if (selectedOption.value == 'Full Week') {
       return 'Full Week, ${_formatTimeOfDay(startTime.value)} - ${_formatTimeOfDay(endTime.value)}';
     }

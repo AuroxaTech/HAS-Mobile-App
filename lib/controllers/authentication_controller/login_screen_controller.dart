@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:property_app/services/auth_services/auth_services.dart';
 import 'package:property_app/views/main_bottom_bar/main_bottom_bar.dart';
 import 'package:property_app/views/main_bottom_bar/service_provider_bottom_ar.dart';
@@ -20,6 +21,7 @@ class LoginScreenController extends GetxController {
   RxBool passwordObscure = true.obs;
   NotificationServices notificationServices = NotificationServices();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
   @override
   void onInit() {
     super.onInit();
@@ -29,8 +31,9 @@ class LoginScreenController extends GetxController {
   RxBool isLoading = false.obs;
   AuthServices authServices = AuthServices();
 
-  Future<void> login(
-      BuildContext context, String email, String password) async {
+  var message = "".obs;
+
+  Future<void> login(BuildContext context, String email, String password) async {
     try {
       isLoading.value = true;
 
@@ -46,23 +49,29 @@ class LoginScreenController extends GetxController {
         await handleSuccessfulLogin(data);
       } else {
         isLoading.value = false;
-        final errorMessage = data['message'] ?? 'Unknown error occurred';
-        handleErrorResponse(errorMessage);
+        // Extract the first error message from 'payload' array
+        message.value = (data["message"]['payload'] is List && data['payload'].isNotEmpty)
+            ? data["message"]['payload'][0]
+            : 'Unknown error occurred';
+
+        handleErrorResponse(message.value);
       }
+
     } catch (e) {
       isLoading.value = false;
       print("Login error: $e");
 
       if (e.toString().contains('Server returned HTML')) {
         AppUtils.errorSnackBar(
-          "Server Error",
-          "There was a problem with this account. Please contact support."
+            "Server Error",
+            "There was a problem with this account. Please contact support."
         );
       } else {
-        handleErrorResponse(e.toString());
+        handleErrorResponse(message.value.isNotEmpty ? message.value : "Wrong email/password");
       }
     }
   }
+
 
   void handleErrorResponse(String errorMessage) {
     if (errorMessage.toLowerCase().contains("server error")) {
@@ -73,9 +82,10 @@ class LoginScreenController extends GetxController {
           "Not Found", "The requested resource was not found.");
     } else {
       print("Error Message: $errorMessage");
-      AppUtils.errorSnackBar("Error", errorMessage);
+      AppUtils.errorSnackBar("Error", errorMessage);  // Pass errorMessage directly
     }
   }
+
 
   Future<void> handleSuccessfulLogin(Map<String, dynamic> data) async {
     try {
@@ -225,9 +235,31 @@ class LoginScreenController extends GetxController {
     }
   }
 
-  void navigateBasedOnRole(int roleId) {
+
+  void navigateBasedOnRole(int roleId) async {
     print("Navigating based on role ID: $roleId");
 
+    final LocalAuthentication auth = LocalAuthentication();
+    try {
+      final bool didAuthenticate = await auth.authenticate(
+        localizedReason: 'Please authenticate to access your account',
+        options: const AuthenticationOptions(
+          useErrorDialogs: true,
+          biometricOnly: true, // Keeps it biometric-only
+        ),
+      );
+
+      if (didAuthenticate) {
+        await Preferences.setBiometricEnabled(true);
+      } else {
+        await Preferences.setBiometricEnabled(false);
+        print("User did not authenticate with biometrics.");
+      }
+    } catch (e) {
+      print("Biometric auth error: $e");
+    }
+
+    // Regardless of biometric result, proceed with navigation
     switch (roleId) {
       case 1:
         print("Navigating to Admin/Landlord Dashboard");
@@ -247,12 +279,74 @@ class LoginScreenController extends GetxController {
         break;
       default:
         print("Invalid role ID: $roleId");
-        AppUtils.errorSnackBar(
-          "Error", 
-          "Invalid role assigned. Please contact support."
-        );
+        AppUtils.errorSnackBar("Error", "Invalid role assigned. Please contact support.");
     }
   }
+
+// void navigateBasedOnRole(int roleId) async{
+  //   print("Navigating based on role ID: $roleId");
+  //
+  //   final LocalAuthentication auth = LocalAuthentication();
+  //   final bool didAuthenticate = await auth.authenticate(
+  //     localizedReason: 'Please authenticate to access your account',
+  //     options: const AuthenticationOptions(
+  //         useErrorDialogs: true, biometricOnly: true),
+  //   );
+  //
+  //   if (didAuthenticate) {
+  //     await Preferences.setBiometricEnabled(true);
+  //     switch (roleId) {
+  //       case 1:
+  //         print("Navigating to Admin/Landlord Dashboard");
+  //         Get.offAll(() => const MainBottomBar());
+  //         break;
+  //       case 2:
+  //         print("Navigating to Tenant Dashboard");
+  //         Get.offAll(() => const TenantBottomBar());
+  //         break;
+  //       case 3:
+  //         print("Navigating to Service Provider Dashboard");
+  //         Get.offAll(() => const ServiceProviderBottomBar());
+  //         break;
+  //       case 4:
+  //         print("Navigating to Visitor Dashboard");
+  //         Get.offAll(() => const VisitorBottomBar());
+  //         break;
+  //       default:
+  //         print("Invalid role ID: $roleId");
+  //         AppUtils.errorSnackBar(
+  //             "Error",
+  //             "Invalid role assigned. Please contact support."
+  //         );
+  //     }
+  //     return;
+  //   }
+  //
+  //   switch (roleId) {
+  //     case 1:
+  //       print("Navigating to Admin/Landlord Dashboard");
+  //       Get.offAll(() => const MainBottomBar());
+  //       break;
+  //     case 2:
+  //       print("Navigating to Tenant Dashboard");
+  //       Get.offAll(() => const TenantBottomBar());
+  //       break;
+  //     case 3:
+  //       print("Navigating to Service Provider Dashboard");
+  //       Get.offAll(() => const ServiceProviderBottomBar());
+  //       break;
+  //     case 4:
+  //       print("Navigating to Visitor Dashboard");
+  //       Get.offAll(() => const VisitorBottomBar());
+  //       break;
+  //     default:
+  //       print("Invalid role ID: $roleId");
+  //       AppUtils.errorSnackBar(
+  //           "Error",
+  //           "Invalid role assigned. Please contact support."
+  //       );
+  //   }
+  // }
 
   // void navigateBasedOnRole(int roleId) {
   //   switch (roleId) {

@@ -508,7 +508,10 @@
 
 import 'dart:convert';
 
+import 'package:property_app/models/propert_model/service_image_model.dart';
+
 import '../service_provider_model/all_services.dart';
+import '../service_provider_model/calendar_service.dart';
 
 ServiceStatus serviceStatusFromJson(String str) =>
     ServiceStatus.fromJson(json.decode(str));

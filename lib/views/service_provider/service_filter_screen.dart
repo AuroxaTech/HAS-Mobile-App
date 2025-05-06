@@ -30,7 +30,7 @@ class ServiceFilterScreen extends GetView<ServiceListingScreenController> {
                   CustomBorderTextField(
                     hintText: "Plumber",
                     controller: controller.serviceNameController,
-                    keyboaredtype: TextInputType.number,
+                    keyboaredtype: TextInputType.text,
                     // maxLength: 10,
                   ),
 
@@ -40,7 +40,7 @@ class ServiceFilterScreen extends GetView<ServiceListingScreenController> {
                   CustomBorderTextField(
                     hintText: "Islamabad",
                     controller: controller.cityController,
-                    keyboaredtype: TextInputType.number,
+                    keyboaredtype: TextInputType.text,
                     // maxLength: 10,
 
                   ),
@@ -50,7 +50,7 @@ class ServiceFilterScreen extends GetView<ServiceListingScreenController> {
                   CustomBorderTextField(
                     hintText: "Pakistan",
                     controller: controller.countryController,
-                    keyboaredtype: TextInputType.number,
+                    keyboaredtype: TextInputType.text,
                     // maxLength: 10,
                   ),
 
@@ -97,6 +97,88 @@ class ServiceFilterScreen extends GetView<ServiceListingScreenController> {
                       ),
                     ],
                   ),
+                  h10,
+                  Obx(() => CustomDropDown(
+                    value: controller.selectedCategory.value.isNotEmpty &&
+                        controller.categoriesList
+                            .any((category) => category['name'] == controller.selectedCategory.value)
+                        ? controller.selectedCategory.value
+                        : "Choose Category",
+                    validator: (value) {
+                      if (value == null || value == "Choose Category") {
+                        return 'Choose a category';
+                      }
+                      return null;
+                    },
+                    onChange: (value) {
+                      controller.selectedCategory.value = value;
+                      controller.updateSubCategories(value); // Fetch subcategories based on selection
+
+                      var selectedCategory = controller.categoriesList.firstWhere(
+                            (category) => category['name'] == value,
+                        orElse: () => {'id': '', 'name': 'Choose Category'},
+                      );
+                      controller.selectedCategoryId.value = selectedCategory['id'].toString();
+
+                      print("selectedid ${controller.selectedCategoryId.value}");
+                      // Store category ID
+                    },
+                    items: [
+                      DropdownMenuItem<String>(
+                        value: "Choose Category",
+                        child: customText(
+                            text: "Choose Category",
+                            fontSize: 16, color: Colors.grey),
+                      ),
+                      ...controller.categoriesList
+                          .map<DropdownMenuItem<String>>((category) {
+                        return DropdownMenuItem<String>(
+                          value: category['name'],
+                          child: customText(text: category['name'], fontSize: 16, color: Colors.black),
+                        );
+                      }).toList(),
+                    ],
+                  )),
+
+
+
+                  h10,
+
+                  // Subcategory Dropdown
+                  Obx(() => CustomDropDown(
+                    value: controller.selectedSubCategory.value.isNotEmpty &&
+                        controller.subCategoriesList
+                            .any((sub) => sub['name'] == controller.selectedSubCategory.value)
+                        ? controller.selectedSubCategory.value
+                        : "Choose a subcategory",
+                    validator: (value) {
+                      if (value == null || value == "Choose a subcategory") {
+                        return 'Choose a subcategory';
+                      }
+                      return null;
+                    },
+                    onChange: (value) {
+                      controller.selectedSubCategory.value = value;
+                    },
+                    items: [
+                      DropdownMenuItem<String>(
+                        value: "Choose a subcategory",
+                        child: customText(text: "Choose a subcategory", fontSize: 16, color: Colors.grey),
+                      ),
+                      ...controller.subCategoriesList
+                          .map<DropdownMenuItem<String>>((sub) {
+                        return DropdownMenuItem<String>(
+                          value: sub['name'],
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.7, // Dynamic width
+                            child: customText(text: sub['name'], fontSize: 16, color: Colors.black,   overFlow: TextOverflow.ellipsis, // Truncate long text
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ],
+                  )),
+
                   h20,
                   CustomButton(
                     width: double.infinity,
@@ -109,6 +191,7 @@ class ServiceFilterScreen extends GetView<ServiceListingScreenController> {
                           "service_name": controller.serviceNameController.text.toString(),
                           "country": controller.countryController.text.toString(),
                           "city": controller.cityController.text,
+                          "category_id" : controller.selectedCategoryId.value
                         };
                         Get.back(result: filters);
                       }
