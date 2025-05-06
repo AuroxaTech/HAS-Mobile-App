@@ -542,6 +542,7 @@ class SignUpScreen extends GetView<SignUpController> {
                           password: controller.passwordController.text,
                           cPassword: controller.confirmPasswordController.text,
                           role: "",
+
                           lastStatus: 1, // or 2 based on your scenario
                           occupation: controller.occupationController
                               .text, // provide value based on your scenario
@@ -566,6 +567,7 @@ class SignUpScreen extends GetView<SignUpController> {
                           password: controller.passwordController.text,
                           cPassword: controller.confirmPasswordController.text,
                           role: "",
+
                           lastStatus: 2,
                           // lastLandlordName: controller.lastLandLordController.text, // provide value based on your scenario
                           // lastTenancy: controller.lastTenancyController.text, // provide value based on your scenario
@@ -598,6 +600,7 @@ class SignUpScreen extends GetView<SignUpController> {
                           password: controller.passwordController.text,
                           cPassword: controller.confirmPasswordController.text,
                           role: "",
+
                           profileImage: controller.profileImage.value!,
                           lastStatus: 2, // or 2 based on your scenario
                           occupation: controller.occupationController
@@ -623,6 +626,7 @@ class SignUpScreen extends GetView<SignUpController> {
                           password: controller.passwordController.text,
                           cPassword: controller.confirmPasswordController.text,
                           role: "",
+
                           profileImage: controller.profileImage.value!,
                           lastStatus: 1,
                           // lastLandlordName: controller.lastLandLordController.text, // provide value based on your scenario
@@ -974,6 +978,7 @@ class SignUpScreen extends GetView<SignUpController> {
           ),
         ),
         h15,
+
         controller.pickFile.value == null
             ? uploadImageContainer(
                 onTap: () {
@@ -1055,6 +1060,7 @@ class SignUpScreen extends GetView<SignUpController> {
         CustomButton(
           width: double.infinity,
           text: "Next",
+
           isLoading: controller.isLoading.value,
           onTap: controller.isLoading.value
               ? null
@@ -1063,6 +1069,7 @@ class SignUpScreen extends GetView<SignUpController> {
     if (controller.formKey.currentState!.validate()) {
       Get.to(const AddServiceProvider());
     }},
+
 
         ),
         h50,
