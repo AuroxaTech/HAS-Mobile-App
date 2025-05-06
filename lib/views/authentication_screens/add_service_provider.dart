@@ -199,6 +199,86 @@ class AddServiceProvider extends GetView<SignUpController> {
                         return null;
                       },
                     ),
+
+                    h10,
+                    Obx(() => CustomDropDown(
+                      value: controller.selectedCategory.value.isNotEmpty &&
+                          controller.categoriesList
+                              .any((category) => category['name'] == controller.selectedCategory.value)
+                          ? controller.selectedCategory.value
+                          : "Choose Category",
+                      validator: (value) {
+                        if (value == null || value == "Choose Category") {
+                          return 'Choose a category';
+                        }
+                        return null;
+                      },
+                      onChange: (value) {
+                        controller.selectedCategory.value = value;
+                        controller.updateSubCategories(value); // Fetch subcategories based on selection
+
+                        var selectedCategory = controller.categoriesList.firstWhere(
+                              (category) => category['name'] == value,
+                          orElse: () => {'id': '', 'name': 'Choose Category'},
+                        );
+                        controller.selectedCategoryId.value = selectedCategory['id'].toString();
+
+                        print("selectedid ${controller.selectedCategoryId.value}");
+                        // Store category ID
+                      },
+                      items: [
+                        DropdownMenuItem<String>(
+                          value: "Choose Category",
+                          child: customText(
+                              text: "Choose Category",
+                              fontSize: 16, color: Colors.grey),
+                        ),
+                        ...controller.categoriesList
+                            .map<DropdownMenuItem<String>>((category) {
+                          return DropdownMenuItem<String>(
+                            value: category['name'],
+                            child: customText(text: category['name'], fontSize: 16, color: Colors.black),
+                          );
+                        }).toList(),
+                      ],
+                    )),
+
+
+
+                    h10,
+
+                    // Subcategory Dropdown
+                    Obx(() => CustomDropDown(
+                      value: controller.selectedSubCategory.value.isNotEmpty &&
+                          controller.subCategoriesList
+                              .any((sub) => sub['name'] == controller.selectedSubCategory.value)
+                          ? controller.selectedSubCategory.value
+                          : "Choose a subcategory",
+                      validator: (value) {
+                        if (value == null || value == "Choose a subcategory") {
+                          return 'Choose a subcategory';
+                        }
+                        return null;
+                      },
+                      onChange: (value) {
+                        controller.selectedSubCategory.value = value;
+                      },
+                      items: [
+                        DropdownMenuItem<String>(
+                          value: "Choose a subcategory",
+                          child: customText(text: "Choose a subcategory", fontSize: 16, color: Colors.grey),
+                        ),
+                        ...controller.subCategoriesList
+                            .map<DropdownMenuItem<String>>((sub) {
+                          return DropdownMenuItem<String>(
+                            value: sub['name'],
+                            child: customText(text: sub['name'], fontSize: 16, color: Colors.black),
+                          );
+                        }).toList(),
+                      ],
+                    )),
+
+
                     h10,
                     customText(
                       text: "Media:",
@@ -359,6 +439,7 @@ class AddServiceProvider extends GetView<SignUpController> {
                                       country: controller.selectedCountry.value!,
                                       profileImage: controller.profileImage.value,
                                       resume: controller.pickFile.value?.xFile,
+                                      categoryId: controller.selectedCategoryId.value
                                     );
                                   } catch (e) {
                                     print('Registration failed: $e');

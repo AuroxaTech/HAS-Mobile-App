@@ -30,37 +30,34 @@ class CalendarDetailScreen extends GetView<CalendarDetailController> {
               : Stack(
                   children: [
                     PageView.builder(
-                      itemCount: controller.images.isNotEmpty
-                          ? controller.images.length
+                      itemCount: controller
+                          .getCalendarOne.value!.serviceImages.isNotEmpty
+                          ? controller
+                          .getCalendarOne.value!.serviceImages.length
                           : 1, // Ensure we have at least 1 item to avoid errors
                       scrollDirection: Axis.horizontal,
                       controller: controller.pageController,
                       itemBuilder: (context, index) {
                         // Ensure getCalendarOne and service data exist
                         if (controller.getCalendarOne.value != null) {
-                          String imagesString = controller
-                              .getCalendarOne.value!.serviceImages
-                              .toString();
-                          List<String> imageList = imagesString.split(',');
-                          controller.images = imageList;
+
 
                           return InkWell(
                             onTap: () {
-                              if (controller.images.isNotEmpty) {
                                 Get.to(
-                                  () => ViewImage(
-                                    photo: AppUrls.mediaImages + controller.images[0],
+                                  () => ViewImagesModel(
+                                    photo: controller
+                                        .getCalendarOne.value!.serviceImages, index: index, // Assuming images in controller.images are relative paths
                                   ),
                                   transition: routeTransition,
                                 );
-                              }
+
                             },
                             child: CachedNetworkImage(
                               width: double.infinity,
                               height: screenHeight(context) * 0.5,
-                              imageUrl: imageList.isNotEmpty
-                                  ? controller.images[index]
-                                  : '', // Fallback for empty image list
+                              imageUrl:controller
+                                  .getCalendarOne.value!.serviceImages[index].imagePath,
                               fit: BoxFit.cover,
                               errorWidget: (context, e, b) {
                                 return Image.asset(AppIcons.appLogo);
@@ -326,6 +323,24 @@ class MyDraggable extends GetView<CalendarDetailController> {
                                     onTap: () {
                                       //     createConversation(controller.getCalendarOne.value!.request., profilePicture, id, context)
                                       //Get.toNamed(kChatConversionScreen);
+                                      createConversation(
+                                          controller
+                                              .getCalendarOne
+                                              .value!
+                                              .user
+                                              .fullName ??
+                                              "",
+                                          controller
+                                              .getCalendarOne
+                                              .value!
+                                              .user
+                                              .profileImage,
+                                          controller
+                                              .getCalendarOne
+                                              .value!
+                                              .userId
+                                              .toString(),
+                                          context);
                                     },
                                   ),
                                 )

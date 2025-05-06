@@ -168,6 +168,8 @@ class SignUpScreen extends GetView<SignUpController> {
                         prefix: const Icon(Icons.location_on_outlined,
                             color: greyColor),
                         hintText: "Address (Optional)",
+                        keyboaredtype: TextInputType.text,
+
                       ),
                       h15,
 
@@ -176,12 +178,15 @@ class SignUpScreen extends GetView<SignUpController> {
                         prefix: const Icon(Icons.local_post_office_outlined,
                             color: greyColor),
                         hintText: "Postal code (Optional)",
+                        keyboaredtype: TextInputType.text,
+
                       ),
                       h15,
 
                       CustomTextField(
                         controller: controller.passwordController,
                         isObscureText: controller.passwordObscure.value,
+                        keyboaredtype: TextInputType.text,
                         prefix:
                             const Icon(Icons.lock_outline, color: greyColor),
                         suffixIcon: IconButton(
@@ -210,6 +215,7 @@ class SignUpScreen extends GetView<SignUpController> {
                       CustomTextField(
                         controller: controller.confirmPasswordController,
                         isObscureText: controller.cPasswordObscure.value,
+                        keyboaredtype: TextInputType.text,
                         prefix:
                             const Icon(Icons.lock_outline, color: greyColor),
                         suffixIcon: IconButton(
@@ -236,6 +242,7 @@ class SignUpScreen extends GetView<SignUpController> {
                       // Enhanced Role Selection
                       CustomDropDown(
                         value: controller.userRoleValue.value,
+
                         validator: (value) {
                           if (value == null || value == "Select Role") {
                             return 'Please select a role';
@@ -731,7 +738,6 @@ class SignUpScreen extends GetView<SignUpController> {
                     icon: const Icon(Icons.calendar_month)),
               ),
         h15,
-        h10,
         CustomTextField(
           maxLines: 5,
           minLines: 3,
@@ -1061,8 +1067,18 @@ class SignUpScreen extends GetView<SignUpController> {
               : () async {
 
     if (controller.formKey.currentState!.validate()) {
+    if (controller.frontCNICImage.value == null) {
+    AppUtils.errorSnackBar(
+    "Please Select", "Please Select CNIC Front Image");
+    } else if (controller.backCNICImage.value == null) {
+    AppUtils.errorSnackBar(
+    "Please Select", "Please Select CNIC Back Image");
+    } else {
       Get.to(const AddServiceProvider());
-    }},
+    }
+
+    }
+    },
 
         ),
         h50,

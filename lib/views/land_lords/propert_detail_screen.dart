@@ -40,9 +40,12 @@ class PropertyDetailScreen extends GetView<MyPropertyDetailController> {
                         return InkWell(
                           onTap: () {
                             Get.to(
-                                () => ViewImage(
-                                    photo: controller.getPropertyOne.value!
-                                        .propertyImages[index]),
+                                () =>
+                                    ViewImages(
+                                      photo: controller.getPropertyOne.value!
+                                          .propertyImages, index: index, // Assuming images in controller.images are relative paths
+                                    ),
+
                                 transition: routeTransition);
                           },
                           child: CachedNetworkImage(

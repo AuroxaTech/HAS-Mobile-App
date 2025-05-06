@@ -35,9 +35,10 @@ class MyServicesDetailScreen extends GetView<MyServicesDetailScreenController> {
                         return InkWell(
                           onTap: () {
                             Get.to(
-                                () => ViewImage(
-                                      photo: image,
-                                    ),
+                                () => ViewImages(
+                                  photo: controller
+                                      .images, index: index, // Assuming images in controller.images are relative paths
+                                ),
                                 transition: routeTransition);
                           },
                           child: CachedNetworkImage(

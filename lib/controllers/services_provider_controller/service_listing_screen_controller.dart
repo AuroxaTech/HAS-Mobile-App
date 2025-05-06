@@ -1,11 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:property_app/models/service_provider_model/all_services.dart';
 import 'package:property_app/services/property_services/add_services.dart';
 
+import '../../utils/api_urls.dart';
 import '../../utils/shared_preferences/preferences.dart';
-
+import 'package:http/http.dart' as http;
 class ServiceListingScreenController extends GetxController {
   final sheet = GlobalKey();
   final controller = DraggableScrollableController();
@@ -101,9 +104,10 @@ class ServiceListingScreenController extends GetxController {
     var data = Get.arguments;
     print("IDDDDDD $data");
     print("Hello");
-    pagingController.addPageRequestListener((pageKey) {
-      getServices(pageKey);
-    });
+    // pagingController.addPageRequestListener((pageKey) {
+    //   getServices(pageKey);
+    // });
+    fetchCategories();
     //data == null ? null : getService(data);
     super.onInit();
   }
@@ -220,5 +224,44 @@ class ServiceListingScreenController extends GetxController {
 
     // Force the UI to refresh and reflect the change
     pagingController.notifyListeners();
+  }
+
+
+  var categoriesList = [].obs;
+  var subCategoriesList = [].obs;
+  var selectedCategory = 'Choose Category'.obs;
+  var selectedCategoryId = ''.obs;
+  var selectedSubCategoryId = ''.obs;
+  var selectedSubCategory = 'Choose a subcategory'.obs;
+
+  RxBool isFirsTime = false.obs;
+
+
+  Future<void> fetchCategories() async {
+    try {
+      var response = await http.get(Uri.parse("${AppUrls.baseUrl}/categories"));
+      if (response.statusCode == 200) {
+        var jsonData = json.decode(response.body);
+        print("cateogoreis : $jsonData");
+        categoriesList.value = jsonData['payload']['data'];
+      } else {
+        Get.snackbar("Error", "Failed to fetch categories");
+      }
+    } catch (e) {
+      Get.snackbar("Error", "Something went wrong");
+    }
+  }
+
+  void updateSubCategories(String categoryName) {
+    var selected = categoriesList.firstWhere(
+          (category) => category['name'] == categoryName,
+      orElse: () => null,
+    );
+
+    if (selected != null) {
+      subCategoriesList.value = selected['children'] ?? [];
+    } else {
+      subCategoriesList.clear();
+    }
   }
 }

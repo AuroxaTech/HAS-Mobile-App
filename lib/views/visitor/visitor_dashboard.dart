@@ -25,6 +25,7 @@ class VisitorDashBoard extends GetView<VisitorDashboardController> {
       appBar: homeAppBar(context,
           isBack: true,
           text: "Visitor Profile",
+          isMenu: true,
           menuOnTap: () => controller.key.currentState!.openDrawer(),
           back: false),
       drawer: providerDrawer(context, onDeleteAccount: () {

@@ -406,6 +406,7 @@ class AuthServices extends BaseApiService {
     required String country,
     required String description,
     required String additionalInfo,
+    required String categoryId,
     List<XFile>? serviceImages,
     XFile? resume,
   }) async {
@@ -451,6 +452,7 @@ class AuthServices extends BaseApiService {
       request.fields['city'] = city;
       request.fields['description'] = description;
       request.fields['additional_information'] = additionalInfo;
+      request.fields['category_id'] = categoryId;
 
       // Add services
       for (var service in services) {

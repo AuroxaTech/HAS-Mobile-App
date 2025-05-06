@@ -8,6 +8,7 @@ import 'package:property_app/constant_widget/constant_widgets.dart';
 import 'package:property_app/utils/shared_preferences/preferences.dart';
 import 'package:path/path.dart' as path;
 
+import '../../models/propert_model/service_image_model.dart';
 import '../../models/service_provider_model/all_services.dart';
 import '../../utils/api_urls.dart';
 import '../../utils/base_api_service.dart';
@@ -29,6 +30,7 @@ class ServiceProviderServices {
     required String additionalInformation,
     required String yearsExperience,
     required String duration,
+    required String categoryId,
     List<XFile>? mediaFiles,
   }) async {
     try {
@@ -55,6 +57,7 @@ class ServiceProviderServices {
           'country': country,
           'city': city,
           'year_experience': yearsExperience,
+          'category_id': categoryId,
         });
 
       // Add media files if provided
@@ -870,6 +873,32 @@ class ServiceProviderServices {
         body: json.encode({
           //  "job_id": jobId,
           "status": status,
+        }),
+        headers: getHeader(userToken: token),
+      );
+      return json.decode(res.body);
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+      return {'error': 'Failed to decline service request.'};
+    }
+  }
+
+  Future<Map<String, dynamic>> makePayment({
+    required dynamic amount,
+    required String serviceId,
+  }) async {
+    try {
+      Uri url = Uri.parse("${AppUrls.baseUrl}/stripe/payment");
+      var token = await Preferences.getToken();
+      var res = await http.post(
+        url,
+        body: json.encode({
+          //  "job_id": jobId,
+          "amount": amount,
+          "payment_method_id" : "pm_card_visa",
+          "service_id" : serviceId
         }),
         headers: getHeader(userToken: token),
       );

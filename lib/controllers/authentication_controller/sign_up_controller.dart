@@ -1,5 +1,6 @@
+import 'dart:convert';
 import 'dart:io';
-
+import 'package:http/http.dart' as http;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -8,9 +9,11 @@ import 'package:property_app/services/auth_services/auth_services.dart';
 import 'package:property_app/utils/utils.dart';
 
 import '../../services/notification_services/notification_services.dart';
+import '../../utils/api_urls.dart';
 import '../../utils/base_api_service.dart';
 
 class SignUpController extends GetxController {
+
   RxString userRoleValue = 'Select Role'.obs;
   RxString noOfPropertiesValue = 'No of Properties'.obs;
   RxString propertiesTypeValue = 'Choose Property Type'.obs;
@@ -314,7 +317,7 @@ class SignUpController extends GetxController {
         // If registration failed, show error message
         isLoading.value = false;
         AppUtils.errorSnackBar(
-            "Error", registrationData['messages']["email"][0]);
+            "Error", registrationData['message']["email"][0]);
       }
     } catch (e) {
       // Handle exception
@@ -453,6 +456,7 @@ class SignUpController extends GetxController {
     required String pricing,
     required String duration,
     required String country,
+    required String categoryId,
     List<XFile>? serviceImages, // Added service images list
     XFile? resume, // Added resume file
   }) async {
@@ -507,6 +511,7 @@ class SignUpController extends GetxController {
         country: country,
         serviceImages: serviceImages,
         resume: resume,
+        categoryId: categoryId
       );
 
       if (data['success'] == true && data['payload'] != null) {
@@ -855,6 +860,7 @@ class SignUpController extends GetxController {
   void onInit() {
     super.onInit();
     countriesList.addAll(allCountries);
+    fetchCategories();
   }
 
   void searchCountry(String query) {
@@ -887,4 +893,42 @@ class SignUpController extends GetxController {
     // Format as "hh:mm PP" (e.g., "04:00 PM" for 4:00 PM)
     return '$hourStr:$minute $period';
   }
+
+
+
+
+  var categoriesList = [].obs;
+  var subCategoriesList = [].obs;
+  var selectedCategory = 'Choose Category'.obs;
+  var selectedCategoryId = ''.obs;
+  var selectedSubCategory = 'Choose a subcategory'.obs;
+
+
+  Future<void> fetchCategories() async {
+    try {
+      var response = await http.get(Uri.parse("${AppUrls.baseUrl}/categories"));
+      if (response.statusCode == 200) {
+        var jsonData = json.decode(response.body);
+        categoriesList.value = jsonData['payload']['data'];
+      } else {
+        Get.snackbar("Error", "Failed to fetch categories");
+      }
+    } catch (e) {
+      Get.snackbar("Error", "Something went wrong");
+    }
+  }
+
+  void updateSubCategories(String categoryName) {
+    var selected = categoriesList.firstWhere(
+          (category) => category['name'] == categoryName,
+      orElse: () => null,
+    );
+
+    if (selected != null) {
+      subCategoriesList.value = selected['children'] ?? [];
+    } else {
+      subCategoriesList.clear();
+    }
+  }
+
 }

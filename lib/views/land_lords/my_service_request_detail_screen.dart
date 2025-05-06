@@ -63,11 +63,13 @@ class MyServiceRequestDetailScreen
                                 scrollDirection: Axis.horizontal,
                                 controller: controller.pageController,
                                 itemBuilder: (context, index) {
+                                  var urls = controller.getServiceRequestOne.value!.serviceImages;
                                   return InkWell(
                                     onTap: () {
                                       Get.to(
-                                        () => ViewImage(
-                                          photo: controller.getServiceRequestOne.value!.serviceImages[index].imagePath,
+                                        () =>
+                                        ViewImagesModel(
+                                          photo: urls, index: index, // Assuming images in controller.images are relative paths
                                         ),
                                         transition: routeTransition,
                                       );

@@ -199,11 +199,12 @@ PreferredSizeWidget backAppBar(
 }
 
 PreferredSizeWidget titleAppBar(String text,
-    {List<Widget>? action, PreferredSizeWidget? bottom}) {
+    {List<Widget>? action, PreferredSizeWidget? bottom, Widget? leading}) {
   return AppBar(
     elevation: 0.0,
     backgroundColor: whiteColor,
     automaticallyImplyLeading: true,
+    leading: leading,
     title: headingText(text: text, fontSize: 24),
     centerTitle: false,
     actions: action,
@@ -252,7 +253,7 @@ PreferredSizeWidget homeAppBar(context,
                     shape: BoxShape.circle,
                     border: Border.all(color: borderColor)),
                 padding: const EdgeInsets.all(12),
-                child: SvgPicture.asset(AppIcons.notification),
+                child: SvgPicture.asset(AppIcons.notification, color: Colors.black,),
               ),
             )
           : const SizedBox(),

@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import '../propert_model/service_image_model.dart';
+
 ServiceRequest serviceRequestFromJson(String str) =>
     ServiceRequest.fromJson(json.decode(str));
 
@@ -632,36 +634,3 @@ class Provider {
       };
 }
 
-class ServiceImage {
-  int id;
-  int serviceId;
-  String imagePath;
-  DateTime createdAt;
-  DateTime updatedAt;
-
-  ServiceImage({
-    required this.id,
-    required this.serviceId,
-    required this.imagePath,
-    required this.createdAt,
-    required this.updatedAt,
-  });
-
-  factory ServiceImage.fromJson(Map<String, dynamic> json) => ServiceImage(
-        id: json["id"] ?? 0,
-        serviceId: json["service_id"] ?? 0,
-        imagePath: json["image_path"] ?? "",
-        createdAt: DateTime.parse(
-            json["created_at"] ?? DateTime.now().toIso8601String()),
-        updatedAt: DateTime.parse(
-            json["updated_at"] ?? DateTime.now().toIso8601String()),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "service_id": serviceId,
-        "image_path": imagePath,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
-      };
-}

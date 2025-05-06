@@ -90,4 +90,32 @@ class JobDetailController extends GetxController {
       isLoading.value = false;
     }
   }
+
+  Future<void> makePayment({
+    required dynamic amount,
+    required String serviceId,
+  }) async {
+    isLoading.value = true;
+
+    try {
+      var result = await serviceRequestService.makePayment(
+        amount: amount,
+        serviceId: serviceId,
+      );
+      print("payment response $result");
+      if (result['success'] == true) {
+      //  await Get.toNamed(kRateExperienceScreen, arguments: jobId);
+     //   AppUtils.getSnackBar("Success", result['message']);
+      } else {
+      //  AppUtils.errorSnackBar("Error", result['message']);
+      }
+    } catch (e) {
+      // Get.back();
+      print(e);
+      AppUtils.errorSnackBar("Error", "Failed request");
+    } finally {
+      // Get.back();
+      isLoading.value = false;
+    }
+  }
 }

@@ -37,21 +37,23 @@ class JobDetailScreen extends GetView<JobDetailController> {
                 controller: controller.pageController,
                 itemBuilder: (context, index) {
                   var imageUrl = controller.getServiceRequestOne.value?.serviceImages[index]; // Get image URL directly from controller.images
+
+                  var urls = controller.getServiceRequestOne.value?.serviceImages;
                   
                   print("imageUrl ${imageUrl!.imagePath}");
 
                   return InkWell(
                     onTap: () {
                       Get.to(
-                              () => ViewImage(
-                            photo: imageUrl.imagePath, // Assuming images in controller.images are relative paths
+                              () => ViewImagesModel(
+                            photo: urls!, index: index, // Assuming images in controller.images are relative paths
                           ),
                           transition: routeTransition);
                     },
                     child: CachedNetworkImage(
                       width: double.infinity,
                       height: screenHeight(context) * 0.5,
-                      imageUrl: imageUrl!.imagePath, // Load image with base URL
+                      imageUrl: imageUrl.imagePath, // Load image with base URL
                       fit: BoxFit.cover,
                       errorWidget: (context, e, b) {
                         return Image.asset(AppIcons.appLogo);
@@ -385,6 +387,7 @@ class MyDraggable extends GetView<JobDetailController> {
                                                     id: controller.id.value,
                                                     serviceProviderName: jobDetail?.user.fullName, // Access user.fullName
                                                     serviceProviderEmail: jobDetail?.user.email, // Access user.email
+                                                    serviceId: jobDetail.serviceId.toString(),
                                                   ));
                                                 });
                                           },

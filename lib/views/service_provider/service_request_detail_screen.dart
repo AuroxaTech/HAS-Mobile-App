@@ -34,30 +34,30 @@ class ServiceRequestDetailScreen
               : Stack(
                   children: [
                     PageView.builder(
-                      itemCount: controller.images.length,
+                      itemCount: controller.getServiceRequestOne
+                          .value!.serviceImages.length,
                       scrollDirection: Axis.horizontal,
                       controller: controller.pageController,
                       itemBuilder: (context, index) {
-                        String imagesString = controller.getServiceRequestOne
-                                    .value!.serviceImages == null ? ""
-                            : controller
-                                .getServiceRequestOne.value!.serviceImages
-                                .toString();
+
                         // List<String> imageList = imagesString.split(',');
                         // controller.images = controller.getServiceRequestOne
                         //     .value!.serviceImages;
                         return InkWell(
                           onTap: () {
                             Get.to(
-                                () => ViewImage(
-                                      photo: controller.images[index].imagePath,
+                                () => ViewImagesModel(
+                                      photo: controller.getServiceRequestOne
+                                          .value!.serviceImages,
+                                  index: index,
                                     ),
                                 transition: routeTransition);
                           },
                           child: CachedNetworkImage(
                             width: double.infinity,
                             height: screenHeight(context) * 0.5,
-                            imageUrl: controller.images[index].imagePath,
+                            imageUrl: controller.getServiceRequestOne
+                                .value!.serviceImages[index].imagePath,
                             fit: BoxFit.cover,
                             errorWidget: (context, e, b) {
                               return Image.asset(AppIcons.appLogo);
@@ -93,7 +93,8 @@ class ServiceRequestDetailScreen
                           child: SmoothPageIndicator(
                             controller: controller
                                 .pageController, // Connect the indicator to the controller
-                            count: controller.images.length,
+                            count: controller.getServiceRequestOne
+                                .value!.serviceImages.length,
                             effect: const WormEffect(
                               dotColor: whiteColor,
                               dotHeight: 10,
@@ -585,7 +586,8 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
   }
 
   createConversation(
-      String name, String profilePicture, String id, context) async {
+      String name, String profilePicture, String id, context)
+  async {
     print("user.Id =>${id.toString()}");
     try {
       var userId = await Preferences.getUserID();

@@ -211,11 +211,18 @@ Widget customDrawer(context, {VoidCallback? onDeleteAccount}) {
                                 SharedPreferences prefs =
                                     await SharedPreferences.getInstance();
                                 await updateUserStatus(false);
-                                await prefs.remove("token");
-                                await prefs.remove("role");
-                                await prefs.remove("user_id").then((value) {
+                                bool? userData = await Preferences.getBiometricEnabled();
+                                if(userData == true){
                                   Get.offAllNamed(kLoginScreen);
-                                });
+                                }else{
+                                  await prefs.remove("token");
+                                  await prefs.remove("role");
+                                  await prefs.remove("user_id").then((value) {
+                                    Get.offAllNamed(kLoginScreen);
+
+                                  });
+                                }
+
                                 // prefs.clear().then((value) {
                                 // });
                               },
@@ -447,13 +454,18 @@ Widget providerDrawer(context, {VoidCallback? onDeleteAccount}) {
                             MaterialButton(
                               onPressed: () async {
                                 SharedPreferences prefs =
-                                    await SharedPreferences.getInstance();
+                                await SharedPreferences.getInstance();
                                 await updateUserStatus(false);
-                                await prefs.remove("token");
-                                await prefs.remove("role");
-                                await prefs.remove("user_id").then((value) {
+                                bool? userData = await Preferences.getBiometricEnabled();
+                                if(userData == true){
                                   Get.offAllNamed(kLoginScreen);
-                                });
+                                }else{
+                                  await prefs.remove("token");
+                                  await prefs.remove("role");
+                                  await prefs.remove("user_id").then((value) {
+                                    Get.offAllNamed(kLoginScreen);
+                                  });
+                                }
                               },
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),

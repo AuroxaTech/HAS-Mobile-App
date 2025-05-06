@@ -27,6 +27,7 @@ class ServiceProviderScreen extends GetView<ServiceProviderController> {
           text: "Service Provider",
           showNotification: true,
           isBack: true,
+          isMenu: true,
           menuOnTap: () => controller.key.currentState!.openDrawer(),
           back: false),
       drawer: providerDrawer(context, onDeleteAccount: () {
