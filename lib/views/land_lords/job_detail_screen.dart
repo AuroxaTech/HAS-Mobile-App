@@ -1,21 +1,23 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
-import 'package:property_app/controllers/jobs_controller/job_detail_screen.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-
+import 'package:property_app/app_constants/color_constants.dart';
+import 'package:property_app/app_constants/app_sizes.dart';
+import 'package:property_app/constant_widget/constant_widgets.dart';
+import 'package:property_app/route_management/constant_routes.dart';
+import 'package:property_app/utils/api_urls.dart';
+import 'package:intl/intl.dart';
 import '../../app_constants/animations.dart';
 import '../../app_constants/app_icon.dart';
-import '../../app_constants/app_sizes.dart';
-import '../../app_constants/color_constants.dart';
-import '../../constant_widget/constant_widgets.dart';
 import '../../constant_widget/view_photo.dart';
+import '../../controllers/jobs_controller/job_detail_screen.dart';
 import '../../controllers/stripe_payment_controller/stripe_payment_controller.dart';
 import '../../custom_widgets/custom_button.dart';
+import '../../models/propert_model/service_job_status.dart';
 import '../../stripe_payment_screen/stripe_payment_screen.dart';
-import '../../utils/api_urls.dart';
+
 
 class JobDetailScreen extends GetView<JobDetailController> {
   const JobDetailScreen({Key? key}) : super(key: key);
@@ -25,86 +27,81 @@ class JobDetailScreen extends GetView<JobDetailController> {
     return Scaffold(
       body: SafeArea(
         child: Obx(
-          () => controller.isLoading.value
+              () => controller.isLoading.value
               ? const Center(child: CircularProgressIndicator())
               : Stack(
-                  children: [
-                    PageView.builder(
-                      itemCount: controller.images.length,
-                      scrollDirection: Axis.horizontal,
-                      controller: controller.pageController,
-                      itemBuilder: (context, index) {
-                        String imagesString =
-                            controller.getServiceRequestOne.value!.request ==
-                                    null
-                                ? ""
-                                : controller.getServiceRequestOne.value!.request
-                                    .service!.media;
-                        List<String> imageList = imagesString.split(',');
-                        controller.images = imageList;
-                        return InkWell(
-                          onTap: () {
-                            Get.to(
-                                () => ViewImage(
-                                      photo: AppUrls.mediaImages +
-                                          imageList[index],
-                                    ),
-                                transition: routeTransition);
-                          },
-                          child: CachedNetworkImage(
-                            width: double.infinity,
-                            height: screenHeight(context) * 0.5,
-                            imageUrl: AppUrls.mediaImages + imageList[index],
-                            fit: BoxFit.cover,
-                            errorWidget: (context, e, b) {
-                              return Image.asset(AppIcons.appLogo);
-                            },
+            children: [
+              PageView.builder(
+                itemCount: controller.getServiceRequestOne.value?.serviceImages.length,
+                scrollDirection: Axis.horizontal,
+                controller: controller.pageController,
+                itemBuilder: (context, index) {
+                  var imageUrl = controller.getServiceRequestOne.value?.serviceImages[index]; // Get image URL directly from controller.images
+                  
+                  print("imageUrl ${imageUrl!.imagePath}");
+
+                  return InkWell(
+                    onTap: () {
+                      Get.to(
+                              () => ViewImage(
+                            photo: imageUrl.imagePath, // Assuming images in controller.images are relative paths
                           ),
-                        );
+                          transition: routeTransition);
+                    },
+                    child: CachedNetworkImage(
+                      width: double.infinity,
+                      height: screenHeight(context) * 0.5,
+                      imageUrl: imageUrl!.imagePath, // Load image with base URL
+                      fit: BoxFit.cover,
+                      errorWidget: (context, e, b) {
+                        return Image.asset(AppIcons.appLogo);
                       },
                     ),
-                    Positioned(
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            InkWell(
-                              onTap: () {
-                                Get.back();
-                              },
-                              child: CircleAvatar(
-                                backgroundColor: whiteColor,
-                                child: SvgPicture.asset(AppIcons.backIcon),
-                              ),
-                            ),
-                          ],
+                  );
+                },
+              ),
+              Positioned(
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          Get.back();
+                        },
+                        child: CircleAvatar(
+                          backgroundColor: whiteColor,
+                          child: SvgPicture.asset(AppIcons.backIcon),
                         ),
                       ),
-                    ),
-                    controller.images.isNotEmpty
-                        ? Positioned(
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 290.0),
-                              child: Align(
-                                alignment: Alignment.topCenter,
-                                child: SmoothPageIndicator(
-                                  controller: controller
-                                      .pageController, // Connect the indicator to the controller
-                                  count: controller.images.length,
-                                  effect: const WormEffect(
-                                    dotColor: whiteColor,
-                                    dotHeight: 10,
-                                    dotWidth: 10,
-                                  ), // Feel free to choose any effect
-                                ),
-                              ),
-                            ),
-                          )
-                        : SizedBox(),
-                    const MyDraggable(),
-                  ],
+                    ],
+                  ),
                 ),
+              ),
+              controller.images.isNotEmpty
+                  ? Positioned(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 290.0),
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: SmoothPageIndicator(
+                      controller: controller
+                          .pageController, // Connect the indicator to the controller
+                      count: controller.images.length,
+                      effect: const WormEffect(
+                        dotColor: whiteColor,
+                        dotHeight: 10,
+                        dotWidth: 10,
+                      ), // Feel free to choose any effect
+                    ),
+                  ),
+                ),
+              )
+                  : SizedBox(),
+              const MyDraggable(),
+            ],
+          ),
         ),
       ),
     );
@@ -122,22 +119,18 @@ class MyDraggable extends GetView<JobDetailController> {
         initialChildSize: 0.58,
         maxChildSize: 0.58, // Set maxChildSize to the same value (0.5)
         minChildSize: 0.58,
-        // expand: true,
-        // snap: true,
-        // snapSizes: const [
-        //   0.5,  // Set the first snap size to the minimum size (0.2)
-        //   0.95,
-        // ],
         controller: controller.controller,
         builder: (BuildContext context, ScrollController scrollController) {
-          DateTime? createdAt =
-              controller.getServiceRequestOne.value?.createdAt;
+          Job? jobDetail = controller.getServiceRequestOne.value; // Get Job detail from controller
+
+          DateTime? createdAt = jobDetail?.createdAt;
           String requestDate = createdAt != null
-              ? DateFormat('dd-M-yy').format(createdAt!)
-              : 'N/A'; // Adjust the pattern as needed
+              ? DateFormat('dd-M-yy').format(createdAt)
+              : 'N/A';
           String requestTime = createdAt != null
               ? DateFormat('h:mm a').format(createdAt)
               : 'N/A';
+
           return DecoratedBox(
             decoration: const BoxDecoration(
               color: Colors.white,
@@ -170,13 +163,7 @@ class MyDraggable extends GetView<JobDetailController> {
                                   children: [
                                     Center(
                                       child: headingText(
-                                        text: controller
-                                                .getServiceRequestOne
-                                                .value
-                                                ?.request
-                                                ?.service
-                                                ?.serviceName ??
-                                            "", // Null-aware access with fallback
+                                        text: jobDetail?.serviceName ?? "No Service Name", // Access serviceName directly from Job model
                                         fontSize: 24,
                                       ),
                                     ),
@@ -186,29 +173,24 @@ class MyDraggable extends GetView<JobDetailController> {
                                           left: 20, right: 20),
                                       child: Column(
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                         children: [
                                           Row(
                                             crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                            CrossAxisAlignment.start,
                                             mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
+                                            MainAxisAlignment.spaceBetween,
                                             children: [
                                               Column(
                                                 crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
+                                                CrossAxisAlignment.start,
                                                 children: [
                                                   customText(
                                                       text: "Client Name :",
                                                       color: greyColor,
                                                       fontSize: 15),
                                                   customText(
-                                                    text: controller
-                                                            .getServiceRequestOne
-                                                            .value
-                                                            ?.provider
-                                                            ?.fullname ??
-                                                        "No Name", // Use null-aware access and a fallback value
+                                                    text: jobDetail?.user.fullName ?? "No Name", // Access user.fullName from Job model
                                                     color: blackColor,
                                                     fontSize: 16,
                                                   ),
@@ -220,20 +202,15 @@ class MyDraggable extends GetView<JobDetailController> {
                                               Expanded(
                                                 child: Column(
                                                   crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
+                                                  CrossAxisAlignment.start,
                                                   children: [
                                                     customText(
                                                         text:
-                                                            "Contact Details :",
+                                                        "Contact Details :",
                                                         color: greyColor,
                                                         fontSize: 15),
                                                     customText(
-                                                        text: controller
-                                                                .getServiceRequestOne
-                                                                .value
-                                                                ?.provider
-                                                                ?.email ??
-                                                            "No Email",
+                                                        text: jobDetail?.user.email ?? "No Email", // Access user.email from Job model
                                                         color: blackColor,
                                                         fontSize: 16),
                                                   ],
@@ -248,24 +225,19 @@ class MyDraggable extends GetView<JobDetailController> {
                                               fontSize: 15),
                                           h5,
                                           customText(
-                                              text: controller
-                                                      .getServiceRequestOne
-                                                      .value
-                                                      ?.request
-                                                      ?.description ??
-                                                  "No Description",
+                                              text: jobDetail?.description ?? "No Description", // Access description directly from Job model
                                               color: blackColor,
                                               fontSize: 14),
                                           h5,
                                           Row(
                                             crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                            CrossAxisAlignment.start,
                                             mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
+                                            MainAxisAlignment.spaceBetween,
                                             children: [
                                               Column(
                                                 crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
+                                                CrossAxisAlignment.start,
                                                 children: [
                                                   customText(
                                                       text: "Location :",
@@ -273,19 +245,14 @@ class MyDraggable extends GetView<JobDetailController> {
                                                       fontSize: 16),
                                                   h5,
                                                   customText(
-                                                      text: controller
-                                                              .getServiceRequestOne
-                                                              .value
-                                                              ?.request
-                                                              ?.address ??
-                                                          "",
+                                                      text: jobDetail?.location ?? "", // Access location directly from Job model
                                                       color: blackColor,
                                                       fontSize: 16),
                                                 ],
                                               ),
                                               Column(
                                                 crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
+                                                CrossAxisAlignment.start,
                                                 children: [
                                                   customText(
                                                       text: "Request Status :",
@@ -362,12 +329,7 @@ class MyDraggable extends GetView<JobDetailController> {
                                                   fontSize: 12),
                                               w10,
                                               customText(
-                                                  text: controller
-                                                          .getServiceRequestOne
-                                                          .value
-                                                          ?.request
-                                                          ?.date ??
-                                                      "",
+                                                  text: jobDetail?.startTime ?? "", // Access startTime directly from Job model, assuming client date is startTime
                                                   color: blackColor,
                                                   fontSize: 12),
                                             ],
@@ -385,12 +347,7 @@ class MyDraggable extends GetView<JobDetailController> {
                                                   fontSize: 12),
                                               w10,
                                               customText(
-                                                  text: controller
-                                                          .getServiceRequestOne
-                                                          .value
-                                                          ?.request
-                                                          ?.time ??
-                                                      "",
+                                                  text: jobDetail?.endTime ?? "", // Access endTime directly from Job model, assuming client time is endTime
                                                   color: blackColor,
                                                   fontSize: 12),
                                             ],
@@ -400,23 +357,10 @@ class MyDraggable extends GetView<JobDetailController> {
                                     ),
                                   ],
                                 ),
-                                // h10,
-                                // Center(
-                                //   child: CustomButton(
-                                //     height: screenHeight(context) * 0.05,
-                                //     borderRadius: BorderRadius.circular(50),
-                                //     text: "Contract",
-                                //     fontSize: 20,
-                                //     width: screenWidth(context) * 0.4,
-                                //     onTap: (){
-                                //       Get.toNamed(kContractScreen);
-                                //     },
-                                //   ),
-                                // ),
                                 const SizedBox(
                                   height: 10,
                                 ),
-                                Padding(
+                                jobDetail?.status == "pending" || jobDetail?.status == "rejected" || jobDetail?.status == "completed" ? const SizedBox() : Padding(
                                   padding: const EdgeInsets.all(12.0),
                                   child: Row(
                                     children: [
@@ -426,62 +370,26 @@ class MyDraggable extends GetView<JobDetailController> {
                                             animatedDialog(context,
                                                 title: "Job Completed",
                                                 subTitle:
-                                                    "Are you sure to complete this job",
+                                                "Are you sure to complete this job",
                                                 yesButtonText: "Complete",
                                                 yesTap: () {
-                                              Get.find<
+                                                  Get.find<
                                                       StripePaymentScreenController>()
-                                                  .initializePaymentDetails(
-                                                serviceId: controller
-                                                    .getServiceRequestOne
-                                                    .value!
-                                                    .request
-                                                    .serviceId,
-                                                serviceProviderId: controller
-                                                    .getServiceRequestOne
-                                                    .value!
-                                                    .request
-                                                    .service!
-                                                    .userId,
-                                                price: double.parse(controller
-                                                    .getServiceRequestOne
-                                                    .value!
-                                                    .request!
-                                                    .service!
-                                                    .pricing),
-                                              );
-                                              Get.off(StripePaymentScreen(
-                                                jobId: controller
-                                                    .getServiceRequestOne
-                                                    .value!
-                                                    .id,
-                                                id: controller.id.value,
-                                                serviceProviderName: controller
-                                                    .getServiceRequestOne
-                                                    .value
-                                                    ?.provider
-                                                    ?.fullname,
-                                                serviceProviderEmail: controller
-                                                    .getServiceRequestOne
-                                                    .value
-                                                    ?.provider
-                                                    ?.email,
-                                              ));
-                                              // controller
-                                              //     .acceptServiceRequest(
-                                              //         jobId: controller
-                                              //             .getServiceRequestOne
-                                              //             .value!
-                                              //             .id,
-                                              //         status: 1)
-                                              //     .then((value) {
-                                              //   controller.getJobRequest(
-                                              //       id: controller.id.value);
-                                              // });
-                                            });
+                                                      .initializePaymentDetails(
+                                                    serviceId: jobDetail?.serviceId, // Access serviceId from Job model
+                                                    serviceProviderId: jobDetail!.providerId!, // Access providerId from Job model
+                                                    price: double.tryParse(jobDetail?.pricing ?? '0.0') ?? 0.0, // Access pricing from Job model
+                                                  );
+                                                  Get.off(StripePaymentScreen(
+                                                    jobId: jobDetail?.id, // Access id from Job model
+                                                    id: controller.id.value,
+                                                    serviceProviderName: jobDetail?.user.fullName, // Access user.fullName
+                                                    serviceProviderEmail: jobDetail?.user.email, // Access user.email
+                                                  ));
+                                                });
                                           },
                                           borderRadius:
-                                              BorderRadius.circular(40),
+                                          BorderRadius.circular(40),
                                           height: screenHeight(context) * 0.055,
                                           text: "Job Completed?",
                                           fontSize: 16,
@@ -495,26 +403,23 @@ class MyDraggable extends GetView<JobDetailController> {
                                             animatedDialog(context,
                                                 title: "Decline Request",
                                                 subTitle:
-                                                    "Are you sure to decline this request",
+                                                "Are you sure to decline this request",
                                                 yesButtonText: "Decline",
                                                 isLoading: controller.isLoading
                                                     .value, yesTap: () {
-                                              controller
-                                                  .acceptServiceRequest(
-                                                      jobId: controller
-                                                          .getServiceRequestOne
-                                                          .value!
-                                                          .id,
-                                                      status: 2)
-                                                  .then((value) {
-                                                controller.getJobRequest(
-                                                    id: controller.id.value);
-                                              });
-                                            });
+                                                  controller
+                                                      .acceptServiceRequest(
+                                                      jobId: jobDetail!.id, // Access id from Job model
+                                                      status: "rejected")
+                                                      .then((value) {
+                                                    controller.getJobRequest(
+                                                        id: controller.id.value);
+                                                  });
+                                                });
                                           },
                                           gradientColor: redGradient(),
                                           borderRadius:
-                                              BorderRadius.circular(40),
+                                          BorderRadius.circular(40),
                                           height: screenHeight(context) * 0.055,
                                           text: "Reject Job?",
                                           fontSize: 16,
@@ -539,3 +444,4 @@ class MyDraggable extends GetView<JobDetailController> {
     });
   }
 }
+

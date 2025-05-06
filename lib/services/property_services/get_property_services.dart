@@ -6,41 +6,92 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:property_app/constant_widget/constant_widgets.dart';
 import 'package:property_app/utils/api_urls.dart';
+import 'package:property_app/utils/base_api_service.dart';
 import 'package:property_app/utils/shared_preferences/preferences.dart';
 
 import '../../utils/connectivity.dart';
 import '../../utils/utils.dart';
 
-class PropertyServices {
-  getProperties() async {
-    Uri url = Uri.parse(
-      AppUrls.getProperties,
-    );
-    try {
-      var res = await http.get(url,
-          headers: getHeader(userToken: await Preferences.getToken()));
-      return json.decode(res.body);
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
-      return e;
-    }
-  }
+class PropertyServices extends BaseApiService {
+  // getProperties() async {
+  //   Uri url = Uri.parse(
+  //     AppUrls.getProperties,
+  //   );
+  //   try {
+  //     var res = await http.get(url,
+  //         headers: getHeader(userToken: await Preferences.getToken()));
+  //     return json.decode(res.body);
+  //   } catch (e) {
+  //     if (kDebugMode) {
+  //       print(e);
+  //     }
+  //     return e;
+  //   }
+  // }
 
-  getLandLordProperties({required int userId}) async {
+  Future<Map<String, dynamic>> getLandLordProperties(
+      {required int userId}) async {
     Uri url = Uri.parse(
-      "${AppUrls.getLandLordProperty}?user_id=$userId",
+      "${AppUrls.getAllProperty}?user_id=$userId",
     );
     try {
-      var token = await Preferences.getToken();
-      var res = await http.get(url, headers: getHeader(userToken: token));
-      return json.decode(res.body);
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
+      // Check for internet connectivity
+      if (!await ConnectivityUtility.checkInternetConnectivity()) {
+        return {
+          'success': false,
+          'message':
+              'No internet connection. Please check your network settings.'
+        };
       }
-      return e;
+
+      var token = await Preferences.getToken();
+
+      // Log request
+      BaseApiService.logRequest(
+          url.toString(), 'GET', getHeader(userToken: token), null);
+
+      var response = await http.get(url, headers: getHeader(userToken: token));
+
+      // Log response
+      BaseApiService.logResponse(
+          url.toString(), response.statusCode, response.body);
+
+      // Check if response is HTML
+      if (response.body.trim().startsWith('<!DOCTYPE html>')) {
+        print("Received HTML response instead of JSON");
+        return {
+          'success': false,
+          'message': 'Server returned HTML instead of JSON. Please try again.'
+        };
+      }
+
+      if (response.statusCode == 200) {
+        final decodedResponse = json.decode(response.body);
+
+        return decodedResponse;
+      } else {
+        return {
+          'success': false,
+          'message': 'Server responded with status code: ${response.statusCode}'
+        };
+      }
+    } catch (e) {
+      print("Error in getLandLordProperties: $e");
+
+      // Log error
+      BaseApiService.logError(url.toString(), e.toString());
+
+      if (e is FormatException) {
+        return {
+          'success': false,
+          'message': 'Invalid response format from server'
+        };
+      }
+
+      return {
+        'success': false,
+        'message': 'Failed to fetch properties: ${e.toString()}'
+      };
     }
   }
 
@@ -61,24 +112,100 @@ class PropertyServices {
   //   }
   // }
 
+  // Future<Map<String, dynamic>> getAllProperties(int pageKey,
+  //     {Map<String, dynamic>? filters}) async {
+  //   try {
+  //     var token = await Preferences.getToken();
+  //
+  //     // Build URL with query parameters
+  //     Uri url = Uri.parse(AppUrls.getAllProperty);
+  //     if (filters != null && filters.isNotEmpty) {
+  //       // Add filters as query parameters if they exist
+  //       url = url.replace(queryParameters: {
+  //         'page': pageKey.toString(),
+  //         ...filters.map((key, value) => MapEntry(key, value.toString())),
+  //       });
+  //     } else {
+  //       // Just add page parameter if no filters
+  //       url = url.replace(queryParameters: {'page': pageKey.toString()});
+  //     }
+  //
+  //     // Log request
+  //     BaseApiService.logRequest(
+  //         url.toString(), 'GET', getHeader(userToken: token), filters);
+  //
+  //     // Make GET request
+  //     final response = await http.get(
+  //       url,
+  //       headers: getHeader(userToken: token),
+  //     );
+  //
+  //     // Log response
+  //     BaseApiService.logResponse(
+  //         url.toString(), response.statusCode, response.body);
+  //
+  //     if (response.statusCode == 200) {
+  //       final decodedResponse = json.decode(response.body);
+  //
+  //       // Adapt the response to match the expected format
+  //       if (decodedResponse['success'] == true) {
+  //         final properties = decodedResponse['payload'] as List;
+  //
+  //         // Only return properties if this is the first page
+  //         // For subsequent pages, return empty list to stop pagination
+  //         return {
+  //           'status': true,
+  //           'data': {
+  //             'current_page': pageKey,
+  //             'data': pageKey == 1 ? properties : [],
+  //             'last_page': 1,
+  //           }
+  //         };
+  //       } else {
+  //         throw ApiException(
+  //             decodedResponse['message'] ?? 'Failed to fetch properties',
+  //             statusCode: response.statusCode);
+  //       }
+  //     } else {
+  //       throw ApiException('Error fetching properties',
+  //           statusCode: response.statusCode);
+  //     }
+  //   } catch (e) {
+  //     BaseApiService.logError(AppUrls.getAllProperty, e.toString());
+  //
+  //     if (e is ApiException) {
+  //       BaseApiService.handleApiException(e);
+  //       rethrow;
+  //     }
+  //
+  //     return {'status': false, 'message': e.toString()};
+  //   }
+  // }
+
   Future<Map<String, dynamic>> getAllProperties(int pageKey,
       {Map<String, dynamic>? filters}) async {
-    Uri url = Uri.parse("${AppUrls.getAllProperty}?page=$pageKey");
+    Map<String, String> queryParams = {'page': pageKey.toString()};
+
+    if (filters != null) {
+      filters.forEach((key, value) {
+        if (value != null && value.toString().isNotEmpty) {
+          queryParams[key] = value.toString();
+        }
+      });
+    }
+
+    Uri url =
+        Uri.parse(AppUrls.getAllProperty).replace(queryParameters: queryParams);
+
     try {
       var token = await Preferences.getToken();
       Map<String, String> headers = getHeader(userToken: token);
 
-      // Prepare the body of the POST request
-      Map<String, dynamic> body = filters ?? {};
-      var response = await http.post(url,
-          headers: headers,
-          body: json.encode(body) // Encoding the body to JSON format
-          );
+      var response = await http.get(url, headers: headers);
 
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
-        // Handling errors or unsuccessful responses
         print(
             'Error fetching properties: ${response.statusCode} ${response.body}');
         return {'status': false, 'message': 'Error fetching properties'};
@@ -93,7 +220,7 @@ class PropertyServices {
 
   getProperty({required int id}) async {
     Uri url = Uri.parse(
-      "${AppUrls.getProperty}/$id",
+      "${AppUrls.propertyDetail}/$id",
     );
     try {
       var token = await Preferences.getToken();
@@ -108,8 +235,8 @@ class PropertyServices {
   }
 
   Future<Map<String, dynamic>> updateProperty({
-    required int type,
-    required int id,
+    required String id,
+    required String type,
     required String city,
     required double amount,
     required String address,
@@ -122,27 +249,26 @@ class PropertyServices {
     required List<XFile> propertyImages,
     required String propertyType,
     required String propertySubType,
-    // required int noOfProperty,
-    // required String propertyType,
-    // required String availabilityStartTime,
-    // required String availabilityEndTime,
     required String description,
   }) async {
-    if (await ConnectivityUtility.checkInternetConnectivity() == true) {
-      var url = Uri.parse("${AppUrls.updateProperty}/$id");
-      var myId = await Preferences.getUserID();
+    try {
+      // Check internet connectivity
+      if (!await ConnectivityUtility.checkInternetConnectivity()) {
+        AppUtils.getSnackBarNoInternet();
+        throw ApiException('No internet connectivity');
+      }
+
       var token = await Preferences.getToken();
+      var url = Uri.parse("${AppUrls.updateProperty}/$id");
+
+      // Create multipart request
       var request = http.MultipartRequest('POST', url)
         ..headers.addAll({
-          'Content-Type':
-              'multipart/form-data', // Add your desired content type
-          'Authorization':
-              'Bearer $token', // Add your authorization token if needed
-          // Add other headers as needed
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
         })
         ..fields.addAll({
-          "user_id": myId,
-          'type': type.toString(),
+          'type': type,
           'city': city,
           'amount': amount.toString(),
           'address': address,
@@ -151,16 +277,19 @@ class PropertyServices {
           'area_range': areaRange,
           'bedroom': bedroom.toString(),
           'bathroom': bathroom.toString(),
-          "property_type": propertyType,
-          "property_sub_type": propertyType,
-          'description': bathroom.toString(),
+          'property_type': propertyType,
+          'property_sub_type': propertySubType,
+          'description': description,
         });
 
-      request.files.add(await http.MultipartFile.fromPath(
-        'electricity_bill',
-        File(electricityBill.path).path,
-        filename: 'electricity_bill.jpg',
-      ));
+      // Add electricity bill file
+      if (electricityBill.path.isNotEmpty) {
+        request.files.add(await http.MultipartFile.fromPath(
+          'electricity_bill_image',
+          electricityBill.path,
+          filename: 'electricity_bill.jpg',
+        ));
+      }
 
       // Add property images
       for (var i = 0; i < propertyImages.length; i++) {
@@ -172,30 +301,51 @@ class PropertyServices {
         ));
       }
 
-      // Add remaining fields
-      // request.fields.addAll({
-      //   'no_of_property': noOfProperty.toString(),
-      //   'property_type': propertyType,
-      //   'availability_start_time': availabilityStartTime,
-      //   'availability_end_time': availabilityEndTime,
-      // });
+      // Log request details
+      BaseApiService.logRequest(
+        url.toString(),
+        'POST',
+        request.headers,
+        request.fields,
+      );
 
-      try {
-        var response = await request.send();
-        var responseBody = await response.stream.bytesToString();
-        return json.decode(responseBody);
-      } catch (e) {
-        // Handle general errors
-        throw Exception('Failed to register property: $e');
+      // Send request
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
+
+      // Log response
+      BaseApiService.logResponse(
+        url.toString(),
+        response.statusCode,
+        response.body,
+      );
+
+      // Check if response is HTML
+      if (response.body.trim().startsWith('<!DOCTYPE html>')) {
+        throw ApiException(
+            'Server returned HTML instead of JSON. Please try again.');
       }
-    } else {
-      AppUtils.getSnackBarNoInternet();
-      throw Exception('No internet connectivity');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final decodedResponse = json.decode(response.body);
+        return decodedResponse;
+      } else {
+        throw ApiException(
+          'Failed to update property. Status code: ${response.statusCode}',
+          statusCode: response.statusCode,
+        );
+      }
+    } catch (e) {
+      print("Error updating property: $e");
+      if (e is ApiException) {
+        rethrow;
+      }
+      throw ApiException('Failed to update property: $e');
     }
   }
 
   Future<Map<String, dynamic>> addProperty({
-    required int type,
+    required String type,
     required String city,
     required double amount,
     required String address,
@@ -215,6 +365,7 @@ class PropertyServices {
       var myId = await Preferences.getUserID();
       var token = await Preferences.getToken();
       print(myId);
+      print(token);
       var request = http.MultipartRequest('POST', url)
         ..headers.addAll({
           'Content-Type':
@@ -224,8 +375,7 @@ class PropertyServices {
           // Add other headers as needed
         })
         ..fields.addAll({
-          "user_id": myId.toString(),
-          'type': "$type",
+          'type': type,
           'city': city,
           'amount': amount.toString(),
           'address': address,
@@ -240,7 +390,7 @@ class PropertyServices {
         });
 
       request.files.add(await http.MultipartFile.fromPath(
-        'electricity_bill',
+        'electricity_bill_image',
         File(electricityBill.path).path,
         filename: 'electricity_bill.jpg',
       ));
@@ -270,6 +420,10 @@ class PropertyServices {
         return json.decode(responseBody);
       } catch (e) {
         // Handle general errors
+        var response = await request.send();
+        var responseBody = await response.stream.bytesToString();
+        print("response $responseBody");
+        rethrow;
         throw Exception('Failed to register property: $e');
       }
     } else {
@@ -282,10 +436,9 @@ class PropertyServices {
     Uri url = Uri.parse(
       "${AppUrls.deleteProperty}/$id",
     );
+    var token = await Preferences.getToken();
     try {
-      var res = await http.get(url,
-          headers: getHeader(
-              userToken: "2|klnaa5CRhLR8G8ik3kPQfTKurymTgSnbZdawrw5rdfff43e8"));
+      var res = await http.get(url, headers: getHeader(userToken: token));
       return json.decode(res.body);
     } catch (e) {
       if (kDebugMode) {
@@ -295,11 +448,11 @@ class PropertyServices {
     }
   }
 
-  Future<bool> addFavoriteProperty(int propertyId, int favFlag) async {
+  Future<bool> addFavoriteProperty(int propertyId) async {
     try {
       // Check internet connectivity first
       bool? isConnected = await ConnectivityUtility.checkInternetConnectivity();
-      if (!isConnected!) {
+      if (!isConnected) {
         return false; // Return false or throw a custom exception if you prefer
       }
 
@@ -313,11 +466,11 @@ class PropertyServices {
         url,
         headers: getHeader(userToken: token),
         body: jsonEncode({
-          'user_id': id,
           'property_id': propertyId,
-          'fav_flag': favFlag.toString(),
         }),
       );
+      print("body" + response.body);
+
       if (response.statusCode == 200) {
         print(response.body);
         print(response);
@@ -332,33 +485,107 @@ class PropertyServices {
     }
   }
 
-  Future<Map<String, dynamic>> getRentedProperties(
-    int pageKey,
-  ) async {
-    Uri url = Uri.parse("${AppUrls.getApprovedContractProperty}?page=$pageKey");
+// Function to remove a favorite property
+  Future<bool> removeFavoriteProperty(int propertyId) async {
     try {
-      var token = await Preferences.getToken();
-      Map<String, String> headers = getHeader(userToken: token);
+      // Check internet connectivity first
+      bool? isConnected = await ConnectivityUtility.checkInternetConnectivity();
+      if (!isConnected) {
+        return false; // Return false or throw a custom exception if you prefer
+      }
 
-      // Prepare the body of the POST request
-      var response = await http.get(
+      // Define the API URL for the DELETE request
+      var url = Uri.parse(
+          '${AppUrls.baseUrl}/property-favourites/delete/$propertyId');
+
+      var id = await Preferences
+          .getUserID(); // Ensure you handle null or exceptions in getUserID
+      var token = await Preferences
+          .getToken(); // Ensure you handle null or exceptions in getToken
+
+      // Make the API DELETE call
+      final response = await http.get(
         url,
-        headers: headers,
+        headers: getHeader(userToken: token),
       );
 
+      print("Response body: " + response.body);
+
       if (response.statusCode == 200) {
-        return json.decode(response.body);
+        print(response.body);
+        return true; // Successfully removed from favorites
       } else {
-        // Handling errors or unsuccessful responses
-        print(
-            'Error fetching properties: ${response.statusCode} ${response.body}');
-        return {'status': false, 'message': 'Error fetching properties'};
+        print(response.body);
+        return false; // Failed to remove favorite
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('Exception caught: $e');
+      print(e); // Consider logging the error
+      return false; // Return false or handle as needed
+    }
+  }
+
+  Future<Map<String, dynamic>> getRentedProperties(int pageKey) async {
+    try {
+      // Check for internet connectivity
+      if (!await ConnectivityUtility.checkInternetConnectivity()) {
+        return {
+          'status': false,
+          'message':
+              'No internet connection. Please check your network settings.'
+        };
       }
-      return {'status': false, 'message': e.toString()};
+
+      var token = await Preferences.getToken();
+      Uri url =
+          Uri.parse("${AppUrls.getApprovedContractProperty}?page=$pageKey");
+
+      // Log request
+      BaseApiService.logRequest(
+          url.toString(), 'GET', getHeader(userToken: token), null);
+
+      var response = await http.get(url, headers: getHeader(userToken: token));
+
+      // Log response
+      BaseApiService.logResponse(
+          url.toString(), response.statusCode, response.body);
+
+      // Check if response is HTML
+      if (response.body.trim().startsWith('<!DOCTYPE html>')) {
+        print("Received HTML response instead of JSON");
+        return {
+          'status': false,
+          'message': 'Server returned HTML instead of JSON. Please try again.'
+        };
+      }
+
+      if (response.statusCode == 200) {
+        final decodedResponse = json.decode(response.body);
+
+        return decodedResponse;
+      } else {
+        return {
+          'status': false,
+          'message': 'Server responded with status code: ${response.statusCode}'
+        };
+      }
+    } catch (e) {
+      print("Error in getRentedProperties: $e");
+
+      // Log error
+      BaseApiService.logError(
+          AppUrls.getApprovedContractProperty, e.toString());
+
+      if (e is FormatException) {
+        return {
+          'status': false,
+          'message': 'Invalid response format from server'
+        };
+      }
+
+      return {
+        'status': false,
+        'message': 'Failed to fetch rented properties: ${e.toString()}'
+      };
     }
   }
 }

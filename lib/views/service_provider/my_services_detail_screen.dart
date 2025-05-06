@@ -13,7 +13,6 @@ import '../../constant_widget/view_photo.dart';
 import '../../controllers/services_provider_controller/my_service_screen_controller.dart';
 import '../../custom_widgets/custom_button.dart';
 import '../../route_management/constant_routes.dart';
-import '../../utils/api_urls.dart';
 
 class MyServicesDetailScreen extends GetView<MyServicesDetailScreenController> {
   const MyServicesDetailScreen({Key? key}) : super(key: key);
@@ -37,14 +36,14 @@ class MyServicesDetailScreen extends GetView<MyServicesDetailScreenController> {
                           onTap: () {
                             Get.to(
                                 () => ViewImage(
-                                      photo: AppUrls.mediaImages + image,
+                                      photo: image,
                                     ),
                                 transition: routeTransition);
                           },
                           child: CachedNetworkImage(
                             width: double.infinity,
                             height: screenHeight(context) * 0.5,
-                            imageUrl: AppUrls.mediaImages + image,
+                            imageUrl: image,
                             fit: BoxFit.fill,
                             errorWidget: (context, e, b) {
                               return Image.asset(AppIcons.appLogo);
@@ -118,9 +117,9 @@ class MyDraggable extends GetView<MyServicesDetailScreenController> {
     return LayoutBuilder(builder: (context, constraints) {
       return DraggableScrollableSheet(
         key: controller.sheet,
-        initialChildSize: 0.5,
-        maxChildSize: 0.5, // Set maxChildSize to the same value (0.5)
-        minChildSize: 0.5,
+        initialChildSize: 0.55,
+        maxChildSize: 0.55, // Set maxChildSize to the same value (0.5)
+        minChildSize: 0.55,
         // expand: true,
         // snap: true,
         // snapSizes: const [
@@ -241,19 +240,24 @@ class MyDraggable extends GetView<MyServicesDetailScreenController> {
                                           Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
-                                              Row(
+                                              Column(
                                                 children: [
-                                                  Image.asset(
-                                                    AppIcons.clockDuration,
-                                                    width: 20,
-                                                    height: 20,
-                                                  ),
                                                   customText(
-                                                      text:
-                                                          " Duration : ${controller.getServiceOne.value!.startTime}",
+                                                      text: "Duration",
                                                       color: greyColor,
+                                                      fontSize: 16),
+                                                  h5,
+                                                  customText(
+                                                      text: controller
+                                                          .getServiceOne
+                                                          .value!
+                                                          .duration,
+                                                      color: blackColor,
                                                       fontSize: 15),
+                                                  h5,
                                                 ],
                                               ),
                                               customText(
@@ -278,7 +282,27 @@ class MyDraggable extends GetView<MyServicesDetailScreenController> {
                                                   fontSize: 16),
                                             ],
                                           ),
-                                          h50,
+                                          h5,
+                                          Row(
+                                            children: [
+                                              Image.asset(
+                                                AppIcons.clockDuration,
+                                                width: 20,
+                                                height: 20,
+                                              ),
+                                              w5,
+                                              customText(
+                                                  text: "Service Time : ",
+                                                  color: greyColor,
+                                                  fontSize: 16),
+                                              customText(
+                                                  text:
+                                                      "${controller.getServiceOne.value!.startTime} - ${controller.getServiceOne.value!.endTime}",
+                                                  color: blackColor,
+                                                  fontSize: 12),
+                                            ],
+                                          ),
+                                          h30,
                                           Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,

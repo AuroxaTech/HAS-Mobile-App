@@ -48,28 +48,33 @@ class ServiceListingScreenController extends GetxController {
           await servicesService.getAllServices(pageKey, filters: filters);
       isLoading.value = false;
 
-      if (result['status'] == true) {
-        final List<AllService> newItems = (result['data']['data'] as List)
-            .map((json) => AllService.fromJson(json))
-            .toList();
-
+      if (result['success'] == true) {
+        final List<AllService> newItems = [];
+        
+        // Get the data array from the payload
+        final dataList = result['payload']['data'] as List;
+        
         // Fetch current user ID
         int currentUserId = await Preferences.getUserID();
-        // Update isApplied status for each service
-        for (var item in newItems) {
-          item.isApplied = 0; // Default to 0
-          if (item.serviceProviderRequests != null) {
-            for (var request in item.serviceProviderRequests!) {
-              if (request.userId == currentUserId) {
-                item.isApplied = request.isApplied ?? 0;
-                break; // No need to check further
-              }
-            }
-          }
+        print("Current user ID: $currentUserId");
+        
+        // Process each service item
+        for (var json in dataList) {
+          // Create the AllService object from JSON
+          AllService service = AllService.fromJson(json);
+          
+          // Debug the isApplied value from API
+          print("Service ID ${service.id} - API isApplied value: ${json['is_applied']}");
+          
+          // Ensure isApplied is set directly from the API response
+          service.isApplied = json['is_applied'] ?? 0;
+          
+          // Add to our list
+          newItems.add(service);
         }
 
         final isLastPage =
-            result['data']['current_page'] == result['data']['last_page'];
+            result['payload']['current_page'] == result['payload']['last_page'];
 
         if (isLastPage) {
           pagingController.appendLastPage(newItems);
@@ -82,7 +87,7 @@ class ServiceListingScreenController extends GetxController {
       }
     } catch (error) {
       isLoading.value = false;
-      print(error);
+      print("Error fetching services: $error");
 
       final errorMessage = error.toString();
       pagingController.error = errorMessage;
@@ -139,7 +144,7 @@ class ServiceListingScreenController extends GetxController {
     isFavorite.value = !isFavorite.value; // Toggle the favorite status
     int favFlag =
         isFavorite.value ? 1 : 2; // 1 for favorite, 2 for not favorite
-    bool result = await servicesService.addFavorite(providerId, favFlag);
+    bool result = await servicesService.addFavorite(providerId);
     if (!result) {
       // If the API call failed, revert the favorite status
       isFavorite.value = !isFavorite.value;
@@ -177,26 +182,40 @@ class ServiceListingScreenController extends GetxController {
 
   void toggleFavorite1(int index, int serviceId) async {
     // Safety check to ensure itemList is not null
+
+    print("service_id $serviceId");
     if (pagingController.itemList == null) return;
+
     // Retrieve the current service directly from pagingController's itemList
     var service = pagingController.itemList![index];
-    // Toggle the isFavorite status
-    bool newFavoriteStatus = !(service.isFavorite ?? false);
+
+    // Toggle the isFavorite status based on integer values (0 for not favorite, 1 for favorite)
+    int newFavoriteStatus = (service.isFavorite == 1) ? 0 : 1;
     service.isFavorite = newFavoriteStatus;
 
     // Attempt to update the backend with the new favorite status
     try {
       // Make the API call
-      bool result = await servicesService.addFavorite(
-          serviceId, newFavoriteStatus ? 1 : 2);
+      bool result;
+      if (newFavoriteStatus == 1) {
+        // If the service is not in favorites, add it
+        print("Adding to favorites...");
+        result = await servicesService.addFavorite(serviceId);
+      } else {
+        // If the service is in favorites, remove it
+        print("Removing from favorites...");
+        result = await servicesService.removeFavoriteService(serviceId);
+      }
+      print(result);
       if (!result) {
         throw Exception('API call to add favorite failed.');
       }
       // If successful, no need to do anything as the local state is already updated
     } catch (error) {
       // If the API call fails, revert the local change
-      service.isFavorite = !newFavoriteStatus;
+      service.isFavorite = (newFavoriteStatus == 1) ? 0 : 1; // Revert to previous state
       Get.snackbar('Error', 'Could not update favorites. Please try again.');
+      rethrow;
     }
 
     // Force the UI to refresh and reflect the change

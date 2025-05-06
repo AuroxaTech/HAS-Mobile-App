@@ -24,7 +24,7 @@ class CalendarDetailController extends GetxController {
     super.onInit();
   }
 
-  List<String> images = [];
+  List<dynamic> images = [];
 
   Future<void> getServiceJob({required int id}) async {
     print("we are in get service");
@@ -36,16 +36,16 @@ class CalendarDetailController extends GetxController {
 
       print("Type of result['data']: ${result['data']?.runtimeType}");
 
-      if (result['data'] != null) {
-        if (result['data'] is Map) {
-          var data = result['data'];
+      if (result['payload'] != null) {
+        if (result['payload'] is Map) {
+          var data = result['payload'];
           print("Data :: $data");
           getCalendarOne.value = CalendarData.fromJson(data);
 
           // Check if the necessary fields are not null
-          if (getCalendarOne.value?.request?.service?.media != null) {
-            String imagesString = getCalendarOne.value!.request.service!.media!;
-            List<String> imageList = imagesString.split(',');
+          if (getCalendarOne.value?.serviceImages != null) {
+            List<dynamic> imagesString = getCalendarOne.value!.serviceImages;
+            List<dynamic> imageList = imagesString;
             images = imageList;
           } else {
             print("Media is null or not available");

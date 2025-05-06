@@ -12,6 +12,7 @@ class JobScreenController extends GetxController {
   RxBool pending = true.obs;
   RxBool completed = false.obs;
   RxBool reject = false.obs;
+  RxBool accepted = false.obs;
 
   ServiceProviderServices servicesService = ServiceProviderServices();
   Rx<bool> isLoading = false.obs;
@@ -24,10 +25,14 @@ class JobScreenController extends GetxController {
     print("IDDDDDD $data");
     print("Hello");
     pendingJobController.addPageRequestListener((pageKey) {
-      Future.microtask(() => getServiceJobs(pageKey));
+      Future.microtask(() => getServiceJobs(pageKey, "pending"));
     });
+    getServiceJobs(1, 'completed');
+    getServiceJobs(1, 'rejected');
+    getServiceJobs(1, 'accepted');
     super.onInit();
   }
+
 
   Future<void> getServicesRequest() async {
     List<ServiceRequestUser> list = <ServiceRequestUser>[];
@@ -47,40 +52,18 @@ class JobScreenController extends GetxController {
       isLoading.value = false;
     }
   }
+  //x
 
-  RxList<PendingJob> pendingJob = <PendingJob>[].obs;
-  RxList<CompletedJob> completedJob = <CompletedJob>[].obs;
-  RxList<RejectedJob> rejectedJob = <RejectedJob>[].obs;
 
-  Future<void> getServiceJob() async {
-    isLoading.value = true;
-    try {
-      var id = await Preferences.getUserID();
-      var result = await servicesService.getMyJobs(userId: id, page: 1);
-      print("result $result");
-      if (result['status'] == true) {
-        DataStatus providerFavorite = DataStatus.fromJson(result);
-        print("Pending  ${providerFavorite.pendingJobs}");
-        pendingJob.value = providerFavorite.pendingJobs;
-        completedJob.value = providerFavorite.completedJobs;
-        rejectedJob.value = providerFavorite.rejectedJobs;
-      } else {
-        print(result['message']);
-      }
-    } catch (e) {
-      print(e);
-      rethrow;
-    } finally {
-      isLoading.value = false;
-    }
-  }
+  final PagingController<int, Job> pendingJobController = // Changed to Job
+  PagingController(firstPageKey: 1);
+  final PagingController<int, Job> completedJobController = // Changed to Job
+  PagingController(firstPageKey: 1);
+  final PagingController<int, Job> rejectedJobController = // Changed to Job
+  PagingController(firstPageKey: 1);
+  final PagingController<int, Job> acceptedJobController = // Changed to Job
+  PagingController(firstPageKey: 1);
 
-  final PagingController<int, PendingJob> pendingJobController =
-      PagingController(firstPageKey: 1);
-  final PagingController<int, CompletedJob> completedJobController =
-      PagingController(firstPageKey: 1);
-  final PagingController<int, RejectedJob> rejectedJobController =
-      PagingController(firstPageKey: 1);
 
   // Future<void> getServiceJobs(int pageKey) async {
   //   isLoading.value = true;
@@ -123,35 +106,59 @@ class JobScreenController extends GetxController {
   //   }
   // }
 
-  Future<void> getServiceJobs(int pageKey) async {
+  Future<void> getServiceJobs(int pageKey, String status) async { // Added status parameter
     isLoading.value = true;
     try {
       var id = await Preferences.getUserID();
-      var result = await servicesService.getMyJobs(userId: id, page: pageKey);
-      print("API Result: ${json.encode(result)}"); // Log the full result
+      var result = await servicesService.getMyJobs(userId: id, page: pageKey,); // Pass status to service
+      print("API Result for $status jobs (page $pageKey): ${json.encode(result)}");
 
-      if (result['status'] == true) {
-        var data = result['data'];
-        print("Data to be parsed: $data"); // Check raw data before parsing
+      if (result['success'] == true) {
+        var payload = result['payload']; // Changed from data to payload
+        print("Payload to be parsed for $status jobs: $payload");
 
-        DataStatus dataStatus = DataStatus.fromJson(data);
+        ServiceStatus serviceStatus = ServiceStatus.fromJson(result); // Parse the whole response
 
-        updatePagination(pendingJobController, dataStatus.pendingJobs,
-            dataStatus.pendingJobsPagination, pageKey);
-        updatePagination(completedJobController, dataStatus.completedJobs,
-            dataStatus.completedJobsPagination, pageKey);
-        updatePagination(rejectedJobController, dataStatus.rejectedJobs,
-            dataStatus.rejectedJobsPagination, pageKey);
+        JobsData jobsData;
+        PagingController<int, Job>? currentController;
+
+        switch (status) { // Determine which controller and JobsData to use based on status
+          case 'pending':
+            jobsData = serviceStatus.data.pendingJobs; // Access nested jobs data
+            currentController = pendingJobController;
+            break;
+          case 'completed':
+            jobsData = serviceStatus.data.completedJobs; // Access nested jobs data
+            currentController = completedJobController;
+            break;
+          case 'rejected':
+            jobsData = serviceStatus.data.rejectedJobs; // Access nested jobs data
+            currentController = rejectedJobController;
+            break;
+          case 'accepted': // Handle accepted jobs
+            jobsData = serviceStatus.data.acceptedJobs;
+            currentController = acceptedJobController;
+            break;
+          case 'cancelled': // Handle cancelled jobs
+            jobsData = serviceStatus.data.cancelledJobs;
+          //  currentController = cancelledJobController;
+            break;
+          default:
+            throw Exception('Unknown job status: $status');
+        }
+
+        updatePagination(currentController!, jobsData.data, jobsData.pagination, pageKey); // Pass jobsData.data and jobsData.pagination
       } else {
-        print("API Error: ${result['message']}");
+        print("API Error for $status jobs: ${result['message']}");
       }
     } catch (e) {
-      print("Exception during parsing or API call: $e");
+      print("Exception during parsing or API call for $status jobs: $e");
       rethrow;
     } finally {
       isLoading.value = false;
     }
   }
+
 
   void updatePagination<T>(PagingController<int, T> controller, List<T> jobs,
       Pagination pagination, int pageKey) {
@@ -161,4 +168,5 @@ class JobScreenController extends GetxController {
       controller.appendPage(jobs, pageKey + 1);
     }
   }
+
 }

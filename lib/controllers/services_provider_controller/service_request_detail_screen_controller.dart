@@ -15,7 +15,7 @@ class ServiceRequestDetailScreenController extends GetxController {
   Rx<ServiceRequestProvider?> getServiceRequestOne =
       Rx<ServiceRequestProvider?>(null);
 
-  List<String> images = [];
+  List<ServiceImage> images = [];
   RxInt id = 0.obs;
   @override
   void onInit() {
@@ -35,17 +35,17 @@ class ServiceRequestDetailScreenController extends GetxController {
 
     isLoading.value = false;
 
-    if (result['data'] != null && result['data'] is Map) {
-      var data = result['data'] as Map<String, dynamic>;
+    if (result['payload'] != null && result['payload'] is Map) {
+      var data = result['payload'] as Map<String, dynamic>;
       print("Data :: $data");
-      print("User Data :: ${data['user']}");
+   //   print("User Data :: ${data['user']}");
 
-      getServiceRequestOne.value = ServiceRequestProvider.fromJson(data);
-      String imagesString = getServiceRequestOne.value!.service == null
-          ? ""
-          : getServiceRequestOne.value!.service!.media.toString();
-      List<String> imageList = imagesString.split(',');
-      images = imageList;
+       getServiceRequestOne.value = ServiceRequestProvider.fromJson(data);
+      // String imagesString = getServiceRequestOne.value!.serviceImages == null
+      //     ? ""
+      //     : getServiceRequestOne.value!.serviceImages.toString();
+      // List<String> imageList = imagesString.split(',');
+      images = getServiceRequestOne.value!.serviceImages;
       isLoading.value = false;
       // selectedBathrooms.value = int.parse(getPropertyOne.value!.bathroom);
       // selectedBedroom.value = int.parse(getPropertyOne.value!.bedroom);
@@ -57,12 +57,15 @@ class ServiceRequestDetailScreenController extends GetxController {
     }
   }
 
-  Future<void> declineServiceRequest({required int requestId}) async {
+  Future<void> declineServiceRequest({required int requestId, required int providerId, }) async {
     isLoading.value = true;
 
     try {
       var result = await serviceRequestService.declineServiceRequest(
-          requestId: requestId);
+          requestId: requestId,
+         serviceProviderId: providerId
+
+      );
       print(result);
       if (result['status'] == true) {
         Get.back();

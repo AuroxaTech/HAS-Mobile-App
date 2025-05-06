@@ -171,7 +171,7 @@ class AddPropertyController extends GetxController{
   PropertyServices propertyServices = PropertyServices();
 
   Future<void> addProperty({
-    required int type,
+    required String type,
     required String city,
     required double amount,
     required String address,
@@ -208,23 +208,25 @@ class AddPropertyController extends GetxController{
 
       print("Data : $data");
 
-      if (data['status'] == true) {
+      if (data['success'] == true) {
         // Handle success scenario
-        debugPrint("Print if ${data["messages"]}");
+        debugPrint("Print if ${data["message"]}");
         Get.back();
         Get.back();
-        AppUtils.getSnackBar("Success",data["messages"]);
+        AppUtils.getSnackBar("Success",data["message"]);
 
         isLoading.value = false;
       } else {
         // Handle error scenario
         isLoading.value = false;
-        AppUtils.errorSnackBar("Error", data['messages']);
+        AppUtils.errorSnackBar("Error", data['message']);
       }
     } catch (e) {
       // Handle general errors
       print(e);
+
       isLoading.value = false;
+      rethrow;
      // AppUtils.getSnackBar("Error", e.toString());
     }
   }

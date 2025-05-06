@@ -17,34 +17,38 @@ class RateExperience extends GetView<RateExperienceController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: whiteColor,
-      appBar: backAppBar(text: "FeedBack", isTitle: true, leading: IconButton(onPressed: (){
-        Get.back();
-        Get.back();
-        Get.back();
-        Get.back();
-      }, icon: Icon(Icons.arrow_back)) ),
+      appBar: backAppBar(
+          text: "FeedBack",
+          isTitle: true,
+          leading: IconButton(
+              onPressed: () {
+                Get.back();
+                Get.back();
+                Get.back();
+                Get.back();
+              },
+              icon: const Icon(Icons.arrow_back))),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(18.0),
           child: SingleChildScrollView(
             child: Form(
               key: controller.formKey,
-              child: Obx(() => Column(
+              child: Obx(
+                () => Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     customText(
-                      text: "Rate Your Experience",
-                      fontWeight: FontWeight.w500,
-                      fontSize: 25,
-                      color: Colors.grey.shade600
-                    ),
+                        text: "Rate Your Experience",
+                        fontWeight: FontWeight.w500,
+                        fontSize: 25,
+                        color: Colors.grey.shade600),
                     h5,
                     customText(
-                      text: "Are you Satisfied with service!",
-                      fontWeight: FontWeight.w500,
-                      fontSize: 12,
-                      color: Colors.grey.shade600
-                    ),
+                        text: "Are you Satisfied with service!",
+                        fontWeight: FontWeight.w500,
+                        fontSize: 12,
+                        color: Colors.grey.shade600),
                     h15,
                     RatingWidget(
                       maxRating: 5,
@@ -61,40 +65,40 @@ class RateExperience extends GetView<RateExperienceController> {
                         text: "Tell us what can be improved?",
                         fontWeight: FontWeight.w500,
                         fontSize: 14,
-                        color: blackColor
-                    ),
+                        color: blackColor),
                     h15,
                     Obx(() => Wrap(
-                      spacing: 8,
-                      children: controller.selectedHome.keys.map((String key) {
-                        bool isSelected = controller.selectedHome[key]!;
-                        return ChoiceChip(
-                          label: customText(
-                              text: key,
-                              color: isSelected ? whiteColor : blackColor,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          selected: isSelected,
-                          selectedColor: blackColor,
-                          backgroundColor: Colors.grey.shade100,
-                          onSelected: (bool selected) {
-                            controller.toggleHome(key);
-                          },
-                        );
-                      }).toList(),
-                    )),
+                          spacing: 8,
+                          children:
+                              controller.selectedHome.keys.map((String key) {
+                            bool isSelected = controller.selectedHome[key]!;
+                            return ChoiceChip(
+                              label: customText(
+                                  text: key,
+                                  color: isSelected ? whiteColor : blackColor,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              selected: isSelected,
+                              selectedColor: blackColor,
+                              backgroundColor: Colors.grey.shade100,
+                              onSelected: (bool selected) {
+                                controller.toggleHome(key);
+                              },
+                            );
+                          }).toList(),
+                        )),
                     h20,
                     CustomBorderTextField(
                       controller: controller.descriptionController,
                       hintText: "Tell us on about service",
                       minLines: 4,
                       maxLines: 5,
-                      validator: (value){
+                      validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Tell us about services';
                         }
@@ -103,22 +107,24 @@ class RateExperience extends GetView<RateExperienceController> {
                     ),
                     h50,
                     CustomButton(
-                        width: double.infinity,
-                        text: "Submit",
-                        isLoading: controller.isLoading.value,
-                        onTap: (){
-                          if(controller.formKey.currentState!.validate()){
-                            if(controller.rating.value == 0){
-                              AppUtils.errorSnackBar("Rating", "Please add rating");
-                            }else{
-                              controller.sendFeedback(
-                                  serviceId: controller.serviceId.value, rate: controller.rating.value,
-                                  description: controller.descriptionController.text,
-                                  propertySubTypeId: controller.selectedIndex.value,
-                                 );
-                              }
-                           }
-                        },
+                      width: double.infinity,
+                      text: "Submit",
+                      isLoading: controller.isLoading.value,
+                      onTap: () {
+                        if (controller.formKey.currentState!.validate()) {
+                          if (controller.rating.value == 0) {
+                            AppUtils.errorSnackBar(
+                                "Rating", "Please add rating");
+                          } else {
+                            controller.sendFeedback(
+                              serviceId: controller.serviceId.value,
+                              rate: controller.rating.value,
+                              description:
+                                  controller.descriptionController.text,
+                            );
+                          }
+                        }
+                      },
                     )
                   ],
                 ),

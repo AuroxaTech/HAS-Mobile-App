@@ -7,7 +7,6 @@ import 'package:property_app/app_constants/app_sizes.dart';
 import 'package:property_app/constant_widget/constant_widgets.dart';
 import 'package:property_app/controllers/services_provider_controller/service_listing_detail_controller.dart';
 import 'package:property_app/custom_widgets/custom_button.dart';
-import 'package:property_app/utils/api_urls.dart';
 import 'package:property_app/views/service_provider/rating_screen.dart';
 
 import '../../app_constants/app_icon.dart';
@@ -48,7 +47,7 @@ class ServiceListingDetailScreen
                           padding: const EdgeInsets.all(18.0),
                           child: Column(
                             children: [
-                              SizedBox(
+                              const SizedBox(
                                 height: 50,
                               ),
                               Row(
@@ -71,8 +70,9 @@ class ServiceListingDetailScreen
                                     backgroundColor: Colors.transparent,
                                     child: ClipOval(
                                       child: CachedNetworkImage(
-                                        imageUrl: AppUrls.mediaImages +
-                                            controller.images[0],
+                                        imageUrl: controller.images.isEmpty
+                                            ? ""
+                                            : controller.images[0],
                                         width: 120,
                                         height: 120,
                                         fit: BoxFit.cover,
@@ -87,12 +87,12 @@ class ServiceListingDetailScreen
                                       icon: Icon(
                                         controller.getServiceOne.value!
                                                     .isFavorite ==
-                                                true
+                                                1
                                             ? Icons.favorite
                                             : Icons.favorite_border,
                                         color: controller.getServiceOne.value!
                                                     .isFavorite ==
-                                                true
+                                                1
                                             ? Colors.red
                                             : greyColor,
                                       ),
@@ -120,7 +120,8 @@ class ServiceListingDetailScreen
                                   maxRating: 5,
                                   isRating: false,
                                   initialRating: controller
-                                      .getServiceOne.value!.averageRate,
+                                          .getServiceOne.value!.averageRate ??
+                                      0,
                                   onRatingChanged: (rating) {
                                     print('Selected rating: $rating');
                                   },
@@ -346,10 +347,18 @@ class ServiceListingDetailScreen
                                 SizedBox(
                                   height: 80,
                                   child: ListView.builder(
-                                      itemCount: controller.images.length,
+                                      itemCount: controller.getServiceOne.value
+                                              ?.serviceImages.length ??
+                                          0,
                                       shrinkWrap: true,
                                       scrollDirection: Axis.horizontal,
                                       itemBuilder: (context, index) {
+                                        final imageUrl = controller
+                                                .getServiceOne
+                                                .value
+                                                ?.serviceImages[index]
+                                                .imagePath ??
+                                            '';
                                         return Row(
                                           children: [
                                             GestureDetector(
@@ -381,7 +390,6 @@ class ServiceListingDetailScreen
                                                           alignment:
                                                               Alignment.center,
                                                           children: [
-                                                            // Hero animation for smooth transition
                                                             Hero(
                                                               tag:
                                                                   'image_$index',
@@ -391,11 +399,8 @@ class ServiceListingDetailScreen
                                                                 maxScale: 4.0,
                                                                 child:
                                                                     CachedNetworkImage(
-                                                                  imageUrl: AppUrls
-                                                                          .mediaImages +
-                                                                      controller
-                                                                              .images[
-                                                                          index],
+                                                                  imageUrl:
+                                                                      imageUrl,
                                                                   fit: BoxFit
                                                                       .contain,
                                                                   placeholder: (context,
@@ -436,7 +441,6 @@ class ServiceListingDetailScreen
                                                                 ),
                                                               ),
                                                             ),
-                                                            // Close button with animation
                                                             Positioned(
                                                               top: 40,
                                                               right: 20,
@@ -468,7 +472,6 @@ class ServiceListingDetailScreen
                                                                 ),
                                                               ),
                                                             ),
-                                                            // Image counter
                                                             Positioned(
                                                               bottom: 20,
                                                               child: Container(
@@ -491,7 +494,7 @@ class ServiceListingDetailScreen
                                                                               20),
                                                                 ),
                                                                 child: Text(
-                                                                  'Image ${index + 1} of ${controller.images.length}',
+                                                                  'Image ${index + 1} of ${controller.getServiceOne.value?.serviceImages.length ?? 0}',
                                                                   style:
                                                                       const TextStyle(
                                                                     color: Colors
@@ -502,7 +505,6 @@ class ServiceListingDetailScreen
                                                                 ),
                                                               ),
                                                             ),
-                                                            // Zoom hint
                                                           ],
                                                         ),
                                                       ),
@@ -517,21 +519,28 @@ class ServiceListingDetailScreen
                                                   shape: BoxShape.rectangle,
                                                   borderRadius:
                                                       BorderRadius.circular(15),
-                                                  image: DecorationImage(
-                                                    image:
-                                                        CachedNetworkImageProvider(
-                                                            AppUrls.mediaImages +
-                                                                controller
-                                                                        .images[
-                                                                    index]),
+                                                ),
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(15),
+                                                  child: CachedNetworkImage(
+                                                    imageUrl: imageUrl,
                                                     fit: BoxFit.cover,
+                                                    placeholder:
+                                                        (context, url) =>
+                                                            const Center(
+                                                      child:
+                                                          CircularProgressIndicator(),
+                                                    ),
+                                                    errorWidget: (context, url,
+                                                            error) =>
+                                                        Image.asset(
+                                                            AppIcons.appLogo),
                                                   ),
                                                 ),
                                               ),
                                             ),
-                                            const SizedBox(
-                                              width: 10,
-                                            ),
+                                            const SizedBox(width: 10),
                                           ],
                                         );
                                       }),
@@ -611,10 +620,74 @@ class ServiceListingDetailScreen
                                   width: double.infinity,
                                   height: 150,
                                   decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(18),
-                                      image: const DecorationImage(
-                                          image: AssetImage(AppIcons.appLogo),
-                                          fit: BoxFit.cover)),
+                                    borderRadius: BorderRadius.circular(18),
+                                  ),
+                                  child: controller.getServiceOne.value
+                                              ?.certification !=
+                                          null
+                                      ? ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(18),
+                                          child: CachedNetworkImage(
+                                            imageUrl: controller.getServiceOne
+                                                .value!.certification!,
+                                            fit: BoxFit.cover,
+                                            placeholder: (context, url) =>
+                                                const Center(
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            ),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(18),
+                                                border: Border.all(
+                                                    color:
+                                                        Colors.grey.shade300),
+                                              ),
+                                              child: const Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Icon(
+                                                      Icons.image_not_supported,
+                                                      size: 40,
+                                                      color: Colors.grey),
+                                                  SizedBox(height: 8),
+                                                  Text(
+                                                    'No Certification Available',
+                                                    style: TextStyle(
+                                                        color: Colors.grey),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      : Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(18),
+                                            border: Border.all(
+                                                color: Colors.grey.shade300),
+                                          ),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(Icons.image_not_supported,
+                                                  size: 40, color: Colors.grey),
+                                              SizedBox(height: 8),
+                                              Text(
+                                                'No Certification Available',
+                                                style: TextStyle(
+                                                    color: Colors.grey),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                 ),
                                 h10,
                                 customText(
@@ -650,13 +723,11 @@ class ServiceListingDetailScreen
                                                     ""
                                                 ? const AssetImage(
                                                     AppIcons.personIcon)
-                                                : NetworkImage(AppUrls
-                                                            .profileImageBaseUrl +
-                                                        controller
-                                                            .getServiceOne
-                                                            .value!
-                                                            .user!
-                                                            .profileimage)
+                                                : NetworkImage(controller
+                                                        .getServiceOne
+                                                        .value!
+                                                        .user!
+                                                        .profileimage)
                                                     as ImageProvider,
                                       )),
                                     ),
@@ -681,7 +752,10 @@ class ServiceListingDetailScreen
                                           maxRating: 5,
                                           isRating: false,
                                           initialRating: controller
-                                              .getServiceOne.value!.totalRate,
+                                                  .getServiceOne
+                                                  .value!
+                                                  .totalRate ??
+                                              0,
                                           onRatingChanged: (rating) {
                                             print('Selected rating: $rating');
                                           },
@@ -725,17 +799,36 @@ class ServiceListingDetailScreen
                                         onTap: () {
                                           Get.toNamed(kNewServiceRequestScreen,
                                               arguments: [
-                                                (controller.getServiceOne.value!
-                                                    .serviceName),
+                                                controller.getServiceOne.value!
+                                                    .serviceName,
                                                 controller.getServiceOne.value!
                                                     .user!.email,
-                                                (controller.getServiceOne.value!
-                                                    .description),
+                                                controller.getServiceOne.value!
+                                                    .description,
                                                 controller.getServiceOne.value!
                                                     .userId,
                                                 controller
                                                     .getServiceOne.value!.id,
                                                 controller.images[0],
+                                                controller.getServiceOne.value!
+                                                    .country,
+                                                controller
+                                                    .getServiceOne.value!.city,
+                                                controller.getServiceOne.value!
+                                                        .yearExperience ??
+                                                    "0",
+                                                controller.getServiceOne.value!
+                                                    .cnicFrontPic,
+                                                controller.getServiceOne.value!
+                                                    .cnicBackPic,
+                                                controller.getServiceOne.value!
+                                                    .certification,
+                                                controller.getServiceOne.value!
+                                                    .resume,
+                                                controller.getServiceOne.value!
+                                                    .pricing,
+                                                controller.getServiceOne.value!
+                                                    .serviceImages
                                               ]);
                                         },
                                         height: 45,

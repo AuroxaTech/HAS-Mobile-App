@@ -1,11 +1,10 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:property_app/models/propert_model/ladlord_property_model.dart';
+
 import '../../app_constants/color_constants.dart';
 import '../../constant_widget/constant_widgets.dart';
-import '../../controllers/dasboard_controller/all_property_controller.dart';
 import '../../controllers/tenant_controllers/current_reneted.dart';
 import '../../route_management/constant_routes.dart';
 import '../../utils/api_urls.dart';
@@ -45,45 +44,63 @@ class CurrentRented extends GetView<CurrentRantedPropertiesController> {
                   shrinkWrap: true,
                   pagingController: controller.pagingController,
                   builderDelegate: PagedChildBuilderDelegate<Property>(
-                      firstPageErrorIndicatorBuilder: (context) => MaterialButton(
-                        child: const Text("No Data Found, Tap to try again."),
-                        onPressed: () => controller.pagingController.refresh(),
-                      ),
+                      firstPageErrorIndicatorBuilder: (context) =>
+                          MaterialButton(
+                            child:
+                                const Text("No Data Found, Tap to try again."),
+                            onPressed: () =>
+                                controller.pagingController.refresh(),
+                          ),
                       newPageErrorIndicatorBuilder: (context) => MaterialButton(
-                        child: const Text("Failed to load more items. Tap to try again."),
-                        onPressed: () => controller.pagingController.retryLastFailedRequest(),
-                      ),
+                            child: const Text(
+                                "Failed to load more items. Tap to try again."),
+                            onPressed: () => controller.pagingController
+                                .retryLastFailedRequest(),
+                          ),
                       noItemsFoundIndicatorBuilder: (context) => MaterialButton(
-                        child: const Text("No Data found. Tap to reset"),
-                        onPressed: () => controller.getProperty(1),
-                      ),
+                            child: const Text("No Data found. Tap to reset"),
+                            onPressed: () => controller.getProperty(1),
+                          ),
                       itemBuilder: (context, item, index) {
-                        String imagesString = item.images.toString();
-                        List<String> imageList = imagesString.split(',');
-                        print(AppUrls.propertyImages + imageList[0],);
+                        // Get the image URL
+                        String imageUrl = "";
+
+                        // First try to get from propertyImages if it exists and is not empty
+                        if (item.propertyImages.isNotEmpty) {
+                          imageUrl = item.propertyImages.first;
+                        }
+                        // Fallback to images field if propertyImages is empty
+                        else if (item.images.isNotEmpty) {
+                          // Check if the image path is a full URL or a relative path
+                          if (item.images.startsWith('http')) {
+                            imageUrl = item.images;
+                          } else {
+                            imageUrl = AppUrls.propertyImages + item.images;
+                          }
+                        }
+
+                        print("Property ${item.id} image URL: $imageUrl");
+
                         return Column(
                           children: [
-                            myPropertyWidget(context,
-                                onTap: (){
-                                  Get.toNamed(kAllPropertyDetailScreen, arguments: item.id);
-                                },
-                                title: item.city.toString(),
-                                image: AppUrls.propertyImages + imageList[0],
-                                price: "\$${item.amount.toString()}",
-                                description: item.description.toString(),
-                                bedroom: item.bedroom.toString(),
-                                bathroom: item.bathroom.toString(),
-                                marla: item.areaRange.toString(),
-
+                            myPropertyWidget(context, onTap: () {
+                              Get.toNamed(kAllPropertyDetailScreen,
+                                  arguments: item.id);
+                            },
+                                title: item.city,
+                                image: imageUrl,
+                                price: "\$${item.amount}",
+                                description: item.description,
+                                bedroom: item.bedroom,
+                                bathroom: item.bathroom,
+                                marla: item.areaRange,
                                 rent: item.type == "1" ? "Rent" : "Sale"),
-
-                            SizedBox(
+                            const SizedBox(
                               height: 20,
                             )
                           ],
                         );
-                      }
-                  ),
+                      }),
                 ),
               ),
             ),
@@ -97,7 +114,6 @@ class CurrentRented extends GetView<CurrentRantedPropertiesController> {
           ],
         ),
       ),
-
     );
   }
 }

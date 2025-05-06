@@ -13,7 +13,6 @@ import 'package:property_app/route_management/constant_routes.dart';
 
 import '../../controllers/services_provider_controller/service_listing_screen_controller.dart';
 import '../../models/service_provider_model/all_services.dart';
-import '../../utils/api_urls.dart';
 import '../../utils/shared_preferences/preferences.dart';
 import '../chat_screens/chat_conversion_screen.dart';
 
@@ -75,38 +74,46 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                       itemBuilder: (context, item, index) {
                         print(
                             "Screen - Building item for service ID: ${item.id}");
-                        print("Screen - isApplied: ${item.isApplied.toInt()}");
-                        print("Screen - decline: ${item.decline}");
-                        print("Screen - approved: ${item.approved}");
+                        print("Screen - isApplied value: ${item.isApplied}");
+                        print(
+                            "Screen - Raw isApplied type: ${item.isApplied.runtimeType}");
+                        print(
+                            "Screen - Condition check: item.isApplied == 1 is ${item.isApplied == 1}");
+                        print("Favourite = ${item.isFavorite}");
+                        print("is Applied => ${item.isApplied}");
 
                         int? isApplied;
-                        int? isDeclined;
-                        int? isApproved;
+                        // int? isDeclined;
+                        // int? isApproved;
 
-                        // If serviceProviderRequests exists, print the latest request details
-                        if (item.serviceProviderRequests != null &&
-                            item.serviceProviderRequests!.isNotEmpty) {
-                          var latestRequest = item.serviceProviderRequests!
-                              .reduce((curr, next) =>
-                                  curr.id > next.id ? curr : next);
-                          isApplied = latestRequest.isApplied ?? 0;
-                          isDeclined = latestRequest.decline ?? 0;
-                          isApproved = latestRequest.approved ?? 0;
+                        // // If serviceProviderRequests exists, print the latest request details
+                        // if (item.serviceProviderRequests != null &&
+                        //     item.serviceProviderRequests!.isNotEmpty) {
+                        //   var latestRequest = item.serviceProviderRequests!
+                        //       .reduce((curr, next) =>
+                        //           curr.id > next.id ? curr : next);
+                        //   isApplied = latestRequest.isApplied ?? 0;
+                        //   isDeclined = latestRequest.decline ?? 0;
+                        //   isApproved = latestRequest.approved ?? 0;
+                        // }
+
+                        String imageUrl = AppIcons.appLogo;
+                        if (item.serviceImages.isNotEmpty) {
+                          imageUrl = item.serviceImages[0].imagePath;
                         }
 
-                        String imagesString = item.media.toString();
-                        List<String> imageList = imagesString.split(',');
-
-                        print(item.isFavorite);
-                        print("is Applied => ${item.isApplied}");
-                        print("is decline => ${item.decline}");
                         return Padding(
                           padding: const EdgeInsets.only(top: 15),
                           child: InkWell(
                             onTap: () {
                               Get.toNamed(
                                 kServiceListingScreenDetail,
-                                arguments: [item.id, imageList],
+                                arguments: [
+                                  item.id,
+                                  item.serviceImages
+                                      .map((img) => img.imagePath)
+                                      .toList()
+                                ],
                               );
                             },
                             child: Container(
@@ -146,9 +153,7 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                                                   borderRadius:
                                                       BorderRadius.circular(10),
                                                   child: CachedNetworkImage(
-                                                    imageUrl:
-                                                        AppUrls.mediaImages +
-                                                            imageList[0],
+                                                    imageUrl: imageUrl,
                                                     width: 60,
                                                     height: 70,
                                                     fit: BoxFit.cover,
@@ -164,7 +169,7 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
-                                                  Container(
+                                                  SizedBox(
                                                     width: 150,
                                                     child: customText(
                                                       text: item.serviceName,
@@ -188,10 +193,10 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                                           ),
                                           IconButton(
                                             icon: Icon(
-                                              item.isFavorite == true
+                                              item.isFavorite == 1
                                                   ? Icons.favorite
                                                   : Icons.favorite_border,
-                                              color: item.isFavorite == true
+                                              color: item.isFavorite == 1
                                                   ? Colors.red
                                                   : greyText,
                                             ),
@@ -286,34 +291,8 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                                           ),
                                           w15,
                                           Expanded(
-                                            child: _shouldShowBookService(
-                                                    isApplied,
-                                                    isDeclined,
-                                                    isApproved)
+                                            child: item.isBooked == true
                                                 ? CustomButton(
-                                                    height:
-                                                        screenHeight(context) *
-                                                            0.06,
-                                                    text: "Book Service",
-                                                    fontSize: 18,
-                                                    gradientColor: gradient(),
-                                                    onTap: () {
-                                                      Get.toNamed(
-                                                          kNewServiceRequestScreen,
-                                                          arguments: [
-                                                            (item.serviceName),
-                                                            item.user == null
-                                                                ? ""
-                                                                : item.user!
-                                                                    .email,
-                                                            (item.description),
-                                                            item.userId,
-                                                            item.id,
-                                                            imageList[0]
-                                                          ]);
-                                                    },
-                                                  )
-                                                : CustomButton(
                                                     gradientColor:
                                                         detailGradient(),
                                                     height:
@@ -321,7 +300,44 @@ class ServicesListingScreen extends GetView<ServiceListingScreenController> {
                                                             0.06,
                                                     text: "Pending",
                                                     fontSize: 18,
-                                                    onTap: () {},
+                                                    onTap: () {
+                                                      print(
+                                                          "Service ${item.id} is already applied (isApplied=${item.isApplied})");
+                                                    },
+                                                  )
+                                                : CustomButton(
+                                                    height:
+                                                        screenHeight(context) *
+                                                            0.06,
+                                                    text: "Book Service",
+                                                    fontSize: 18,
+                                                    gradientColor: gradient(),
+                                                    onTap: () {
+                                                      print(
+                                                          "Booking service ${item.id} (isApplied=${item.isApplied})");
+                                                      Get.toNamed(
+                                                          kNewServiceRequestScreen,
+                                                          arguments: [
+                                                            item.serviceName,
+                                                            item.user == null
+                                                                ? ""
+                                                                : item.user!
+                                                                    .email,
+                                                            item.description,
+                                                            item.userId,
+                                                            item.id,
+                                                            imageUrl,
+                                                            item.country,
+                                                            item.city,
+                                                            item.yearExperience,
+                                                            item.cnicFrontPic,
+                                                            item.cnicBackPic,
+                                                            item.certification,
+                                                            item.resume,
+                                                            item.pricing,
+                                                            item.serviceImages
+                                                          ]);
+                                                    },
                                                   ),
                                           )
                                         ],

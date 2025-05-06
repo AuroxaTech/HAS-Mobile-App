@@ -147,6 +147,8 @@ class MyPropertyDetailController extends GetxController {
     print("IDDDDDD $data");
     print("Hello");
     id.value = data;
+    print("iddd ${ id.value }");
+
     getService(id: data);
     super.onInit();
   }
@@ -160,8 +162,8 @@ class MyPropertyDetailController extends GetxController {
 
     isLoading.value = false;
 
-    if (result['data'] != null && result['data'] is Map) {
-      var data = result['data'] as Map<String, dynamic>;
+    if (result['payload'] != null && result['payload'] is Map) {
+      var data = result['payload'] as Map<String, dynamic>;
       print("Data :: $data");
 
       if (getPropertyOne != null) {
@@ -188,7 +190,7 @@ class MyPropertyDetailController extends GetxController {
   }
 
   Future<void> updateProperty({
-    required int type,
+    required String type,
     required String city,
     required double amount,
     required String address,
@@ -201,23 +203,31 @@ class MyPropertyDetailController extends GetxController {
     required List<XFile> propertyImages,
     required String propertyType,
     required String propertySubType,
-    // required int noOfProperty,
-    // required String propertyType,
-    // required String availabilityStartTime,
-    // required String availabilityEndTime,
     required String description,
   }) async {
-    isLoading.value = true;
-
     try {
-      var data = await propertyService.updateProperty(
-        id: id.value,
+      isLoading.value = true;
+
+      // Validate and constrain lat/long values
+      double validLat = lat;
+      double validLong = long;
+
+      // Ensure latitude is between -90 and 90
+      if (lat < -90) validLat = -90;
+      if (lat > 90) validLat = 90;
+
+      // Ensure longitude is between -180 and 180
+      if (long < -180) validLong = -180;
+      if (long > 180) validLong = 180;
+
+      var result = await propertyService.updateProperty(
+        id: id.value.toString(),
         type: type,
         city: city,
         amount: amount,
         address: address,
-        lat: lat,
-        long: long,
+        lat: validLat,
+        long: validLong,
         areaRange: areaRange,
         bedroom: bedroom,
         bathroom: bathroom,
@@ -225,35 +235,26 @@ class MyPropertyDetailController extends GetxController {
         propertyImages: propertyImages,
         propertyType: propertyType,
         propertySubType: propertySubType,
-        // noOfProperty: noOfProperty,
-        // propertyType: propertyType,
-        // availabilityStartTime: availabilityStartTime,
-        // availabilityEndTime: availabilityEndTime,
         description: description,
       );
 
-      print("Data : $data");
-
-      if (data['status'] == true) {
-        // Handle success scenario
-        debugPrint("Print if ${data["messages"]}");
+      if (result['success'] == true) {
         Get.back();
         Get.back();
         Get.back();
-        AppUtils.getSnackBar("Success",data["messages"]);
-
-        isLoading.value = false;
+        AppUtils.getSnackBar("Success", result["message"] ?? "Property updated successfully");
       } else {
-        // Handle error scenario
-        isLoading.value = false;
-        AppUtils.errorSnackBar("Error", data['messages']);
+        AppUtils.errorSnackBar("Error", result['message'] ?? "Failed to update property");
       }
     } catch (e) {
-      // Handle general errors
-      print(e);
+      print("Error in updateProperty: $e");
+      String errorMessage = e.toString();
+      if (errorMessage.contains('Numeric value out of range')) {
+        errorMessage = 'Invalid latitude or longitude values. Please provide valid coordinates.';
+      }
+      AppUtils.errorSnackBar("Error", errorMessage);
+    } finally {
       isLoading.value = false;
-      AppUtils.errorSnackBar("Error", e.toString());
-      throw e;
     }
   }
 
@@ -266,15 +267,15 @@ class MyPropertyDetailController extends GetxController {
 
     isLoading.value = false;
 
-    if (result['status'] == true) {
+    if (result['success'] == true) {
         isLoading.value = false;
         Get.back();
         Get.back();
-       AppUtils.getSnackBar("Delete", result['messages']);
+       AppUtils.getSnackBar("Delete", result['message']);
     } else {
         isLoading.value = false;
         print("getPropertyOne is null");
-        AppUtils.errorSnackBar("Error", result['messages']);
+        AppUtils.errorSnackBar("Error", result['message']);
       }
      isLoading.value = false;
     }

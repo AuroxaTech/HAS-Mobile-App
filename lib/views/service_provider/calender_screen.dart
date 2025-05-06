@@ -19,8 +19,9 @@ const int kLastYear = 2030;
 
 class CalendarScreen extends GetView<CalendarScreenController> {
   final bool isBack;
-   bool? back;
-   CalendarScreen({Key? key, required this.isBack, this.back = false}) : super(key: key);
+  bool? back;
+  CalendarScreen({Key? key, required this.isBack, this.back = false})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -193,11 +194,11 @@ class CalendarScreen extends GetView<CalendarScreenController> {
                                             ),
                                           ),
                                           title: customText(
-                                            text: item.provider.fullname,
+                                            text: item.provider.fullName,
                                             fontSize: 21,
                                           ),
                                           subtitle: customText(
-                                            text: item.request.time,
+                                            text: item.endTime,
                                             color: greyColor,
                                           ),
                                         ),
@@ -207,7 +208,7 @@ class CalendarScreen extends GetView<CalendarScreenController> {
                                   );
                                 } else {
                                   // Handle the case when createdAt is null
-                                  return SizedBox.shrink();
+                                  return const SizedBox.shrink();
                                 }
                               },
                             ),

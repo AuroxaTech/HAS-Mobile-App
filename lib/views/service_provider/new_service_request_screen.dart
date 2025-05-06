@@ -3,7 +3,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:property_app/constant_widget/constant_widgets.dart';
 import 'package:property_app/custom_widgets/custom_text_field.dart';
-import 'package:property_app/utils/api_urls.dart';
 
 import '../../app_constants/app_sizes.dart';
 import '../../app_constants/color_constants.dart';
@@ -38,8 +37,7 @@ class NewServiceRequestScreen
                   ListTile(
                     leading: CircleAvatar(
                       radius: 30,
-                      backgroundImage: NetworkImage(
-                          AppUrls.mediaImages + controller.data[5]),
+                      backgroundImage: NetworkImage(controller.data[5]),
                     ),
                     title: customText(
                         text: controller.data[0],
@@ -267,28 +265,43 @@ class NewServiceRequestScreen
                             onTap: () {
                               if (controller.formKey.currentState!.validate()) {
                                 controller.newServiceRequest(
+                                    serviceName: controller.data[0],
                                     serviceId: controller.data[4].toString(),
-                                    serviceProviderId:
-                                        controller.data[3].toString(),
-                                    address: controller.addressController.text,
+                                    providerId: controller.data[3].toString(),
+                                    location: controller.addressController.text,
                                     lat: 33.3334,
                                     lng: 77.3843,
-                                    propertyType:
-                                        controller.propertyTypeIndex.value,
-                                    date: controller.selectedDays.join(', '),
-                                    time: "${controller.startTime.value.format(context)} - ${controller.endTime.value.format(context)}",
-                                    price: 0,
-                                    postalCode: int.tryParse(
-                                        controller.postalCodeController.text)!,
+                                    propertyType: controller
+                                        .propertyTypeIndex.value
+                                        .toString(),
+                                    duration:
+                                        controller.selectedDays.join(', '),
+                                    startTime: _formatTimeOfDay(
+                                        controller.startTime.value),
+                                    endTime: _formatTimeOfDay(
+                                        controller.endTime.value),
                                     description:
                                         controller.descriptionController.text,
                                     additionalInfo: controller
                                             .instructionController.text.isEmpty
                                         ? ""
                                         : controller.instructionController.text,
+                                    country: "Canada",
+                                    city: controller.addressController.text
+                                        .split(',')
+                                        .last
+                                        .trim(),
+                                    yearExperience:
+                                        controller.data[8].toString(),
+                                    cnicFrontPic: controller.data[9].toString(),
+                                    cnicBackPic: controller.data[10].toString(),
+                                    certification:
+                                        controller.data[11].toString(),
+                                    resume: controller.data[12].toString(),
+                                    price: controller.data[13],
+                                    serviceImages: controller.data[14],
                                     isApplied: 1);
                               }
-                              //   Get.toNamed(kNewServiceRequestScreen);
                             },
                             height: 45,
                             text: "Submit request",
@@ -307,4 +320,11 @@ class NewServiceRequestScreen
       ),
     );
   }
+}
+
+String _formatTimeOfDay(TimeOfDay time) {
+  final hour = time.hourOfPeriod;
+  final minute = time.minute.toString().padLeft(2, '0');
+  final period = time.period == DayPeriod.am ? 'AM' : 'PM';
+  return '${hour == 0 ? 12 : hour}:$minute $period';
 }

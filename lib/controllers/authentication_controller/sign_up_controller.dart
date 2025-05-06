@@ -8,6 +8,7 @@ import 'package:property_app/services/auth_services/auth_services.dart';
 import 'package:property_app/utils/utils.dart';
 
 import '../../services/notification_services/notification_services.dart';
+import '../../utils/base_api_service.dart';
 
 class SignUpController extends GetxController {
   RxString userRoleValue = 'Select Role'.obs;
@@ -73,6 +74,7 @@ class SignUpController extends GetxController {
     "7  1/2"
   ];
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> formKey1 = GlobalKey<FormState>();
   final GlobalKey<FormState> formKeyDetail = GlobalKey<FormState>();
   TextEditingController nameController = TextEditingController();
   TextEditingController userNameController = TextEditingController();
@@ -104,13 +106,16 @@ class SignUpController extends GetxController {
   RxBool experienceField = true.obs;
   //Add Detail screen
   TextEditingController newYorkController = TextEditingController();
+  TextEditingController cityController = TextEditingController();
   RxBool newYorkField = true.obs;
+  RxBool cityField = true.obs;
   TextEditingController amountController = TextEditingController();
   RxBool amountField = true.obs;
   TextEditingController streetController = TextEditingController();
   TextEditingController postalAddressController = TextEditingController();
   RxBool streetField = true.obs;
   TextEditingController description = TextEditingController();
+  TextEditingController additionalInfo = TextEditingController();
 
   String phone = "";
   String countryCode = "";
@@ -295,11 +300,12 @@ class SignUpController extends GetxController {
         password: password,
         conPassword: conPassword,
         profileImage: profileImage,
-        deviceToken: "deviceId",
+        deviceToken: "werty134",
         platform: Platform.isAndroid ? "android" : "ios",
       );
 
-      if (registrationData['status'] == true) {
+      if (registrationData['success'] == true) {
+        Get.back();
         // Registration successful
         isLoading.value = false;
         AppUtils.getSnackBar(
@@ -326,9 +332,9 @@ class SignUpController extends GetxController {
     required String phoneNumber,
     required String password,
     required String cPassword,
-    required int roleId,
+    required String role,
     XFile? profileImage,
-    required int type,
+    required String type,
     required String city,
     required double amount,
     String? address,
@@ -347,78 +353,77 @@ class SignUpController extends GetxController {
     required String description,
     String? postalCode,
   }) async {
-    isLoading.value = true;
-
     try {
-      var deviceId;
-      if (Platform.isAndroid) {
-        deviceId = await notificationServices.getDeviceToken();
-      } else {
-        deviceId = await notificationServices.getIOSDeviceToken();
-      }
-      print("deviceToken : $deviceId");
-      var data = await authServices.registerProperty(
-          fullName: fullName,
-          userName: userName,
-          email: email,
-          password: password,
-          phoneNumber: phoneNumber,
-          deviceToken: deviceId,
-          platform: Platform.isAndroid ? "android" : "ios",
-          cPassword: cPassword,
-          roleId: roleId,
-          profileImage: profileImage,
-          type: type,
-          city: city,
-          amount: amount,
-          address: address,
-          lat: lat,
-          long: long,
-          areaRange: areaRange,
-          bedroom: bedroom,
-          bathroom: bathroom,
-          electricityBill: electricityBill,
-          propertyImages: propertyImages,
-          noOfProperty: noOfProperty,
-          propertyType: propertyType,
-          availabilityStartTime: availabilityStartTime,
-          availabilityEndTime: availabilityEndTime,
-          description: description,
-          subtype: subType,
-          postalCode: postalCode);
+      isLoading.value = true;
 
-      print("Data : $data");
+      final data = await authServices.registerProperty(
+        fullName: fullName,
+        userName: userName,
+        email: email,
+        phoneNumber: phoneNumber,
+        password: password,
+        deviceToken: "werty134",
+        platform: Platform.isAndroid ? "android" : "ios",
+        cPassword: cPassword,
+        role: role,
+        profileImage: profileImage,
+        type: type,
+        city: city,
+        amount: amount,
+        address: address,
+        lat: lat,
+        long: long,
+        areaRange: areaRange,
+        bedroom: bedroom,
+        bathroom: bathroom,
+        electricityBill: electricityBill,
+        propertyImages: propertyImages,
+        noOfProperty: noOfProperty,
+        propertyType: propertyType,
+        availabilityStartTime: availabilityStartTime,
+        availabilityEndTime: availabilityEndTime,
+        description: description,
+        subtype: subType,
+        postalCode: postalCode,
+      );
 
-      if (data['status'] == true) {
-        // Handle success scenario
-        // int userId = data['user']['id']; // Adjust according to your actual response
-        //
-        // // Call method to create connected account
-        // await authServices.createConnectedAccount(userId: userId, email: email);
-
-        debugPrint("Print if ${data["messages"]}");
+      if (data['success'] == true && data['payload'] != null) {
+        // Only proceed if both user and property were created successfully
+        clearFormData();
         Get.back();
         Get.back();
-        AppUtils.getSnackBar("Success", data["messages"]);
-
-        isLoading.value = false;
+        AppUtils.getSnackBar(
+            "Success", data["message"] ?? "Registration successful");
       } else {
-        isLoading.value = false;
-        if (data['messages'] != null) {
-          if (data['messages']['username'] != null) {
-            AppUtils.errorSnackBar("Error", data['messages']['username'][0]);
-          } else if (data['messages']['email'] != null) {
-            AppUtils.errorSnackBar("Error", data['messages']['email'][0]);
-          } else {
-            AppUtils.errorSnackBar("Error", "An unknown error occurred.");
-          }
+        // Handle any error messages
+        String errorMessage = data['message'] ?? "Registration failed";
+
+        if (data['errors'] != null) {
+          final errors = data['errors'] as Map<String, dynamic>;
+          errorMessage = '';
+
+          errors.forEach((key, value) {
+            if (value is List) {
+              errorMessage += '${value.first}\n';
+            } else {
+              errorMessage += '$value\n';
+            }
+          });
         }
+
+        AppUtils.errorSnackBar("Error", errorMessage.trim());
       }
     } catch (e) {
-      print(e);
+      String errorMessage = e.toString();
+      if (e is ApiException) {
+        if (e.statusCode == 422 && e.message.contains("kilobytes")) {
+          errorMessage =
+              "Image size too large. Please use smaller images (max 2MB)";
+        }
+      }
+      AppUtils.errorSnackBar("Error", errorMessage);
+    } finally {
       isLoading.value = false;
-      AppUtils.errorSnackBar("Error", e.toString());
-      rethrow;
     }
   }
 
@@ -431,10 +436,13 @@ class SignUpController extends GetxController {
     required String phoneNumber,
     required String password,
     required String cPassword,
+    required String city,
     String? address,
     String? postalCode,
     XFile? profileImage,
-    required String services,
+    required List<String> services, // Now supports multiple services
+    required String description,
+    required String additionalInfo,
     required String yearExperience,
     required String availabilityStartTime,
     required String availabilityEndTime,
@@ -442,66 +450,105 @@ class SignUpController extends GetxController {
     required XFile cnicBack,
     String? certification,
     XFile? certificationFile,
+    required String pricing,
+    required String duration,
+    required String country,
+    List<XFile>? serviceImages, // Added service images list
+    XFile? resume, // Added resume file
   }) async {
-    isLoading.value = true;
+    try {
+      isLoading.value = true;
 
-    //  try {
-    var deviceId = await notificationServices.getDeviceToken();
-    print("deviceToken : $deviceId");
+      // Validate service images
+      if (serviceImages == null || serviceImages.isEmpty) {
+        AppUtils.errorSnackBar(
+            "Error", "Please add at least one service image");
+        isLoading.value = false;
+        return;
+      }
 
-    var data = await authServices.registerServiceProvider(
-      fullName: fullName,
-      userName: userName,
-      email: email,
-      phoneNumber: phoneNumber,
-      password: password,
-      cPassword: cPassword,
-      deviceToken: deviceId,
-      address: address,
-      postalCode: postalCode,
-      platform: Platform.isAndroid ? "android" : "ios",
-      profileImage: profileImage,
-      services: services,
-      yearExperience: yearExperience,
-      availabilityStartTime: availabilityStartTime,
-      availabilityEndTime: availabilityEndTime,
-      cnicFront: cnicFront,
-      cnicBack: cnicBack,
-      certification: certification,
-      certificationFile: certificationFile,
-    );
+      // Print debug information
+      print("Registering service provider with:");
+      print("Full Name: $fullName");
+      print("Email: $email");
+      print("Services: $services");
+      print("Service Images Count: ${serviceImages.length}");
 
-    if (data['status'] == true) {
-      // int userId = data['user']['id']; // Adjust according to your actual response
-      //
-      // // Call method to create connected account
-      // await authServices.createConnectedAccount(userId: userId, email: email);
-      isLoading.value = false;
-      print("Data : $data");
-      Get.back();
-      AppUtils.getSnackBar("Success", data["messages"]);
-    } else {
-      // Handle error scenario
-      isLoading.value = false;
-      if (data['messages'] != null) {
-        if (data['messages']['username'] != null) {
-          // Show the username error message
-          AppUtils.errorSnackBar("Error", data['messages']['username'][0]);
-        } else if (data['messages']['email'] != null) {
-          // Show the email error message
-          AppUtils.errorSnackBar("Error", data['messages']['email'][0]);
+      for (var image in serviceImages) {
+        print("Service Image Path: ${image.path}");
+      }
+
+      // Call the API function with the updated parameters
+      final data = await authServices.registerServiceProvider(
+        fullName: fullName,
+        userName: userName,
+        email: email,
+        phoneNumber: phoneNumber,
+        password: password,
+        cPassword: cPassword,
+        city: city,
+        deviceToken: "werty134",
+        address: address,
+        postalCode: postalCode,
+        platform: Platform.isAndroid ? "android" : "ios",
+        profileImage: profileImage,
+        services: services,
+        yearExperience: yearExperience,
+        availabilityStartTime: availabilityStartTime,
+        availabilityEndTime: availabilityEndTime,
+        cnicFront: cnicFront,
+        cnicBack: cnicBack,
+        certification: certification,
+        description: description,
+        additionalInfo: additionalInfo,
+        certificationFile: certificationFile,
+        pricing: pricing,
+        duration: duration,
+        country: country,
+        serviceImages: serviceImages,
+        resume: resume,
+      );
+
+      if (data['success'] == true && data['payload'] != null) {
+        clearFormData();
+        Get.back();
+        Get.back();
+        AppUtils.getSnackBar(
+            "Success", data["message"] ?? "Registration successful");
+      } else {
+        // Handle error messages
+        if (data['errors'] != null) {
+          final errors = data['errors'] as Map<String, dynamic>;
+          String errorMessage = '';
+
+          // Concatenate all error messages
+          errors.forEach((key, value) {
+            if (value is List) {
+              errorMessage += '${value.first}\n';
+            } else {
+              errorMessage += '$value\n';
+            }
+          });
+
+          AppUtils.errorSnackBar("Validation Error", errorMessage.trim());
+        } else if (data['message'] != null) {
+          AppUtils.errorSnackBar("Error", data['message']);
         } else {
-          // Show a general error message if neither username nor email has a specific error
-          AppUtils.errorSnackBar("Error", "An unknown error occurred.");
+          AppUtils.errorSnackBar("Error", "An unknown error occurred");
         }
       }
+    } catch (e) {
+      String errorMessage = e.toString();
+      if (e is ApiException) {
+        if (e.statusCode == 422 && e.message.contains("kilobytes")) {
+          errorMessage =
+              "Image size too large. Please use smaller images (max 2MB)";
+        }
+      }
+      AppUtils.errorSnackBar("Error", errorMessage);
+    } finally {
+      isLoading.value = false;
     }
-    // } catch (e) {
-    //   print(e);
-    //   isLoading.value = false;
-    //   AppUtils.getSnackBar("Error", "Failed to register service provider");
-    //   rethrow;
-    // }
   }
 
   Future<void> registerTenant({
@@ -511,7 +558,7 @@ class SignUpController extends GetxController {
     required String phoneNumber,
     required String password,
     required String cPassword,
-    required int roleId,
+    required String role,
     String? address,
     String? postalCode,
     XFile? profileImage,
@@ -523,10 +570,10 @@ class SignUpController extends GetxController {
     String? leasedDuration,
     String? noOfOccupants,
   }) async {
-    isLoading.value = true;
     try {
-      var deviceId = await notificationServices.getDeviceToken();
-      var data = await authServices.registerTenant(
+      isLoading.value = true;
+
+      final data = await authServices.registerTenant(
         fullName: fullName,
         userName: userName,
         email: email,
@@ -535,7 +582,7 @@ class SignUpController extends GetxController {
         postalCode: postalCode,
         password: password,
         cPassword: cPassword,
-        roleId: roleId,
+        role: role,
         profileImage: profileImage,
         lastStatus: lastStatus,
         lastLandlordName: lastLandlordName,
@@ -544,35 +591,300 @@ class SignUpController extends GetxController {
         occupation: occupation,
         leasedDuration: leasedDuration,
         noOfOccupants: noOfOccupants,
-        deviceToken: deviceId,
+        deviceToken: "werty134",
         platform: Platform.isAndroid ? "android" : "ios",
       );
 
-      print("Data : $data");
+      if (data['success'] == true) {
+        // Clear form data
+        clearFormData();
 
-      if (data['status'] == true) {
-        isLoading.value = false;
-        Get.back();
-        AppUtils.getSnackBar("Success", data['messages']);
+        // Navigate back to login screen
+        Get.back(); // Close registration screen
+        AppUtils.getSnackBar(
+            "Success", "Registration successful. Please login to continue.");
       } else {
-        // Handle error scenario
-        isLoading.value = false;
-        if (data['messages'] != null) {
-          if (data['messages']['username'] != null) {
-            // Show the username error message
-            AppUtils.errorSnackBar("Error", data['messages']['username'][0]);
-          } else if (data['messages']['email'] != null) {
-            // Show the email error message
-            AppUtils.errorSnackBar("Error", data['messages']['email'][0]);
-          } else {
-            // Show a general error message if neither username nor email has a specific error
-            AppUtils.errorSnackBar("Error", "An unknown error occurred.");
-          }
+        // Handle error messages
+        if (data['errors'] != null) {
+          final errors = data['errors'] as Map<String, dynamic>;
+          String errorMessage = '';
+
+          errors.forEach((key, value) {
+            if (value is List) {
+              errorMessage += '${value.first}\n';
+            } else {
+              errorMessage += '$value\n';
+            }
+          });
+
+          AppUtils.errorSnackBar("Validation Error", errorMessage.trim());
+        } else if (data['message'] != null) {
+          AppUtils.errorSnackBar("Error", data['message']);
+        } else {
+          AppUtils.errorSnackBar("Error", "An unknown error occurred");
         }
       }
     } catch (e) {
+      String errorMessage = e.toString();
+      if (e is ApiException) {
+        if (e.statusCode == 422 && e.message.contains("kilobytes")) {
+          errorMessage =
+              "Image size too large. Please use smaller images (max 2MB)";
+        }
+      }
+      AppUtils.errorSnackBar("Error", errorMessage);
+    } finally {
       isLoading.value = false;
-      AppUtils.errorSnackBar("Error", "Failed to register tenant");
     }
+  }
+
+  // Add method to clear form data
+  void clearFormData() {
+    nameController.clear();
+    userNameController.clear();
+    emailController.clear();
+    phoneController.clear();
+    addressController.clear();
+    postalCode.clear();
+    passwordController.clear();
+    confirmPasswordController.clear();
+    description.clear();
+    newYorkController.clear();
+    amountController.clear();
+    images.clear();
+    profileImage.value = null;
+    isSale.value = false;
+    selectedRange.value = "1 sq ft";
+    selectedBedroom.value = 1;
+    selectedBothList.value = "1";
+    propertyTypeIndex.value = 0;
+    noOfPropertiesValue.value = 'No of Properties';
+  }
+
+  //Serive adding
+
+  var servicesNameController = TextEditingController();
+  var cityNameController = TextEditingController();
+  var descriptionController = TextEditingController();
+  var categoryController = TextEditingController();
+  var pricingController = TextEditingController();
+  var durationController = TextEditingController();
+  var availabilityController = TextEditingController();
+  var locationController = TextEditingController();
+  var additionalInfoController = TextEditingController();
+  var yearsExperienceController = TextEditingController();
+
+  var selectedCountry = RxnString();
+  var countriesList = <String>[].obs;
+  final List<String> allCountries = [
+    'Afghanistan',
+    'Albania',
+    'Algeria',
+    'Andorra',
+    'Angola',
+    'Antigua and Barbuda',
+    'Argentina',
+    'Armenia',
+    'Australia',
+    'Austria',
+    'Azerbaijan',
+    'Bahamas',
+    'Bahrain',
+    'Bangladesh',
+    'Barbados',
+    'Belarus',
+    'Belgium',
+    'Belize',
+    'Benin',
+    'Bhutan',
+    'Bolivia',
+    'Bosnia and Herzegovina',
+    'Botswana',
+    'Brazil',
+    'Brunei',
+    'Bulgaria',
+    'Burkina Faso',
+    'Burundi',
+    'Cabo Verde',
+    'Cambodia',
+    'Cameroon',
+    'Canada',
+    'Central African Republic',
+    'Chad',
+    'Chile',
+    'China',
+    'Colombia',
+    'Comoros',
+    'Congo (Congo-Brazzaville)',
+    'Congo (Democratic Republic of the Congo)',
+    'Costa Rica',
+    'Croatia',
+    'Cuba',
+    'Cyprus',
+    'Czech Republic (Czechia)',
+    'Denmark',
+    'Djibouti',
+    'Dominica',
+    'Dominican Republic',
+    'Ecuador',
+    'Egypt',
+    'El Salvador',
+    'Equatorial Guinea',
+    'Eritrea',
+    'Estonia',
+    'Eswatini (fmr. "Swaziland")',
+    'Ethiopia',
+    'Fiji',
+    'Finland',
+    'France',
+    'Gabon',
+    'Gambia',
+    'Georgia',
+    'Germany',
+    'Ghana',
+    'Greece',
+    'Grenada',
+    'Guatemala',
+    'Guinea',
+    'Guinea-Bissau',
+    'Guyana',
+    'Haiti',
+    'Holy See',
+    'Honduras',
+    'Hungary',
+    'Iceland',
+    'India',
+    'Indonesia',
+    'Iran',
+    'Iraq',
+    'Ireland',
+    'Israel',
+    'Italy',
+    'Ivory Coast',
+    'Jamaica',
+    'Japan',
+    'Jordan',
+    'Kazakhstan',
+    'Kenya',
+    'Kiribati',
+    'Kuwait',
+    'Kyrgyzstan',
+    'Laos',
+    'Latvia',
+    'Lebanon',
+    'Lesotho',
+    'Liberia',
+    'Libya',
+    'Liechtenstein',
+    'Lithuania',
+    'Luxembourg',
+    'Madagascar',
+    'Malawi',
+    'Malaysia',
+    'Maldives',
+    'Mali',
+    'Malta',
+    'Marshall Islands',
+    'Mauritania',
+    'Mauritius',
+    'Mexico',
+    'Micronesia',
+    'Moldova',
+    'Monaco',
+    'Mongolia',
+    'Montenegro',
+    'Morocco',
+    'Mozambique',
+    'Myanmar (formerly Burma)',
+    'Namibia',
+    'Nauru',
+    'Nepal',
+    'Netherlands',
+    'New Zealand',
+    'Nicaragua',
+    'Niger',
+    'Nigeria',
+    'North Korea',
+    'North Macedonia (formerly Macedonia)',
+    'Norway',
+    'Oman',
+    'Pakistan',
+    'Palau',
+    'Palestine State',
+    'Panama',
+    'Papua New Guinea',
+    'Paraguay',
+    'Peru',
+    'Philippines',
+    'Poland',
+    'Portugal',
+    'Qatar',
+    'Romania',
+    'Russia',
+    'Rwanda',
+    'Saint Kitts and Nevis',
+    'Saint Lucia',
+    'Saint Vincent and the Grenadines',
+    'Samoa',
+    'San Marino',
+    'Sao Tome and Principe',
+    'Saudi Arabia',
+    'Senegal',
+    'Serbia',
+    'Seychelles',
+    'Sierra Leone',
+    'Singapore',
+    'Slovakia',
+    'Slovenia',
+    'Solomon Islands',
+    'Somalia',
+    'South Africa',
+    'South Korea',
+    'South Sudan',
+    'Spain',
+    'Sri Lanka',
+    'Sudan',
+    'Suriname',
+    'Sweden',
+    'Switzerland',
+    'Syria',
+    'Tajikistan',
+    'Tanzania',
+  ];
+  @override
+  void onInit() {
+    super.onInit();
+    countriesList.addAll(allCountries);
+  }
+
+  void searchCountry(String query) {
+    if (query.isEmpty) {
+      countriesList.assignAll(allCountries);
+    } else {
+      countriesList.assignAll(
+        allCountries
+            .where((country) =>
+                country.toLowerCase().contains(query.toLowerCase()))
+            .toList(),
+      );
+    }
+  }
+
+  String formatTimeOfDay(TimeOfDay time) {
+    // Convert to 12-hour format
+    int hour = time.hourOfPeriod;
+    if (hour == 0) hour = 12; // Handle midnight (12 AM)
+
+    // Format hour with leading zero if needed
+    String hourStr = hour.toString().padLeft(2, '0');
+
+    // Format minutes with leading zero if needed
+    String minute = time.minute.toString().padLeft(2, '0');
+
+    // Determine AM/PM
+    String period = time.period == DayPeriod.am ? 'AM' : 'PM';
+
+    // Format as "hh:mm PP" (e.g., "04:00 PM" for 4:00 PM)
+    return '$hourStr:$minute $period';
   }
 }

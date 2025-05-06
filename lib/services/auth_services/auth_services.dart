@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:property_app/constant_widget/constant_widgets.dart';
@@ -9,9 +8,10 @@ import 'package:property_app/utils/api_urls.dart';
 import 'package:property_app/utils/shared_preferences/preferences.dart';
 import 'package:property_app/utils/utils.dart';
 
+import '../../utils/base_api_service.dart';
 import '../../utils/connectivity.dart';
 
-class AuthServices {
+class AuthServices extends BaseApiService {
   Future<Map<String, dynamic>> registerVisitor({
     required String fullName,
     required String userName,
@@ -25,39 +25,71 @@ class AuthServices {
     required String conPassword,
     XFile? profileImage,
   }) async {
-    if (await ConnectivityUtility.checkInternetConnectivity() == true) {
-      try {
-        var request =
-            http.MultipartRequest('POST', Uri.parse(AppUrls.registerUrl));
-        request.fields.addAll({
-          'email': email,
-          'fullname': fullName,
-          'username': userName,
-          'phone_number': phoneNumber,
-          'address': address!,
-          'postal_code': postalCode!,
-          'password': password,
-          'device_token': deviceToken,
-          'platform': platform,
-          'password_confirmation': conPassword,
-          'role_id': '4',
-        });
-        // Add profileImage to the request if it's not null
-        if (profileImage != null) {
-          request.files.add(await http.MultipartFile.fromPath(
-              'profileimage', profileImage.path));
-        }
-        var response = await request.send();
-        var responseBody = await response.stream.bytesToString();
-        return json.decode(responseBody);
-      } catch (e) {
-        // Handle general errors
-        throw Exception('Failed to register: $e');
-      }
-    } else {
+    final hasInternet = await ConnectivityUtility.checkInternetConnectivity();
+    if (!hasInternet) {
       AppUtils.getSnackBarNoInternet();
-      // You might want to throw an exception here or return a specific value
-      throw Exception('No internet connectivity');
+      throw ApiException('No internet connectivity');
+    }
+
+    try {
+      apiUrl = AppUrls.registerUrl;
+
+      // Prepare form data
+      final fields = {
+        'email': email,
+        'full_name': fullName,
+        'user_name': userName,
+        'phone_number': phoneNumber,
+        'address': address ?? '',
+        'postal_code': postalCode ?? '',
+        'password': password,
+        'device_token': deviceToken,
+        'platform': 'android',
+        'password_confirmation': conPassword,
+        'role': 'visitor'
+        //'role_id': '4',
+      };
+
+      // Log request details
+      BaseApiService.logRequest(
+          apiUrl,
+          'POST',
+          {'Accept': 'application/json', 'Content-Type': 'multipart/form-data'},
+          fields);
+
+      // Create multipart request
+      var request = http.MultipartRequest('POST', Uri.parse(apiUrl))
+        ..headers.addAll({
+          'Accept': 'application/json',
+        })
+        ..fields.addAll(fields);
+
+      // Add profile image if provided
+      if (profileImage != null) {
+        request.files.add(await http.MultipartFile.fromPath(
+            'profile_image', profileImage.path));
+      }
+
+      var response = await request.send();
+      var responseBody = await response.stream.bytesToString();
+
+      // Log response
+      BaseApiService.logResponse(apiUrl, response.statusCode, responseBody);
+
+      // Parse and validate response
+      final decodedResponse = json.decode(responseBody);
+      validateResponse(response.statusCode, decodedResponse);
+
+      return decodedResponse;
+    } catch (e) {
+      // Log error
+      BaseApiService.logError(apiUrl, e.toString());
+
+      if (e is ApiException) {
+        BaseApiService.handleApiException(e as ApiException);
+        rethrow;
+      }
+      throw ApiException('Failed to register: $e');
     }
   }
 
@@ -70,9 +102,9 @@ class AuthServices {
     required String cPassword,
     required String deviceToken,
     required String platform,
-    required int roleId,
-    XFile? profileImage, // Make profile image non-required
-    required int type,
+    required String role,
+    XFile? profileImage,
+    required String type,
     required String city,
     required double amount,
     String? address,
@@ -91,29 +123,38 @@ class AuthServices {
     required String description,
     String? postalCode,
   }) async {
-    if (await ConnectivityUtility.checkInternetConnectivity() == true) {
-      var url = Uri.parse(AppUrls.registerUrl);
-      var data = {
-        'fullname': fullName,
-        'username': userName,
+    final hasInternet = await ConnectivityUtility.checkInternetConnectivity();
+    if (!hasInternet) {
+      AppUtils.getSnackBarNoInternet();
+      throw ApiException('No internet connectivity');
+    }
+
+    try {
+      apiUrl = AppUrls.registerUrl;
+      final url = Uri.parse(apiUrl);
+
+      // Prepare form data
+      final fields = {
+        'full_name': fullName,
+        'user_name': userName,
         'email': email,
         'phone_number': phoneNumber,
         'password': password,
-        'device_token': deviceToken,
+        'device_token': 'werty134',
         'platform': platform,
         'password_confirmation': cPassword,
-        'role_id': roleId.toString(),
+        'role': role,
         'type': type.toString(),
         'city': city,
         'amount': amount.toString(),
-        'address': address,
+        'address': address ?? '',
         'lat': lat.toString(),
         'long': long.toString(),
         'area_range': areaRange,
         'bedroom': bedroom.toString(),
-        'bathroom': bathroom.toString(),
-        'description': description.toString(),
-        'postal_code': postalCode.toString(),
+        'bathroom': bathroom,
+        'description': description,
+        'postal_code': postalCode ?? '',
         'no_of_property': noOfProperty.toString(),
         'property_type': propertyType,
         'property_sub_type': subtype,
@@ -121,49 +162,32 @@ class AuthServices {
         'availability_end_time': availabilityEndTime,
       };
 
-      print(data);
+      // Log request details
+      BaseApiService.logRequest(
+          url.toString(),
+          'POST',
+          {'Accept': 'application/json', 'Content-Type': 'multipart/form-data'},
+          fields);
+
+      // Create multipart request
       var request = http.MultipartRequest('POST', url)
         ..headers.addAll({
-          'Content-Type': 'multipart/form-data',
+          'Accept': 'application/json',
         })
-        ..fields.addAll({
-          'fullname': fullName,
-          'username': userName,
-          'email': email,
-          'phone_number': phoneNumber,
-          'password': password,
-          'device_token': deviceToken,
-          'platform': platform,
-          'password_confirmation': cPassword,
-          'role_id': roleId.toString(),
-          'type': type.toString(),
-          'city': city,
-          'amount': amount.toString(),
-          'address': address!,
-          'lat': lat.toString(),
-          'long': long.toString(),
-          'area_range': areaRange,
-          'bedroom': bedroom.toString(),
-          'bathroom': bathroom.toString(),
-          'description': description.toString(),
-          'postal_code': postalCode.toString(),
-          'property_images[]': propertyImages.toString(),
-          'electricity_bill': electricityBill.name,
-        });
+        ..fields.addAll(fields);
 
       // Add profile image if provided
       if (profileImage != null) {
         request.files.add(await http.MultipartFile.fromPath(
-          'profileimage',
+          'profile_image',
           File(profileImage.path).path,
           filename: 'profile_image.jpg',
         ));
       }
-
       // Add electricity bill image
       request.files.add(await http.MultipartFile.fromPath(
         'electricity_bill',
-        File(electricityBill.path).path,
+        electricityBill.path,
         filename: 'electricity_bill.jpg',
       ));
 
@@ -177,27 +201,184 @@ class AuthServices {
         ));
       }
 
-      // Add remaining fields
-      request.fields.addAll({
-        'no_of_property': noOfProperty.toString(),
-        'property_type': propertyType,
-        'property_sub_type': subtype,
-        'availability_start_time': availabilityStartTime,
-        'availability_end_time': availabilityEndTime,
-      });
       var response = await request.send();
-
       var responseBody = await response.stream.bytesToString();
-      print("Response body : $responseBody");
-      print("Response body : ${response.statusCode}");
-      return jsonDecode(responseBody);
-    } else {
-      AppUtils.getSnackBarNoInternet();
-      throw Exception('No internet connectivity');
+
+      // Log response
+      BaseApiService.logResponse(
+          url.toString(), response.statusCode, responseBody);
+
+      // Parse and validate response
+      final decodedResponse = json.decode(responseBody);
+      validateResponse(response.statusCode, decodedResponse);
+
+      return decodedResponse;
+    } catch (e) {
+      BaseApiService.logError(apiUrl, e.toString());
+      if (e is ApiException) {
+        BaseApiService.handleApiException(e);
+        rethrow;
+      }
+      throw ApiException('Failed to register property: $e');
     }
   }
 
   //Service Provider
+
+  // Future<Map<String, dynamic>> registerServiceProvider({
+  //   required String fullName,
+  //   required String userName,
+  //   required String email,
+  //   required String phoneNumber,
+  //   required String password,
+  //   required String city,
+  //   String? address,
+  //   String? postalCode,
+  //   required String cPassword,
+  //   required String deviceToken,
+  //   required String platform,
+  //   XFile? profileImage,
+  //   required String services,
+  //   required String yearExperience,
+  //   required String availabilityStartTime,
+  //   required String availabilityEndTime,
+  //   required XFile cnicFront,
+  //   required XFile cnicBack,
+  //   String? certification,
+  //   XFile? certificationFile,
+  //   required String pricing,
+  //   required String duration,
+  //   required String country,
+  //   required String location,
+  //   required String description,
+  //   required String additionalInfo,
+  // }) async {
+  //   final hasInternet = await ConnectivityUtility.checkInternetConnectivity();
+  //   if (!hasInternet) {
+  //     AppUtils.getSnackBarNoInternet();
+  //     throw ApiException('No internet connectivity');
+  //   }
+  //
+  //   try {
+  //     apiUrl = AppUrls.registerUrl;
+  //     final url = Uri.parse(apiUrl);
+  //
+  //     // Convert services to array format
+  //     final servicesList = [services]; // Create array with single service
+  //
+  //     // Prepare form data
+  //     final fields = {
+  //       'full_name': fullName,
+  //       'user_name': userName,
+  //       'email': email,
+  //       'phone_number': phoneNumber,
+  //       'password': password,
+  //       'device_token': "werty134",
+  //       'platform': platform,
+  //       'password_confirmation': cPassword,
+  //       'role': "service_provider",
+  //       'services[]': servicesList, // Send as array
+  //       'address': address ?? '',
+  //       'postal_code': postalCode ?? '',
+  //       'year_experience': yearExperience,
+  //       'availability_start_time': availabilityStartTime,
+  //       'availability_end_time': availabilityEndTime,
+  //       'certification': certification ?? 'No',
+  //       'pricing': pricing,
+  //       'duration': duration,
+  //       'country': country,
+  //       'location': location,
+  //       'city': city,
+  //       'description': description,
+  //       'additional_information': additionalInfo,
+  //     };
+  //
+  //     // Log request
+  //     BaseApiService.logRequest(
+  //         url.toString(),
+  //         'POST',
+  //         {'Accept': 'application/json', 'Content-Type': 'multipart/form-data'},
+  //         fields);
+  //
+  //     // Create multipart request
+  //     var request = http.MultipartRequest('POST', url)
+  //       ..headers.addAll({
+  //         'Accept': 'application/json',
+  //       });
+  //
+  //     // Add all fields except services
+  //     fields.forEach((key, value) {
+  //       if (key != 'services[]') {
+  //         request.fields[key] = value.toString();
+  //       }
+  //     });
+  //
+  //     // Add services as array
+  //     for (var service in servicesList) {
+  //       request.fields['services[]'] = service;
+  //     }
+  //
+  //     // Add profile image if provided
+  //     if (profileImage != null) {
+  //       request.files.add(await http.MultipartFile.fromPath(
+  //         'profile_image',
+  //         profileImage.path,
+  //         filename: 'profile_image.jpg',
+  //       ));
+  //     }
+  //
+  //     // Add CNIC images
+  //     request.files.add(await http.MultipartFile.fromPath(
+  //       'cnic_front',
+  //       cnicFront.path,
+  //       filename: 'cnic_front.jpg',
+  //     ));
+  //
+  //     request.files.add(await http.MultipartFile.fromPath(
+  //       'cnic_back',
+  //       cnicBack.path,
+  //       filename: 'cnic_back.jpg',
+  //     ));
+  //
+  //     // Add certification file if provided
+  //     if (certificationFile != null) {
+  //       request.files.add(await http.MultipartFile.fromPath(
+  //         'certification_file',
+  //         certificationFile.path,
+  //         filename: 'certification_file.jpg',
+  //       ));
+  //     }
+  //
+  //     var response = await request.send();
+  //     var responseBody = await response.stream.bytesToString();
+  //
+  //     // Log response
+  //     BaseApiService.logResponse(
+  //         url.toString(), response.statusCode, responseBody);
+  //
+  //     // Parse and validate response
+  //     final decodedResponse = json.decode(responseBody);
+  //     validateResponse(response.statusCode, decodedResponse);
+  //
+  //     return decodedResponse;
+  //   } catch (e) {
+  //     BaseApiService.logError(apiUrl, e.toString());
+  //     if (e is ApiException) {
+  //       BaseApiService.handleApiException(e);
+  //       rethrow;
+  //     }
+  //     throw ApiException('Failed to register service provider: $e');
+  //   }
+  // }
+
+  Future<http.MultipartFile> convertToFile(XFile file, String fieldName) async {
+    return await http.MultipartFile.fromPath(
+      fieldName,
+      file.path,
+      filename:
+          '${fieldName}_${DateTime.now().millisecondsSinceEpoch}.jpg', // Ensure unique filename
+    );
+  }
 
   Future<Map<String, dynamic>> registerServiceProvider({
     required String fullName,
@@ -205,13 +386,14 @@ class AuthServices {
     required String email,
     required String phoneNumber,
     required String password,
+    required String city,
     String? address,
     String? postalCode,
     required String cPassword,
     required String deviceToken,
     required String platform,
     XFile? profileImage,
-    required String services,
+    required List<String> services,
     required String yearExperience,
     required String availabilityStartTime,
     required String availabilityEndTime,
@@ -219,79 +401,142 @@ class AuthServices {
     required XFile cnicBack,
     String? certification,
     XFile? certificationFile,
+    required String pricing,
+    required String duration,
+    required String country,
+    required String description,
+    required String additionalInfo,
+    List<XFile>? serviceImages,
+    XFile? resume,
   }) async {
-    var url =
-        Uri.parse(AppUrls.registerUrl); // Replace with your actual API endpoint
-    var data = {
-      'fullname': fullName,
-      'username': userName,
-      'email': email,
-      'phone_number': phoneNumber,
-      'password': password,
-      'device_token': deviceToken,
-      'platform': platform,
-      'password_confirmation': cPassword,
-      'role_id': "3",
-      'services': "2",
-      'year_experience': yearExperience.toString(),
-      'availability_start_time': availabilityStartTime,
-      'availability_end_time': availabilityEndTime,
-      if (certification != null) 'certification': certification,
-    };
-
-    print(data.toString());
-    var request = http.MultipartRequest('POST', url)
-      ..headers['Content-Type'] = 'multipart/form-data'
-      ..fields.addAll({
-        'fullname': fullName,
-        'username': userName,
-        'email': email,
-        'phone_number': phoneNumber,
-        'password': password,
-        'device_token': deviceToken,
-        'platform': platform,
-        'password_confirmation': cPassword,
-        'role_id': "3",
-        'services': "2",
-        'address': address!,
-        'postal_code': postalCode!,
-        'year_experience': yearExperience.toString(),
-        'availability_start_time': "9 : am",
-        'availability_end_time': "5 : PM",
-        'certification': "No",
-      })
-      ..files.add(await http.MultipartFile.fromPath(
-        'cnic_front',
-        File(cnicFront.path).path,
-        filename: 'cnic_front.jpg',
-      ))
-      ..files.add(await http.MultipartFile.fromPath(
-        'cnic_back',
-        File(cnicBack.path).path,
-        filename: 'cnic_back.jpg',
-      ));
-    if (profileImage != null) {
-      request.files.add(await http.MultipartFile.fromPath(
-        'profileimage',
-        File(profileImage.path).path,
-        filename: 'profile_image.jpg',
-      ));
+    final hasInternet = await ConnectivityUtility.checkInternetConnectivity();
+    if (!hasInternet) {
+      AppUtils.getSnackBarNoInternet();
+      throw ApiException('No internet connectivity');
     }
-    if (certificationFile != null) {
-      request.files.add(await http.MultipartFile.fromPath(
-        'certification_file_name',
-        File(certificationFile.path).path,
-        filename: 'certification_file.jpg',
-      ));
-    }
-    var response = await request.send();
 
-    var responseBody = await response.stream.bytesToString();
-    print("Response : $responseBody");
-    return json.decode(responseBody);
-    try {} catch (e) {
-      rethrow;
-      throw Exception('Failed to register service provider: $e');
+    try {
+      apiUrl = AppUrls.registerUrl;
+
+      // Create a multipart request directly
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse(apiUrl),
+      );
+
+      // Add headers
+      request.headers.addAll({
+        'Accept': 'application/json',
+      });
+
+      // Add all text fields
+      request.fields['full_name'] = fullName;
+      request.fields['user_name'] = userName;
+      request.fields['email'] = email;
+      request.fields['phone_number'] = phoneNumber;
+      request.fields['password'] = password;
+      request.fields['device_token'] = deviceToken;
+      request.fields['platform'] = platform;
+      request.fields['password_confirmation'] = cPassword;
+      request.fields['role'] = "service_provider";
+      request.fields['address'] = address ?? '';
+      request.fields['postal_code'] = postalCode ?? '';
+      request.fields['year_experience'] = yearExperience;
+      request.fields['availability_start_time'] = availabilityStartTime;
+      request.fields['availability_end_time'] = availabilityEndTime;
+      request.fields['pricing'] = pricing;
+      request.fields['duration'] = duration;
+      request.fields['country'] = country;
+      request.fields['location'] = country;
+      request.fields['city'] = city;
+      request.fields['description'] = description;
+      request.fields['additional_information'] = additionalInfo;
+
+      // Add services
+      for (var service in services) {
+        request.fields['services[]'] = service;
+      }
+
+      // Add profile image if provided
+      if (profileImage != null) {
+        var profileFile = await http.MultipartFile.fromPath(
+          'profile_image',
+          profileImage.path,
+        );
+        request.files.add(profileFile);
+        print("Added profile image: ${profileImage.path}");
+      }
+
+      // Add CNIC front image
+      var cnicFrontFile = await http.MultipartFile.fromPath(
+        'cnic_front_pic',
+        cnicFront.path,
+      );
+      request.files.add(cnicFrontFile);
+      print("Added CNIC front: ${cnicFront.path}");
+
+      // Add CNIC back image
+      var cnicBackFile = await http.MultipartFile.fromPath(
+        'cnic_back_pic',
+        cnicBack.path,
+      );
+      request.files.add(cnicBackFile);
+      print("Added CNIC back: ${cnicBack.path}");
+
+      // Add certification file if provided
+      if (certificationFile != null) {
+        var certFile = await http.MultipartFile.fromPath(
+          'certification',
+          certificationFile.path,
+        );
+        request.files.add(certFile);
+        print("Added certification file: ${certificationFile.path}");
+      }
+
+      // Add service images - using a different approach
+      if (serviceImages != null && serviceImages.isNotEmpty) {
+        for (int i = 0; i < serviceImages.length; i++) {
+          var serviceImageFile = await http.MultipartFile.fromPath(
+            'service_images[$i]', // Try using indexed notation like property images
+            serviceImages[i].path,
+          );
+          request.files.add(serviceImageFile);
+          print("Added service image $i: ${serviceImages[i].path}");
+        }
+      }
+
+      // Add resume if provided
+      if (resume != null) {
+        var resumeFile = await http.MultipartFile.fromPath(
+          'resume',
+          resume.path,
+        );
+        request.files.add(resumeFile);
+        print("Added resume: ${resume.path}");
+      }
+
+      // Log request details
+      print("Request URL: ${apiUrl}");
+      print("Request Headers: ${request.headers}");
+      print("Request Fields: ${request.fields}");
+      print("Request Files Count: ${request.files.length}");
+
+      // Send the request
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
+
+      // Log response details
+      print("Response Status Code: ${response.statusCode}");
+      print("Response Body: ${response.body}");
+
+      // Parse response
+      final decodedResponse = json.decode(response.body);
+
+      return decodedResponse;
+    } catch (e) {
+      print("Registration Error: $e");
+      if (e is ApiException) rethrow;
+      throw ApiException('Failed to register service provider: $e');
     }
   }
 
@@ -306,7 +551,7 @@ class AuthServices {
     String? postalCode,
     required String deviceToken,
     required String platform,
-    required int roleId,
+    required String role,
     XFile? profileImage,
     required int lastStatus,
     String? lastLandlordName,
@@ -316,63 +561,80 @@ class AuthServices {
     String? leasedDuration,
     String? noOfOccupants,
   }) async {
-    if (await ConnectivityUtility.checkInternetConnectivity() == true) {
-      var url = Uri.parse(AppUrls.registerUrl);
+    final hasInternet = await ConnectivityUtility.checkInternetConnectivity();
+    if (!hasInternet) {
+      AppUtils.getSnackBarNoInternet();
+      throw ApiException('No internet connectivity');
+    }
 
+    try {
+      apiUrl = AppUrls.registerUrl;
+      final url = Uri.parse(apiUrl);
+
+      // Prepare form data
+      final fields = {
+        'full_name': fullName,
+        'user_name': userName,
+        'email': email,
+        'phone_number': phoneNumber,
+        'password': password,
+        'device_token': "werty134",
+        'platform': platform,
+        'address': address ?? '',
+        'postal_code': postalCode ?? '',
+        'password_confirmation': cPassword,
+        'role': "tenant",
+        'last_status': lastStatus.toString(),
+        'last_landlord_name': lastLandlordName ?? '',
+        'last_tenancy': lastTenancy ?? '',
+        'last_landlord_contact': lastLandlordContact ?? '',
+        'occupation': occupation ?? '',
+        'leased_duration': leasedDuration ?? '',
+        'no_of_occupants': noOfOccupants ?? '',
+      };
+
+      // Log request
+      BaseApiService.logRequest(
+          url.toString(),
+          'POST',
+          {'Accept': 'application/json', 'Content-Type': 'multipart/form-data'},
+          fields);
+
+      // Create multipart request
       var request = http.MultipartRequest('POST', url)
         ..headers.addAll({
-          'Content-Type':
-              'multipart/form-data', // Add your desired content type
-          //'Authorization': 'Bearer YOUR_ACCESS_TOKEN', // Add your authorization token if needed
-          // Add other headers as needed
+          'Accept': 'application/json',
         })
-        ..fields.addAll({
-          'fullname': fullName,
-          'username': userName,
-          'email': email,
-          'phone_number': phoneNumber,
-          'password': password,
-          'device_token': deviceToken,
-          'platform': platform,
-          'address': address!,
-          'postal_code': postalCode!,
-          'password_confirmation': cPassword,
-          'role_id': roleId.toString(),
-          'last_status': lastStatus.toString(),
-          if (lastLandlordName != null)
-            'last_landlord_name': lastLandlordName ?? '',
-          if (lastTenancy != null) 'last_tenancy': lastTenancy ?? '',
-          if (lastLandlordContact != null)
-            'last_landlord_contact': lastLandlordContact ?? '',
-        });
+        ..fields.addAll(fields);
 
-      // Add these fields outside the conditional statements
-      request.fields.addAll({
-        'occupation': occupation!,
-        'leased_duration': leasedDuration!,
-        'no_of_occupants': noOfOccupants!.toString(),
-      });
-
+      // Add profile image if provided
       if (profileImage != null) {
         request.files.add(await http.MultipartFile.fromPath(
-          'profileimage',
-          File(profileImage.path).path,
+          'profile_image',
+          profileImage.path,
           filename: 'profile_image.jpg',
         ));
       }
 
-      try {
-        var response = await request.send();
-        var responseBody = await response.stream.bytesToString();
-        print(responseBody);
-        return json.decode(responseBody);
-      } catch (e) {
-        // Handle general errors
-        throw Exception('Failed to register tenant: $e');
+      var response = await request.send();
+      var responseBody = await response.stream.bytesToString();
+
+      // Log response
+      BaseApiService.logResponse(
+          url.toString(), response.statusCode, responseBody);
+
+      // Parse and validate response
+      final decodedResponse = json.decode(responseBody);
+      validateResponse(response.statusCode, decodedResponse);
+
+      return decodedResponse;
+    } catch (e) {
+      BaseApiService.logError(apiUrl, e.toString());
+      if (e is ApiException) {
+        BaseApiService.handleApiException(e);
+        rethrow;
       }
-    } else {
-      AppUtils.getSnackBarNoInternet();
-      throw Exception('No internet connectivity');
+      throw ApiException('Failed to register tenant: $e');
     }
   }
 
@@ -440,116 +702,205 @@ class AuthServices {
     required String deviceToken,
     required String platform,
   }) async {
-    if (await ConnectivityUtility.checkInternetConnectivity() == true) {
-      Uri url = Uri.parse(
-        '${AppUrls.loginUrl}?email=$email&password=$password&device_token=$deviceToken&platform=$platform',
-      );
-      try {
-        var res = await http.post(
-          url,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        );
-
-        // Debug logging
-        print('Response status code: ${res.statusCode}');
-        print('Response headers: ${res.headers}');
-        print('Response body: ${res.body}');
-
-        // Check if response is HTML instead of JSON
-        if (res.body.trim().startsWith('<!DOCTYPE html>')) {
-          throw Exception(
-              'Server returned HTML instead of JSON. Please contact support.');
-        }
-
-        // Check status code
-        if (res.statusCode != 200) {
-          throw Exception('Server returned status code ${res.statusCode}');
-        }
-
-        try {
-          return json.decode(res.body);
-        } on FormatException catch (e) {
-          throw Exception('Invalid JSON response from server: ${e.message}');
-        }
-      } catch (e) {
-        if (e is Exception) {
-          rethrow;
-        }
-        throw Exception('Failed to Login: $e');
-      }
-    } else {
+    final hasInternet = await ConnectivityUtility.checkInternetConnectivity();
+    if (!hasInternet) {
       AppUtils.getSnackBarNoInternet();
-      throw Exception('No internet connectivity');
+      throw ApiException('No internet connectivity');
+    }
+
+    try {
+      apiUrl = AppUrls.loginUrl;
+
+      // Prepare query parameters
+      final queryParams = {
+        'email': email,
+        'password': password,
+        'device_token': deviceToken,
+        'platform': platform,
+      };
+
+      final url = Uri.parse(apiUrl).replace(queryParameters: queryParams);
+
+      // Log request
+      BaseApiService.logRequest(
+          url.toString(), 'POST', {'Accept': 'application/json'}, queryParams);
+
+      final response = await http.post(
+        url,
+        headers: {
+          'Accept': 'application/json',
+        },
+      );
+
+      // Log response
+      BaseApiService.logResponse(
+          url.toString(), response.statusCode, response.body);
+
+      // Check if response is HTML
+      if (response.body.trim().startsWith('<!DOCTYPE html>')) {
+        throw ApiException(
+            'Server returned HTML instead of JSON. Please contact support.');
+      }
+
+      // Parse and validate response
+      final decodedResponse = json.decode(response.body);
+      validateResponse(response.statusCode, decodedResponse);
+
+      return decodedResponse;
+    } catch (e) {
+      // Log error with full URL
+      BaseApiService.logError(
+          Uri.parse(apiUrl).replace(queryParameters: {
+            'email': email,
+            'platform': platform,
+            // Omit password and device token from error logs
+          }).toString(),
+          e.toString());
+
+      if (e is ApiException) {
+        BaseApiService.handleApiException(e);
+        rethrow;
+      }
+      if (e is FormatException) {
+        throw ApiException('Invalid JSON response from server: ${e.message}');
+      }
+      throw ApiException(e.toString());
     }
   }
 
-  getUserState() async {
-    var data = await Preferences.getUserID();
-    var token = await Preferences.getToken();
-    Uri url = Uri.parse(
-      "${AppUrls.userState}?serviceprovider_id=$data",
-    );
+  Future<Map<String, dynamic>> getUserState() async {
     try {
-      var res = await http.post(url, headers: getHeader(userToken: token));
-      return json.decode(res.body);
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
+      var data = await Preferences.getUserID();
+      var token = await Preferences.getToken();
+      Uri url = Uri.parse("${AppUrls.userState}?serviceprovider_id=$data");
+
+      // Log request
+      BaseApiService.logRequest(
+          url.toString(), 'GET', getHeader(userToken: token), null);
+
+      var response = await http.get(url, headers: getHeader(userToken: token));
+
+      // Log response
+      BaseApiService.logResponse(
+          url.toString(), response.statusCode, response.body);
+
+      if (response.statusCode == 200) {
+        final decodedResponse = json.decode(response.body);
+        return decodedResponse;
+      } else {
+        throw ApiException('Failed to fetch service provider state',
+            statusCode: response.statusCode);
       }
-      return e;
+    } catch (e) {
+      // Log error
+      BaseApiService.logError(AppUrls.userState, e.toString());
+
+      if (e is FormatException) {
+        throw ApiException('Invalid response format from server');
+      }
+
+      throw ApiException(e.toString());
     }
   }
 
   getLandLordState() async {
     var data = await Preferences.getUserID();
     var token = await Preferences.getToken();
+    print("Data ==> $data");
+
     Uri url = Uri.parse(
-      "${AppUrls.landlordStat}?landlord_id=$data",
+      AppUrls.landlordStat,
     );
     try {
-      var res = await http.post(url, headers: getHeader(userToken: token));
+      var res = await http.post(url,
+          headers: getHeader(userToken: token),
+          body: jsonEncode({"landlord_id": data}));
       return json.decode(res.body);
     } catch (e) {
-      if (kDebugMode) {
-        print(e);
+      // Log error
+      BaseApiService.logError(AppUrls.landlordStat, e.toString());
+
+      if (e is FormatException) {
+        throw ApiException('Invalid response format from server');
       }
-      return e;
+
+      throw ApiException(e.toString());
     }
   }
 
-  getTenantState() async {
-    var data = await Preferences.getUserID();
-    var token = await Preferences.getToken();
-    Uri url = Uri.parse(
-      "${AppUrls.tenantStat}?tenant_id=$data",
-    );
+  Future<Map<String, dynamic>> getTenantState() async {
     try {
-      var res = await http.post(url, headers: getHeader(userToken: token));
-      return json.decode(res.body);
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
+      var data = await Preferences.getUserID();
+      var token = await Preferences.getToken();
+      Uri url = Uri.parse("${AppUrls.tenantStat}?tenant_id=$data");
+
+      // Log request
+      BaseApiService.logRequest(
+          url.toString(), 'POST', getHeader(userToken: token), null);
+
+      var response = await http.get(url, headers: getHeader(userToken: token));
+
+      // Log response
+      BaseApiService.logResponse(
+          url.toString(), response.statusCode, response.body);
+
+      if (response.statusCode == 200) {
+        final decodedResponse = json.decode(response.body);
+        return decodedResponse;
+      } else {
+        throw ApiException('Failed to fetch tenant state',
+            statusCode: response.statusCode);
       }
-      return e;
+    } catch (e) {
+      // Log error
+      BaseApiService.logError(AppUrls.tenantStat, e.toString());
+
+      if (e is FormatException) {
+        throw ApiException('Invalid response format from server');
+      }
+
+      throw ApiException(e.toString());
     }
   }
 
-  getVisitorState() async {
-    var data = await Preferences.getUserID();
-    var token = await Preferences.getToken();
-    Uri url = Uri.parse(
-      "${AppUrls.visitorStat}?visitor_id=$data",
-    );
+  Future<Map<String, dynamic>> getVisitorState() async {
     try {
-      var res = await http.post(url, headers: getHeader(userToken: token));
-      return json.decode(res.body);
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
+      var data = await Preferences.getUserID();
+      var token = await Preferences.getToken();
+      Uri url = Uri.parse("${AppUrls.visitorStat}?visitor_id=$data");
+
+      // Log request
+      BaseApiService.logRequest(
+          url.toString(), 'GET', getHeader(userToken: token), null);
+
+      var response = await http.get(url, headers: getHeader(userToken: token));
+
+      // Log response
+      BaseApiService.logResponse(
+          url.toString(), response.statusCode, response.body);
+
+      // Check if response is HTML
+      if (response.body.trim().startsWith('<!DOCTYPE html>')) {
+        throw ApiException(
+            'Server returned HTML instead of JSON. Please try again.');
       }
-      return e;
+
+      if (response.statusCode == 200) {
+        final decodedResponse = json.decode(response.body);
+        return decodedResponse;
+      } else {
+        throw ApiException('Failed to fetch visitor state',
+            statusCode: response.statusCode);
+      }
+    } catch (e) {
+      // Log error
+      BaseApiService.logError(AppUrls.visitorStat, e.toString());
+
+      if (e is FormatException) {
+        throw ApiException('Invalid response format from server');
+      }
+
+      throw ApiException(e.toString());
     }
   }
 

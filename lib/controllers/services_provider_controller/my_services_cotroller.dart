@@ -62,21 +62,53 @@ class MyServicesController extends GetxController {
   }
 
   Future<void> getServices() async {
-    List<Services> list = <Services>[];
-    print("we are in get services");
-    isLoading.value = true;
-    var id = await Preferences.getUserID();
-    print("User ID ==> $id");
-    var result = await servicesService.getServices(userId: id);
-    print("Service result : $result");
-    if (result["status"] == true) {
-      isLoading.value = false;
-      for (var data in result['data']["data"]) {
-        print("Service List :: $data");
-        list.add(Services.fromJson(data));
+    try {
+      print("we are in get services");
+      isLoading.value = true;
+      var id = await Preferences.getUserID();
+      print("User ID ==> $id");
+      var result = await servicesService.getServices(userId: id);
+      //print("Service result : $result");
+
+      // Add debug prints
+      print("Success value: ${result["success"]}");
+      print("Status value: ${result["status"]}");
+
+      // Check both success and status
+      if (result["success"] == true || result["status"] == true) {
+        List<Services> list = <Services>[];
+
+        // Try both payload and data paths
+        var servicesData;
+        if (result['payload'] != null && result['payload']['data'] != null) {
+          servicesData = result['payload']['data'] as List;
+        } else if (result['data'] != null && result['data']['data'] != null) {
+          servicesData = result['data']['data'] as List;
+        } else {
+          throw Exception("Could not find services data in response");
+        }
+
+        print("Services data length: ${servicesData.length}");
+
+        for (var data in servicesData) {
+          print("Processing service: $data");
+          list.add(Services.fromJson(data));
+        }
+
+        print("Final list length: ${list.length}");
+        getServicesList.value = list;
+
+        // Verify list was set
+        print("getServicesList length: ${getServicesList.length}");
+      } else {
+        print("API call successful but status/success check failed");
+        AppUtils.errorSnackBar("Error", "Failed to load services");
       }
-      getServicesList.value = list;
-    } else {
+    } catch (e) {
+      print("Error loading services: $e");
+      AppUtils.errorSnackBar(
+          "Error", "Failed to load services: ${e.toString()}");
+    } finally {
       isLoading.value = false;
     }
   }
@@ -95,23 +127,26 @@ class MyServicesController extends GetxController {
   }
 
   Future<void> deleteService({required int id}) async {
-    print("we are in delete service");
-    isLoading.value = true;
-    var result = await servicesService.deleteService(id: id);
-    print("Service Result : $result");
+    try {
+      isLoading.value = true;
+      var result = await servicesService.deleteService(id: id);
 
-    isLoading.value = false;
-
-    if (result['status'] == true) {
+      if (result['success'] == true) {
+        // Remove the deleted service from the list
+        getServicesList.removeWhere((service) => service.id == id);
+        Get.back();
+        AppUtils.getSnackBar(
+            "Success", result['messages'] ?? "Service deleted successfully");
+      } else {
+        AppUtils.errorSnackBar(
+            "Error", result['messages'] ?? "Failed to delete service");
+      }
+    } catch (e) {
+      print("Error deleting service: $e");
+      AppUtils.errorSnackBar(
+          "Error", "Failed to delete service. Please try again.");
+    } finally {
       isLoading.value = false;
-      Get.back();
-      Get.back();
-      AppUtils.getSnackBar("Delete", result['messages']);
-    } else {
-      isLoading.value = false;
-      print("getPropertyOne is null");
-      AppUtils.errorSnackBar("Error", result['messages']);
     }
-    isLoading.value = false;
   }
 }

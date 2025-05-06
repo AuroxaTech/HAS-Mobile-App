@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:property_app/controllers/authentication_controller/sign_up_controller.dart';
 import 'package:property_app/route_management/constant_routes.dart';
+import 'package:property_app/views/authentication_screens/add_service_provider.dart';
 
 import '../../app_constants/animations.dart';
 import '../../app_constants/app_icon.dart';
@@ -295,6 +297,7 @@ class SignUpScreen extends GetView<SignUpController> {
           onTap: controller.isLoading.value
               ? null
               : () {
+                  print("Phone Number ==> ${controller.phoneController.text}");
                   if (controller.formKey.currentState!.validate()) {
                     controller.registerVisitor(
                       context,
@@ -538,7 +541,8 @@ class SignUpScreen extends GetView<SignUpController> {
                           phoneNumber: controller.phoneController.text,
                           password: controller.passwordController.text,
                           cPassword: controller.confirmPasswordController.text,
-                          roleId: 2,
+                          role: "",
+
                           lastStatus: 1, // or 2 based on your scenario
                           occupation: controller.occupationController
                               .text, // provide value based on your scenario
@@ -562,7 +566,8 @@ class SignUpScreen extends GetView<SignUpController> {
                           email: controller.emailController.text,
                           password: controller.passwordController.text,
                           cPassword: controller.confirmPasswordController.text,
-                          roleId: 2,
+                          role: "",
+
                           lastStatus: 2,
                           // lastLandlordName: controller.lastLandLordController.text, // provide value based on your scenario
                           // lastTenancy: controller.lastTenancyController.text, // provide value based on your scenario
@@ -594,7 +599,8 @@ class SignUpScreen extends GetView<SignUpController> {
                           phoneNumber: controller.phoneController.text,
                           password: controller.passwordController.text,
                           cPassword: controller.confirmPasswordController.text,
-                          roleId: 2,
+                          role: "",
+
                           profileImage: controller.profileImage.value!,
                           lastStatus: 2, // or 2 based on your scenario
                           occupation: controller.occupationController
@@ -619,7 +625,8 @@ class SignUpScreen extends GetView<SignUpController> {
                           email: controller.emailController.text,
                           password: controller.passwordController.text,
                           cPassword: controller.confirmPasswordController.text,
-                          roleId: 2,
+                          role: "",
+
                           profileImage: controller.profileImage.value!,
                           lastStatus: 1,
                           // lastLandlordName: controller.lastLandLordController.text, // provide value based on your scenario
@@ -647,6 +654,24 @@ class SignUpScreen extends GetView<SignUpController> {
   Widget servicesProvider(context) {
     return Column(
       children: [
+        CustomTextField(
+          hintText: "New York",
+          controller: controller.cityController,
+          errorText:
+              controller.cityField.value ? null : "Please enter city name",
+          validator: (value) {
+            if (value == null || value.isEmpty || value.length < 3) {
+              return 'Please enter city name';
+            }
+            return null;
+          },
+          prefixConstraints: BoxConstraints(
+            minWidth: Get.width * 0.12,
+            minHeight: Get.width * 0.038,
+          ),
+          prefix: SvgPicture.asset(AppIcons.city),
+        ),
+        h15,
         CustomDropDown(
           value: controller.electricalValue.value,
           validator: (value) {
@@ -710,6 +735,21 @@ class SignUpScreen extends GetView<SignUpController> {
                     icon: const Icon(Icons.calendar_month)),
               ),
         h15,
+        h10,
+        CustomTextField(
+          maxLines: 5,
+          minLines: 3,
+          validator: (value) {
+            if (value == null || value.isEmpty || value.length < 3) {
+              return 'Additional Info Required';
+            }
+            return null;
+          },
+          controller: controller.additionalInfo,
+          hintText: "Add your main services you offer",
+        ),
+        h15,
+
         CustomDropDown(
           value: controller.yesValue.value,
           onChange: (value) {
@@ -938,6 +978,7 @@ class SignUpScreen extends GetView<SignUpController> {
           ),
         ),
         h15,
+
         controller.pickFile.value == null
             ? uploadImageContainer(
                 onTap: () {
@@ -1018,173 +1059,18 @@ class SignUpScreen extends GetView<SignUpController> {
         h50,
         CustomButton(
           width: double.infinity,
-          text: "Register",
+          text: "Next",
+
           isLoading: controller.isLoading.value,
           onTap: controller.isLoading.value
               ? null
               : () async {
-                  if (controller.formKey.currentState!.validate()) {
-                    if (controller.frontCNICImage.value == null) {
-                      AppUtils.errorSnackBar(
-                          "Please Select", "Please Select CNIC Front Image");
-                    } else if (controller.backCNICImage.value == null) {
-                      AppUtils.errorSnackBar(
-                          "Please Select", "Please Select CNIC Back Image");
-                    } else {
-                      int experience =
-                          int.parse(controller.experienceController.text);
-                      if (controller.profileImage.value == null) {
-                        if (controller.yesValue.value == "Any Certificate ?" ||
-                            controller.yesValue.value == "No") {
-                          // User has provided certification
-                          try {
-                            await controller.registerServiceProvider(
-                              fullName: controller.nameController.text,
-                              userName: controller.userNameController.text,
-                              email: controller.emailController.text,
-                              address: controller.addressController.text.isEmpty
-                                  ? "Test"
-                                  : controller.addressController.text,
-                              postalCode: controller.postalCode.text.isEmpty
-                                  ? "00000"
-                                  : controller.postalCode.text,
-                              phoneNumber: controller.phoneController.text,
-                              password: controller.passwordController.text,
-                              cPassword:
-                                  controller.confirmPasswordController.text,
-                              services: controller.electricalValue.value,
-                              yearExperience:
-                                  controller.experienceController.text,
-                              availabilityStartTime: controller
-                                      .selectedWeekdayRange.value +
-                                  controller.startTime.value.format(context),
-                              availabilityEndTime:
-                                  controller.endTime.value.format(context),
-                              cnicFront: controller.frontCNICImage.value!,
-                              cnicBack: controller.backCNICImage.value!,
-                            );
-                            // Registration successful, navigate or perform other actions
-                          } catch (e) {
-                            // Handle registration failure, show error message or take appropriate action
-                            print('Registration failed: $e');
-                          }
-                        } else {
-                          // User has not provided certification
-                          try {
-                            await controller.registerServiceProvider(
-                              fullName: controller.nameController.text,
-                              userName: controller.userNameController.text,
-                              email: controller.emailController.text,
-                              address: controller.addressController.text.isEmpty
-                                  ? "Test"
-                                  : controller.addressController.text,
-                              postalCode: controller.postalCode.text.isEmpty
-                                  ? "00000"
-                                  : controller.postalCode.text,
-                              phoneNumber: controller.phoneController.text,
-                              password: controller.passwordController.text,
-                              cPassword:
-                                  controller.confirmPasswordController.text,
-                              services: controller.electricalValue.value,
-                              yearExperience:
-                                  controller.experienceController.text,
-                              availabilityStartTime: controller
-                                      .selectedWeekdayRange.value +
-                                  controller.startTime.value.format(context),
-                              availabilityEndTime:
-                                  controller.endTime.value.format(context),
-                              cnicFront: controller.frontCNICImage.value!,
-                              cnicBack: controller.backCNICImage.value!,
-                              certification: controller.yesValue.value,
-                              certificationFile:
-                                  controller.certificateImage.value!,
-                              // No certification information provided
-                            );
 
-                            // Registration successful, navigate or perform other actions
-                          } catch (e) {
-                            // Handle registration failure, show error message or take appropriate action
-                            print('Registration failed: $e');
-                          }
-                        }
-                      } else {
-                        if (controller.yesValue.value == "Any Certificate ?" ||
-                            controller.yesValue.value == "No") {
-                          // User has provided certification
-                          try {
-                            await controller.registerServiceProvider(
-                              address: controller.addressController.text.isEmpty
-                                  ? "Test"
-                                  : controller.addressController.text,
-                              postalCode: controller.postalCode.text.isEmpty
-                                  ? "00000"
-                                  : controller.postalCode.text,
-                              fullName: controller.nameController.text,
-                              userName: controller.userNameController.text,
-                              email: controller.emailController.text,
-                              phoneNumber: controller.phoneController.text,
-                              password: controller.passwordController.text,
-                              cPassword:
-                                  controller.confirmPasswordController.text,
-                              profileImage: controller.profileImage.value!,
-                              services: controller.electricalValue.value,
-                              yearExperience: experience.toString(),
-                              availabilityStartTime:
-                                  controller.startTime.value.format(context),
-                              availabilityEndTime:
-                                  controller.endTime.value.format(context),
-                              cnicFront: controller.frontCNICImage.value!,
-                              cnicBack: controller.backCNICImage.value!,
-                            );
+    if (controller.formKey.currentState!.validate()) {
+      Get.to(const AddServiceProvider());
+    }},
 
-                            // Registration successful, navigate or perform other actions
-                          } catch (e) {
-                            // Handle registration failure, show error message or take appropriate action
-                            print('Registration failed: $e');
-                          }
-                        } else {
-                          // User has not provided certification
-                          try {
-                            await controller.registerServiceProvider(
-                              address: controller.addressController.text.isEmpty
-                                  ? "Test"
-                                  : controller.addressController.text,
-                              postalCode: controller.postalCode.text.isEmpty
-                                  ? "00000"
-                                  : controller.postalCode.text,
-                              fullName: controller.nameController.text,
-                              userName: controller.userNameController.text,
-                              email: controller.emailController.text,
-                              phoneNumber: controller.phoneController.text,
-                              password: controller.passwordController.text,
-                              cPassword:
-                                  controller.confirmPasswordController.text,
-                              profileImage: controller.profileImage.value!,
-                              services: controller.electricalValue.value,
-                              yearExperience:
-                                  controller.experienceController.text,
-                              availabilityStartTime:
-                                  controller.startTime.value.format(context),
-                              availabilityEndTime:
-                                  controller.endTime.value.format(context),
-                              cnicFront: controller.frontCNICImage.value!,
-                              cnicBack: controller.backCNICImage.value!,
-                              certification: controller.yesValue.value,
-                              certificationFile:
-                                  controller.certificateImage.value!,
-                              // No certification information provided
-                            );
 
-                            // Registration successful, navigate or perform other actions
-                          } catch (e) {
-                            // Handle registration failure, show error message or take appropriate action
-                            print('Registration failed: $e');
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
         ),
         h50,
       ],

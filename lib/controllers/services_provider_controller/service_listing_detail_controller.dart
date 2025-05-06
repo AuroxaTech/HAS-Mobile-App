@@ -1,12 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:property_app/models/service_provider_model/all_services.dart';
 import 'package:property_app/services/property_services/add_services.dart';
 
-import '../../models/service_provider_model/get_services.dart';
-
-class ServiceListingDetailScreenController extends GetxController{
-
+class ServiceListingDetailScreenController extends GetxController {
   ServiceProviderServices servicesService = ServiceProviderServices();
   Rx<bool> isLoading = false.obs;
   Rx<AllService?> getServiceOne = Rx<AllService?>(null);
@@ -17,11 +13,10 @@ class ServiceListingDetailScreenController extends GetxController{
     int id = data[0];
     images = data[1];
     print("IDDDDDD $id");
-    print("Hello");
+    print("Data = $data");
     getService(id: id);
     super.onInit();
   }
-
 
   Future<void> getService({required int id}) async {
     print("we are in get service");
@@ -49,32 +44,53 @@ class ServiceListingDetailScreenController extends GetxController{
     }
   }
 
-  void toggleFavorite1( int serviceId) async {
+  void toggleFavorite1(int serviceId) async {
     // Safety check to ensure itemList is not null
 
-    // Retrieve the current service directly from pagingController's itemList
+    // Retrieve the current service directly from `getServiceOne.value`
     var service = getServiceOne.value;
+    if (service == null) {
+      Get.snackbar('Error', 'Service not found.');
+      return;
+    }
+
     // Toggle the isFavorite status
-    bool newFavoriteStatus = !(service?.isFavorite ?? false);
-    service?.isFavorite = newFavoriteStatus;
+    int newFavoriteStatus = (service.isFavorite == 1) ? 0 : 1;
+    service.isFavorite = newFavoriteStatus;
 
     // Attempt to update the backend with the new favorite status
     try {
-      // Make the API call
-      bool result = await servicesService.addFavorite(serviceId, newFavoriteStatus ? 1 : 2);
+      // Determine the API call based on the new favorite status
+
+      print("Printing to favorites... $newFavoriteStatus");
+
+      bool result;
+      if (newFavoriteStatus == 1) {
+        // If the service is not in favorites, add it
+        print("Adding to favorites...");
+        result = await servicesService.addFavorite(serviceId);
+      } else {
+        // If the service is in favorites, remove it
+        print("Removing from favorites...");
+        result = await servicesService.removeFavoriteService(serviceId);
+      }
+
+      // If the API call fails, throw an exception
       if (!result) {
-        throw Exception('API call to add favorite failed.');
-      }else{
+        throw Exception('API call to update favorite failed.');
+      } else {
+        // If successful, refresh the service state
         getServiceOne.refresh();
       }
-      // If successful, no need to do anything as the local state is already updated
     } catch (error) {
       // If the API call fails, revert the local change
-      service?.isFavorite = !newFavoriteStatus;
+      service.isFavorite =
+          (newFavoriteStatus == 1) ? 0 : 1; // Revert to previous state
       Get.snackbar('Error', 'Could not update favorites. Please try again.');
+      print('Error: $error');
+      rethrow;
     }
 
     // Force the UI to refresh and reflect the change
   }
-
 }

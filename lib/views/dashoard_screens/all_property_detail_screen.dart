@@ -16,7 +16,6 @@ import '../../app_constants/app_sizes.dart';
 import '../../constant_widget/view_photo.dart';
 import '../../controllers/dasboard_controller/all_property_detail_controller.dart';
 import '../../route_management/constant_routes.dart';
-import '../../utils/api_urls.dart';
 import '../chat_screens/chat_conversion_screen.dart';
 
 //Changes
@@ -45,7 +44,7 @@ class AllPropertyDetailScreen extends GetView<AllPropertyDetailController> {
                           controller: controller.pageController,
                           itemBuilder: (context, index) {
                             String imagesString = controller
-                                .getPropertyOne.value!.images
+                                .getPropertyOne.value!.propertyImages
                                 .toString();
                             List<String> imageList = imagesString.split(',');
                             controller.images = imageList;
@@ -54,16 +53,16 @@ class AllPropertyDetailScreen extends GetView<AllPropertyDetailController> {
                               onTap: () {
                                 Get.to(
                                     () => ViewImage(
-                                          photo: AppUrls.propertyImages +
-                                              imageList[index],
+                                          photo: controller.getPropertyOne
+                                              .value!.propertyImages[index],
                                         ),
                                     transition: routeTransition);
                               },
                               child: CachedNetworkImage(
                                 width: double.infinity,
                                 height: screenHeight(context) * 0.5,
-                                imageUrl:
-                                    AppUrls.propertyImages + imageList[index],
+                                imageUrl: controller.getPropertyOne.value!
+                                    .propertyImages![index],
                                 fit: BoxFit.cover,
                                 errorWidget: (context, e, b) {
                                   return Image.asset(
@@ -111,8 +110,10 @@ class AllPropertyDetailScreen extends GetView<AllPropertyDetailController> {
                               child: SmoothPageIndicator(
                                 controller: controller
                                     .pageController, // Connect the indicator to the controller
-                                count: controller.images.length,
-                                effect: WormEffect(
+                                count: controller.getPropertyOne.value
+                                        ?.propertyImages?.length ??
+                                    0,
+                                effect: const WormEffect(
                                     dotColor: whiteColor,
                                     dotHeight: 10,
                                     dotWidth:
@@ -203,12 +204,9 @@ class MyDraggable extends GetView<AllPropertyDetailController> {
                                             child: Center(
                                               child: customText(
                                                   text: controller
-                                                              .getPropertyOne
-                                                              .value!
-                                                              .type ==
-                                                          1
-                                                      ? "Rent"
-                                                      : "Sale",
+                                                      .getPropertyOne
+                                                      .value!
+                                                      .type,
                                                   fontSize: 18,
                                                   color: whiteColor),
                                             ),
@@ -337,7 +335,7 @@ class MyDraggable extends GetView<AllPropertyDetailController> {
                                         children: [
                                           controller.getPropertyOne.value!
                                                       .type ==
-                                                  1
+                                                  "Rent"
                                               ? Center(
                                                   child: CustomButton(
                                                     height:
@@ -370,6 +368,8 @@ class MyDraggable extends GetView<AllPropertyDetailController> {
                                                             "Oops",
                                                             "You must login as tenant");
                                                       } else {
+                                                        print(
+                                                            "User Data: ${controller.getPropertyOne.value!.user!.fullname}${controller.getPropertyOne.value!.user!.email}${controller.getPropertyOne.value!.user!.phoneNumber}");
                                                         Get.toNamed(
                                                             kContractScreen,
                                                             arguments: [
@@ -415,14 +415,13 @@ class MyDraggable extends GetView<AllPropertyDetailController> {
                                             gradientColor: greenGradient(),
                                             width: screenWidth(context) * 0.4,
                                             onTap: () async {
-                                              print(
-                                                  "Name == ${controller.getPropertyOne.value!.user!.fullname.toString()}");
-                                              print(controller.getPropertyOne
-                                                  .value!.user!.id
-                                                  .toString());
-                                              print(controller.getPropertyOne
-                                                  .value!.user!.profileimage
-                                                  .toString());
+                                              // print("Name == ${controller.getPropertyOne.value!.user!.fullname.toString()}");
+                                              // print(controller.getPropertyOne
+                                              //     .value!.user!.id
+                                              //     .toString());
+                                              // print(controller.getPropertyOne
+                                              //     .value!.user!.profileimage
+                                              //     .toString());
 
                                               //  Get.toNamed(kChatConversionScreen);
                                               var roleId =

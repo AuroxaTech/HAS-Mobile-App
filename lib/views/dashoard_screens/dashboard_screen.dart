@@ -12,7 +12,6 @@ import 'package:property_app/models/stat_models/landlord_stat.dart';
 
 import '../../constant_widget/drawer.dart';
 import '../../route_management/constant_routes.dart';
-import '../../utils/api_urls.dart';
 import '../chat_screens/HomeScreen.dart';
 
 class DashBoardScreen extends GetView<DashboardController> {
@@ -48,12 +47,10 @@ class DashBoardScreen extends GetView<DashboardController> {
                             child: ClipOval(
                               child: CachedNetworkImage(
                                 fit: BoxFit.cover,
-                                width:
-                                    60, // Ensure these dimensions are sufficient to fill the CircleAvatar without stretching
+                                width: 60,
                                 height: 60,
-                                imageUrl: AppUrls.profileImageBaseUrl +
-                                    controller.getLandlord.value!.landlord.user!
-                                        .profileimage,
+                                imageUrl: controller.getLandlord.value!.landlord
+                                    .user?.profileimage ?? '',
                                 errorWidget: (context, e, b) {
                                   return Container(
                                     decoration: BoxDecoration(
@@ -78,7 +75,7 @@ class DashBoardScreen extends GetView<DashboardController> {
                           title: headingText(
                               text: controller.getLandlord.value!.landlord.user
                                       ?.fullname ??
-                                  "",
+                                  "User",
                               fontSize: 24),
                           subtitle: customText(text: "Landlord", fontSize: 14),
                         ),
@@ -170,6 +167,8 @@ class DashBoardScreen extends GetView<DashboardController> {
                                                 icon: FontAwesomeIcons.heart),
                                             w80,
                                           ]),
+                                          h80,
+                                          h80,
                                         ],
                                       ),
                                     ),

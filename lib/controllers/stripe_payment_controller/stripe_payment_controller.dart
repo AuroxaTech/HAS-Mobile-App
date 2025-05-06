@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 import '../../models/stripe_payment_model/stripe_payment_model.dart';
-import '../../services/auth_services/auth_services.dart';
 import '../../utils/api_urls.dart';
 import '../../utils/shared_preferences/preferences.dart';
 
@@ -39,9 +38,10 @@ class StripePaymentScreenController extends GetxController {
     isProcessing(true);
     try {
       final paymentIntent =
-      await _stripePaymentModel.createPaymentIntent(amount, currency);
+          await _stripePaymentModel.createPaymentIntent(amount, currency);
       if (paymentIntent != null) {
-        bool paymentResult = await _initializePaymentSheet(paymentIntent['client_secret']);
+        bool paymentResult =
+            await _initializePaymentSheet(paymentIntent['client_secret']);
         return paymentResult;
       } else {
         Get.snackbar('Payment Failed', 'Unable to create payment intent.');
@@ -95,7 +95,7 @@ class StripePaymentScreenController extends GetxController {
   }
 
   Future<bool> collectPaymentFromTenant() async {
-    final url = Uri.parse('https://haservices.ca:8080/payment');
+    final url = Uri.parse('${AppUrls.baseUrl}/payment');
     var token = await Preferences.getToken();
     print('Sending request to: $url');
     print('Headers: {Authorization: Bearer $token, Accept: application/json}');
@@ -119,7 +119,7 @@ class StripePaymentScreenController extends GetxController {
     print('Payout Response ===> ${response.body}');
     print('Status Code ===> ${response.statusCode}');
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200) {
       Get.snackbar(
           "Payment Successful", "The payment was successfully processed.");
       return true;

@@ -28,12 +28,10 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>To capture profile photo please grant camera access</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>This app needs access to location when open and in the background.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This app needs access to location when in the background.</string>
+    <string>This app continuously tracks location in the background to provide real-time property recommendations and updates.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs access to location in the background.</string>
+    <string>This app requires location access to display nearby properties and enhance the user experience.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>App needs access to photo lib for profile images</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
@@ -66,5 +64,7 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSFaceIDUsageDescription</key>
+    <string>Allows secure and convenient login using Face ID.</string>
 </dict>
 </plist>

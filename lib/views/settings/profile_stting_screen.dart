@@ -1,11 +1,12 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:property_app/app_constants/color_constants.dart';
 import 'package:property_app/constant_widget/constant_widgets.dart';
 import 'package:property_app/custom_widgets/custom_button.dart';
 import 'package:property_app/custom_widgets/custom_text_field.dart';
-import 'package:property_app/utils/api_urls.dart';
+
 import '../../app_constants/app_icon.dart';
 import '../../app_constants/app_sizes.dart';
 import '../../controllers/land_lord/profile_setting_screen_controller.dart';
@@ -19,145 +20,158 @@ class ProfileSettingsScreen extends GetView<ProfileSettingsScreenController> {
       backgroundColor: whiteColor,
       appBar: homeAppBar(context, text: "Settings"),
       body: SafeArea(
-        child: Obx(() =>
-        controller.isLoadingGet.value ? const Center(child: CircularProgressIndicator()) :
-        Padding(
-          padding: const EdgeInsets.only(left: 18, right: 18),
-          child: SingleChildScrollView(
-            child: Form(
-              key: controller.formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      controller.pickProfileImage();
-                    },
-                    child: Center(
-                      child: CircleAvatar(
-                        radius: 62,
-                        backgroundColor: Colors.grey,
-                        child: CircleAvatar(
-                          radius: 60,
-                          backgroundColor: Colors.white,
-                          backgroundImage:  _getProfileImage(),
-                          child: Align(
-                            alignment: Alignment.bottomRight,
-                            child: Container(
-                              width: 30,
-                              height: 30,
-                              decoration: const BoxDecoration(
-                                  color: primaryColor,
-                                  shape: BoxShape.circle
+        child: Obx(
+          () => controller.isLoadingGet.value
+              ? const Center(child: CircularProgressIndicator())
+              : Padding(
+                  padding: const EdgeInsets.only(left: 18, right: 18),
+                  child: SingleChildScrollView(
+                    child: Form(
+                      key: controller.formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              controller.pickProfileImage();
+                            },
+                            child: Center(
+                              child: CircleAvatar(
+                                radius: 62,
+                                backgroundColor: Colors.grey,
+                                child: CircleAvatar(
+                                  radius: 60,
+                                  backgroundColor: Colors.white,
+                                  backgroundImage: _getProfileImage(),
+                                  child: Align(
+                                    alignment: Alignment.bottomRight,
+                                    child: Container(
+                                      width: 30,
+                                      height: 30,
+                                      decoration: const BoxDecoration(
+                                          color: primaryColor,
+                                          shape: BoxShape.circle),
+                                      child: const Center(
+                                          child: Icon(
+                                        Icons.add,
+                                        color: Colors.white,
+                                      )),
+                                    ),
+                                  ),
+                                ),
                               ),
-                              child: const Center(child: Icon(Icons.add, color: Colors.white,)),
                             ),
                           ),
-                        ),
+                          customText(
+                            text: "Username :",
+                            fontSize: 16,
+                            color: greyColor,
+                          ),
+                          h10,
+                          CustomTextField(
+                            hintText: "Username",
+                            controller: controller.usernameController,
+                            readOnly: true, // Make username non-editable
+                          ),
+                          h10,
+                          customText(
+                            text: "Full Name :",
+                            fontSize: 16,
+                            color: greyColor,
+                          ),
+                          h10,
+                          CustomTextField(
+                            hintText: "Full name",
+                            controller: controller.nameController,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Name is required';
+                              }
+                              return null;
+                            },
+                          ),
+                          h5,
+                          customText(
+                            text: "Email :",
+                            fontSize: 16,
+                            color: greyColor,
+                          ),
+                          h5,
+                          CustomTextField(
+                            hintText: "Email",
+                            controller: controller.email,
+                            readOnly: true,
+                          ),
+                          h5,
+                          customText(
+                            text: "Phone Number :",
+                            fontSize: 16,
+                            color: greyColor,
+                          ),
+                          h5,
+                          CustomTextField(
+                            hintText: "Phone Number",
+                            controller: controller.phoneNumber,
+                            validator: (value) {
+                              if (value == null ||
+                                  value.isEmpty ||
+                                  value.length < 10) {
+                                return 'Invalid phone number. Must be at least 10 characters';
+                              }
+                              return null;
+                            },
+                          ),
+                          h30,
+                          Obx(
+                            () => Center(
+                                child: CustomButton(
+                              width: double.infinity,
+                              text: "Save",
+                              isLoading: controller.isLoading.value,
+                              onTap: () {
+                                if (controller.formKey.currentState!
+                                    .validate()) {
+                                  if (controller.profileImage.value == null) {
+                                    controller.updateDataAndImage(
+                                        name: controller.nameController.text,
+                                        phoneNumber:
+                                            controller.phoneNumber.text,
+                                        username:
+                                            controller.usernameController.text);
+                                  } else {
+                                    print(
+                                        "profile image : ${controller.profileImage.value!.path}");
+                                    controller.updateDataAndImage(
+                                      name: controller.nameController.text,
+                                      phoneNumber: controller.phoneNumber.text,
+                                      filePath: controller.profileImage.value!,
+                                      username:
+                                          controller.usernameController.text,
+                                    );
+                                  }
+                                }
+                              },
+                            )),
+                          ),
+                          h20,
+                        ],
                       ),
                     ),
                   ),
-                  customText(
-                    text: "Username :",
-                    fontSize: 16,
-                    color: greyColor,
-                  ),
-                  h10,
-                  CustomTextField(
-                    hintText: "Username",
-                    controller: controller.usernameController,
-                    readOnly: true, // Make username non-editable
-                  ),
-                  h10,
-                  customText(
-                    text: "Full Name :",
-                    fontSize: 16,
-                    color: greyColor,
-                  ),
-                  h10,
-                  CustomTextField(
-                    hintText: "Full name",
-                    controller: controller.nameController,
-                    validator: (value) {
-                      if (value == null || value.isEmpty ) {
-                        return 'Name is required';
-                      }
-                      return null;
-                    },
-                  ),
-                  h5,
-                  customText(
-                    text: "Email :",
-                    fontSize: 16,
-                    color: greyColor,
-                  ),
-                  h5,
-                  CustomTextField(
-                    hintText: "Email",
-                    controller: controller.email,
-                    readOnly: true,
-                  ),
-                  h5,
-                  customText(
-                    text: "Phone Number :",
-                    fontSize: 16,
-                    color: greyColor,
-                  ),
-                  h5,
-                  CustomTextField(
-                    hintText: "Phone Number",
-                    controller: controller.phoneNumber,
-                    validator: (value) {
-                      if (value == null || value.isEmpty || value.length < 10) {
-                        return 'Invalid phone number. Must be at least 10 characters';
-                      }
-                      return null;
-                    },
-                  ),
-                  h30,
-                  Obx(
-                        () => Center(child: CustomButton(
-                      width: double.infinity,
-                      text: "Save",
-                      isLoading: controller.isLoading.value,
-                      onTap: () {
-                        if (controller.formKey.currentState!.validate()) {
-                          if (controller.profileImage.value == null) {
-                            controller.updateDataAndImage(
-                              name: controller.nameController.text,
-                              phoneNumber: controller.phoneNumber.text,
-                              username: controller.usernameController.text
-                            );
-                          } else {
-                            print("profile image : ${controller.profileImage.value!.path}");
-                            controller.updateDataAndImage(
-                              name: controller.nameController.text,
-                              phoneNumber: controller.phoneNumber.text,
-                              filePath: controller.profileImage.value!, username: controller.usernameController.text,
-                            );
-                          }
-                        }
-                      },
-                    )),
-                  ),
-                  h20,
-                ],
-              ),
-            ),
-          ),
-        ),
+                ),
         ),
       ),
     );
   }
 
   ImageProvider _getProfileImage() {
-    if (controller.profileImage.value != null && File(controller.profileImage.value!.path).existsSync()) {
+    if (controller.profileImage.value != null &&
+        File(controller.profileImage.value!.path).existsSync()) {
       print("Using local file image: ${controller.profileImage.value!.path}");
       return FileImage(File(controller.profileImage.value!.path));
     } else if (controller.image.isNotEmpty) {
-      print("Using network image: ${AppUrls.profileImageBaseUrl + controller.image}");
-      return NetworkImage(AppUrls.profileImageBaseUrl + controller.image);
+      print("Using network image: ${controller.image}");
+      return NetworkImage(controller.image);
     }
     print("Using default asset image");
     return const AssetImage(AppIcons.personIcon);

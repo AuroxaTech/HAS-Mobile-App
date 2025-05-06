@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:property_app/constant_widget/delete_widgets.dart';
 import 'package:property_app/constant_widget/drawer.dart';
 import 'package:property_app/controllers/services_provider_controller/service_provide_controller.dart';
-import 'package:property_app/utils/api_urls.dart';
 import 'package:property_app/views/service_provider/rating_screen.dart';
 
 import '../../app_constants/animations.dart';
@@ -39,9 +38,33 @@ class ServiceProviderScreen extends GetView<ServiceProviderController> {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (controller.getServiceOne.value == null) {
-            return const Center(child: Text("Your profile is not approved."));
-          }
+          // if (controller.getServiceOne.value == null) {
+          //   return Center(
+          //     child: Column(
+          //       mainAxisAlignment: MainAxisAlignment.center,
+          //       children: [
+          //         const Icon(
+          //           Icons.pending_actions,
+          //           size: 64,
+          //           color: primaryColor,
+          //         ),
+          //         const SizedBox(height: 16),
+          //         Text(
+          //           "Your profile is pending approval",
+          //           style: TextStyle(
+          //               fontSize: 18,
+          //               fontWeight: FontWeight.w500,
+          //               color: Colors.grey[800]),
+          //         ),
+          //         const SizedBox(height: 8),
+          //         Text(
+          //           "Please wait while we review your profile",
+          //           style: TextStyle(color: Colors.grey[600]),
+          //         ),
+          //       ],
+          //     ),
+          //   );
+          // }
 
           return RefreshIndicator(
             onRefresh: () async {
@@ -54,54 +77,41 @@ class ServiceProviderScreen extends GetView<ServiceProviderController> {
                     leading: CircleAvatar(
                       radius: 30,
                       child: ClipOval(
-                        child: CachedNetworkImage(
-                          fit: BoxFit.cover,
-                          width: 60,
-                          height: 60,
-                          imageUrl: AppUrls.profileImageBaseUrl +
-                              controller.getServiceOne.value!.serviceprovider
-                                  .user.profileimage,
-                          errorWidget: (context, e, b) {
-                            return Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: primaryColor,
-                                  width: 2,
-                                ),
-                              ),
-                              child: const Center(
-                                child: FaIcon(
-                                  FontAwesomeIcons.user,
-                                  size: 35,
-                                  color: primaryColor,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
+                        child: controller.getServiceOne.value?.user.profileimage
+                                    .isNotEmpty ==
+                                true
+                            ? CachedNetworkImage(
+                                fit: BoxFit.cover,
+                                width: 60,
+                                height: 60,
+                                imageUrl: controller
+                                    .getServiceOne.value!.user.profileimage,
+                                errorWidget: (context, e, b) =>
+                                    _buildDefaultAvatar(),
+                              )
+                            : _buildDefaultAvatar(),
                       ),
                     ),
                     title: headingText(
-                        text: controller
-                            .getServiceOne.value!.serviceprovider.user.fullname,
+                        text: controller.getServiceOne.value?.user.fullname ??
+                            "Loading...",
                         fontSize: 24),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         customText(
-                            text: controller.getServiceOne.value!
-                                        .serviceprovider.providerService ==
-                                    null
-                                ? "Nothing mentioned"
-                                : controller.getServiceOne.value!
-                                    .serviceprovider.providerService!.name,
+                            text: controller.getServiceOne.value?.services
+                                        .isNotEmpty ==
+                                    true
+                                ? controller.getServiceOne.value!.services.first
+                                    .serviceName
+                                : "No services added",
                             fontSize: 14),
                         RatingWidget(
                           maxRating: 5,
                           isRating: false,
                           initialRating:
-                              controller.getServiceOne.value!.rate.toInt(),
+                              controller.getServiceOne.value?.rate ?? 0,
                           onRatingChanged: (rating) {
                             print('Selected rating: $rating');
                           },
@@ -223,27 +233,26 @@ class ServiceProviderScreen extends GetView<ServiceProviderController> {
               children: [
                 dashboardSmallContainer(
                   context,
-                  title: controller.getServiceOne.value == null
-                      ? "0"
-                      : controller.getServiceOne.value!.totalJobs.toString(),
+                  title: controller.getServiceOne.value?.totalJobs.toString() ??
+                      "0",
                   subTitle: "Total",
                   thirdTitle: "Jobs",
                 ),
                 w25,
                 dashboardSmallContainer(
                   context,
-                  title: controller.getServiceOne.value == null
-                      ? "0"
-                      : controller.getServiceOne.value!.totalPrice.toString(),
+                  title:
+                      controller.getServiceOne.value?.totalPrice.toString() ??
+                          "0",
                   subTitle: "Total",
                   thirdTitle: "earning",
                 ),
                 w25,
                 dashboardSmallContainer(
                   context,
-                  title: controller.getServiceOne.value == null
-                      ? "0"
-                      : controller.getServiceOne.value!.totalService.toString(),
+                  title:
+                      controller.getServiceOne.value?.totalService.toString() ??
+                          "0",
                   subTitle: "Total",
                   thirdTitle: "services",
                 ),
@@ -251,6 +260,25 @@ class ServiceProviderScreen extends GetView<ServiceProviderController> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildDefaultAvatar() {
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: primaryColor,
+          width: 2,
+        ),
+      ),
+      child: const Center(
+        child: FaIcon(
+          FontAwesomeIcons.user,
+          size: 35,
+          color: primaryColor,
+        ),
       ),
     );
   }

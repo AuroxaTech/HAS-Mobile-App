@@ -92,7 +92,6 @@ class ScreenBindings extends Bindings {
     Get.lazyPut<ContractStatusScreenController>(
         () => ContractStatusScreenController());
     Get.lazyPut<RateExperienceController>(() => RateExperienceController());
-    Get.lazyPut<JobScreenController>(() => JobScreenController());
     Get.lazyPut<JobDetailController>(() => JobDetailController());
     Get.lazyPut<MyPropertyDetailController>(() => MyPropertyDetailController());
     Get.lazyPut<MyServiceRequestController>(() => MyServiceRequestController());

@@ -31,24 +31,22 @@ class LoginScreenController extends GetxController {
 
   Future<void> login(
       BuildContext context, String email, String password) async {
-    isLoading.value = true;
-
     try {
+      isLoading.value = true;
+
       var data = await authServices.login(
         email: email,
         password: password,
-        deviceToken: "deviceId",
+        deviceToken: "werty134",
         platform: Platform.isAndroid ? "android" : "ios",
       );
 
-      if (data['status'] == true) {
-        // Success path remains the same
-        print("Response: ${data["data"]}");
+      if (data['success'] == true) {
+        print("Login successful, processing response...");
         await handleSuccessfulLogin(data);
       } else {
         isLoading.value = false;
-        final errorMessage =
-            data['error'] ?? data['messages'] ?? 'Unknown error occurred';
+        final errorMessage = data['message'] ?? 'Unknown error occurred';
         handleErrorResponse(errorMessage);
       }
     } catch (e) {
@@ -56,8 +54,10 @@ class LoginScreenController extends GetxController {
       print("Login error: $e");
 
       if (e.toString().contains('Server returned HTML')) {
-        AppUtils.errorSnackBar("Server Error",
-            "There was a problem with this account. Please contact support.");
+        AppUtils.errorSnackBar(
+          "Server Error",
+          "There was a problem with this account. Please contact support."
+        );
       } else {
         handleErrorResponse(e.toString());
       }
@@ -72,25 +72,66 @@ class LoginScreenController extends GetxController {
       AppUtils.errorSnackBar(
           "Not Found", "The requested resource was not found.");
     } else {
+      print("Error Message: $errorMessage");
       AppUtils.errorSnackBar("Error", errorMessage);
     }
   }
 
   Future<void> handleSuccessfulLogin(Map<String, dynamic> data) async {
     try {
-      await Preferences.setToken(data["token"]);
-      await Preferences.setUserName(data["data"]["fullname"]);
-      await Preferences.setUserEmail(data["data"]["email"]);
-      await Preferences.setRoleID(data["data"]["role_id"]);
-      await Preferences.setUserID(data["data"]["id"]);
+      // The response structure is different from what we're expecting
+      final payload = data["payload"];
+      final user = payload["user"];
+      final token = payload["token"];
 
-      await updateFirestoreUser(data["data"]);
+      // Save user data to preferences
+      await Preferences.setToken(token);
+      await Preferences.setUserName(user["full_name"]);
+      await Preferences.setUserEmail(user["email"]);
+      await Preferences.setUserID(user["id"]);
 
+
+
+
+
+      AppUtils.getSnackBar("Success", data["message"]);
+
+      // Map role and navigate
+      int roleId = mapRoleToId(user["role"]);
+      print("Mapped role ID: $roleId for role ${user["role"]}");
+
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+      final String userId = user["id"].toString();
+      await Preferences.setRoleID(roleId.toString());
+        Map<String, dynamic> userDataMap = {
+          'fullname': user["full_name"],
+          'user_name': user["user_name"],
+          'email': user["email"],
+          "userId": userId,
+          'role_id': roleId,
+          "online": true,
+          'profileimage': user["profile_image"],
+          'lastSeen': FieldValue.serverTimestamp(),
+          "deviceToken": "deviceId",
+          'mobileNumber': user["phone_number"],
+          "createdAT": FieldValue.serverTimestamp(),
+        };
+        await firestore.collection('users').doc(userId).set(userDataMap);
       isLoading.value = false;
-      AppUtils.getSnackBar("Success", data["messages"]);
-      navigateBasedOnRole(data["data"]["role_id"]);
+      navigateBasedOnRole(roleId);
+
+      // await Preferences.setToken(data["token"]);
+      // await Preferences.setUserName(data["data"]["fullname"]);
+      // await Preferences.setUserEmail(data["data"]["email"]);
+      // await Preferences.setRoleID(data["data"]["role_id"]);
+      // await Preferences.setUserID(data["data"]["id"]);
+      //
+      // await updateFirestoreUser(data["data"]);
+      //
+      // navigateBasedOnRole(data["data"]["role_id"]);
     } catch (e) {
       isLoading.value = false;
+      print("Error in handleSuccessfulLogin: $e");
       throw Exception('Error processing login response: $e');
     }
   }
@@ -105,14 +146,16 @@ class LoginScreenController extends GetxController {
           await firestore.collection('users').doc(userId).get();
 
       Map<String, dynamic> userDataMap = {
-        'fullname': userData["fullname"],
+        'fullname': userData["full_name"],
         'email': userData["email"],
         "userId": userData["id"],
-        'role_id': userData["role_id"],
+        'role_id': userData["role"],
         "online": true,
-        'profileimage': userData["profileimage"],
+        'profileimage': userData["profileImage"],
         'lastSeen': FieldValue.serverTimestamp(),
-        "deviceToken": "deviceId"
+        "deviceToken": "deviceId",
+        'mobileNumber': userData["phone_number"],
+        "createdAT": FieldValue.serverTimestamp(),
       };
 
       if (docSnapshot.exists) {
@@ -164,20 +207,67 @@ class LoginScreenController extends GetxController {
     }
   }
 
+  int mapRoleToId(String role) {
+    switch (role.toLowerCase()) {
+      case "admin":
+        return 1;
+      case "landlord":
+        return 1;
+      case "tenant":
+        return 2;
+      case "service_provider":
+        return 3;
+      case "visitor":
+        return 4;
+      default:
+        print("Unknown role: $role");
+        return 0;
+    }
+  }
+
   void navigateBasedOnRole(int roleId) {
+    print("Navigating based on role ID: $roleId");
+
     switch (roleId) {
       case 1:
+        print("Navigating to Admin/Landlord Dashboard");
         Get.offAll(() => const MainBottomBar());
         break;
       case 2:
+        print("Navigating to Tenant Dashboard");
         Get.offAll(() => const TenantBottomBar());
         break;
       case 3:
+        print("Navigating to Service Provider Dashboard");
         Get.offAll(() => const ServiceProviderBottomBar());
         break;
       case 4:
+        print("Navigating to Visitor Dashboard");
         Get.offAll(() => const VisitorBottomBar());
         break;
+      default:
+        print("Invalid role ID: $roleId");
+        AppUtils.errorSnackBar(
+          "Error", 
+          "Invalid role assigned. Please contact support."
+        );
     }
   }
+
+  // void navigateBasedOnRole(int roleId) {
+  //   switch (roleId) {
+  //     case 1:
+  //       Get.offAll(() => const MainBottomBar());
+  //       break;
+  //     case 2:
+  //       Get.offAll(() => const TenantBottomBar());
+  //       break;
+  //     case 3:
+  //       Get.offAll(() => const ServiceProviderBottomBar());
+  //       break;
+  //     case 4:
+  //       Get.offAll(() => const VisitorBottomBar());
+  //       break;
+  //   }
+  // }
 }

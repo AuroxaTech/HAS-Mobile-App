@@ -9,7 +9,6 @@ import 'package:property_app/route_management/constant_routes.dart';
 
 import '../../controllers/services_provider_controller/service_request_cotroller.dart';
 import '../../models/service_provider_model/service_request_model.dart';
-import '../../utils/api_urls.dart';
 import '../../utils/shared_preferences/preferences.dart';
 import '../chat_screens/chat_conversion_screen.dart';
 
@@ -61,33 +60,39 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
                       ),
                   itemBuilder: (context, item, index) {
                     print('Service Request ID: ${item.id}');
-                    String imagesString = item.service == null
-                        ? ""
-                        : item.service!.media.toString();
-                    List<String> imageList = imagesString.split(',');
-                    DateTime createdAt = item.createdAt;
+                    String imageUrl = "";
+                    if (item.serviceImages.isNotEmpty) {
+                      imageUrl = item.serviceImages[0].imagePath;
+                      print("First image URL: $imageUrl");
+                    } else {
+                      print("No service images available");
+                    }
+                    DateTime? createdAt = item.createdAt;
                     String requestDate = DateFormat('dd-M-yy')
-                        .format(createdAt); // Adjust the pattern as needed
+                        .format(createdAt!); // Adjust the pattern as needed
                     String requestTime = DateFormat('h:mm a').format(createdAt);
+
+                    print("images  :: $imageUrl");
+
+
                     return Column(
                       children: [
                         serviceRequestWidget(context,
-                            image: AppUrls.mediaImages + imageList[0],
-                            title: item.service == null
-                                ? ""
-                                : item.service!.serviceName,
+                            image: imageUrl,
+                            title: item.serviceName ?? "",
                             contactDetail: item.user.email,
-                            clientName: item.user.fullname,
-                            location: item.address,
+                            clientName: item.user.fullName,
+                            location: item.location,
                             postalCode: item.postalCode,
                             description: item.description,
                             requestDate: requestDate,
                             requestTime: requestTime,
                             status: item.description,
-                            time: item.time,
-                            date: item.date,
+                            startTime: item.startTime,
+                            endTime: item.endTime,
+                            date: item.duration,
                             contactTap: () {
-                              if (item.decline == 1) {
+                              if (item.status == "rejected") {
                                 Get.snackbar(
                                   'This request has been declined. No chats available',
                                   '',
@@ -97,15 +102,15 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
                                 );
                               } else {
                                 createConversation(
-                                  item.user.fullname ?? "",
-                                  item.user.profileimage,
+                                  item.user.fullName ?? "",
+                                  item.user.profileImage,
                                   item.user.id.toString(),
                                   context,
                                 );
                               }
                             },
                             acceptTap: () {
-                              if (item.decline == 1) {
+                              if (item.status == "rejected") {
                                 Get.snackbar(
                                   'This request has been declined. You cannot accept it',
                                   '',
@@ -124,17 +129,17 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
                                           requestId: item.id,
                                           userId: item.userId.toString(),
                                           providerId:
-                                              item.serviceproviderId.toString())
+                                              item.providerId.toString())
                                       .then((value) {
                                     controller.getServicesRequests(1);
                                   });
                                 });
                               }
                             },
-                            acceptColor: item.approved == 1
+                            acceptColor: item.status == "accepted"
                                 ? const Color(0xff14C034).withOpacity(0.3)
                                 : const Color(0xff14C034),
-                            declineColor: item.decline == 1
+                            declineColor: item.status == "rejected"
                                 ? redColor.withOpacity(0.3)
                                 : redColor,
                             onTap: () {
@@ -148,9 +153,9 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
                                   arguments: item.id);
                             },
                             declineTap: () {
-                              if (item.decline == 1) {
+                              if (item.status == "rejected") {
                                 null;
-                              } else if (item.approved == 1) {
+                              } else if (item.status == "accepted") {
                                 Get.snackbar(
                                   'This request has been accepted. Cannot decline now.',
                                   '',
@@ -165,7 +170,9 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
                                         "Are you sure to decline this request",
                                     yesButtonText: "Decline", yesTap: () {
                                   controller
-                                      .declineServiceRequest(requestId: item.id)
+                                      .declineServiceRequest(
+                                      requestId: item.id,
+                                      serviceProviderId: item.providerId!)
                                       .then((value) {
                                     controller.getServicesRequests(1);
                                   });

@@ -37,20 +37,19 @@ class CalendarDetailScreen extends GetView<CalendarDetailController> {
                       controller: controller.pageController,
                       itemBuilder: (context, index) {
                         // Ensure getCalendarOne and service data exist
-                        if (controller.getCalendarOne.value?.request?.service !=
-                            null) {
+                        if (controller.getCalendarOne.value != null) {
                           String imagesString = controller
-                              .getCalendarOne.value!.request.service!.media
+                              .getCalendarOne.value!.serviceImages
                               .toString();
                           List<String> imageList = imagesString.split(',');
                           controller.images = imageList;
 
                           return InkWell(
                             onTap: () {
-                              if (imageList.isNotEmpty) {
+                              if (controller.images.isNotEmpty) {
                                 Get.to(
                                   () => ViewImage(
-                                    photo: AppUrls.mediaImages + imageList[0],
+                                    photo: AppUrls.mediaImages + controller.images[0],
                                   ),
                                   transition: routeTransition,
                                 );
@@ -60,7 +59,7 @@ class CalendarDetailScreen extends GetView<CalendarDetailController> {
                               width: double.infinity,
                               height: screenHeight(context) * 0.5,
                               imageUrl: imageList.isNotEmpty
-                                  ? AppUrls.mediaImages + imageList[0]
+                                  ? controller.images[index]
                                   : '', // Fallback for empty image list
                               fit: BoxFit.cover,
                               errorWidget: (context, e, b) {
@@ -171,8 +170,8 @@ class MyDraggable extends GetView<CalendarDetailController> {
                                   children: [
                                     Center(
                                       child: headingText(
-                                        text: controller.getCalendarOne.value!
-                                            .request.additionalInfo,
+                                        text: controller
+                                            .getCalendarOne.value!.serviceName,
                                         fontSize: 24,
                                       ),
                                     ),
@@ -202,8 +201,8 @@ class MyDraggable extends GetView<CalendarDetailController> {
                                                       text: controller
                                                           .getCalendarOne
                                                           .value!
-                                                          .provider
-                                                          .fullname,
+                                                          .user
+                                                          .fullName,
                                                       color: blackColor,
                                                       fontSize: 16),
                                                 ],
@@ -225,7 +224,7 @@ class MyDraggable extends GetView<CalendarDetailController> {
                                                         text: controller
                                                             .getCalendarOne
                                                             .value!
-                                                            .provider
+                                                            .user
                                                             .email,
                                                         color: blackColor,
                                                         fontSize: 16),
@@ -242,30 +241,36 @@ class MyDraggable extends GetView<CalendarDetailController> {
                                           h5,
                                           customText(
                                               text: controller.getCalendarOne
-                                                  .value!.request.description,
+                                                  .value!.description,
                                               color: blackColor,
                                               fontSize: 14),
                                           h5,
                                           Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
-                                              Row(
+                                              Column(
                                                 children: [
-                                                  Image.asset(
-                                                    AppIcons.clockDuration,
-                                                    width: 20,
-                                                    height: 20,
-                                                  ),
                                                   customText(
-                                                      text: " Duration  hour",
+                                                      text: "Duration",
                                                       color: greyColor,
-                                                      fontSize: 14),
+                                                      fontSize: 16),
+                                                  h5,
+                                                  customText(
+                                                      text: controller
+                                                          .getCalendarOne
+                                                          .value!
+                                                          .duration,
+                                                      color: blackColor,
+                                                      fontSize: 15),
+                                                  h5,
                                                 ],
                                               ),
                                               customText(
                                                   text:
-                                                      "\$${controller.getCalendarOne.value!.request.price}",
+                                                      "\$${controller.getCalendarOne.value!.pricing}",
                                                   color: blackColor,
                                                   fontSize: 18),
                                             ],
@@ -280,9 +285,29 @@ class MyDraggable extends GetView<CalendarDetailController> {
                                               ),
                                               customText(
                                                   text:
-                                                      " Service Area : ${controller.getCalendarOne.value!.request.description}",
+                                                      " Service Area : ${controller.getCalendarOne.value!.description}",
                                                   color: greyColor,
                                                   fontSize: 15),
+                                            ],
+                                          ),
+                                          h5,
+                                          Row(
+                                            children: [
+                                              Image.asset(
+                                                AppIcons.clockDuration,
+                                                width: 20,
+                                                height: 20,
+                                              ),
+                                              w5,
+                                              customText(
+                                                  text: "Service Time : ",
+                                                  color: greyColor,
+                                                  fontSize: 16),
+                                              customText(
+                                                  text:
+                                                      "${controller.getCalendarOne.value!.startTime} - ${controller.getCalendarOne.value!.endTime}",
+                                                  color: blackColor,
+                                                  fontSize: 12),
                                             ],
                                           ),
                                         ],

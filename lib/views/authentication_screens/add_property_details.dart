@@ -431,24 +431,25 @@ class AddPropertyDetailScreen extends GetView<SignUpController> {
                     ),
                     h50,
                     CustomButton(
-                      width: double.infinity,
-                      text: "Register",
-                      isLoading: controller.isLoading.value,
-                      onTap: (){
-                        print("Area Range on Submit: ${controller.selectedRange.value}");
-                        if(controller.formKeyDetail.currentState!.validate()){
-                          if(controller.images.length > 4){
-                            double amount = double.parse(controller.amountController.text);
-                            int nofProp = int.parse(controller.noOfPropertiesValue.value);
-                            if(controller.profileImage.value == null){
-                        if (controller.formKeyDetail.currentState!.validate()) {
-                          if (controller.images.length > 4) {
-                            double amount =
-                                double.parse(controller.amountController.text);
-                            int nofProp =
-                                int.parse(controller.noOfPropertiesValue.value);
-                            if (controller.profileImage.value == null) {
-                              controller.registerProperty(
+                        width: double.infinity,
+                        text: "Register",
+                        isLoading: controller.isLoading.value,
+                        onTap: () async {
+                          if (controller.formKeyDetail.currentState!
+                              .validate()) {
+                            if (controller.images.length < 5) {
+                              AppUtils.errorSnackBar(
+                                  "Select Images", "Minimum 5 images required");
+                              return;
+                            }
+
+                            try {
+                              double amount = double.parse(
+                                  controller.amountController.text);
+                              int nofProp = int.parse(
+                                  controller.noOfPropertiesValue.value);
+
+                              await controller.registerProperty(
                                 fullName: controller.nameController.text,
                                 userName: controller.userNameController.text,
                                 email: controller.emailController.text,
@@ -456,46 +457,9 @@ class AddPropertyDetailScreen extends GetView<SignUpController> {
                                 password: controller.passwordController.text,
                                 cPassword:
                                     controller.confirmPasswordController.text,
-                                roleId: 1,
-                                type: controller.isSale.value ? 1 : 2,
-                                city: controller.newYorkController.text,
-                                amount: amount,
-                                address:
-                                    controller.addressController.text.isEmpty
-                                        ? "Test"
-                                        : controller.addressController.text,
-                                postalCode: controller.postalCode.text.isEmpty
-                                    ? "00000"
-                                    : controller.postalCode.text,
-                                lat: controller.selectedLat,
-                                long: controller.selectedLng,
-                                areaRange: controller.selectedRange.value,
-                                bedroom: controller.selectedBedroom.value,
-                                bathroom: controller.selectedBothList.value,
-                                electricityBill: controller.images[0],
-                                propertyImages: controller.images,
-                                noOfProperty: nofProp,
-                                propertyType: controller.propertyTypeIndex.value
-                                    .toString(),
-                                availabilityStartTime:
-                                    controller.startTime.value.format(context),
-                                availabilityEndTime:
-                                    controller.endTime.value.format(context),
-                                description: controller.description.text,
-                                subType: 1.toString(),
-                              );
-                            } else {
-                              controller.registerProperty(
-                                fullName: controller.nameController.text,
-                                userName: controller.userNameController.text,
-                                email: controller.emailController.text,
-                                phoneNumber: controller.phoneController.text,
-                                password: controller.passwordController.text,
-                                cPassword:
-                                    controller.confirmPasswordController.text,
-                                roleId: 1,
-                                profileImage: controller.profileImage.value!,
-                                type: controller.isSale.value ? 1 : 2,
+                                role: "landlord",
+                                profileImage: controller.profileImage.value,
+                                type: controller.isSale.value ? "Rent" : "Sale",
                                 city: controller.newYorkController.text,
                                 amount: amount,
                                 address:
@@ -511,29 +475,23 @@ class AddPropertyDetailScreen extends GetView<SignUpController> {
                                     "${controller.selectedRange.value} sq ft",
                                 bedroom: controller.selectedBedroom.value,
                                 bathroom: controller.selectedBothList.value,
-                                electricityBill: controller.profileImage.value!,
+                                electricityBill: controller.images[0],
                                 propertyImages: controller.images,
                                 noOfProperty: nofProp,
                                 propertyType: controller.propertyTypeIndex.value
                                     .toString(),
                                 availabilityStartTime:
-                                    controller.startTime.value.toString(),
+                                    controller.startTime.value.format(context),
                                 availabilityEndTime:
-                                    controller.endTime.value.toString(),
+                                    controller.endTime.value.format(context),
                                 description: controller.description.text,
-                                subType: 1.toString(),
+                                subType: "1",
                               );
+                            } catch (e) {
+                              AppUtils.errorSnackBar("Error", e.toString());
                             }
-                          } else {
-                            AppUtils.errorSnackBar(
-                                "Select Images", "Minimum 5 images upload");
                           }
-                        }
-                      }
-                          }
-                        }
-                      }
-                    ),
+                        }),
                     h50,
                   ],
                 ),

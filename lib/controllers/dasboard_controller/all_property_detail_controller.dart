@@ -8,19 +8,12 @@ import '../../services/property_services/get_property_services.dart';
 import '../../utils/utils.dart';
 
 class AllPropertyDetailController extends GetxController {
-
   RxBool isSale = false.obs;
   RxInt selectedArea = 0.obs;
   RxInt selectedBedroom = 1.obs;
   RxInt selectedBathrooms = 1.obs;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  List<String> areaRange = [
-    "3",
-    "5",
-    "7",
-    "10",
-    "12"
-  ];
+  List<String> areaRange = ["3", "5", "7", "10", "12"];
   TextEditingController newYorkController = TextEditingController();
   RxBool newYorkField = true.obs;
   TextEditingController amountController = TextEditingController();
@@ -82,21 +75,24 @@ class AllPropertyDetailController extends GetxController {
 
   String getSelectedHomeSubType() {
     String selectedKey = selectedHome.entries
-        .firstWhere((MapEntry<String, bool> entry) => entry.value, orElse: () => MapEntry('', false))
+        .firstWhere((MapEntry<String, bool> entry) => entry.value,
+            orElse: () => MapEntry('', false))
         .key;
     return selectedKey;
   }
 
   String getSelectedPlotsSubType() {
     String selectedKey = selectedPlots.entries
-        .firstWhere((MapEntry<String, bool> entry) => entry.value, orElse: () => MapEntry('', false))
+        .firstWhere((MapEntry<String, bool> entry) => entry.value,
+            orElse: () => MapEntry('', false))
         .key;
     return selectedKey;
   }
 
   String getSelectedCommercialSubType() {
     String selectedKey = selectedCommercial.entries
-        .firstWhere((MapEntry<String, bool> entry) => entry.value, orElse: () => MapEntry('', false))
+        .firstWhere((MapEntry<String, bool> entry) => entry.value,
+            orElse: () => MapEntry('', false))
         .key;
     return selectedKey;
   }
@@ -115,6 +111,7 @@ class AllPropertyDetailController extends GetxController {
   void removeImage(int index) {
     pickedImages.removeAt(index);
   }
+
   void removeElect() {
     electBill.value = null;
   }
@@ -130,7 +127,6 @@ class AllPropertyDetailController extends GetxController {
     }
   }
 
-
   final sheet = GlobalKey();
   final controller = DraggableScrollableController();
   final PageController pageController = PageController();
@@ -142,12 +138,13 @@ class AllPropertyDetailController extends GetxController {
   RxInt id = 0.obs;
   var userId = 0.obs;
   var uId = 0.obs;
-  getUserId()async{
+  getUserId() async {
     var id = await Preferences.getUserID();
     userId.value = id;
     uId.value = userId.value;
     print(userId.value);
   }
+
   @override
   void onInit() {
     var data = Get.arguments;
@@ -159,44 +156,45 @@ class AllPropertyDetailController extends GetxController {
     super.onInit();
   }
 
-
   Future<void> getService({required String iddd}) async {
     print("we are in get service");
     isLoading.value = true;
+
     int? id = int.tryParse(iddd);
-    var result = await propertyService.getProperty(id: id!);
+    if (id == null) {
+      print("Invalid ID format");
+      isLoading.value = false;
+      return;
+    }
+
+    var result = await propertyService.getProperty(id: id);
     print("Service Result : $result");
 
     isLoading.value = false;
-    if(result["status"] == true) {
-      if (result['data'] != null && result['data'] is Map) {
-        var data = result['data'] as Map<String, dynamic>;
+
+    if (result["success"] == true) {
+      if (result['payload'] != null &&
+          result['payload'] is Map<String, dynamic>) {
+        var data = result['payload'] as Map<String, dynamic>;
         print("Data :: $data");
 
         if (getPropertyOne != null) {
-
           getPropertyOne.value = Property.fromJson(data);
-          String imagesString = getPropertyOne.value!.images.toString();
-          List<String> imageList = imagesString.split(',');
-          images = imageList;
+          images =
+              getPropertyOne.value!.propertyImages!; // Now it's already a list
           newYorkController.text = getPropertyOne.value!.city;
           amountController.text = getPropertyOne.value!.amount;
           streetController.text = getPropertyOne.value!.address;
         } else {
-          isLoading.value = false;
           print("getPropertyOne is null");
         }
       } else {
-        isLoading.value = false;
         print("Invalid or null data format");
-        // Handle other cases if necessary
       }
-    }else{
-
+    } else {
+      print("Request failed");
     }
-
   }
-
 
   Future<void> deleteService({required int id}) async {
     print("we are in delete service");

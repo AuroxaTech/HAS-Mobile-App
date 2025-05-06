@@ -33,30 +33,36 @@ class UserState {
 }
 
 class Provider {
-  Serviceprovider serviceprovider;
+  final User user;
+  final List<ServiceData> services;
   int totalService;
   int totalJobs;
   int totalPrice;
   int rate;
 
   Provider({
-    required this.serviceprovider,
-    required this.totalService,
-    required this.totalJobs,
-    required this.totalPrice,
-    required this.rate,
+    required this.user,
+    required this.services,
+    this.totalService = 0,
+    this.totalJobs = 0,
+    this.totalPrice = 0,
+    this.rate = 0,
   });
 
   factory Provider.fromJson(Map<String, dynamic> json) => Provider(
-    serviceprovider: Serviceprovider.fromJson(json["serviceprovider"]),
-    totalService: json["total_service"],
-    totalJobs: json["total_jobs"],
-    totalPrice: json["total_price"],
-    rate: json["rate"],
+    user: User.fromJson(json["user"]),
+    services: (json["services"] as List<dynamic>)
+        .map((x) => ServiceData.fromJson(x))
+        .toList(),
+    totalService: json["total_service"] ?? 0,
+    totalJobs: json["total_jobs"] ?? 0,
+    totalPrice: json["total_price"] ?? 0,
+    rate: json["rate"] ?? 0,
   );
 
   Map<String, dynamic> toJson() => {
-    "serviceprovider": serviceprovider.toJson(),
+    "user": user.toJson(),
+    "services": services.map((e) => e.toJson()).toList(),
     "total_service": totalService,
     "total_jobs": totalJobs,
     "total_price": totalPrice,
@@ -64,100 +70,59 @@ class Provider {
   };
 }
 
-class Serviceprovider {
-  int id;
-  int userId;
-  String services;
-  String yearExperience;
-  String availabilityStartTime;
-  String availabilityEndTime;
-  String cnicFront;
-  dynamic cnicEnd;
-  String certification;
-  dynamic file;
-  DateTime createdAt;
-  DateTime updatedAt;
-  User user;
-  ProviderService? providerService;
+class ServiceData {
+  final int id;
+  final int userId;
+  final String serviceName;
+  final String description;
+  final String pricing;
+  final String duration;
+  final String startTime;
+  final String endTime;
+  final String location;
+  final String? country;
+  final dynamic yearExperience;
 
-  Serviceprovider({
+  ServiceData({
     required this.id,
     required this.userId,
-    required this.services,
+    required this.serviceName,
+    required this.description,
+    required this.pricing,
+    required this.duration,
+    required this.startTime,
+    required this.endTime,
+    required this.location,
+    this.country,
     required this.yearExperience,
-    required this.availabilityStartTime,
-    required this.availabilityEndTime,
-    required this.cnicFront,
-    required this.cnicEnd,
-    required this.certification,
-    required this.file,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.user,
-    required this.providerService,
   });
 
-  factory Serviceprovider.fromJson(Map<String, dynamic> json) => Serviceprovider(
+  factory ServiceData.fromJson(Map<String, dynamic> json) => ServiceData(
     id: json["id"],
     userId: json["user_id"],
-    services: json["services"],
+    serviceName: json["service_name"],
+    description: json["description"],
+    pricing: json["pricing"],
+    duration: json["duration"].toString(),
+    startTime: json["start_time"],
+    endTime: json["end_time"],
+    location: json["location"],
+    country: json["country"],
     yearExperience: json["year_experience"],
-    availabilityStartTime: json["availability_start_time"],
-    availabilityEndTime: json["availability_end_time"],
-    cnicFront: json["cnic_front"],
-    cnicEnd: json["cnic_end"],
-    certification: json["certification"],
-    file: json["file"],
-    createdAt: DateTime.parse(json["created_at"]),
-    updatedAt: DateTime.parse(json["updated_at"]),
-    user: User.fromJson(json["user"]),
-
-    providerService: json["provider_service"] == null ? null  : ProviderService.fromJson(json["provider_service"]),
   );
 
   Map<String, dynamic> toJson() => {
     "id": id,
     "user_id": userId,
-    "services": services,
+    "service_name": serviceName,
+    "description": description,
+    "pricing": pricing,
+    "duration": duration,
+    "start_time": startTime,
+    "end_time": endTime,
+    "location": location,
+    "country": country,
     "year_experience": yearExperience,
-    "availability_start_time": availabilityStartTime,
-    "availability_end_time": availabilityEndTime,
-    "cnic_front": cnicFront,
-    "cnic_end": cnicEnd,
-    "certification": certification,
-    "file": file,
-    "created_at": createdAt.toIso8601String(),
-    "updated_at": updatedAt.toIso8601String(),
-    "user": user.toJson(),
-    "provider_service": providerService,
-  };
-}
-
-class ProviderService {
-  int id;
-  String name;
-  dynamic createdAt;
-  dynamic updatedAt;
-
-  ProviderService({
-    required this.id,
-    required this.name,
-    required this.createdAt,
-    required this.updatedAt,
-  });
-
-  factory ProviderService.fromJson(Map<String, dynamic> json) => ProviderService(
-    id: json["id"],
-    name: json["name"],
-    createdAt: json["created_at"],
-    updatedAt: json["updated_at"],
-  );
-
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "name": name,
-    "created_at": createdAt,
-    "updated_at": updatedAt,
   };
 }
 
@@ -165,11 +130,18 @@ class User {
   int id;
   String fullname;
   String email;
+  String userName;
   String phoneNumber;
-  int roleId;
+  String role;
+  String? emailVerifiedAt;
+  String? address;
+  String? postalCode;
   String profileimage;
   String platform;
   String deviceToken;
+  int approvedAt;
+  String verificationToken;
+  int isVerified;
   DateTime createdAt;
   DateTime updatedAt;
 
@@ -177,37 +149,58 @@ class User {
     required this.id,
     required this.fullname,
     required this.email,
+    required this.userName,
     required this.phoneNumber,
-    required this.roleId,
+    required this.role,
+    this.emailVerifiedAt,
+    this.address,
+    this.postalCode,
     required this.profileimage,
     required this.platform,
     required this.deviceToken,
+    required this.approvedAt,
+    required this.verificationToken,
+    required this.isVerified,
     required this.createdAt,
     required this.updatedAt,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => User(
     id: json["id"],
-    fullname: json["fullname"],
-    email: json["email"],
-    phoneNumber: json["phone_number"],
-    roleId: json["role_id"],
-    profileimage: json["profileimage"],
-    platform: json["platform"]?? "",
+    fullname: json["full_name"] ?? "",
+    email: json["email"] ?? "",
+    userName: json["user_name"] ?? "",
+    phoneNumber: json["phone_number"] ?? "",
+    role: json["role"] ?? "",
+    emailVerifiedAt: json["email_verified_at"],
+    address: json["address"],
+    postalCode: json["postal_code"],
+    profileimage: json["profile_image"] ?? "",
+    platform: json["platform"] ?? "",
     deviceToken: json["device_token"] ?? "",
+    approvedAt: json["approved_at"] ?? 0,
+    verificationToken: json["verification_token"] ?? "",
+    isVerified: json["is_verified"] ?? 0,
     createdAt: DateTime.parse(json["created_at"]),
     updatedAt: DateTime.parse(json["updated_at"]),
   );
 
   Map<String, dynamic> toJson() => {
     "id": id,
-    "fullname": fullname,
+    "full_name": fullname,
     "email": email,
+    "user_name": userName,
     "phone_number": phoneNumber,
-    "role_id": roleId,
-    "profileimage": profileimage,
+    "role": role,
+    "email_verified_at": emailVerifiedAt,
+    "address": address,
+    "postal_code": postalCode,
+    "profile_image": profileimage,
     "platform": platform,
     "device_token": deviceToken,
+    "approved_at": approvedAt,
+    "verification_token": verificationToken,
+    "is_verified": isVerified,
     "created_at": createdAt.toIso8601String(),
     "updated_at": updatedAt.toIso8601String(),
   };

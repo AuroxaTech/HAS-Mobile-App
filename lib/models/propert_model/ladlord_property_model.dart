@@ -75,9 +75,11 @@ class PropertyData {
 class Property {
   int id;
   int userId;
-  int type;
+  String type;
   String images;
   String city;
+  List<String> propertyImages; // Updated to list of image URLs
+
   String amount;
   String address;
   String lat;
@@ -89,7 +91,7 @@ class Property {
   String electricityBill;
   String createdAt;
   String updatedAt;
-  bool isFavorite;
+  int isFavorite;
   User? user;
 
   Property({
@@ -97,6 +99,7 @@ class Property {
     required this.userId,
     required this.type,
     required this.images,
+    required this.propertyImages,
     required this.city,
     required this.amount,
     required this.address,
@@ -110,28 +113,43 @@ class Property {
     required this.createdAt,
     required this.updatedAt,
     required this.isFavorite,
-    required this.user
+    required this.user,
   });
 
   factory Property.fromJson(Map<String, dynamic> json) {
+    // Parse property images
+    List<String> images = [];
+    if (json['property_images'] != null) {
+      if (json['property_images'] is List) {
+        images = (json['property_images'] as List)
+            .map((image) => 
+                image is Map<String, dynamic> && image.containsKey('image_path') 
+                ? image['image_path'].toString() 
+                : '')
+            .where((path) => path.isNotEmpty)
+            .toList();
+      }
+    }
+    
     return Property(
-      id: json['id'],
-      userId: json['user_id'],
-      type: json['type'],
-      images: json['images']??"",
+      id: json['id'] ?? 0,
+      userId: json['user_id'] ?? 0,
+      type: json['type'] ?? "",
+      propertyImages: images,
+      images: json['images'] ?? "",
       city: json['city'] ?? "",
-      amount: json['amount'],
-      address: json['address'],
-      lat: json['lat'],
-      long: json['long'],
-      areaRange: json['area_range'],
-      bedroom: json['bedroom'],
-      bathroom: json['bathroom'],
-      description: json['description']?? "",
+      amount: json['amount'] ?? "0.00",
+      address: json['address'] ?? "",
+      lat: json['lat'] ?? "0.0",
+      long: json['long'] ?? "0.0",
+      areaRange: json['area_range'] ?? "",
+      bedroom: json['bedroom']?.toString() ?? "0",
+      bathroom: json['bathroom']?.toString() ?? "0",
+      description: json['description'] ?? "",
       electricityBill: json['electricity_bill'] ?? "",
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
-      isFavorite: json["is_favorite"] ?? false,
+      createdAt: json['created_at'] ?? "",
+      updatedAt: json['updated_at'] ?? "",
+      isFavorite: json["isFavorite"] ?? 0,
       user: json["user"] == null ? null : User.fromJson(json["user"]),
     );
   }
@@ -157,13 +175,12 @@ class PageLink {
   }
 }
 
-
 class User {
   int id;
   String fullname;
   String email;
   String phoneNumber;
-  int roleId;
+  String role;
   String profileimage;
   DateTime createdAt;
   DateTime updatedAt;
@@ -173,31 +190,31 @@ class User {
     required this.fullname,
     required this.email,
     required this.phoneNumber,
-    required this.roleId,
+    required this.role,
     required this.profileimage,
     required this.createdAt,
     required this.updatedAt,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => User(
-    id: json["id"],
-    fullname: json["fullname"],
-    email: json["email"],
-    phoneNumber: json["phone_number"],
-    roleId: json["role_id"],
-    profileimage: json["profileimage"],
-    createdAt: DateTime.parse(json["created_at"]),
-    updatedAt: DateTime.parse(json["updated_at"]),
-  );
+        id: json["id"],
+        fullname: json["full_name"],
+        email: json["email"],
+        phoneNumber: json["phone_number"],
+        role: json["role"],
+        profileimage: json["profile_image"] ?? "",
+        createdAt: DateTime.parse(json["created_at"]),
+        updatedAt: DateTime.parse(json["updated_at"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "fullname": fullname,
-    "email": email,
-    "phone_number": phoneNumber,
-    "role_id": roleId,
-    "profileimage": profileimage,
-    "created_at": createdAt.toIso8601String(),
-    "updated_at": updatedAt.toIso8601String(),
-  };
+        "id": id,
+        "full_name": fullname,
+        "email": email,
+        "phone_number": phoneNumber,
+        "role": role,
+        "profile_image": profileimage,
+        "created_at": createdAt.toIso8601String(),
+        "updated_at": updatedAt.toIso8601String(),
+      };
 }

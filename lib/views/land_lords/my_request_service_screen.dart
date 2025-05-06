@@ -10,7 +10,6 @@ import '../../app_constants/app_sizes.dart';
 import '../../app_constants/color_constants.dart';
 import '../../constant_widget/constant_widgets.dart';
 import '../../custom_widgets/custom_button.dart';
-import '../../utils/api_urls.dart';
 
 class MyServiceRequest extends GetView<MyServiceRequestController> {
   const MyServiceRequest({Key? key}) : super(key: key);
@@ -46,24 +45,29 @@ class MyServiceRequest extends GetView<MyServiceRequestController> {
                                 itemBuilder: (context, index) {
                                   List<String> imageList = [];
 
+                                  String imagesString = controller
+                                      .getServicesRequestList[index]
+                                      .serviceImages
+                                      .toString();
+                                  imageList = imagesString.split(',');
+
+                                  String imageUrl = AppIcons.appLogo;
+
+                                  // Check if serviceImages exists and has items
                                   if (controller.getServicesRequestList[index]
-                                          .service?.media !=
-                                      null) {
-                                    String imagesString = controller
+                                      .serviceImages.isNotEmpty) {
+                                    // Access the image_path of the first service image
+                                    imageUrl = controller
                                         .getServicesRequestList[index]
-                                        .service!
-                                        .media
-                                        .toString();
-                                    imageList = imagesString.split(',');
+                                        .serviceImages[0]
+                                        .imagePath;
                                   }
 
                                   return Column(
                                     children: [
                                       jobWidget(
                                         context,
-                                        image: imageList.isNotEmpty
-                                            ? AppUrls.mediaImages + imageList[0]
-                                            : AppIcons.appLogo,
+                                        image: imageUrl,
                                         onTap: () {
                                           Get.toNamed(
                                               kMyServiceRequestDetailScreen,
@@ -80,8 +84,7 @@ class MyServiceRequest extends GetView<MyServiceRequestController> {
                                         },
                                         title: controller
                                                 .getServicesRequestList[index]
-                                                .service
-                                                ?.serviceName ??
+                                                .serviceName ??
                                             "No Title",
                                         contactDetail: controller
                                                 .getServicesRequestList[index]
@@ -91,11 +94,11 @@ class MyServiceRequest extends GetView<MyServiceRequestController> {
                                         clientName: controller
                                                 .getServicesRequestList[index]
                                                 .user
-                                                ?.fullname ??
+                                                .fullName ??
                                             "No Name",
                                         location: controller
                                                 .getServicesRequestList[index]
-                                                .address ??
+                                                .location ??
                                             "No Address",
                                         description: controller
                                                 .getServicesRequestList[index]
@@ -103,22 +106,17 @@ class MyServiceRequest extends GetView<MyServiceRequestController> {
                                             "No Description",
                                         requestDate: controller
                                                 .getServicesRequestList[index]
-                                                .date ??
+                                                .duration ??
                                             "No Date",
-                                        requestTime: controller
-                                                .getServicesRequestList[index]
-                                                .time ??
-                                            "No Time",
+                                        requestTime:
+                                            "${controller.getServicesRequestList[index].startTime} - ${controller.getServicesRequestList[index].endTime}" ??
+                                                "No Time",
                                         clientDate: controller
-                                                .getServicesRequestList[index]
-                                                .service
-                                                ?.startTime ??
-                                            "No Date",
-                                        clientTime: controller
-                                                .getServicesRequestList[index]
-                                                .service
-                                                ?.endTime ??
-                                            "No Date",
+                                            .getServicesRequestList[index]
+                                            .duration,
+                                        clientTime:
+                                            "${controller.getServicesRequestList[index].startTime} - ${controller.getServicesRequestList[index].endTime}" ??
+                                                "No Date",
                                       ),
                                       const SizedBox(
                                         height: 20,
