@@ -3,6 +3,7 @@ import 'package:property_app/controllers/authentication_controller/change_passwo
 import 'package:property_app/controllers/authentication_controller/forgot_password_controller.dart';
 import 'package:property_app/controllers/authentication_controller/on_boarding_screen_controller.dart';
 import 'package:property_app/controllers/authentication_controller/sign_up_controller.dart';
+import 'package:property_app/controllers/authentication_controller/stripe_account_controller.dart';
 import 'package:property_app/controllers/chat_screens_controller/chat_convertion_screen_controller.dart';
 import 'package:property_app/controllers/dasboard_controller/all_property_controller.dart';
 import 'package:property_app/controllers/dasboard_controller/all_property_detail_controller.dart';
@@ -54,6 +55,7 @@ class ScreenBindings extends Bindings {
     Get.lazyPut<OnBoardingScreenController>(() => OnBoardingScreenController());
     Get.lazyPut<LoginScreenController>(() => LoginScreenController());
     Get.lazyPut<SignUpController>(() => SignUpController());
+    Get.lazyPut<StripeAccountController>(() => StripeAccountController());
     Get.lazyPut<DashboardController>(() => DashboardController());
     Get.lazyPut<MyPropertyController>(() => MyPropertyController());
     Get.lazyPut<AddPropertyController>(() => AddPropertyController());

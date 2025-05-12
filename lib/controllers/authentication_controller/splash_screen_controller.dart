@@ -1,7 +1,12 @@
+import 'dart:convert';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:local_auth/local_auth.dart';
 import 'package:property_app/route_management/constant_routes.dart';
+import 'package:property_app/utils/api_urls.dart';
 import 'package:property_app/utils/shared_preferences/preferences.dart';
+import 'package:property_app/utils/utils.dart';
+import 'package:property_app/views/authentication_screens/stripe_account_screen.dart';
 import 'package:property_app/views/main_bottom_bar/main_bottom_bar.dart';
 import 'package:property_app/views/main_bottom_bar/service_provider_bottom_ar.dart';
 import 'package:property_app/views/main_bottom_bar/tenant_bottom_bar.dart';
@@ -140,13 +145,67 @@ class SplashScreenController extends GetxController {
         Get.offAll(const TenantBottomBar());
         break;
       case "3":
-        Get.offAll(const ServiceProviderBottomBar());
+        // If user is a service provider, check their Stripe account status
+        await checkServiceProviderStripeStatus(token);
         break;
       case "4":
         Get.offAll(const VisitorBottomBar());
         break;
       default:
         Get.offNamed(kLoginScreen);
+    }
+  }
+  
+  Future<void> checkServiceProviderStripeStatus(String? token) async {
+    if (token == null) {
+      Get.offNamed(kLoginScreen);
+      return;
+    }
+    
+    try {
+      final response = await http.get(
+        Uri.parse('${AppUrls.baseUrl}/stripe/account/status'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        final status = responseData['status'];
+        
+        print("Stripe Status at Splash ==> $status");
+        
+        if (status == 'active') {
+          Get.offAll(() => const ServiceProviderBottomBar());
+        } else if (status == 'not_connected' || status == 'pending') {
+          Get.offAll(() => const StripeAccountScreen());
+        } else {
+          // Unknown status - proceed with warning
+          AppUtils.warningSnackBar(
+            "Stripe Account", 
+            "Your Stripe account status is unknown. Please verify your account setup."
+          );
+          Get.offAll(() => const ServiceProviderBottomBar());
+        }
+      } else {
+        // API error - proceed to service provider screen with warning
+        print("Stripe status check failed: ${response.statusCode} - ${response.body}");
+        AppUtils.warningSnackBar(
+          "Stripe Account",
+          "Failed to verify your Stripe account status."
+        );
+        Get.offAll(() => const ServiceProviderBottomBar());
+      }
+    } catch (e) {
+      // Exception - proceed to service provider screen with warning
+      print("Error checking Stripe account status: $e");
+      AppUtils.warningSnackBar(
+        "Stripe Account",
+        "Error verifying your Stripe account status."
+      );
+      Get.offAll(() => const ServiceProviderBottomBar());
     }
   }
 

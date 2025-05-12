@@ -1,10 +1,14 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:local_auth/local_auth.dart';
 import 'package:property_app/services/auth_services/auth_services.dart';
+import 'package:property_app/utils/api_urls.dart';
+import 'package:property_app/views/authentication_screens/stripe_account_screen.dart';
 import 'package:property_app/views/main_bottom_bar/main_bottom_bar.dart';
 import 'package:property_app/views/main_bottom_bar/service_provider_bottom_ar.dart';
 import 'package:property_app/views/main_bottom_bar/tenant_bottom_bar.dart';
@@ -33,7 +37,8 @@ class LoginScreenController extends GetxController {
 
   var message = "".obs;
 
-  Future<void> login(BuildContext context, String email, String password) async {
+  Future<void> login(
+      BuildContext context, String email, String password) async {
     try {
       isLoading.value = true;
 
@@ -50,28 +55,26 @@ class LoginScreenController extends GetxController {
       } else {
         isLoading.value = false;
         // Extract the first error message from 'payload' array
-        message.value = (data["message"]['payload'] is List && data['payload'].isNotEmpty)
-            ? data["message"]['payload'][0]
-            : 'Unknown error occurred';
+        message.value =
+            (data["message"]['payload'] is List && data['payload'].isNotEmpty)
+                ? data["message"]['payload'][0]
+                : 'Unknown error occurred';
 
         handleErrorResponse(message.value);
       }
-
     } catch (e) {
       isLoading.value = false;
       print("Login error: $e");
 
       if (e.toString().contains('Server returned HTML')) {
-        AppUtils.errorSnackBar(
-            "Server Error",
-            "There was a problem with this account. Please contact support."
-        );
+        AppUtils.errorSnackBar("Server Error",
+            "There was a problem with this account. Please contact support.");
       } else {
-        handleErrorResponse(message.value.isNotEmpty ? message.value : "Wrong email/password");
+        handleErrorResponse(
+            message.value.isNotEmpty ? message.value : "Wrong email/password");
       }
     }
   }
-
 
   void handleErrorResponse(String errorMessage) {
     if (errorMessage.toLowerCase().contains("server error")) {
@@ -82,10 +85,10 @@ class LoginScreenController extends GetxController {
           "Not Found", "The requested resource was not found.");
     } else {
       print("Error Message: $errorMessage");
-      AppUtils.errorSnackBar("Error", errorMessage);  // Pass errorMessage directly
+      AppUtils.errorSnackBar(
+          "Error", errorMessage); // Pass errorMessage directly
     }
   }
-
 
   Future<void> handleSuccessfulLogin(Map<String, dynamic> data) async {
     try {
@@ -100,10 +103,6 @@ class LoginScreenController extends GetxController {
       await Preferences.setUserEmail(user["email"]);
       await Preferences.setUserID(user["id"]);
 
-
-
-
-
       AppUtils.getSnackBar("Success", data["message"]);
 
       // Map role and navigate
@@ -113,36 +112,76 @@ class LoginScreenController extends GetxController {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
       final String userId = user["id"].toString();
       await Preferences.setRoleID(roleId.toString());
-        Map<String, dynamic> userDataMap = {
-          'fullname': user["full_name"],
-          'user_name': user["user_name"],
-          'email': user["email"],
-          "userId": userId,
-          'role_id': roleId,
-          "online": true,
-          'profileimage': user["profile_image"],
-          'lastSeen': FieldValue.serverTimestamp(),
-          "deviceToken": "deviceId",
-          'mobileNumber': user["phone_number"],
-          "createdAT": FieldValue.serverTimestamp(),
-        };
-        await firestore.collection('users').doc(userId).set(userDataMap);
-      isLoading.value = false;
-      navigateBasedOnRole(roleId);
+      Map<String, dynamic> userDataMap = {
+        'fullname': user["full_name"],
+        'user_name': user["user_name"],
+        'email': user["email"],
+        "userId": userId,
+        'role_id': roleId,
+        "online": true,
+        'profileimage': user["profile_image"],
+        'lastSeen': FieldValue.serverTimestamp(),
+        "deviceToken": "deviceId",
+        'mobileNumber': user["phone_number"],
+        "createdAT": FieldValue.serverTimestamp(),
+      };
+      await firestore.collection('users').doc(userId).set(userDataMap);
 
-      // await Preferences.setToken(data["token"]);
-      // await Preferences.setUserName(data["data"]["fullname"]);
-      // await Preferences.setUserEmail(data["data"]["email"]);
-      // await Preferences.setRoleID(data["data"]["role_id"]);
-      // await Preferences.setUserID(data["data"]["id"]);
-      //
-      // await updateFirestoreUser(data["data"]);
-      //
-      // navigateBasedOnRole(data["data"]["role_id"]);
+      // Check if user is a service provider
+      if (user["role"] == "service_provider") {
+        await checkStripeAccountStatus(token);
+      } else {
+        navigateBasedOnRole(roleId);
+      }
+      isLoading.value = false;
     } catch (e) {
       isLoading.value = false;
       print("Error in handleSuccessfulLogin: $e");
       throw Exception('Error processing login response: $e');
+    }
+  }
+
+  Future<void> checkStripeAccountStatus(String token) async {
+    try {
+      final response = await http.get(
+        Uri.parse('${AppUrls.baseUrl}/stripe/account/status'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        final status = responseData['status'];
+
+        print("Stripe Status ==> $status");
+
+        if (status == 'active') {
+          // If account is active, navigate to the service provider screen
+          navigateBasedOnRole(3);
+        } else if (status == 'not_connected' || status == 'pending') {
+          // If account needs setup, navigate to stripe setup screen
+          Get.offAll(() => const StripeAccountScreen());
+        } else {
+          // Fallback navigation with warning
+          AppUtils.warningSnackBar("Stripe Account",
+              "Your Stripe account status is unknown. Please contact support.");
+          navigateBasedOnRole(3);
+        }
+      } else {
+        // API error handling
+        print(
+            "Stripe status check failed: ${response.statusCode} - ${response.body}");
+        AppUtils.warningSnackBar("Stripe Account",
+            "Failed to verify your Stripe account status. Proceeding to dashboard.");
+        navigateBasedOnRole(3);
+      }
+    } catch (e) {
+      print("Error checking Stripe account status: $e");
+      AppUtils.warningSnackBar("Stripe Account",
+          "Error verifying your Stripe account status. Proceeding to dashboard.");
+      navigateBasedOnRole(3);
     }
   }
 
@@ -235,7 +274,6 @@ class LoginScreenController extends GetxController {
     }
   }
 
-
   void navigateBasedOnRole(int roleId) async {
     print("Navigating based on role ID: $roleId");
 
@@ -279,7 +317,8 @@ class LoginScreenController extends GetxController {
         break;
       default:
         print("Invalid role ID: $roleId");
-        AppUtils.errorSnackBar("Error", "Invalid role assigned. Please contact support.");
+        AppUtils.errorSnackBar(
+            "Error", "Invalid role assigned. Please contact support.");
     }
   }
 

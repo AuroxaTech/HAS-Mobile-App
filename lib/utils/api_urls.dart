@@ -1,13 +1,10 @@
 class AppUrls {
   static const mapKey = "AIzaSyDyeWs6PDrJbaqLv_AL0m1aww0munJ_vlc";
-  static const stripePKLiveKey =
-      "pk_test_51Q0Gu9I2037pL7hB3AmEuJLRahLYS2fq526p9aVNW1cebhDfebb2JadzrM3ioBA0MxI6D2lLYRvC14Zd75YQbM4w00pZB5DAn8";
-  static const stripeSKLiveKey =
-      "sk_test_51Q0Gu9I2037pL7hBy3BwYZ8esA8nCaafEwRwpvB9fA1eehlsx4HclqOzDXgUKUk7v7QZHILhWARkvOkLXmYjX9Yh00WHLsAamW";
+  static const stripePKTestKey =
+      "pk_test_51HjIu0CtN8FBu4sMBrRyqvMhEHkLO1fAG4EUIqadkjchf3YTILAc0gnqkk0LFRCqbsxkb8k66DKe07cwuycRO3Y000zt0BGyQV";
+
   // static const stripePKLiveKey =
   //     "pk_live_51OzihLBFjIw5Tzwc1rtHQpQT6eLGwhPu4ofUdeiGyUXg2xg3K5SVWZqHzUmWK5FQzyOKBb6GLrQaSQ3fWT1KPah000kgnRST9A";
-  // static const stripeSKLiveKey =
-  //     "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";
 
   // static const baseUrl = "https://pktours.pk";
 
