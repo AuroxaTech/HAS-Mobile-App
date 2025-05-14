@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:property_app/app_constants/color_constants.dart';
 import 'package:property_app/constant_widget/constant_widgets.dart';
 import 'package:property_app/controllers/payment_controller/payment_screen_controller.dart';
+
 import '../../app_constants/app_sizes.dart';
 
 class PaymentsScreen extends GetView<PaymentScreenController> {
@@ -24,7 +25,8 @@ class PaymentsScreen extends GetView<PaymentScreenController> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.payment_outlined, size: 80, color: Colors.grey),
+                const Icon(Icons.payment_outlined,
+                    size: 80, color: Colors.grey),
                 h20,
                 customText(
                   text: "No payment history found",
@@ -60,16 +62,23 @@ class PaymentsScreen extends GetView<PaymentScreenController> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   customText(
-                    text: "Total Earnings",
+                    text: "Total Earnings (After Commission)",
                     fontSize: 16,
                     color: Colors.white70,
                   ),
                   h10,
                   customText(
-                    text: "\$${controller.totalPaymentsReceived.toStringAsFixed(2)}",
+                    text:
+                        "\$${controller.totalPaymentsReceived.toStringAsFixed(2)}",
                     fontSize: 28,
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
+                  ),
+                  h5,
+                  customText(
+                    text: "2% commission is deducted from all payments",
+                    fontSize: 12,
+                    color: Colors.white70,
                   ),
                 ],
               ),
@@ -97,8 +106,14 @@ class PaymentsScreen extends GetView<PaymentScreenController> {
                   itemCount: controller.providerPayments.length,
                   itemBuilder: (context, index) {
                     final payment = controller.providerPayments[index];
-                    final amount = payment['amount'] ?? 0;
-                    
+                    final originalAmount = (payment['amount'] is int)
+                        ? (payment['amount'] as int).toDouble()
+                        : (payment['amount'] ?? 0.0);
+                    final finalAmount =
+                        controller.calculateFinalAmount(originalAmount);
+                    final commissionAmount =
+                        controller.calculateCommission(originalAmount);
+
                     // Parse the created date
                     String createdDate = payment['created'] ?? '';
                     DateTime? dateTime;
@@ -107,17 +122,17 @@ class PaymentsScreen extends GetView<PaymentScreenController> {
                     } catch (e) {
                       print("Error parsing date: $e");
                     }
-                    
+
                     // Format the date
-                    final formattedDate = dateTime != null 
+                    final formattedDate = dateTime != null
                         ? DateFormat('MMM dd, yyyy').format(dateTime)
                         : 'Unknown date';
-                        
+
                     // Format the time
-                    final formattedTime = dateTime != null 
+                    final formattedTime = dateTime != null
                         ? DateFormat('h:mm a').format(dateTime)
                         : '';
-                    
+
                     return Card(
                       elevation: 2,
                       margin: const EdgeInsets.only(bottom: 12),
@@ -164,7 +179,11 @@ class PaymentsScreen extends GetView<PaymentScreenController> {
                                         fontSize: 14,
                                         color: Colors.grey[600],
                                       ),
-                                      w10,
+                                    ],
+                                  ),
+                                  h5,
+                                  Row(
+                                    children: [
                                       Icon(
                                         Icons.access_time,
                                         size: 14,
@@ -177,15 +196,38 @@ class PaymentsScreen extends GetView<PaymentScreenController> {
                                         color: Colors.grey[600],
                                       ),
                                     ],
-                                  ),
+                                  )
                                 ],
                               ),
                             ),
-                            customText(
-                              text: "\$${amount.toStringAsFixed(2)}",
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.green[700],
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                customText(
+                                  text: "\$${finalAmount.toStringAsFixed(2)}",
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.green[700],
+                                ),
+                                h5,
+                                Row(
+                                  children: [
+                                    customText(
+                                      text:
+                                          "Original: \$${originalAmount.toStringAsFixed(2)}",
+                                      fontSize: 12,
+                                      color: Colors.grey[600],
+                                    ),
+                                    w5,
+                                    customText(
+                                      text:
+                                          "(-\$${commissionAmount.toStringAsFixed(2)})",
+                                      fontSize: 12,
+                                      color: Colors.red[400],
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           ],
                         ),
