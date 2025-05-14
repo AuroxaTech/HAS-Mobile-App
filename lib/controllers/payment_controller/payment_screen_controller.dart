@@ -10,6 +10,17 @@ class PaymentScreenController extends GetxController {
   RxBool isLoading = false.obs;
   RxList<dynamic> providerPayments = RxList<dynamic>([]);
   RxDouble totalPaymentsReceived = 0.0.obs;
+  final double commissionRate = 0.02; // 2% commission rate
+  
+  /// Calculates the commission amount based on the original payment
+  double calculateCommission(double originalAmount) {
+    return originalAmount * commissionRate;
+  }
+  
+  /// Calculates the final amount after deducting the commission
+  double calculateFinalAmount(double originalAmount) {
+    return originalAmount - calculateCommission(originalAmount);
+  }
 
   @override
   void onInit() {
@@ -39,10 +50,14 @@ class PaymentScreenController extends GetxController {
         if (data['success'] == true && data['payments'] != null) {
           providerPayments.assignAll(data['payments']);
           
-          // Calculate total payments received - amount is already in dollars
+          // Calculate total payments received after deducting 2% commission
           double total = 0;
           for (var payment in providerPayments) {
-            total += (payment['amount'] ?? 0);
+            // Ensure the amount is converted to double before calculations
+            double originalAmount = (payment['amount'] is int) 
+                ? (payment['amount'] as int).toDouble() 
+                : (payment['amount'] ?? 0.0);
+            total += calculateFinalAmount(originalAmount);
           }
           totalPaymentsReceived.value = total;
         } else {
