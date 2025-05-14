@@ -134,6 +134,7 @@ class PaymentsScreen extends GetView<PaymentScreenController> {
                         : '';
 
                     return Card(
+                      color: Colors.white,
                       elevation: 2,
                       margin: const EdgeInsets.only(bottom: 12),
                       shape: RoundedRectangleBorder(
