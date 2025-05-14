@@ -6,7 +6,11 @@ import 'package:property_app/custom_widgets/custom_button.dart';
 
 import '../controllers/jobs_controller/job_detail_screen.dart';
 import '../controllers/stripe_payment_controller/stripe_payment_controller.dart';
-import '../route_management/constant_routes.dart';
+import '../utils/shared_preferences/preferences.dart';
+import '../views/main_bottom_bar/main_bottom_bar.dart';
+import '../views/main_bottom_bar/service_provider_bottom_ar.dart';
+import '../views/main_bottom_bar/tenant_bottom_bar.dart';
+import '../views/main_bottom_bar/visitor_bottom_bar.dart';
 
 class StripePaymentScreen extends StatelessWidget {
   final int? jobId;
@@ -102,6 +106,7 @@ class StripePaymentScreen extends StatelessWidget {
                             text: "Pay Now",
                             btnTextColor: whiteColor,
                             onTap: () async {
+                              var role = await Preferences.getRoleID();
                               bool paymentSuccess =
                                   await stripePaymentController
                                       .processPayment();
@@ -117,7 +122,22 @@ class StripePaymentScreen extends StatelessWidget {
                                       id: id);
                                 }
 
-                                Get.offAllNamed(kJobScreen);
+                                switch (role) {
+                                  case "1":
+                                    Get.offAll(const MainBottomBar());
+                                    break;
+                                  case "2":
+                                    Get.offAll(const TenantBottomBar());
+                                    break;
+                                  case "3":
+                                    await const ServiceProviderBottomBar();
+                                    break;
+                                  case "4":
+                                    Get.offAll(const VisitorBottomBar());
+                                    break;
+                                  default:
+                                    Get.back();
+                                }
                               }
                             },
                           ),

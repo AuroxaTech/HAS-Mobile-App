@@ -13,7 +13,6 @@ import '../../app_constants/color_constants.dart';
 import '../../constant_widget/constant_widgets.dart';
 import '../../constant_widget/view_photo.dart';
 import '../../custom_widgets/custom_button.dart';
-import '../../utils/api_urls.dart';
 import '../../utils/shared_preferences/preferences.dart';
 import '../chat_screens/chat_conversion_screen.dart';
 
@@ -31,39 +30,43 @@ class CalendarDetailScreen extends GetView<CalendarDetailController> {
                   children: [
                     PageView.builder(
                       itemCount: controller
-                          .getCalendarOne.value!.serviceImages.isNotEmpty
+                              .getCalendarOne.value!.serviceImages.isNotEmpty
                           ? controller
-                          .getCalendarOne.value!.serviceImages.length
+                              .getCalendarOne.value!.serviceImages.length
                           : 1, // Ensure we have at least 1 item to avoid errors
                       scrollDirection: Axis.horizontal,
                       controller: controller.pageController,
                       itemBuilder: (context, index) {
                         // Ensure getCalendarOne and service data exist
                         if (controller.getCalendarOne.value != null) {
-
-
                           return InkWell(
-                            onTap: () {
+                              onTap: () {
                                 Get.to(
                                   () => ViewImagesModel(
                                     photo: controller
-                                        .getCalendarOne.value!.serviceImages, index: index, // Assuming images in controller.images are relative paths
+                                        .getCalendarOne.value!.serviceImages,
+                                    index:
+                                        index, // Assuming images in controller.images are relative paths
                                   ),
                                   transition: routeTransition,
                                 );
-
-                            },
-                            child: CachedNetworkImage(
-                              width: double.infinity,
-                              height: screenHeight(context) * 0.5,
-                              imageUrl:controller
-                                  .getCalendarOne.value!.serviceImages[index].imagePath,
-                              fit: BoxFit.cover,
-                              errorWidget: (context, e, b) {
-                                return Image.asset(AppIcons.appLogo);
                               },
-                            ),
-                          );
+                              child: controller.getCalendarOne.value!
+                                      .serviceImages.isNotEmpty
+                                  ? CachedNetworkImage(
+                                      width: double.infinity,
+                                      height: screenHeight(context) * 0.5,
+                                      imageUrl: controller.getCalendarOne.value!
+                                          .serviceImages[index].imagePath,
+                                      fit: BoxFit.cover,
+                                      errorWidget: (context, e, b) {
+                                        return Image.asset(AppIcons.appLogo);
+                                      },
+                                    )
+                                  : Image.asset(
+                                      AppIcons.appLogo,
+                                      fit: BoxFit.none,
+                                    ));
                         } else {
                           // Return a fallback widget when service data is missing
                           return SizedBox();
@@ -127,7 +130,7 @@ class MyDraggable extends GetView<CalendarDetailController> {
         initialChildSize: 0.5,
         maxChildSize: 0.5, // Set maxChildSize to the same value (0.5)
         minChildSize: 0.5,
-        // expand: true,
+        //expand: true,
         // snap: true,
         // snapSizes: const [
         //   0.5,  // Set the first snap size to the minimum size (0.2)
@@ -248,23 +251,33 @@ class MyDraggable extends GetView<CalendarDetailController> {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              Column(
+                                              Row(
                                                 children: [
                                                   customText(
-                                                      text: "Duration",
+                                                      text: "Property Type: ",
                                                       color: greyColor,
                                                       fontSize: 16),
-                                                  h5,
+                                                  w5,
                                                   customText(
                                                       text: controller
                                                           .getCalendarOne
                                                           .value!
-                                                          .duration,
+                                                          .propertyType,
                                                       color: blackColor,
                                                       fontSize: 15),
                                                   h5,
                                                 ],
                                               ),
+                                            ],
+                                          ),
+                                          h5,
+                                          Row(
+                                            children: [
+                                              customText(
+                                                  text: "Price: ",
+                                                  color: greyColor,
+                                                  fontSize: 16),
+                                              w5,
                                               customText(
                                                   text:
                                                       "\$${controller.getCalendarOne.value!.pricing}",
@@ -275,16 +288,16 @@ class MyDraggable extends GetView<CalendarDetailController> {
                                           h5,
                                           Row(
                                             children: [
-                                              Image.asset(
-                                                AppIcons.serviceArea,
-                                                width: 20,
-                                                height: 20,
-                                              ),
+                                              customText(
+                                                  text: "Location: ",
+                                                  color: greyColor,
+                                                  fontSize: 16),
+                                              w5,
                                               customText(
                                                   text:
-                                                      " Service Area : ${controller.getCalendarOne.value!.description}",
-                                                  color: greyColor,
-                                                  fontSize: 15),
+                                                      "\$${controller.getCalendarOne.value!.location}",
+                                                  color: blackColor,
+                                                  fontSize: 18),
                                             ],
                                           ),
                                           h5,
@@ -304,7 +317,7 @@ class MyDraggable extends GetView<CalendarDetailController> {
                                                   text:
                                                       "${controller.getCalendarOne.value!.startTime} - ${controller.getCalendarOne.value!.endTime}",
                                                   color: blackColor,
-                                                  fontSize: 12),
+                                                  fontSize: 14),
                                             ],
                                           ),
                                         ],
@@ -324,21 +337,13 @@ class MyDraggable extends GetView<CalendarDetailController> {
                                       //     createConversation(controller.getCalendarOne.value!.request., profilePicture, id, context)
                                       //Get.toNamed(kChatConversionScreen);
                                       createConversation(
-                                          controller
-                                              .getCalendarOne
-                                              .value!
-                                              .user
-                                              .fullName ??
+                                          controller.getCalendarOne.value!.user
+                                                  .fullName ??
                                               "",
-                                          controller
-                                              .getCalendarOne
-                                              .value!
-                                              .user
+                                          controller.getCalendarOne.value!.user
                                               .profileImage,
                                           controller
-                                              .getCalendarOne
-                                              .value!
-                                              .userId
+                                              .getCalendarOne.value!.userId
                                               .toString(),
                                           context);
                                     },

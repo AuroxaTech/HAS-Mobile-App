@@ -19,22 +19,7 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: whiteColor,
-      appBar: AppBar(
-        leading: Builder(builder: (context) {
-          return IconButton(
-              tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-              icon: const Icon(
-                Icons.arrow_back_ios_new_rounded,
-                size: 18,
-                color: backIconColor,
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-                //Scaffold.of(context).openDrawer(),
-              });
-        }),
-        title: headingText(text: "Service Requests", fontSize: 20),
-      ),
+      appBar: homeAppBar(context, text: "Service Requests"),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () async {
@@ -73,7 +58,6 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
                     String requestTime = DateFormat('h:mm a').format(createdAt);
 
                     print("images  :: $imageUrl");
-
 
                     return Column(
                       children: [
@@ -118,6 +102,14 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
                                   colorText: Colors.white,
                                   snackPosition: SnackPosition.BOTTOM,
                                 );
+                              } else if (item.status == "completed") {
+                                Get.snackbar(
+                                  'This request has been completed. You cannot accept it again',
+                                  '',
+                                  backgroundColor: redColor.withOpacity(0.8),
+                                  colorText: Colors.white,
+                                  snackPosition: SnackPosition.BOTTOM,
+                                );
                               } else {
                                 animatedDialog(context,
                                     title: "Accept Request",
@@ -131,15 +123,19 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
                                           providerId:
                                               item.providerId.toString())
                                       .then((value) {
+                                    // Clear the existing items before refreshing
+                                    controller.pagingController.itemList?.clear();
                                     controller.getServicesRequests(1);
                                   });
                                 });
                               }
                             },
-                            acceptColor: item.status == "accepted"
+                            acceptColor: item.status == "accepted" ||
+                                    item.status == "completed"
                                 ? const Color(0xff14C034).withOpacity(0.3)
                                 : const Color(0xff14C034),
-                            declineColor: item.status == "rejected"
+                            declineColor: item.status == "rejected" ||
+                                    item.status == "completed"
                                 ? redColor.withOpacity(0.3)
                                 : redColor,
                             onTap: () {
@@ -153,7 +149,8 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
                                   arguments: item.id);
                             },
                             declineTap: () {
-                              if (item.status == "rejected") {
+                              if (item.status == "rejected" ||
+                                  item.status == "completed") {
                                 null;
                               } else if (item.status == "accepted") {
                                 Get.snackbar(
@@ -171,9 +168,11 @@ class ServiceRequestScreen extends GetView<ServiceRequestController> {
                                     yesButtonText: "Decline", yesTap: () {
                                   controller
                                       .declineServiceRequest(
-                                      requestId: item.id,
-                                      serviceProviderId: item.providerId!)
+                                          requestId: item.id,
+                                          serviceProviderId: item.providerId!)
                                       .then((value) {
+                                    // Clear the existing items before refreshing
+                                    controller.pagingController.itemList?.clear();
                                     controller.getServicesRequests(1);
                                   });
                                 });

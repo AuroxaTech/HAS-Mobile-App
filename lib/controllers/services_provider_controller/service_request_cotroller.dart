@@ -33,7 +33,7 @@ class ServiceRequestController extends GetxController {
     try {
       isLoading.value = true;
       var result =
-          await servicesService.    getServiceProviderRequest(page: pageKey);
+          await servicesService.getServiceProviderRequest(page: pageKey);
       isLoading.value = false;
       print("My JOB REQUEST Data $result");
       if (result['status'] == true) {
@@ -91,11 +91,12 @@ class ServiceRequestController extends GetxController {
     }
   }
 
-  Future<void> declineServiceRequest({required int requestId, required int serviceProviderId}) async {
+  Future<void> declineServiceRequest(
+      {required int requestId, required int serviceProviderId}) async {
     isLoading.value = true;
     try {
-      var result =
-          await servicesService.declineServiceRequest(requestId: requestId, serviceProviderId: serviceProviderId);
+      var result = await servicesService.declineServiceRequest(
+          requestId: requestId, serviceProviderId: serviceProviderId);
       print(result);
       if (result['success'] == true) {
         Get.back();
@@ -126,11 +127,8 @@ class ServiceRequestController extends GetxController {
         requestId: requestId,
       );
 
-      print(result);
+      print("Accept Service Request Result ==> $result");
       if (result['status'] == true) {
-        pagingController.addPageRequestListener((pageKey) {
-          Future.microtask(() => getServicesRequests(pageKey));
-        });
         Get.back();
         AppUtils.getSnackBar("Success", result['message']);
       } else {
