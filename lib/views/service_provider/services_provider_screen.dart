@@ -18,6 +18,7 @@ class ServiceProviderScreen extends GetView<ServiceProviderController> {
   ServiceProviderScreen({Key? key}) : super(key: key);
   @override
   final controller = Get.put(ServiceProviderController());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

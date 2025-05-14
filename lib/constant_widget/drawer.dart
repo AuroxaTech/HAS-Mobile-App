@@ -81,19 +81,29 @@ Widget customDrawer(context, {VoidCallback? onDeleteAccount}) {
       //   ),
       // ),
 
-      ListTile(
-        onTap: () {
-          Get.back();
-          Get.toNamed(kPaymentScreen);
+      FutureBuilder<dynamic?>(
+        future: Preferences.getRoleID(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData && snapshot.data == "3") {
+            return ListTile(
+              onTap: () {
+                Get.back();
+                Get.toNamed(kPaymentScreen);
+              },
+              leading: const Icon(
+                Icons.wallet,
+                color: primaryColor,
+              ),
+              title: customText(
+                text: "Payments",
+              ),
+            );
+          } else {
+            return const SizedBox.shrink();
+          }
         },
-        leading: const Icon(
-          Icons.wallet,
-          color: primaryColor,
-        ),
-        title: customText(
-          text: "Payments",
-        ),
       ),
+
       ListTile(
         onTap: () {
           Get.back();
@@ -211,15 +221,15 @@ Widget customDrawer(context, {VoidCallback? onDeleteAccount}) {
                                 SharedPreferences prefs =
                                     await SharedPreferences.getInstance();
                                 await updateUserStatus(false);
-                                bool? userData = await Preferences.getBiometricEnabled();
-                                if(userData == true){
+                                bool? userData =
+                                    await Preferences.getBiometricEnabled();
+                                if (userData == true) {
                                   Get.offAllNamed(kLoginScreen);
-                                }else{
+                                } else {
                                   await prefs.remove("token");
                                   await prefs.remove("role");
                                   await prefs.remove("user_id").then((value) {
                                     Get.offAllNamed(kLoginScreen);
-
                                   });
                                 }
 
@@ -342,19 +352,29 @@ Widget providerDrawer(context, {VoidCallback? onDeleteAccount}) {
       //   ),
       // ),
 
-      ListTile(
-        onTap: () {
-          Navigator.pop(context);
-          Get.toNamed(kPaymentScreen);
+      FutureBuilder<dynamic?>(
+        future: Preferences.getRoleID(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData && snapshot.data == "3") {
+            return ListTile(
+              onTap: () {
+                Navigator.pop(context);
+                Get.toNamed(kPaymentScreen);
+              },
+              leading: const Icon(
+                Icons.wallet,
+                color: primaryColor,
+              ),
+              title: customText(
+                text: "Payments",
+              ),
+            );
+          } else {
+            return const SizedBox.shrink();
+          }
         },
-        leading: const Icon(
-          Icons.wallet,
-          color: primaryColor,
-        ),
-        title: customText(
-          text: "Payments",
-        ),
       ),
+
       ListTile(
         onTap: () {
           Navigator.pop(context);
@@ -454,12 +474,13 @@ Widget providerDrawer(context, {VoidCallback? onDeleteAccount}) {
                             MaterialButton(
                               onPressed: () async {
                                 SharedPreferences prefs =
-                                await SharedPreferences.getInstance();
+                                    await SharedPreferences.getInstance();
                                 await updateUserStatus(false);
-                                bool? userData = await Preferences.getBiometricEnabled();
-                                if(userData == true){
+                                bool? userData =
+                                    await Preferences.getBiometricEnabled();
+                                if (userData == true) {
                                   Get.offAllNamed(kLoginScreen);
-                                }else{
+                                } else {
                                   await prefs.remove("token");
                                   await prefs.remove("role");
                                   await prefs.remove("user_id").then((value) {

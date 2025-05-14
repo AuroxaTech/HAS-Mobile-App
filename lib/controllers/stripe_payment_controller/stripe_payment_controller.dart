@@ -1,18 +1,19 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
-import '../../models/stripe_payment_model/stripe_payment_model.dart';
 import '../../utils/api_urls.dart';
 import '../../utils/shared_preferences/preferences.dart';
+import '../../utils/utils.dart';
 
 class StripePaymentScreenController extends GetxController {
   RxInt serviceId = 0.obs;
   RxInt serviceProviderId = 0.obs;
   RxDouble price = 0.0.obs;
 
-  final StripePaymentModel _stripePaymentModel = StripePaymentModel();
   var isProcessing = false.obs;
 
   @override
@@ -22,111 +23,147 @@ class StripePaymentScreenController extends GetxController {
   }
 
   void _initializeStripe() {
-    Stripe.publishableKey = AppUrls.stripePKLiveKey;
+    // Initialize Stripe with publishable key
+    Stripe.publishableKey = AppUrls.stripePKTestKey;
+
+    // Optional: Log to verify initialization
+    print(
+        "Stripe initialized with key: ${AppUrls.stripePKTestKey.substring(0, 10)}...");
   }
 
-  void initializePaymentDetails(
-      {required int serviceId,
-      required int serviceProviderId,
-      required double price}) {
+  void initializePaymentDetails({
+    required int serviceId,
+    required int serviceProviderId,
+    required double price,
+  }) {
     this.serviceId.value = serviceId;
     this.serviceProviderId.value = serviceProviderId;
     this.price.value = price;
   }
 
-  Future<bool> withdrawPayment(String amount, String currency) async {
-    isProcessing(true);
+  Future<bool> processPayment() async {
+    isProcessing.value = true;
     try {
-      final paymentIntent =
-          await _stripePaymentModel.createPaymentIntent(amount, currency);
-      if (paymentIntent != null) {
-        bool paymentResult =
-            await _initializePaymentSheet(paymentIntent['client_secret']);
-        return paymentResult;
+      // Get the client secret from the backend
+      final response = await _makeStripePaymentRequest();
+
+      if (response != null && response['success'] == true) {
+        // Extract client secret from response
+        final clientSecret = response['client_secret'];
+
+        print("Client Secret: $clientSecret");
+
+        // Validate client secret
+        if (clientSecret == null || clientSecret.toString().isEmpty) {
+          print("Missing client secret");
+          AppUtils.errorSnackBar(
+              "Payment Failed", "Invalid payment configuration from server.");
+          return false;
+        }
+
+        try {
+          // Initialize and present payment sheet in one step without local variables
+          await _presentStripePaymentSheet(clientSecret.toString());
+
+          // Payment succeeded
+          AppUtils.getSnackBar(
+              "Payment Successful", "The payment was successfully processed.");
+          return true;
+        } catch (e) {
+          _handlePaymentError(e);
+          return false;
+        }
       } else {
-        Get.snackbar('Payment Failed', 'Unable to create payment intent.');
+        AppUtils.errorSnackBar("Payment Failed",
+            "Could not initialize payment. Please try again.");
         return false;
       }
     } catch (e) {
-      print('Error making payment: $e');
-      Get.snackbar('Payment Failed', 'Error making payment: $e');
+      print("Top level error: $e");
+      AppUtils.errorSnackBar(
+          "Payment Failed", "An unexpected error occurred: $e");
       return false;
     } finally {
-      isProcessing(false);
+      isProcessing.value = false;
     }
   }
 
-  Future<bool> _initializePaymentSheet(String clientSecret) async {
-    try {
-      await Stripe.instance.initPaymentSheet(
-        paymentSheetParameters: SetupPaymentSheetParameters(
-          paymentIntentClientSecret: clientSecret,
-          merchantDisplayName: 'Has App',
-          style: ThemeMode.system,
-        ),
-      );
-      return await _presentPaymentSheet();
-    } catch (e) {
-      Get.snackbar('Payment Failed', 'Error initializing payment sheet: $e');
-      print('Error initializing payment sheet: $e');
-      return false;
-    }
-  }
-
-  Future<bool> _presentPaymentSheet() async {
-    try {
-      await Stripe.instance.presentPaymentSheet();
-      bool paymentSuccess = await collectPaymentFromTenant();
-      return paymentSuccess;
-    } on StripeException catch (e) {
-      if (e.error.code == FailureCode.Canceled) {
-        print('Payment canceled');
-        Get.snackbar('Payment Canceled', 'Payment sheet was canceled.');
-      } else {
-        print('Payment failed: $e');
-        Get.snackbar('Payment Failed', 'Error presenting payment sheet: $e');
-      }
-      return false;
-    } catch (e) {
-      Get.snackbar('Payment Failed', 'Error presenting payment sheet: $e');
-      print('Error presenting payment sheet: $e');
-      return false;
-    }
-  }
-
-  Future<bool> collectPaymentFromTenant() async {
-    final url = Uri.parse('${AppUrls.baseUrl}/payment');
-    var token = await Preferences.getToken();
-    print('Sending request to: $url');
-    print('Headers: {Authorization: Bearer $token, Accept: application/json}');
-    print(
-        'Body: {service_id: ${serviceId.value}, service_provider_id: ${serviceProviderId.value}, price: ${price.value}}');
-
-    final response = await http.post(
-      url,
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Accept': 'application/json',
-      },
-      body: {
-        'service_id': serviceId.value.toString(),
-        'service_provider_id': serviceProviderId.value.toString(),
-        'price': price.value.toString(),
-      },
+  Future<void> _presentStripePaymentSheet(String clientSecret) async {
+    // Initialize payment sheet with client secret
+    await Stripe.instance.initPaymentSheet(
+      paymentSheetParameters: SetupPaymentSheetParameters(
+        paymentIntentClientSecret: clientSecret,
+        merchantDisplayName: 'HAS App',
+        style: ThemeMode.system,
+      ),
     );
-    print("service provider id ${serviceProviderId.value}");
-    print("service id ${serviceId.value}");
-    print('Payout Response ===> ${response.body}');
-    print('Status Code ===> ${response.statusCode}');
 
-    if (response.statusCode == 200) {
-      Get.snackbar(
-          "Payment Successful", "The payment was successfully processed.");
-      return true;
+    // Present payment sheet
+    await Stripe.instance.presentPaymentSheet();
+  }
+
+  void _handlePaymentError(dynamic error) {
+    print("Payment error: $error");
+
+    if (error is StripeException) {
+      if (error.error.code == FailureCode.Canceled) {
+        AppUtils.warningSnackBar(
+            "Payment Canceled", "You canceled the payment process.");
+      } else {
+        print("Stripe error details: "
+            "Code: ${error.error.code}, "
+            "Message: ${error.error.message}, "
+            "Stripe Error Code: ${error.error.stripeErrorCode}");
+        AppUtils.errorSnackBar("Payment Failed",
+            "Error processing payment: ${error.error.localizedMessage}");
+      }
     } else {
-      Get.snackbar(
-          "Payment Failed", "Unable to process the payment. Please try again.");
-      return false;
+      AppUtils.errorSnackBar(
+          "Payment Failed", "An unexpected error occurred: $error");
+    }
+  }
+
+  Future<Map<String, dynamic>?> _makeStripePaymentRequest() async {
+    try {
+      final url = Uri.parse('${AppUrls.baseUrl}/stripe/payment');
+      final token = await Preferences.getToken();
+
+      // Prepare body parameters as a map
+      final Map<String, dynamic> bodyParams = {
+        'provider_id': serviceProviderId.value,
+        'amount': price.value.toInt(),
+        'service_id': serviceId.value,
+      };
+
+      print('Making payment request:');
+      print('URL: $url');
+      print('Provider ID: ${serviceProviderId.value}');
+      print('Amount: ${price.value.toInt()}');
+      print('Service ID: ${serviceId.value}');
+      print('Request body: ${jsonEncode(bodyParams)}');
+
+      final response = await http.post(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(bodyParams),
+      );
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        print('Failed to create payment: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      print('Error creating payment: $e');
+      return null;
     }
   }
 }

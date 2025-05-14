@@ -14,7 +14,6 @@ import '../../constant_widget/constant_widgets.dart';
 import '../../constant_widget/view_photo.dart';
 import '../../controllers/services_provider_controller/service_request_detail_screen_controller.dart';
 import '../../custom_widgets/custom_button.dart';
-import '../../utils/api_urls.dart';
 import '../../utils/shared_preferences/preferences.dart';
 import '../chat_screens/chat_conversion_screen.dart';
 
@@ -34,12 +33,11 @@ class ServiceRequestDetailScreen
               : Stack(
                   children: [
                     PageView.builder(
-                      itemCount: controller.getServiceRequestOne
-                          .value!.serviceImages.length,
+                      itemCount: controller
+                          .getServiceRequestOne.value!.serviceImages.length,
                       scrollDirection: Axis.horizontal,
                       controller: controller.pageController,
                       itemBuilder: (context, index) {
-
                         // List<String> imageList = imagesString.split(',');
                         // controller.images = controller.getServiceRequestOne
                         //     .value!.serviceImages;
@@ -49,15 +47,15 @@ class ServiceRequestDetailScreen
                                 () => ViewImagesModel(
                                       photo: controller.getServiceRequestOne
                                           .value!.serviceImages,
-                                  index: index,
+                                      index: index,
                                     ),
                                 transition: routeTransition);
                           },
                           child: CachedNetworkImage(
                             width: double.infinity,
                             height: screenHeight(context) * 0.5,
-                            imageUrl: controller.getServiceRequestOne
-                                .value!.serviceImages[index].imagePath,
+                            imageUrl: controller.getServiceRequestOne.value!
+                                .serviceImages[index].imagePath,
                             fit: BoxFit.cover,
                             errorWidget: (context, e, b) {
                               return Image.asset(AppIcons.appLogo);
@@ -93,8 +91,8 @@ class ServiceRequestDetailScreen
                           child: SmoothPageIndicator(
                             controller: controller
                                 .pageController, // Connect the indicator to the controller
-                            count: controller.getServiceRequestOne
-                                .value!.serviceImages.length,
+                            count: controller.getServiceRequestOne.value!
+                                .serviceImages.length,
                             effect: const WormEffect(
                               dotColor: whiteColor,
                               dotHeight: 10,
@@ -403,8 +401,11 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                         child: CustomButton(
                                           onTap: () {
                                             if (controller.getServiceRequestOne
-                                                    .value!.status ==
-                                                "accepted") {
+                                                        .value!.status ==
+                                                    "accepted" ||
+                                                controller.getServiceRequestOne
+                                                        .value!.status ==
+                                                    "completed") {
                                               null;
                                             } else if (controller
                                                     .getServiceRequestOne
@@ -448,10 +449,15 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                           fontSize: 12,
                                           gradientColor: acceptGradient(
                                               color: controller
-                                                          .getServiceRequestOne
-                                                          .value!
-                                                          .status ==
-                                                      "accepted"
+                                                              .getServiceRequestOne
+                                                              .value!
+                                                              .status ==
+                                                          "accepted" ||
+                                                      controller
+                                                              .getServiceRequestOne
+                                                              .value!
+                                                              .status ==
+                                                          "completed"
                                                   ? const Color(0xff14C034)
                                                       .withOpacity(0.3)
                                                   : const Color(0xff14C034)),
@@ -462,8 +468,11 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                         child: CustomButton(
                                           onTap: () {
                                             if (controller.getServiceRequestOne
-                                                    .value!.status ==
-                                                "rejected") {
+                                                        .value!.status ==
+                                                    "rejected" ||
+                                                controller.getServiceRequestOne
+                                                        .value!.status ==
+                                                    "completed") {
                                               null;
                                             } else if (controller
                                                     .getServiceRequestOne
@@ -488,15 +497,14 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                                   yesTap: () {
                                                 controller
                                                     .declineServiceRequest(
-                                                        requestId: controller
-                                                            .getServiceRequestOne
-                                                            .value!
-                                                            .id,
-                                                        providerId: controller
-                                                            .getServiceRequestOne
-                                                            .value!
-                                                            .providerId!,
-
+                                                  requestId: controller
+                                                      .getServiceRequestOne
+                                                      .value!
+                                                      .id,
+                                                  providerId: controller
+                                                      .getServiceRequestOne
+                                                      .value!
+                                                      .providerId!,
                                                 )
                                                     .then((value) {
                                                   controller.getServiceRequest(
@@ -507,10 +515,15 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
                                           },
                                           gradientColor: redGradient(
                                               color: controller
-                                                          .getServiceRequestOne
-                                                          .value!
-                                                          .status ==
-                                                      "rejected"
+                                                              .getServiceRequestOne
+                                                              .value!
+                                                              .status ==
+                                                          "rejected" ||
+                                                      controller
+                                                              .getServiceRequestOne
+                                                              .value!
+                                                              .status ==
+                                                          "completed"
                                                   ? redColor.withOpacity(0.3)
                                                   : redColor),
                                           height: screenHeight(context) * 0.04,
@@ -586,8 +599,7 @@ class MyDraggable extends GetView<ServiceRequestDetailScreenController> {
   }
 
   createConversation(
-      String name, String profilePicture, String id, context)
-  async {
+      String name, String profilePicture, String id, context) async {
     print("user.Id =>${id.toString()}");
     try {
       var userId = await Preferences.getUserID();

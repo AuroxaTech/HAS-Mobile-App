@@ -36,7 +36,7 @@ class _ChatViewState extends State<ChatView> {
   @override
   void initState() {
     super.initState();
-    stream = Stream.empty();
+    stream = const Stream.empty();
     getUserIdAndSetupStream();
 
     print("my user id ${userId}");
@@ -86,20 +86,20 @@ class _ChatViewState extends State<ChatView> {
             children: <Widget>[
               widget.searchBox
                   ? Container(
-                      padding: EdgeInsets.all(18.0),
+                      padding: const EdgeInsets.all(18.0),
                       child: TextFormField(
                         controller: searchController,
                         decoration: InputDecoration(
                           hintText: 'Search...',
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12.0),
-                            borderSide: BorderSide(color: Colors.grey),
+                            borderSide: const BorderSide(color: Colors.grey),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12.0),
-                            borderSide: BorderSide(color: Colors.grey),
+                            borderSide: const BorderSide(color: Colors.grey),
                           ),
-                          prefixIcon: Icon(Icons.search),
+                          prefixIcon: const Icon(Icons.search),
                         ),
                         onChanged: (value) {
                           setState(() {
@@ -108,7 +108,7 @@ class _ChatViewState extends State<ChatView> {
                         },
                       ),
                     )
-                  : SizedBox(),
+                  : const SizedBox(),
               // Padding(
               //   padding: EdgeInsets.only(left: 12.w, bottom: 20.h),
               //   child: Text(
@@ -121,7 +121,7 @@ class _ChatViewState extends State<ChatView> {
               //     ),
               //   ),
               // ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               StreamBuilder<QuerySnapshot>(
@@ -318,7 +318,7 @@ class _ChatViewState extends State<ChatView> {
                                                                           style:
                                                                               GoogleFonts.roboto(
                                                                             textStyle:
-                                                                                TextStyle(
+                                                                                const TextStyle(
                                                                               fontSize: 14,
                                                                               fontWeight: FontWeight.bold,
                                                                             ),
@@ -328,7 +328,7 @@ class _ChatViewState extends State<ChatView> {
                                                                                 "0"
                                                                             ? Container()
                                                                             : Padding(
-                                                                                padding: EdgeInsets.only(right: 15),
+                                                                                padding: const EdgeInsets.only(right: 15),
                                                                                 child: Material(
                                                                                   elevation: 2.0,
                                                                                   borderRadius: BorderRadius.circular(16),
@@ -375,7 +375,7 @@ class _ChatViewState extends State<ChatView> {
                                                                       style: GoogleFonts
                                                                           .roboto(
                                                                         textStyle:
-                                                                            TextStyle(
+                                                                            const TextStyle(
                                                                           fontSize:
                                                                               12,
                                                                           color:
@@ -399,7 +399,7 @@ class _ChatViewState extends State<ChatView> {
                                                                     style: GoogleFonts
                                                                         .poppins(
                                                                       textStyle:
-                                                                          TextStyle(
+                                                                          const TextStyle(
                                                                         fontSize:
                                                                             10,
                                                                       ),
@@ -431,9 +431,10 @@ class _ChatViewState extends State<ChatView> {
                                                                         snapshot
                                                                             .data!;
                                                                     return Padding(
-                                                                      padding: EdgeInsets
+                                                                      padding: const EdgeInsets
                                                                           .only(
-                                                                              top: 5),
+                                                                          top:
+                                                                              5),
                                                                       child:
                                                                           Row(
                                                                         mainAxisAlignment:
@@ -475,7 +476,7 @@ class _ChatViewState extends State<ChatView> {
                                                 ),
                                               ],
                                             ),
-                                            SizedBox(
+                                            const SizedBox(
                                               height: 14,
                                             ),
                                           ],

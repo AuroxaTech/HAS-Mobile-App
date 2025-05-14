@@ -3,178 +3,192 @@ import 'package:get/get.dart';
 import 'package:property_app/app_constants/color_constants.dart';
 import 'package:property_app/constant_widget/constant_widgets.dart';
 import 'package:property_app/custom_widgets/custom_button.dart';
+
 import '../controllers/jobs_controller/job_detail_screen.dart';
 import '../controllers/stripe_payment_controller/stripe_payment_controller.dart';
+import '../utils/shared_preferences/preferences.dart';
+import '../views/main_bottom_bar/main_bottom_bar.dart';
+import '../views/main_bottom_bar/service_provider_bottom_ar.dart';
+import '../views/main_bottom_bar/tenant_bottom_bar.dart';
+import '../views/main_bottom_bar/visitor_bottom_bar.dart';
 
 class StripePaymentScreen extends StatelessWidget {
-  int? jobId;
-  int? id;
-  String? serviceProviderName;
-  String? serviceId;
-  String? serviceProviderEmail;
-  final StripePaymentScreenController stripePaymentController =
-      Get.put(StripePaymentScreenController());
-  final JobDetailController jobDetailController =
-      Get.find<JobDetailController>();
+  final int? jobId;
+  final int? id;
+  final String? serviceProviderName;
+  final String? serviceId;
 
   StripePaymentScreen(
-      {Key? key,
-      this.jobId,
-      this.id,
-      this.serviceProviderName,
-      this.serviceProviderEmail,
-      this.serviceId})
-      : super(
-          key: key,
-        );
+      {Key? key, this.jobId, this.id, this.serviceProviderName, this.serviceId})
+      : super(key: key);
+
+  final StripePaymentScreenController stripePaymentController =
+      Get.find<StripePaymentScreenController>();
+  final JobDetailController jobDetailController =
+      Get.find<JobDetailController>();
 
   @override
   Widget build(BuildContext context) {
     print("Job Id ===> $jobId");
     print("Id ===> $id");
     print(
-        'Payment : ${stripePaymentController.price} Service Id : ${stripePaymentController.serviceId} Service Provider Id : ${stripePaymentController.serviceProviderId}');
+        'Payment: \$${stripePaymentController.price} | Service Id: ${stripePaymentController.serviceId} | Service Provider Id: ${stripePaymentController.serviceProviderId}');
+
     return Scaffold(
       appBar: AppBar(
-        title: customText(text: 'Payout',fontSize: 25,fontWeight: FontWeight.bold,),
+        title: customText(
+          text: 'Payment',
+          fontSize: 25,
+          fontWeight: FontWeight.bold,
+        ),
         centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Obx(() => stripePaymentController.isProcessing.value
-            ? const Center(child: CircularProgressIndicator())
+            ? const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 20),
+                    Text("Processing payment...")
+                  ],
+                ),
+              )
             : Center(
                 child: SizedBox(
                   height: 450,
                   child: DecoratedBox(
                     decoration: const BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(30),
-                        topRight: Radius.circular(30),
-                        bottomLeft: Radius.circular(30),
-                        bottomRight: Radius.circular(30),
-                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(30)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 10,
+                          offset: Offset(0, 5),
+                        ),
+                      ],
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(18.0),
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            customText(
-                                text: "Service Provider Details",
-                                color: blackColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 24,
-                                textAlign: TextAlign.center
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          customText(
+                            text: "Payment Details",
+                            color: blackColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24,
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 40),
+                          _buildInfoRow(
+                            label: "Service Name:",
+                            value: serviceProviderName ?? "No Name",
+                          ),
+                          const SizedBox(height: 20),
+                          _buildInfoRow(
+                            label: "Amount:",
+                            value:
+                                "\$${stripePaymentController.price.value.toInt()}",
+                            valueStyle: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: primaryColor,
+                            ),
+                          ),
+                          const SizedBox(height: 60),
+                          CustomButton(
+                            gradientColor: greenGradient(),
+                            text: "Pay Now",
+                            btnTextColor: whiteColor,
+                            onTap: () async {
+                              var role = await Preferences.getRoleID();
+                              bool paymentSuccess =
+                                  await stripePaymentController
+                                      .processPayment();
 
-                            ),
-                            const SizedBox(
-                              height: 40,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: customText(
-                                      text: "Name :",
-                                      color: blackColor,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16),
-                                ),
-                                Expanded(
-                                  child: customText(
-                                    text: serviceProviderName ??
-                                        "No Name", // Use null-aware access and a fallback value
-                                    color: blackColor,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: customText(
-                                      text: "Email :",
-                                      color: blackColor,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18),
-                                ),
-                                Expanded(
-                                  child: customText(
-                                      text: serviceProviderEmail ?? "No Email",
-                                      color: blackColor,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: customText(
-                                      text: "Job Price:",
-                                      color: blackColor,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18),
-                                ),
-                                Expanded(
-                                  child: customText(
-                                      text:
-                                          "\$${stripePaymentController.price.value.toInt()}",
-                                      color: blackColor,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 60),
-                            CustomButton(
-                              gradientColor: greenGradient(),
-                              text: "Payout",
-                              btnTextColor: whiteColor,
-                              onTap: () async {
-                                String amount =
-                                (stripePaymentController.price.value * 100).toInt().toString(); // Convert price to cents
-                                String currency = 'usd';
-                                bool paymentSuccess = await stripePaymentController.withdrawPayment(amount, currency);
-                                if (paymentSuccess) {
-                                  jobDetailController
-                                      .acceptServiceRequest(jobId: jobId, status: "completed")
-                                      .then((value) {
-                                    jobDetailController.getJobRequest(id: id);
-                                   jobDetailController.makePayment(amount: amount, serviceId: serviceId.toString());
-                                  });
-                                  await jobDetailController.makePayment(amount: amount, serviceId: serviceId.toString());
+                              if (paymentSuccess && jobId != null) {
+                                await jobDetailController.acceptServiceRequest(
+                                  jobId: jobId,
+                                  status: "completed",
+                                );
 
-                                } else {
-                                  Get.back();
+                                if (id != null) {
+                                  await jobDetailController.getJobRequest(
+                                      id: id);
                                 }
-                              },
+
+                                switch (role) {
+                                  case "1":
+                                    Get.offAll(const MainBottomBar());
+                                    break;
+                                  case "2":
+                                    Get.offAll(const TenantBottomBar());
+                                    break;
+                                  case "3":
+                                    await const ServiceProviderBottomBar();
+                                    break;
+                                  case "4":
+                                    Get.offAll(const VisitorBottomBar());
+                                    break;
+                                  default:
+                                    Get.back();
+                                }
+                              }
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          TextButton(
+                            onPressed: () => Get.back(),
+                            child: customText(
+                              text: "Cancel",
+                              color: Colors.grey,
+                              fontSize: 16,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
                 ),
               )),
       ),
+    );
+  }
+
+  Widget _buildInfoRow({
+    required String label,
+    required String value,
+    TextStyle? valueStyle,
+  }) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          flex: 2,
+          child: customText(
+            text: label,
+            color: blackColor,
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
+        Expanded(
+          flex: 3,
+          child: customText(
+            text: value,
+            color: blackColor,
+            fontWeight: FontWeight.w600,
+            fontSize: 16,
+            style: valueStyle,
+          ),
+        ),
+      ],
     );
   }
 }

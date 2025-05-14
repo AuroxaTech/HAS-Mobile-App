@@ -6,6 +6,7 @@ import 'package:property_app/views/authentication_screens/forgot_password/new_pa
 import 'package:property_app/views/authentication_screens/forgot_password/verification_screen.dart';
 import 'package:property_app/views/authentication_screens/login_screen.dart';
 import 'package:property_app/views/authentication_screens/sign_up_screen.dart';
+import 'package:property_app/views/authentication_screens/stripe_account_screen.dart';
 import 'package:property_app/views/dashoard_screens/all_property_detail_screen.dart';
 import 'package:property_app/views/dashoard_screens/all_property_screen.dart';
 import 'package:property_app/views/dashoard_screens/dashboard_screen.dart';
@@ -80,6 +81,11 @@ class Routes {
       GetPage(
           name: kAddDetailScreen,
           page: () => AddPropertyDetailScreen(),
+          binding: ScreenBindings(),
+          transition: routeTransition),
+      GetPage(
+          name: kStripeAccountScreen,
+          page: () => const StripeAccountScreen(),
           binding: ScreenBindings(),
           transition: routeTransition),
       GetPage(

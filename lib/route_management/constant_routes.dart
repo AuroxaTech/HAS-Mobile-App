@@ -3,6 +3,7 @@ const String kIntroScreen = "/intro_screen";
 const String kLoginScreen = "/login_screen";
 const String kSignupScreen = "/signup_screen";
 const String kAddDetailScreen = "/add_detail_screen";
+const String kStripeAccountScreen = "/stripe_account_screen";
 
 const String kDashboardScreen = "/dashboard_screen";
 const String kMyProperties = "/my_property_screen";

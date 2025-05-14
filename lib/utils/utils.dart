@@ -30,6 +30,13 @@ class AppUtils{
         duration: const Duration(seconds: 3));
   }
 
+  static void warningSnackBar(String title, String message, {Color? backgroundColor}){
+    Get.snackbar(title, message,
+        colorText: whiteColor,
+        backgroundColor: const Color(0xffFFA726),
+        duration: const Duration(seconds: 3));
+  }
+
   static Future<void> dialog(BuildContext context)async{
     showDialog(context: context,
         builder: (context){
